@@ -1,0 +1,11 @@
+<?php
+
+require_once __DIR__.'/../src/Gaufrette/Autoload/UniversalClassLoader.php';
+
+use Gaufrette\Autoload\UniversalClassLoader;
+
+$loader = new UniversalClassLoader();
+$loader->registerNamespaces(array(
+    'Gaufrette' => __DIR__.'/../src',
+));
+$loader->register();
