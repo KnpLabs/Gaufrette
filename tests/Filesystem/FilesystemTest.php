@@ -7,10 +7,10 @@ class TestAdapter implements Adapter
     public function read($key) {}
     public function write($key, $content) {}
     public function exists($key) {}
-    public function list($pattern) {}
+    public function keys($pattern) {}
 }
 
-class FilesystemTest extends \PHPUnit_Framwork_TestCase
+class FilesystemTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetReturnsAFileInstanceConfiguredForTheKeyAndFilesystem()
     {
@@ -20,7 +20,7 @@ class FilesystemTest extends \PHPUnit_Framwork_TestCase
                 ->with($this->equalTo('myFile'))
                 ->will($this->returnValue(true));
 
-        $fs = new Filesystem();
+        $fs = new Filesystem($adapter);
 
         $file = $fs->get('myFile');
 
@@ -39,7 +39,7 @@ class FilesystemTest extends \PHPUnit_Framwork_TestCase
 
         $fs = new Filesystem($adapter);
 
-        $this->setExcpectedException('InvalidArgumentException');
+        $this->setExpectedException('InvalidArgumentException');
 
         $fs->get('myFile');
     }
@@ -54,7 +54,7 @@ class FilesystemTest extends \PHPUnit_Framwork_TestCase
 
         $fs = new Filesystem($adapter);
 
-        $this->setExcpectedException('InvalidArgumentException');
+        $this->setExpectedException('InvalidArgumentException');
 
         $fs->read('myFile');
     }
@@ -69,7 +69,7 @@ class FilesystemTest extends \PHPUnit_Framwork_TestCase
 
         $fs = new Filesystem($adapter);
 
-        $this->setExcpectedException('InvalidArgumentException');
+        $this->setExpectedException('InvalidArgumentException');
 
         $fs->write('myFile', 'some text');
     }

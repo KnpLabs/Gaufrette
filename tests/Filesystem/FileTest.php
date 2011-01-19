@@ -12,14 +12,14 @@ class FileTest extends \PHPUnit_Framework_TestCase
            ->with($this->equalTo('myFile'));
 
         $file = new File('myFile', $fs);
-        $file->read('myFile');
+        $file->getContent('myFile');
     }
 
     public function testGetContentThrowsAnExceptionIfNoFilesystemIsConfigured()
     {
         $file = new File('myFile');
 
-        $this->setExcpectedException('LogicException');
+        $this->setExpectedException('LogicException');
 
         $file->getContent();
     }
@@ -39,7 +39,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     {
         $file = new File('myFile');
 
-        $this->setExcpectedException('LogicException');
+        $this->setExpectedException('LogicException');
 
         $file->setContent('some content');
     }
