@@ -91,9 +91,9 @@ class Filesystem
      *
      * @return array
      */
-    public function list($pattern = null)
+    public function keys($pattern = null)
     {
-        return $this->adapter->list($pattern);
+        return $this->adapter->keys($pattern);
     }
 
     /**

@@ -45,5 +45,5 @@ interface Adapter
      *
      * @return array
      */
-    function list($pattern);
+    function keys($pattern);
 }

@@ -71,7 +71,7 @@ class Local implements Adapter
      *
      * @return array
      */
-    public function list($pattern)
+    public function keys($pattern)
     {
         $pattern = ltrim(str_replace('\\', '/', $pattern), '/');
 
