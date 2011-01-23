@@ -16,12 +16,17 @@ class Local implements Adapter
     /**
      * Constructor
      *
-     * @param  string $directory The local directory in which the filesystem is
-     *                           located.
+     * @param  string  $directory Directory where the filesystem is located
+     * @param  boolean $create    Whether to create the directory if it does not
+     *                            exist (default FALSE)
+     *
+     * @throws RuntimeException if the specified directory does not exist and
+     *                          could not be created
      */
-    public function __construct($directory)
+    public function __construct($directory, $create = false)
     {
-        $this->directory = realpath($directory);
+        $this->directory = $this->normalizePath($directory);
+        $this->ensureDirectoryExists($this->directory, $create);
     }
 
     /**
@@ -47,7 +52,7 @@ class Local implements Adapter
     {
         $path = $this->computePath($key);
 
-        $this->ensureDirectoryExists(dirname($path));
+        $this->ensureDirectoryExists(dirname($path), true);
 
         return file_put_contents($this->computePath($key), $content);
     }
@@ -76,7 +81,7 @@ class Local implements Adapter
         $pattern = ltrim(str_replace('\\', '/', $pattern), '/');
 
         $pos = strrpos($pattern, '/');
-        if (false === $post) {
+        if (false === $pos) {
             return $this->listDirectory($this->computePath(null), $pattern);
         } elseif (strlen($pattern) === $pos + 1) {
             return $this->listDirectory($this->computePath(dirname($pattern)), null);
@@ -86,29 +91,34 @@ class Local implements Adapter
     }
 
     /**
-     * Lists files from the specified directory and matching the given pattern
+     * Recursively lists files from the specified directory. If a pattern is
+     * specified, it only returns files matching it.
      *
-     * @param  string $directory
-     * @param  string $pattern
+     * @param  string $directory The path of the directory to list files from
+     * @param  string $pattern   The pattern that files must match to be
+     *                           returned
+     *
+     * @return array An array of file keys
      */
-    protected function listDirectory($directory, $pattern)
+    public function listDirectory($directory, $pattern = null)
     {
-        $iterator = new \RecursiveDirectoryIterator(
+        $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($directory)
         );
 
         if (!empty($pattern)) {
             $iterator = new \RegexIterator(
                 $iterator,
-                sprintf('/^%s.+/', preg_quote($pattern)),
-                RecursiveRegexIterator::GET_MATCH
+                sprintf('#^%s/%s#', $directory, $pattern),
+                \RecursiveRegexIterator::MATCH
             );
         }
 
         $keys = array();
-        foreach ($iterator as $filename => $current) {
-            if ($current->isFile()) {
-                $keys[] = $this->computeKey($directory . '/' . $filename);
+        foreach ($iterator as $item) {
+            $item = strval($item);
+            if (!is_dir($item)) {
+                $keys[] = $this->computeKey($item);
             }
         }
 
@@ -118,13 +128,16 @@ class Local implements Adapter
     /**
      * Computes the path from the specified key
      *
-     * @param  string $key
+     * @param  string $key The key which for to compute the path
      *
-     * @return string
+     * @return string A path
+     *
+     * @throws OutOfBoundsException If the computed path is out of the
+     *                              directory
      */
-    protected function computePath($key)
+    public function computePath($key)
     {
-        $path = realpath($this->directory . '/' . $key);
+        $path = $this->normalizePath($this->directory . '/' . $key);
 
         if (0 !== strpos($path, $this->directory)) {
             throw new \OutOfBoundsException(sprintf('The file \'%s\' is out of the filesystem.', $key));
@@ -134,29 +147,77 @@ class Local implements Adapter
     }
 
     /**
+     * Normalizes the given path. It replaces backslashes by slashes, resolves
+     * dots and removes double slashes
+     *
+     * @param  string $path The path to normalize
+     *
+     * @return string A normalized path
+     *
+     * @throws OutOfBoundsException If the given path is out of the directory
+     */
+    public function normalizePath($path)
+    {
+        // normalize directory separator and remove double slashes
+        $path = trim(str_replace(array('\\', '//'), '/', $path), '/');
+
+        // resolve dots
+        $segments = explode('/', $path);
+        $removed = array();
+        foreach ($segments as $i => $segment) {
+            if (in_array($segment, array('.', '..'))) {
+                unset($segments[$i]);
+                $removed[] = $i;
+                if ('..' === $segment) {
+                    $y = $i - 1;
+                    while ($y > -1) {
+                        if (!in_array($y, $removed) && !in_array($segments[$y], array('.', '..'))) {
+                            unset($segments[$y]);
+                            $removed[] = $y;
+                            break;
+                        }
+                        $y--;
+                    }
+                }
+            }
+        }
+
+        return '/' . implode('/', $segments);
+    }
+
+    /**
      * Computes the key from the specified path
      *
      * @param  string $path
      *
      * return string
      */
-    protected function computeKey($path)
+    public function computeKey($path)
     {
         if (0 !== strpos($path, $this->directory)) {
             throw new \OutOfBoundsException(sprintf('The path \'%s\' is out of the filesystem.', $path));
         }
 
-        return substr($path, strlen($this->directory));
+        return ltrim(substr($path, strlen($this->directory)), '/');
     }
 
     /**
      * Ensures the specified directory exists, creates it if it does not
      *
-     * @param  string $directory
+     * @param  string  $directory Path of the directory to test
+     * @param  boolean $create    Whether to create the directory if it does
+     *                            not exist
+     *
+     * @throws RuntimeException if the directory does not exists and could not
+     *                          be created
      */
-    protected function ensureDirectoryExists($directory)
+    public function ensureDirectoryExists($directory, $create = false)
     {
         if (!is_dir($directory)) {
+            if (!$create) {
+                throw new \RuntimeException(sprintf('The directory \'%s\' does not exist.', $directory));
+            }
+
             $this->createDirectory($directory);
         }
     }
@@ -164,9 +225,12 @@ class Local implements Adapter
     /**
      * Creates the specified directory and its parents
      *
-     * @param  string $directory
+     * @param  string $directory Path of the directory to create
+     *
+     * @throws InvalidArgumentException if the directory already exists
+     * @throws RuntimeException         if the directory could not be created
      */
-    protected function createDirectory($directory)
+    public function createDirectory($directory)
     {
         if (is_dir($directory)) {
             throw new \InvalidArgumentException(sprintf('The directory \'%s\' already exists.', $directory));
