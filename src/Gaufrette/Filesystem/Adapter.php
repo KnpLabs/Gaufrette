@@ -46,4 +46,22 @@ interface Adapter
      * @return array
      */
     function keys($pattern);
+
+    /**
+     * Returns the last modified time
+     *
+     * @param  string $key
+     *
+     * @return integer An UNIX like timestamp
+     */
+    function mtime($key);
+
+    /**
+     * Deletes the file
+     *
+     * @param  string $key
+     *
+     * @return boolean TRUE on success, or FALSE on failure
+     */
+    function delete($key);
 }

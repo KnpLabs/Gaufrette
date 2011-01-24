@@ -10,7 +10,8 @@ use Gaufrette\Filesystem\Adapter;
  * This adapter is not cached, if you need it to be cached, please see the
  * CachedFtp adapter which is a proxy class implementing a cache layer.
  *
- * @author Antoine Hérault <antoine.herault@gmail.com>
+ * @packageGaufrette
+ * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
 class Ftp implements Adapter
 {
@@ -22,6 +23,16 @@ class Ftp implements Adapter
     protected $password;
     protected $passive;
 
+    /**
+     * Constructor
+     *
+     * @param  string $directory
+     * @param  string $host
+     * @param  string $port
+     * @param  string $username
+     * @param  string $password
+     * @param  string $passive (default FALSE)
+     */
     public function __construct($directory, $host, $port, $username, $password, $passive = false)
     {
         $this->directory = $directory;
@@ -32,6 +43,9 @@ class Ftp implements Adapter
         $this->passive = $passive;
     }
 
+    /**
+     * {@InheritDoc}
+     */
     public function read($key)
     {
         if (!$this->isConnected()) {
@@ -48,6 +62,9 @@ class Ftp implements Adapter
         return stream_get_contents($temp);
     }
 
+    /**
+     * {@InheritDoc}
+     */
     public function write($key, $content)
     {
         if (!$this->isConnected()) {
@@ -65,6 +82,9 @@ class Ftp implements Adapter
         return $size;
     }
 
+    /**
+     * {@InheritDoc}
+     */
     public function exists($key)
     {
         if (!$this->isConnected()) {
@@ -81,9 +101,47 @@ class Ftp implements Adapter
         return false;
     }
 
+    /**
+     * {@InheritDoc}
+     */
     public function keys($pattern)
     {
+        if (!$this->isConnected()) {
+            $this->connect();
+        }
 
+        throw new \Exception('Shame on me, I should have implemented this method.');
+    }
+
+    /**
+     * {@InheritDoc}
+     */
+    public function mtime($key)
+    {
+        if (!$this->isConnected()) {
+            $this->connect();
+        }
+
+        $mtime = ftp_mdtm($this->connection, $this->computePath($key));
+
+        // the server does not support this function
+        if (-1 === $mtime) {
+            throw new \RuntimeException(sprintf('Could not get the last modified time of the \'%s\' file.', $key));
+        }
+
+        return $mtime;
+    }
+
+    /**
+     * {@InheritDoc}
+     */
+    public function delete($key)
+    {
+        if (!$this->isConnected()) {
+            $this->connect();
+        }
+
+        return ftp_delete($this->connection, $this->computePath($key));
     }
 
     /**

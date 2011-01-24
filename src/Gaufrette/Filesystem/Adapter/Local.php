@@ -30,9 +30,7 @@ class Local implements Adapter
     }
 
     /**
-     * Reads the content of the file
-     *
-     * @param  string $key
+     * {@InheritDoc}
      */
     public function read($key)
     {
@@ -40,13 +38,7 @@ class Local implements Adapter
     }
 
     /**
-     * Writes the given content into the file
-     *
-     * @param  string $key
-     * @param  string $content
-     *
-     * @return integer Number of bytes that were written into the file, or
-     *                 FALSE on failure
+     * {@InheritDoc}
      */
     public function write($key, $content)
     {
@@ -58,11 +50,7 @@ class Local implements Adapter
     }
 
     /**
-     * Indicates whether the file exists
-     *
-     * @param  string $key
-     *
-     * @return boolean
+     * {@InheritDoc}
      */
     public function exists($key)
     {
@@ -70,11 +58,7 @@ class Local implements Adapter
     }
 
     /**
-     * Don't forget the "/" if you want to list a specific directory
-     *
-     * @param  string $pattern
-     *
-     * @return array
+     * {@InheritDoc}
      */
     public function keys($pattern)
     {
@@ -88,6 +72,22 @@ class Local implements Adapter
         } else {
             return $this->listDirectory($this->computePath(dirname($pattern)), basename($pattern));
         }
+    }
+
+    /**
+     * {@InheritDoc}
+     */
+    public function mtime($key)
+    {
+        return filemtime($this->computePath($key));
+    }
+
+    /**
+     * {@InheritDoc}
+     */
+    public function delete($key)
+    {
+        return unlink($this->computePath($key));
     }
 
     /**
