@@ -27,14 +27,17 @@ class Ftp implements Adapter
     /**
      * Constructor
      *
-     * @param  string $directory
-     * @param  string $host
-     * @param  string $port
-     * @param  string $username
-     * @param  string $password
-     * @param  string $passive (default FALSE)
+     * @param  string $directory The directory to use in the ftp server
+     * @param  string $host      The host of the ftp server
+     * @param  string $username  The username
+     * @param  string $password  The password
+     * @param  string $port      The ftp port (default 21)
+     * @param  string $passive   Whether to switch the ftp connection in passive
+     *                           mode (default FALSE)
+     * @param  string $create    Whether to create the directory if it does not
+     *                           exist
      */
-    public function __construct($directory, $host, $port, $username, $password, $passive = false, $create = true)
+    public function __construct($directory, $host, $username = null, $password = null, $port = 21, $passive = false, $create = false)
     {
         $this->directory = $directory;
         $this->host = $host;
@@ -55,13 +58,16 @@ class Ftp implements Adapter
         }
 
         $temp = fopen('php://temp', 'r+');
+
         if (!ftp_fget($this->connection, $temp, $this->computePath($key), FTP_ASCII)) {
             throw new \RuntimeException(sprintf('Could not read file \'%s\'.', $key));
         }
 
         rewind($temp);
+        $contents = stream_get_contents($temp);
+        fclose($temp);
 
-        return stream_get_contents($temp);
+        return $contents;
     }
 
     /**
@@ -73,13 +79,20 @@ class Ftp implements Adapter
             $this->connect();
         }
 
-        $this->ensureDirectoryExists($this->computePath($key));
+        $path = $this->computePath($key);
+        $directory = dirname($path);
+
+        $this->ensureDirectoryExists($directory, true);
 
         $temp = fopen('php://temp', 'r+');
         $size = fwrite($temp, $content);
-        if (!ftp_fput($this->connection, $this->computePath($key), $temp, FTP_ASCII)) {
+        rewind($temp);
+
+        if (!ftp_fput($this->connection, $path, $temp, FTP_ASCII)) {
             throw new \RuntimeException(sprintf('Could not write file \'%s\'.', $key));
         }
+
+        fclose($temp);
 
         return $size;
     }
@@ -112,7 +125,9 @@ class Ftp implements Adapter
             $this->connect();
         }
 
-        throw new \Exception('Shame on me, I should have implemented this method.');
+        $keys = $this->listDirectory($pattern);
+
+        return $keys;
     }
 
     /**
@@ -159,7 +174,7 @@ class Ftp implements Adapter
      */
     public function ensureDirectoryExists($directory, $create = false)
     {
-        if ($this->directoryExists($directory)) {
+        if (!$this->directoryExists($directory)) {
             if (!$create) {
                 throw new \RuntimeException(sprintf('The directory \'%s\' does not exist.', $directory));
             }
@@ -181,12 +196,12 @@ class Ftp implements Adapter
             $this->connect();
         }
 
-        if (!ftp_chdir($this->connection, $directory)) {
+        if (!@ftp_chdir($this->connection, $directory)) {
             return false;
         }
 
         // change directory again to return in the base directory
-        ftp_chdir($this->directory);
+        @ftp_chdir($this->connection, $this->directory);
 
         return true;
     }
@@ -215,6 +230,70 @@ class Ftp implements Adapter
         if (false === $created) {
             throw new \RuntimeException(sprintf('Could not create the \'%s\' directory.', $directory));
         }
+    }
+
+    /**
+     * Recursively lists files from the specified directory. If a pattern is
+     * specified, it only returns files matching it.
+     *
+     * @param  string $directory The path of the directory to list files from
+     * @param  string $pattern   The pattern that files must match to be
+     *                           returned
+     *
+     * @return array An array of file keys
+     */
+    public function listDirectory($directory, $pattern = null)
+    {
+        if (!$this->isConnected()) {
+            $this->connect();
+        }
+
+        $keys = array();
+        $files = ftp_rawlist($this->connection, $directory);
+        $files = $this->parseRawlist($files ? : array());
+
+        foreach ($files as $file) {
+            if ('-' === substr($file['chmod'], 0, 1)) {
+                $keys[] = trim($directory . '/' . $file['name'], '/');
+            }
+        }
+
+        if (null !== $pattern) {
+            $keys = array_filter($keys, function($key) {
+                return preg_match(sprintf('/^%s/', preg_quote($pattern, '/')), $key);
+            });
+        }
+
+        return $keys;
+    }
+
+    /**
+     * Parses the given raw list
+     *
+     * @param  array $rawlist
+     *
+     * @return array
+     */
+    public function parseRawlist(array $rawlist)
+    {
+        $parsed = array();
+        foreach ($rawlist as $line) {
+            $vinfo = preg_split("/[\s]+/", $line, 9);
+            if ($vinfo[0] !== "total") {
+              $info['chmod'] = $vinfo[0];
+              $info['num'] = $vinfo[1];
+              $info['owner'] = $vinfo[2];
+              $info['group'] = $vinfo[3];
+              $info['size'] = $vinfo[4];
+              $info['month'] = $vinfo[5];
+              $info['day'] = $vinfo[6];
+              $info['time'] = $vinfo[7];
+              $info['name'] = $vinfo[8];
+              $parsed[$info['name']] = $info;
+            }
+        }
+
+        return $parsed;
     }
 
     /**
@@ -268,17 +347,19 @@ class Ftp implements Adapter
         }
 
         // ensure the adapter's directory exists
-        try {
-            $this->ensureDirectoryExists($this->directory, $this->create);
-        } catch (\RuntimeException $e) {
-            $this->close();
-            throw $e;
-        }
+        if (!empty($this->directory)) {
+            try {
+                $this->ensureDirectoryExists($this->directory, $this->create);
+            } catch (\RuntimeException $e) {
+                $this->close();
+                throw $e;
+            }
 
-        // change the current directory for the adapter's directory
-        if (!ftp_chdir($this->connection, $this->directory)) {
-            $this->close();
-            throw new \RuntimeException(sprintf('Could not change current directory for the \'%s\' directory.', $this->directory));
+            // change the current directory for the adapter's directory
+            if (!ftp_chdir($this->connection, $this->directory)) {
+                $this->close();
+                throw new \RuntimeException(sprintf('Could not change current directory for the \'%s\' directory.', $this->directory));
+            }
         }
     }
 
