@@ -22,6 +22,7 @@ class Ftp implements Adapter
     protected $username;
     protected $password;
     protected $passive;
+    protected $create;
 
     /**
      * Constructor
@@ -33,14 +34,15 @@ class Ftp implements Adapter
      * @param  string $password
      * @param  string $passive (default FALSE)
      */
-    public function __construct($directory, $host, $port, $username, $password, $passive = false)
+    public function __construct($directory, $host, $port, $username, $password, $passive = false, $create = true)
     {
         $this->directory = $directory;
         $this->host = $host;
-        $this->port = $port
+        $this->port = $port;
         $this->username = $username;
         $this->password = $password;
         $this->passive = $passive;
+        $this->create = $create;
     }
 
     /**
@@ -246,7 +248,7 @@ class Ftp implements Adapter
     {
         // open ftp connection
         $this->connection = ftp_connect($this->host, $this->port);
-        if (!$connection) {
+        if (!$this->connection) {
             throw new \RuntimeException(sprintf('Could not connect to \'%s\' (port: %s).', $this->host, $this->port));
         }
 
