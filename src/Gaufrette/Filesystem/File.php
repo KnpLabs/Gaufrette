@@ -18,7 +18,7 @@ class File
      * @param  string     $key
      * @param  Filesystem $filesystem An optional filesystem
      */
-    public function __construct($key, $filesystem = null)
+    public function __construct($key, Filesystem $filesystem = null)
     {
         $this->key = $key;
         $this->filesystem = $filesystem;
@@ -52,6 +52,21 @@ class File
     public function setFilesystem(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
+        $this->exists = $filesystem->has($this->key);
+    }
+
+    /**
+     * Indicates whether the file exists in the filesystem
+     *
+     * @return boolean
+     */
+    public function exists()
+    {
+        if (null === $this->filesystem) {
+            return false;
+        }
+
+        return $this->filesystem->has($this->key);
     }
 
     /**
@@ -63,6 +78,8 @@ class File
     {
         if (null === $this->filesystem) {
             throw new \LogicException('The filesystem is not defined.');
+        } else if (!$this->exists()) {
+            throw new \LogicException('The file does not exists in the filesystem.');
         }
 
         return $this->filesystem->read($this->key);
