@@ -71,7 +71,7 @@ class Filesystem
     /**
      * Reads the content from the file
      *
-     * @param string $key Key of the file
+     * @param  string $key Key of the file
      *
      * @return string
      */
@@ -82,6 +82,22 @@ class Filesystem
         }
 
         return $this->adapter->read($key);
+    }
+
+    /**
+     * Deletes the file matching the specified key
+     *
+     * @param  string $key
+     *
+     * @return boolean
+     */
+    public function delete($key)
+    {
+        if (!$this->has($key)) {
+            throw new \InvalidArgumentException(sprintf('The file %s does not exist.', $key));
+        }
+
+        return $this->adapter->delete($key);
     }
 
     /**
