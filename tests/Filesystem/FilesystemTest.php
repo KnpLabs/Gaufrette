@@ -8,6 +8,8 @@ class TestAdapter implements Adapter
     public function write($key, $content) {}
     public function exists($key) {}
     public function keys($pattern) {}
+    public function mtime($key) {}
+    public function delete($key) {}
 }
 
 class FilesystemTest extends \PHPUnit_Framework_TestCase
