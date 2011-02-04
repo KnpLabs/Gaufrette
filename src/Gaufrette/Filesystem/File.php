@@ -101,4 +101,18 @@ class File
 
         return $this->filesystem->write($this->key, $content, true);
     }
+
+    /**
+     * Deletes the file from the filesystem
+     *
+     * @return  boolean TRUE on success, or FALSE on failure
+     */
+    public function delete()
+    {
+        if (!$this->exists()) {
+            throw new \LogicException('The file could not be deleted as it does not exist.');
+        }
+
+        return $this->filesystem->delete($this->key);
+    }
 }
