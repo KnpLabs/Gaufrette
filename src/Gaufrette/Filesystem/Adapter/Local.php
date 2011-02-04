@@ -68,7 +68,7 @@ class Local implements Adapter
         if (false === $pos) {
             return $this->listDirectory($this->computePath(null), $pattern);
         } elseif (strlen($pattern) === $pos + 1) {
-            return $this->listDirectory($this->computePath(dirname($pattern)), null);
+            return $this->listDirectory($this->computePath($pattern), null);
         } else {
             return $this->listDirectory($this->computePath(dirname($pattern)), basename($pattern));
         }
@@ -103,22 +103,21 @@ class Local implements Adapter
     public function listDirectory($directory, $pattern = null)
     {
         $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory)
+            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS)
         );
 
         if (!empty($pattern)) {
             $iterator = new \RegexIterator(
                 $iterator,
-                sprintf('#^%s/%s#', $directory, $pattern),
+                sprintf('/^%s/', preg_quote($directory . '/' . $pattern, '/')),
                 \RecursiveRegexIterator::MATCH
             );
         }
 
         $keys = array();
         foreach ($iterator as $item) {
-            $item = strval($item);
-            if (!is_dir($item)) {
-                $keys[] = $this->computeKey($item);
+            if ($item->isFile()) {
+                $keys[] = $this->computeKey(strval($item));
             }
         }
 
