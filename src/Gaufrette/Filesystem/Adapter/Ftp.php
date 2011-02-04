@@ -253,7 +253,7 @@ class Ftp implements Adapter
         $files = $this->parseRawlist($files ? : array());
 
         foreach ($files as $file) {
-            if ('-' === substr($file['chmod'], 0, 1)) {
+            if ('-' === substr($file['perms'], 0, 1)) {
                 $keys[] = trim($directory . '/' . $file['name'], '/');
             }
         }
@@ -278,18 +278,19 @@ class Ftp implements Adapter
     {
         $parsed = array();
         foreach ($rawlist as $line) {
-            $vinfo = preg_split("/[\s]+/", $line, 9);
-            if ($vinfo[0] !== "total") {
-              $info['chmod'] = $vinfo[0];
-              $info['num'] = $vinfo[1];
-              $info['owner'] = $vinfo[2];
-              $info['group'] = $vinfo[3];
-              $info['size'] = $vinfo[4];
-              $info['month'] = $vinfo[5];
-              $info['day'] = $vinfo[6];
-              $info['time'] = $vinfo[7];
-              $info['name'] = $vinfo[8];
-              $parsed[$info['name']] = $info;
+            $infos = preg_split("/[\s]+/", $line, 9);
+            if ('total' !== $infos[0]) {
+                $parsed[] = array(
+                    'perms' => $infos[0],
+                    'num'   => $infos[1],
+                    'owner' => $infos[2],
+                    'group' => $infos[3],
+                    'size'  => $infos[4],
+                    'month' => $infos[5],
+                    'day'   => $infos[6],
+                    'time'  => $infos[7],
+                    'name'  => $infos[8]
+                );
             }
         }
 
