@@ -53,9 +53,9 @@ class Filesystem
     /**
      * Writes the given content into the file
      *
-     * @param string  $key       Key of the file
-     * @parma string  $content   Content to write in the file
-     * @param boolean $overwrite Whether to overwrite the file if exists
+     * @param  string  $key       Key of the file
+     * @param  string  $content   Content to write in the file
+     * @param  boolean $overwrite Whether to overwrite the file if exists
      *
      * @return integer The number of bytes that were written into the file
      */
