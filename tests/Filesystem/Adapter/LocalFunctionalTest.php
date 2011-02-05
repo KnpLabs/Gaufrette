@@ -4,7 +4,7 @@ namespace Gaufrette\Filesystem\Adapter;
 
 use Gaufrette\Filesystem\Adapter\Local;
 
-include __DIR__ . '/AbstractFunctionalTest.php';
+require_once __DIR__ . '/AbstractFunctionalTest.php';
 
 class LocalFunctionalTest extends AbstractFunctionalTest
 {
