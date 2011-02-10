@@ -53,13 +53,9 @@ class Ftp implements Adapter
      */
     public function read($key)
     {
-        if (!$this->isConnected()) {
-            $this->connect();
-        }
-
         $temp = fopen('php://temp', 'r+');
 
-        if (!ftp_fget($this->connection, $temp, $this->computePath($key), FTP_ASCII)) {
+        if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), FTP_ASCII)) {
             throw new \RuntimeException(sprintf('Could not read file \'%s\'.', $key));
         }
 
@@ -75,10 +71,6 @@ class Ftp implements Adapter
      */
     public function write($key, $content)
     {
-        if (!$this->isConnected()) {
-            $this->connect();
-        }
-
         $path = $this->computePath($key);
         $directory = dirname($path);
 
@@ -88,7 +80,7 @@ class Ftp implements Adapter
         $size = fwrite($temp, $content);
         rewind($temp);
 
-        if (!ftp_fput($this->connection, $path, $temp, FTP_ASCII)) {
+        if (!ftp_fput($this->getConnection(), $path, $temp, FTP_ASCII)) {
             throw new \RuntimeException(sprintf('Could not write file \'%s\'.', $key));
         }
 
@@ -102,11 +94,7 @@ class Ftp implements Adapter
      */
     public function exists($key)
     {
-        if (!$this->isConnected()) {
-            $this->connect();
-        }
-
-        $files = ftp_nlist($this->connection, dirname($this->computePath($key)));
+        $files = ftp_nlist($this->getConnection(), dirname($this->computePath($key)));
         foreach ($files as $file) {
             if ($key === $file) {
                 return true;
@@ -121,10 +109,6 @@ class Ftp implements Adapter
      */
     public function keys($pattern)
     {
-        if (!$this->isConnected()) {
-            $this->connect();
-        }
-
         $keys = $this->listDirectory($pattern);
 
         return $keys;
@@ -135,11 +119,7 @@ class Ftp implements Adapter
      */
     public function mtime($key)
     {
-        if (!$this->isConnected()) {
-            $this->connect();
-        }
-
-        $mtime = ftp_mdtm($this->connection, $this->computePath($key));
+        $mtime = ftp_mdtm($this->getConnection(), $this->computePath($key));
 
         // the server does not support this function
         if (-1 === $mtime) {
@@ -154,11 +134,7 @@ class Ftp implements Adapter
      */
     public function delete($key)
     {
-        if (!$this->isConnected()) {
-            $this->connect();
-        }
-
-        return ftp_delete($this->connection, $this->computePath($key));
+        return ftp_delete($this->getConnection(), $this->computePath($key));
     }
 
     /**
@@ -192,16 +168,12 @@ class Ftp implements Adapter
      */
     public function directoryExists($directory)
     {
-        if (!$this->isConnected()) {
-            $this->connect();
-        }
-
-        if (!@ftp_chdir($this->connection, $directory)) {
+        if (!@ftp_chdir($this->getConnection(), $directory)) {
             return false;
         }
 
         // change directory again to return in the base directory
-        @ftp_chdir($this->connection, $this->directory);
+        @ftp_chdir($this->getConnection(), $this->directory);
 
         return true;
     }
@@ -215,10 +187,6 @@ class Ftp implements Adapter
      */
     public function createDirectory($directory)
     {
-        if (!$this->isConnected()) {
-            $this->connect();
-        }
-
         // create parent directory if needed
         $parent = dirname($directory);
         if (!$this->directoryExists($parent)) {
@@ -226,7 +194,7 @@ class Ftp implements Adapter
         }
 
         // create the specified directory
-        $created = ftp_mkdir($this->connection, $directory);
+        $created = ftp_mkdir($this->getConnection(), $directory);
         if (false === $created) {
             throw new \RuntimeException(sprintf('Could not create the \'%s\' directory.', $directory));
         }
@@ -244,12 +212,8 @@ class Ftp implements Adapter
      */
     public function listDirectory($directory, $pattern = null)
     {
-        if (!$this->isConnected()) {
-            $this->connect();
-        }
-
         $keys = array();
-        $files = ftp_rawlist($this->connection, $directory);
+        $files = ftp_rawlist($this->getConnection(), $directory);
         $files = $this->parseRawlist($files ? : array());
 
         foreach ($files as $file) {
@@ -318,6 +282,22 @@ class Ftp implements Adapter
     {
         return is_resource($this->connection);
     }
+
+    /**
+     * Returns an opened ftp connection resource. If the connection is not
+     * already opened, it open it before
+     *
+     * @return resource The ftp connection
+     */
+    public function getConnection()
+    {
+        if (!$this->isConnected()) {
+            $this->connect();
+        }
+
+        return $this->connection;
+    }
+
 
     /**
      * Opens the adapter's ftp connection
