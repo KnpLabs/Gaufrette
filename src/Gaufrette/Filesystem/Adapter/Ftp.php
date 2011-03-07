@@ -298,7 +298,6 @@ class Ftp implements Adapter
         return $this->connection;
     }
 
-
     /**
      * Opens the adapter's ftp connection
      *

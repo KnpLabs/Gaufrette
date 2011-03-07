@@ -14,17 +14,38 @@ class Cache implements Adapter
 {
     protected $source;
     protected $cache;
+    protected $ttl;
 
     /**
      * Constructor
      *
-     * @param  Adapter $source
-     * @param  Adapter $cache
+     * @param  Adapter $source  The source adapter that must be cached
+     * @param  Adapter $cache   The adapter used to cache the source
+     * @param  integer $ttl     Time to live of a cached file
      */
-    public function __construct(Adapter $source, Adapter $cache)
+    public function __construct(Adapter $source, Adapter $cache, $ttl = 0)
     {
         $this->source = $source;
         $this->cache = $cache;
+        $this->ttl = $ttl;
+    }
+
+    /**
+     * Returns the time to live of the cache
+     *
+     * @return integer $ttl
+     */
+    public function getTtl() {
+        return $this->ttl;
+    }
+
+    /**
+     * Defines the time to live of the cache
+     *
+     * @param  integer $ttl
+     */
+    public function setTtl($ttl) {
+        $this->ttl = $ttl;
     }
 
     /**
@@ -85,7 +106,10 @@ class Cache implements Adapter
         }
 
         try {
-            return $this->cache->mtime($key) < $this->source->mtime($key);
+            $dateCache = $this->cache->mtime($key);
+            $dateSource = $this->source->mtime($key);
+
+            return time() - $this->ttl > $dateCache && $dateCache < $dateSource;
         } catch (\RuntimeException $e) {
             return true;
         }
