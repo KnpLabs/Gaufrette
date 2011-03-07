@@ -56,6 +56,31 @@ Gaufrette also provide a File class that is a representation of files in a files
 
     echo $file->getContent(); // Hello World
 
+### Cache a slow filesystem
+
+If you have to deal with a slow filesystem, it is out of quetion to use it directly.
+So, you need a cache! Happily, Gaufrette offers a cache system ready for use.
+It consist of an adapter itself composed of two adapters:
+
+    * The *source* adapter that should be cached
+    * The *cache* adapter that is used to cache
+
+Here is an exemple of how to cache an ftp filesystem:
+
+    <?php
+
+    use Gaufrette\Filesystem\Filesystem;
+    use Gaufrette\Filesystem\Adapter\Ftp as FtpAdapter;
+    use Gaufrette\Filesystem\Adapter\Local as LocalAdapter;
+
+    // create an ftp adapter instance as $ftp and a local one as $local
+
+    $cachedFtp = new CacheAdapter($ftp, $local, 10);
+
+    $filesystem = new Filestystem($cachedFtp);
+
+The third parameter of the cache adapter is the time to live of the cache.
+
 Using Gaufrette in a Symfony2 project
 -------------------------------------
 
