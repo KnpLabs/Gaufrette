@@ -87,3 +87,24 @@ Using Gaufrette in a Symfony2 project
 As you can see, Gaufrette provides an elegant way to declare your filesystems.
 If you want to use them in a Symfony2 project, you can simply add them as
 services of your dependency injection container.
+
+Running the Tests
+-----------------
+
+The tests use PHPUnit.
+
+### Setup the vendor libraries
+
+As some filesystem adapters use vendor libraries, you should install the vendors:
+
+    $ ./vendors.sh
+
+It will avoid skip a lot of tests.
+
+### Launch the Test Suite
+
+In the Gaufrette root directory:
+
+    $ phpunit -c .
+
+Is it green?
