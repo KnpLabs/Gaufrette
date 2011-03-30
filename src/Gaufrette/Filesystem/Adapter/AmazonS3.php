@@ -15,12 +15,14 @@ class AmazonS3 implements Adapter
 {
     protected $service;
     protected $bucket;
+    protected $ensureBucket = false;
+    protected $create;
 
     public function __construct(S3 $service, $bucket, $create = false)
     {
         $this->service = $service;
         $this->bucket = $bucket;
-        $this->ensureBucketExists($bucket, $create);
+        $this->create = $create;
     }
 
     /**
@@ -28,6 +30,8 @@ class AmazonS3 implements Adapter
      */
     public function read($key)
     {
+        $this->ensureBucketExists();
+        
         return $this->service->getObject($this->computePath($key));
     }
 
@@ -36,6 +40,8 @@ class AmazonS3 implements Adapter
      */
     public function write($key, $content)
     {
+        $this->ensureBucketExists();
+        
         if ($this->service->putObject($this->computePath($key), $content)) {
             return $this->getStringNumBytes($content);
         }
@@ -48,6 +54,8 @@ class AmazonS3 implements Adapter
      */
     public function exists($key)
     {
+        $this->ensureBucketExists();
+        
         return $this->service->isObjectAvailable($this->computePath($key));
     }
 
@@ -56,6 +64,8 @@ class AmazonS3 implements Adapter
      */
     public function mtime($key)
     {
+        $this->ensureBucketExists();
+        
         $info = $this->service->getInfo($this->computePath($key));
 
         return $info['mtime'];
@@ -66,6 +76,8 @@ class AmazonS3 implements Adapter
      */
     public function keys($pattern = null)
     {
+        $this->ensureBucketExists();
+        
         $matches = array();
         $objects = $this->service->getObjectsByBucket($this->bucket);
 
@@ -83,6 +95,8 @@ class AmazonS3 implements Adapter
      */
     public function delete($key)
     {
+        $this->ensureBucketExists();
+
         return $this->removeObject($this->computePath($key));
     }
 
@@ -97,19 +111,22 @@ class AmazonS3 implements Adapter
      * @throws RuntimeException if the bucket does not exists or could not be
      *                          created
      */
-    protected function ensureBucketExists($bucket, $create = false)
+    protected function ensureBucketExists()
     {
-        if ($this->service->isBucketAvailable($bucket)) {
-            return;
-        }
+        if (!$this->ensureBucket) {
 
-        if ($create) {
-            $created = $this->service->createBucket($bucket);
-            if (!$created) {
-                throw new \RuntimeException(sprintf('Could not create the \'%s\' bucket.', $bucket));
+            $available = $this->service->isBucketAvailable($this->bucket);
+
+            if (!$available && $this->create) {
+                $created = $this->service->createBucket($this->bucket);
+                if (!$created) {
+                    throw new \RuntimeException(sprintf('Could not create the \'%s\' bucket.', $this->bucket));
+                }
+            } else if (!$available) {
+                throw new \RuntimeException(sprintf('The bucket \'%s\' was not found. Please create it on Amazon AWS.', $this->bucket));
             }
-        } else {
-            throw new \RuntimeException(sprintf('The bucket \'%s\' was not found.', $bucket));
+
+            $this->ensureBucket = true;
         }
     }
 
@@ -149,10 +166,10 @@ class AmazonS3 implements Adapter
     protected function getStringNumBytes($string)
     {
         $d = 0;
-        $strlen_var = strlen($str);
+        $strlen_var = strlen($string);
         for ($c = 0; $c < $strlen_var; ++$c) {
 
-            $ord_var_c = ord($str{$d});
+            $ord_var_c = ord($string{$d});
 
             switch (true) {
                 case (($ord_var_c >= 0x20) && ($ord_var_c <= 0x7F)):

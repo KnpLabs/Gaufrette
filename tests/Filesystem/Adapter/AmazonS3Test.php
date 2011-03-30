@@ -13,10 +13,10 @@ class AmazonS3Test extends \PHPUnit_Framework_TestCase
         }
 
         $this->service = $this->getMock('Zend\Service\Amazon\S3\S3', array(), array(), '', false);
-        $this->service->expects($this->any())
-            ->method('isBucketAvailable')
-            ->with($this->equalTo('foobucket'))
-            ->will($this->returnValue(true));
+//        $this->service->expects($this->any())
+//            ->method('isBucketAvailable')
+//            ->with($this->equalTo('foobucket'))
+//            ->will($this->returnValue(true));
     }
 
     public function testComputePath()
