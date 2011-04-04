@@ -103,7 +103,7 @@ class Local implements Adapter
     public function listDirectory($directory, $pattern = null)
     {
         $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS)
+            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS)
         );
 
         if (!empty($pattern)) {
@@ -158,30 +158,20 @@ class Local implements Adapter
     public function normalizePath($path)
     {
         // normalize directory separator and remove double slashes
-        $path = trim(str_replace(array('\\', '//'), '/', $path), '/');
-
-        // resolve dots
-        $segments = explode('/', $path);
-        $removed = array();
-        foreach ($segments as $i => $segment) {
-            if (in_array($segment, array('.', '..'))) {
-                unset($segments[$i]);
-                $removed[] = $i;
-                if ('..' === $segment) {
-                    $y = $i - 1;
-                    while ($y > -1) {
-                        if (!in_array($y, $removed) && !in_array($segments[$y], array('.', '..'))) {
-                            unset($segments[$y]);
-                            $removed[] = $y;
-                            break;
-                        }
-                        $y--;
-                    }
-                }
+        $path = str_replace(array('/', '\\'), '/', $path);
+        $absolute = $path[0] == '/';
+        $parts = array_filter(explode('/', $path), 'strlen');
+        $absolutes = array();
+        foreach ($parts as $part) {
+            if ('.' == $part) continue;
+            if ('..' == $part) {
+                array_pop($absolutes);
+            } else {
+                $absolutes[] = $part;
             }
         }
 
-        return '/' . implode('/', $segments);
+        return ($absolute ? '/' : '') . implode('/', $absolutes);
     }
 
     /**
@@ -193,6 +183,7 @@ class Local implements Adapter
      */
     public function computeKey($path)
     {
+        $path = $this->normalizePath($path);
         if (0 !== strpos($path, $this->directory)) {
             throw new \OutOfBoundsException(sprintf('The path \'%s\' is out of the filesystem.', $path));
         }

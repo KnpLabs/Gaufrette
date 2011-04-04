@@ -6,7 +6,7 @@ class LocalTest extends \PHPUnit_Framework_TestCase
 {
     public function testComputePath()
     {
-        $directory = __DIR__ . '/filesystem';
+        $directory = str_replace('\\', '/', __DIR__) . '/filesystem';
         $adapter = new Local($directory);
 
         $this->assertEquals($directory . '/foobar', $adapter->computePath('foobar'));
@@ -20,7 +20,7 @@ class LocalTest extends \PHPUnit_Framework_TestCase
 
     public function testNormalizePath()
     {
-        $directory = __DIR__ . '/filesystem';
+        $directory = str_replace('\\', '/', __DIR__) . '/filesystem';
         $adapter = new Local($directory);
 
         $this->assertEquals('/foo/bar', $adapter->normalizePath('//foo/foo2/foo3/../..//bar/./foo4/..'));
@@ -28,7 +28,16 @@ class LocalTest extends \PHPUnit_Framework_TestCase
 
     public function testComputeKey()
     {
-        $directory = __DIR__ . '/filesystem';
+        $directory = str_replace('\\', '/', __DIR__) . '/filesystem';
+        $adapter = new Local($directory);
+
+        $this->assertEquals('foobar', $adapter->computeKey($directory . '/foobar'));
+        $this->assertEquals('foo/bar', $adapter->computeKey($directory . '/foo/bar'));
+    }
+
+    public function testComputeKeyUnnormalized()
+    {
+        $directory = str_replace('\\', '/', __DIR__) . '/filesystem/../filesystem';
         $adapter = new Local($directory);
 
         $this->assertEquals('foobar', $adapter->computeKey($directory . '/foobar'));
