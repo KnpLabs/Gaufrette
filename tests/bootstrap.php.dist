@@ -7,7 +7,7 @@ use Gaufrette\Autoload\UniversalClassLoader;
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
     'Gaufrette' => __DIR__.'/../src',
-    'Zend'      => __DIR__.'/../../../vendor/zend/library',
+    'Zend'      => __DIR__.'/../vendor/zend/library',
 ));
 
 $loader->register();
