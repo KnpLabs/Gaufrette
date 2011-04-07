@@ -113,6 +113,30 @@ class Filesystem
     }
 
     /**
+     * Returns the last modified time of the specified file
+     *
+     * @param  string $key
+     *
+     * @return integer An UNIX like timestamp
+     */
+    public function mtime($key)
+    {
+        return $this->adapter->mtime($key);
+    }
+
+    /**
+     * Returns the checksum of the specified file's content
+     *
+     * @param  string $key
+     *
+     * @return integer An UNIX like timestamp
+     */
+    public function checksum($key)
+    {
+        return $this->adapter->checksum($key);
+    }
+
+    /**
      * Creates a new File instance and returns it
      *
      * @param  string $key
