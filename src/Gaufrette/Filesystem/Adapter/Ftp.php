@@ -130,6 +130,14 @@ class Ftp implements Adapter
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function checksum($key)
+    {
+        return md5($this->read($key));
+    }
+
+    /**
      * {@InheritDoc}
      */
     public function delete($key)

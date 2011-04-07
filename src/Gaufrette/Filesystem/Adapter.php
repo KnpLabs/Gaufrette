@@ -57,6 +57,15 @@ interface Adapter
     function mtime($key);
 
     /**
+     * Returns the checksum of the file
+     *
+     * @param  string $key
+     *
+     * @return string
+     */
+    function checksum($key);
+
+    /**
      * Deletes the file
      *
      * @param  string $key

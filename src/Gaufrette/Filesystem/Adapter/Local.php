@@ -83,6 +83,14 @@ class Local implements Adapter
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function checksum($key)
+    {
+        return md5_file($this->computePath($key));
+    }
+
+    /**
      * {@InheritDoc}
      */
     public function delete($key)

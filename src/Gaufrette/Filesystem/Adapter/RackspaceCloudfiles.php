@@ -82,6 +82,16 @@ class RackspaceCloudfiles implements Adapter
     /**
      * {@inheritDoc}
      */
+    public function checksum($key)
+    {
+        $object = $this->container->get_object($key);
+
+        return $object->getETag();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function delete($key)
     {
         try {

@@ -31,7 +31,7 @@ class AmazonS3 implements Adapter
     public function read($key)
     {
         $this->ensureBucketExists();
-        
+
         return $this->service->getObject($this->computePath($key));
     }
 
@@ -41,7 +41,7 @@ class AmazonS3 implements Adapter
     public function write($key, $content)
     {
         $this->ensureBucketExists();
-        
+
         if ($this->service->putObject($this->computePath($key), $content)) {
             return $this->getStringNumBytes($content);
         }
@@ -55,7 +55,7 @@ class AmazonS3 implements Adapter
     public function exists($key)
     {
         $this->ensureBucketExists();
-        
+
         return $this->service->isObjectAvailable($this->computePath($key));
     }
 
@@ -65,7 +65,7 @@ class AmazonS3 implements Adapter
     public function mtime($key)
     {
         $this->ensureBucketExists();
-        
+
         $info = $this->service->getInfo($this->computePath($key));
 
         return $info['mtime'];
@@ -74,10 +74,22 @@ class AmazonS3 implements Adapter
     /**
      * {@inheritDoc}
      */
+    public function checksum($key)
+    {
+        $this->ensureBucketExists();
+
+        $info = $this->service->getInfo($this->computePath($key));
+
+        return trim($info['etag'], '"');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function keys($pattern = null)
     {
         $this->ensureBucketExists();
-        
+
         $matches = array();
         $objects = $this->service->getObjectsByBucket($this->bucket);
 

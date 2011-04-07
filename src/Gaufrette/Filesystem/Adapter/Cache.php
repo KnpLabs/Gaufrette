@@ -86,6 +86,14 @@ class Cache implements Adapter
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function checksum($key)
+    {
+        return $this->source->checksum($key);
+    }
+
+    /**
      * {@InheritDoc}
      */
     public function delete($key)
