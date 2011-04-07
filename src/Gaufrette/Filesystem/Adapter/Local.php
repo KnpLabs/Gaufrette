@@ -3,6 +3,7 @@
 namespace Gaufrette\Filesystem\Adapter;
 
 use Gaufrette\Filesystem\Adapter;
+use Gaufrette\Checksum;
 
 /**
  * Adapter for the local filesystem
@@ -87,7 +88,7 @@ class Local implements Adapter
      */
     public function checksum($key)
     {
-        return md5_file($this->computePath($key));
+        return Checksum::fromFile($this->computePath($key));
     }
 
     /**
