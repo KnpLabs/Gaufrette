@@ -2,25 +2,15 @@
 
 namespace Gaufrette\Filesystem;
 
-class TestAdapter implements Adapter
-{
-    public function read($key) {}
-    public function write($key, $content) {}
-    public function exists($key) {}
-    public function keys($pattern) {}
-    public function mtime($key) {}
-    public function delete($key) {}
-}
+use Gaufrette\Filesystem\Adapter\InMemory;
 
 class FilesystemTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetReturnsAFileInstanceConfiguredForTheKeyAndFilesystem()
     {
-        $adapter = $this->getAdapterMock();
-        $adapter->expects($this->once())
-                ->method('exists')
-                ->with($this->equalTo('myFile'))
-                ->will($this->returnValue(true));
+        $adapter = new InMemory(array(
+            'myFile' => array()
+        ));
 
         $fs = new Filesystem($adapter);
 
@@ -33,11 +23,7 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 
     public function testGetThrowsAnExceptionIfTheFileDoesNotExistAndTheCreateParameterIsSetToFalse()
     {
-        $adapter = $this->getAdapterMock();
-        $adapter->expects($this->once())
-                ->method('exists')
-                ->with($this->equalTo('myFile'))
-                ->will($this->returnValue(false));
+        $adapter = new InMemory();
 
         $fs = new Filesystem($adapter);
 
@@ -48,11 +34,7 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 
     public function testReadThrowsAnExceptionIfTheKeyDoesNotMatchAnyFile()
     {
-        $adapter = $this->getAdapterMock();
-        $adapter->expects($this->once())
-                ->method('exists')
-                ->with($this->equalTo('myFile'))
-                ->will($this->returnValue(false));
+        $adapter = new InMemory();
 
         $fs = new Filesystem($adapter);
 
@@ -63,21 +45,14 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 
     public function testWriteThrowsAnExceptionIfTheFileAlreadyExistsAndIsNotAllowedToOverwrite()
     {
-        $adapter = $this->getAdapterMock();
-        $adapter->expects($this->once())
-                ->method('exists')
-                ->with($this->equalTo('myFile'))
-                ->will($this->returnValue(true));
+        $adapter = new InMemory(array(
+            'myFile' => array()
+        ));
 
         $fs = new Filesystem($adapter);
 
         $this->setExpectedException('InvalidArgumentException');
 
         $fs->write('myFile', 'some text');
-    }
-
-    protected function getAdapterMock()
-    {
-        return $this->getMock('Gaufrette\Filesystem\TestAdapter');
     }
 }
