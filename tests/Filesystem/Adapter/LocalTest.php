@@ -18,14 +18,6 @@ class LocalTest extends \PHPUnit_Framework_TestCase
         $adapter->computePath('../foobar');
     }
 
-    public function testNormalizePath()
-    {
-        $directory = str_replace('\\', '/', __DIR__) . '/filesystem';
-        $adapter = new Local($directory);
-
-        $this->assertEquals('/foo/bar', $adapter->normalizePath('//foo/foo2/foo3/../..//bar/./foo4/..'));
-    }
-
     public function testComputeKey()
     {
         $directory = str_replace('\\', '/', __DIR__) . '/filesystem';

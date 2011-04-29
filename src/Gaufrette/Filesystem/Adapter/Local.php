@@ -4,6 +4,7 @@ namespace Gaufrette\Filesystem\Adapter;
 
 use Gaufrette\Filesystem\Adapter;
 use Gaufrette\Checksum;
+use Gaufrette\Path;
 
 /**
  * Adapter for the local filesystem
@@ -155,32 +156,15 @@ class Local implements Adapter
     }
 
     /**
-     * Normalizes the given path. It replaces backslashes by slashes, resolves
-     * dots and removes double slashes
+     * Normalizes the given path
      *
-     * @param  string $path The path to normalize
+     * @param  string $path
      *
-     * @return string A normalized path
-     *
-     * @throws OutOfBoundsException If the given path is out of the directory
+     * @return string
      */
     public function normalizePath($path)
     {
-        // normalize directory separator and remove double slashes
-        $path = str_replace(array('/', '\\'), '/', $path);
-        $absolute = $path[0] == '/';
-        $parts = array_filter(explode('/', $path), 'strlen');
-        $absolutes = array();
-        foreach ($parts as $part) {
-            if ('.' == $part) continue;
-            if ('..' == $part) {
-                array_pop($absolutes);
-            } else {
-                $absolutes[] = $part;
-            }
-        }
-
-        return ($absolute ? '/' : '') . implode('/', $absolutes);
+        return Path::normalize($path);
     }
 
     /**
