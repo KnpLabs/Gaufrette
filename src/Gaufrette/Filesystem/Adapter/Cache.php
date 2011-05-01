@@ -2,7 +2,7 @@
 
 namespace Gaufrette\Filesystem\Adapter;
 
-use Gaufrette\Adapter;
+use Gaufrette\Filesystem\Adapter;
 
 /**
  * Cache adapter
@@ -91,6 +91,14 @@ class Cache implements Adapter
     public function checksum($key)
     {
         return $this->source->checksum($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function keys()
+    {
+        return $this->source->keys();
     }
 
     /**

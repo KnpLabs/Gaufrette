@@ -3,45 +3,49 @@
 namespace Gaufrette\Filesystem\Adapter;
 
 use Gaufrette\Filesystem\Adapter\Local;
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 require_once __DIR__ . '/AbstractFunctionalTest.php';
 
 class LocalFunctionalTest extends AbstractFunctionalTest
 {
-    protected static $directory = null;
+    protected $directory;
 
-    public static function setUpBeforeClass()
+    public function setUp()
     {
-        if (null === self::$directory) {
-            self::$directory = __DIR__ . DIRECTORY_SEPARATOR . 'filesystem';
-        }
+        $this->directory = __DIR__.'/filesystem';
 
-        if (!is_dir(self::$directory)) {
-            @mkdir(self::$directory, 0777, true);
+        if (!is_dir($this->directory)) {
+            mkdir($this->directory, 0777, true);
         }
     }
 
-    public static function tearDownAfterClass()
+    public function tearDown()
     {
-        // skip if there is no directory to remove
-        if (null === self::$directory || !is_dir(self::$directory)) {
-            return ;
+        if (!is_dir($this->directory)) {
+            return;
         }
 
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator(self::$directory),
-            \RecursiveIteratorIterator::CHILD_FIRST
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(
+                $this->directory,
+                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+            )
         );
 
         foreach ($iterator as $item) {
             if ($item->isDir()) {
-                @rmdir(strval($item));
+                rmdir(strval($item));
+            } else {
+                unlink(strval($item));
             }
         }
     }
 
     protected function getAdapter()
     {
-        return new Local(self::$directory);
+        return new Local($this->directory);
     }
 }

@@ -107,11 +107,9 @@ class Ftp implements Adapter
     /**
      * {@InheritDoc}
      */
-    public function keys($pattern)
+    public function keys()
     {
-        $keys = $this->listDirectory($pattern);
-
-        return $keys;
+        return $this->listDirectory($this->directory);
     }
 
     /**
@@ -213,27 +211,20 @@ class Ftp implements Adapter
      * specified, it only returns files matching it.
      *
      * @param  string $directory The path of the directory to list files from
-     * @param  string $pattern   The pattern that files must match to be
-     *                           returned
      *
      * @return array An array of file keys
      */
-    public function listDirectory($directory, $pattern = null)
+    public function listDirectory($directory)
     {
         $keys = array();
-        $files = ftp_rawlist($this->getConnection(), $directory);
-        $files = $this->parseRawlist($files ? : array());
+        $files = $this->parseRawlist(
+            ftp_rawlist($this->getConnection(), $directory) ? : array()
+        );
 
         foreach ($files as $file) {
             if ('-' === substr($file['perms'], 0, 1)) {
                 $keys[] = trim($directory . '/' . $file['name'], '/');
             }
-        }
-
-        if (null !== $pattern) {
-            $keys = array_filter($keys, function($key) {
-                return preg_match(sprintf('/^%s/', preg_quote($pattern, '/')), $key);
-            });
         }
 
         return $keys;

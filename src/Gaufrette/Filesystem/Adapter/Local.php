@@ -5,6 +5,9 @@ namespace Gaufrette\Filesystem\Adapter;
 use Gaufrette\Filesystem\Adapter;
 use Gaufrette\Checksum;
 use Gaufrette\Path;
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 /**
  * Adapter for the local filesystem
@@ -62,18 +65,26 @@ class Local implements Adapter
     /**
      * {@InheritDoc}
      */
-    public function keys($pattern)
+    public function keys()
     {
-        $pattern = ltrim(str_replace('\\', '/', $pattern), '/');
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(
+                $this->directory,
+                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+            )
+        );
 
-        $pos = strrpos($pattern, '/');
-        if (false === $pos) {
-            return $this->listDirectory($this->computePath(null), $pattern);
-        } elseif (strlen($pattern) === $pos + 1) {
-            return $this->listDirectory($this->computePath($pattern), null);
-        } else {
-            return $this->listDirectory($this->computePath(dirname($pattern)), basename($pattern));
-        }
+        $files = iterator_to_array($iterator);
+
+        $self = $this;
+        return array_values(
+            array_map(
+                function($file) use ($self) {
+                    return $self->computeKey(strval($file));
+                },
+                $files
+            )
+        );
     }
 
     /**
@@ -98,40 +109,6 @@ class Local implements Adapter
     public function delete($key)
     {
         return unlink($this->computePath($key));
-    }
-
-    /**
-     * Recursively lists files from the specified directory. If a pattern is
-     * specified, it only returns files matching it.
-     *
-     * @param  string $directory The path of the directory to list files from
-     * @param  string $pattern   The pattern that files must match to be
-     *                           returned
-     *
-     * @return array An array of file keys
-     */
-    public function listDirectory($directory, $pattern = null)
-    {
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS)
-        );
-
-        if (!empty($pattern)) {
-            $iterator = new \RegexIterator(
-                $iterator,
-                sprintf('/^%s/', preg_quote($directory . '/' . $pattern, '/')),
-                \RecursiveRegexIterator::MATCH
-            );
-        }
-
-        $keys = array();
-        foreach ($iterator as $item) {
-            if ($item->isFile()) {
-                $keys[] = $this->computeKey(strval($item));
-            }
-        }
-
-        return $keys;
     }
 
     /**

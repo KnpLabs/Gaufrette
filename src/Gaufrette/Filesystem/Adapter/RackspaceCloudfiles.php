@@ -64,9 +64,9 @@ class RackspaceCloudfiles implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function keys($pattern)
+    public function keys()
     {
-        return $this->container->list_objects(0, null, null, $pattern);
+        return $this->container->list_objects(0, null, null);
     }
 
     /**

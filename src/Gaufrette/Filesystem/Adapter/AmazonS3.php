@@ -86,20 +86,11 @@ class AmazonS3 implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function keys($pattern = null)
+    public function keys()
     {
         $this->ensureBucketExists();
 
-        $matches = array();
-        $objects = $this->service->getObjectsByBucket($this->bucket);
-
-        if (null !== $pattern) {
-            $objects = array_filter($objects, function($key) use($pattern) {
-                return 0 === strpos($key, $pattern);
-            });
-        }
-
-        return $objects;
+        return $this->service->getObjectsByBucket($this->bucket);
     }
 
     /**

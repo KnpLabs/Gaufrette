@@ -38,29 +38,17 @@ abstract class AbstractFunctionalTest extends \PHPUnit_Framework_TestCase
             'bar/bar'
         );
 
-        $fs = $this->getFilesystem();
+        $filesystem = $this->getFilesystem();
 
         foreach ($files as $file) {
-            $fs->write($file, '', true);
+            $filesystem->write($file, '', true);
         }
 
-        $keys = $fs->keys('foo');
-        $this->assertEquals(4, count($keys));
-        foreach (array('foobar', 'foo/bar', 'foo/bar2', 'foo/foobar/bar') as $key) {
-            $this->assertContains($key, $keys);
-        }
+        $keys = $filesystem->keys();
 
-        $keys = $fs->keys('foo/');
-        $this->assertEquals(3, count($keys));
-        foreach (array('foo/bar', 'foo/bar2', 'foo/foobar/bar') as $key) {
-            $this->assertContains($key, $keys);
-        }
-
-        $keys = $fs->keys('bar/f');
-        $this->assertEquals(array('bar/foo'), $keys);
-
+        $this->assertEquals(count($files), count($keys));
         foreach ($files as $file) {
-            $fs->delete($file);
+            $this->assertContains($file, $keys);
         }
     }
 
