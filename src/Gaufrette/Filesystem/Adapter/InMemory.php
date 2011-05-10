@@ -84,6 +84,9 @@ class InMemory implements Adapter
         return $this->files[$key]['content'];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function rename($key, $new)
     {
         $this->files[$new] = $this->files[$key];
