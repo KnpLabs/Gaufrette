@@ -57,6 +57,14 @@ class Local implements Adapter
     /**
      * {@InheritDoc}
      */
+    public function rename($key, $new)
+    {
+        return rename($this->computePath($key), $this->computeKey($new));
+    }
+
+    /**
+     * {@InheritDoc}
+     */
     public function exists($key)
     {
         return is_file($this->computePath($key));
