@@ -34,6 +34,19 @@ class Filesystem
     }
 
     /**
+     * Renames a file
+     *
+     * @param string $key
+     * @param string $new
+     *
+     * @return boolean TRUE if the rename was successful, FALSE otherwise
+     */
+    public function rename($key, $new)
+    {
+        return $this->adapter->rename($key, $new);
+    }
+
+    /**
      * Returns the file matching the specified key
      *
      * @param  string  $key    Key of the file
