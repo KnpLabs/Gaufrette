@@ -39,6 +39,15 @@ class Sftp implements Adapter
     /**
      * {@inheritDoc}
      */
+    public function rename($key, $new)
+    {
+        $this->write($new, $this->read($key));
+        $this->delete($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function write($key, $content)
     {
         $this->initialize();
