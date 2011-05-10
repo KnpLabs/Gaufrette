@@ -92,6 +92,20 @@ class Ftp implements Adapter
     /**
      * {@InheritDoc}
      */
+    public function rename($key, $new)
+    {
+        $old = $this->computePath($key);
+        $path = $this->computePath($new);
+        $directory = dirname($new);
+
+        $this->ensureDirectoryExists($directory, true);
+
+        return ftp_rename($this->getConnection(), $old, $path);
+    }
+
+    /**
+     * {@InheritDoc}
+     */
     public function exists($key)
     {
         $files = ftp_nlist($this->getConnection(), dirname($this->computePath($key)));
