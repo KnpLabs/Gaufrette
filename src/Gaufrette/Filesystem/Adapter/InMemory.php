@@ -92,8 +92,6 @@ class InMemory implements Adapter
         $this->files[$new] = $this->files[$key];
         unset($this->files[$key]);
         $this->files[$new]['mtime'] = time();
-
-        return true;
     }
 
     /**
