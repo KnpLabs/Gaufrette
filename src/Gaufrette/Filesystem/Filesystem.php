@@ -103,13 +103,11 @@ class Filesystem
     /**
      * Returns an array of all keys matching the specified pattern
      *
-     * @param  string $pattern An optional pattern (default NULL)
-     *
      * @return array
      */
-    public function keys($pattern = null)
+    public function keys()
     {
-        return $this->adapter->keys($pattern);
+        return $this->adapter->keys();
     }
 
     /**
