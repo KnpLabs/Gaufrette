@@ -40,8 +40,11 @@ class RackspaceCloudfiles implements Adapter
      */
     public function rename($key, $new)
     {
-       $this->write($new, $this->read($key));
-       $this->delete($key);
+       if ($this->write($new, $this->read($key))) {
+           return $this->delete($key);
+       }
+
+       return false;
     }
 
     /**
