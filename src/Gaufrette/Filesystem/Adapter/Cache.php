@@ -63,6 +63,15 @@ class Cache implements Adapter
     /**
      * {@InheritDoc}
      */
+    public function rename($key, $new)
+    {
+        $this->source->rename($key, $new);
+        $this->cache->rename($key, $new);
+    }
+
+    /**
+     * {@InheritDoc}
+     */
     public function write($key, $content)
     {
         $this->source->write($key, $content);

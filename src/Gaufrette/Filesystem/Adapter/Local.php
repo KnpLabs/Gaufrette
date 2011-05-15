@@ -57,6 +57,16 @@ class Local implements Adapter
     /**
      * {@InheritDoc}
      */
+    public function rename($key, $new)
+    {
+        if(!rename($this->computePath($key), $this->computeKey($new))) {
+            throw new \RuntimeException(sprintf('Could not rename file \'%s\' to \'%s\'.', $key, $new));
+        }
+    }
+
+    /**
+     * {@InheritDoc}
+     */
     public function exists($key)
     {
         return is_file($this->computePath($key));
