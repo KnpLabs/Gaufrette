@@ -81,7 +81,7 @@ class Cache implements Adapter
     /**
      * {@InheritDoc}
      */
-    public function exists()
+    public function exists($key)
     {
         return $this->source->exists($key);
     }
