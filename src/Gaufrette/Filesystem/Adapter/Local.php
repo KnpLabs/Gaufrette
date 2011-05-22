@@ -39,7 +39,13 @@ class Local implements Adapter
      */
     public function read($key)
     {
-        return file_get_contents($this->computePath($key));
+        $content = file_get_contents($this->computePath($key));
+
+        if (false === $content) {
+            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
+        }
+
+        return $content;
     }
 
     /**
@@ -51,7 +57,13 @@ class Local implements Adapter
 
         $this->ensureDirectoryExists(dirname($path), true);
 
-        return file_put_contents($this->computePath($key), $content);
+        $numBytes = file_put_contents($this->computePath($key), $content);
+
+        if (false === $numBytes) {
+            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
+        }
+
+        return $numBytes;
     }
 
     /**
@@ -59,7 +71,9 @@ class Local implements Adapter
      */
     public function rename($key, $new)
     {
-        return rename($this->computePath($key), $this->computeKey($new));
+        if (!rename($this->computePath($key), $this->computePath($new))) {
+            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
+        }
     }
 
     /**
@@ -116,7 +130,9 @@ class Local implements Adapter
      */
     public function delete($key)
     {
-        return unlink($this->computePath($key));
+        if (!unlink($this->computePath($key))) {
+            throw new \RuntimeException(sprintf('Could not remove the \'%s\' file.', $key));
+        }
     }
 
     /**
