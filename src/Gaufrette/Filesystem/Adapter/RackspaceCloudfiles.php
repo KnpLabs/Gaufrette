@@ -32,7 +32,11 @@ class RackspaceCloudfiles implements Adapter
     {
         $object = $this->container->get_object($key);
 
-        return $object->read();
+        try {
+            return $object->read();
+        } catch (\Exception $e) {
+            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
+        }
     }
 
     /**
@@ -40,11 +44,12 @@ class RackspaceCloudfiles implements Adapter
      */
     public function rename($key, $new)
     {
-       if ($this->write($new, $this->read($key))) {
-           return $this->delete($key);
+        try {
+            $this->write($new, $this->read($key));
+            $this->delete($key);
+        } catch (\Exception $e) {
+            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
        }
-
-       return false;
     }
 
     /**
@@ -58,11 +63,11 @@ class RackspaceCloudfiles implements Adapter
             $object = $this->container->create_object($key);
         }
 
-        if ($object->write($content)) {
-            return $this->getStringNumBytes($content);
+        if (!$object->write($content)) {
+            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
         }
 
-        return false;
+        return $this->getStringNumBytes($content);
     }
 
     /**
@@ -107,9 +112,11 @@ class RackspaceCloudfiles implements Adapter
     public function delete($key)
     {
         try {
-            return $this->container->delete_object($key);
+            $this->container->delete_object($key);
+        } catch (\NoSuchObjectException $e) {
+            // @todo what do we do when the object does not exist?
         } catch (\Exception $e) {
-            return false;
+            throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
         }
     }
 
