@@ -33,7 +33,13 @@ class Sftp implements Adapter
     {
         $this->initialize();
 
-        return $this->sftp->read($this->computePath($key));
+        $content = $this->sftp->read($this->computePath($key));
+
+        if (false === $content) {
+            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
+        }
+
+        return $content;
     }
 
     /**
@@ -41,11 +47,12 @@ class Sftp implements Adapter
      */
     public function rename($key, $new)
     {
-        if (!$this->write($new, $this->read($key))) {
+        try {
+            $this->write($new, $this->read($key));
             $this->delete($key);
+        } catch (\RuntimeException $e) {
+            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
         }
-
-        return false;
     }
 
     /**
@@ -59,7 +66,13 @@ class Sftp implements Adapter
 
         $this->ensureDirectoryExists(dirname($path), true);
 
-        return $this->sftp->write($path, $content);
+        $numBytes = $this->sftp->write($path, $content);
+
+        if (false === $numBytes) {
+            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
+        }
+
+        return $numBytes;
     }
 
     /**
@@ -77,7 +90,7 @@ class Sftp implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function keys($pattern = null)
+    public function keys()
     {
         $this->initialize();
 
@@ -111,7 +124,9 @@ class Sftp implements Adapter
     {
         $this->initialize();
 
-        return unlink($this->sftp->getUrl($this->computePath($key)));
+        if (unlink($this->sftp->getUrl($this->computePath($key)))) {
+            throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
+        }
     }
 
     /**
