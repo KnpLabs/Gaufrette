@@ -40,11 +40,8 @@ class AmazonS3 implements Adapter
      */
     public function rename($key, $new)
     {
-        if ($this->write($new, $this->read($key))) {
-            return $this->delete($key);
-        }
-
-        return false;
+        $this->write($new, $this->read($key));
+        $this->delete($key);
     }
 
     /**
@@ -54,11 +51,11 @@ class AmazonS3 implements Adapter
     {
         $this->ensureBucketExists();
 
-        if ($this->service->putObject($this->computePath($key), $content)) {
-            return $this->getStringNumBytes($content);
+        if (!$this->service->putObject($this->computePath($key), $content)) {
+            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
         }
 
-        return false;
+        return $this->getStringNumBytes($content);
     }
 
     /**
@@ -112,7 +109,9 @@ class AmazonS3 implements Adapter
     {
         $this->ensureBucketExists();
 
-        return $this->removeObject($this->computePath($key));
+        if (!$this->removeObject($this->computePath($key))) {
+            throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
+        }
     }
 
     /**
