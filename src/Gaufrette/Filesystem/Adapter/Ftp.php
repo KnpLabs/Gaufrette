@@ -56,7 +56,7 @@ class Ftp implements Adapter
         $temp = fopen('php://temp', 'r+');
 
         if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), FTP_ASCII)) {
-            throw new \RuntimeException(sprintf('Could not read file \'%s\'.', $key));
+            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
         }
 
         rewind($temp);
@@ -81,7 +81,7 @@ class Ftp implements Adapter
         rewind($temp);
 
         if (!ftp_fput($this->getConnection(), $path, $temp, FTP_ASCII)) {
-            throw new \RuntimeException(sprintf('Could not write file \'%s\'.', $key));
+            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
         }
 
         fclose($temp);
@@ -101,7 +101,7 @@ class Ftp implements Adapter
         $this->ensureDirectoryExists($directory, true);
 
         if(!ftp_rename($this->getConnection(), $old, $path)) {
-            throw new \RuntimeException(sprintf('Could not rename file \'%s\' to \'%s\'.', $key, $new));
+            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
         }
     }
 
@@ -156,7 +156,9 @@ class Ftp implements Adapter
      */
     public function delete($key)
     {
-        return ftp_delete($this->getConnection(), $this->computePath($key));
+        if (!ftp_delete($this->getConnection(), $this->computePath($key))) {
+            throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
+        }
     }
 
     /**
@@ -190,12 +192,12 @@ class Ftp implements Adapter
      */
     public function directoryExists($directory)
     {
-        if (!@ftp_chdir($this->getConnection(), $directory)) {
+        if (!ftp_chdir($this->getConnection(), $directory)) {
             return false;
         }
 
         // change directory again to return in the base directory
-        @ftp_chdir($this->getConnection(), $this->directory);
+        ftp_chdir($this->getConnection(), $this->directory);
 
         return true;
     }
