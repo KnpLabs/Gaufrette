@@ -98,8 +98,7 @@ class Local implements Adapter
             );
 
             $files = iterator_to_array($iterator);
-        }
-        else {
+        } else {
             $files = scandir($this->computePath($pattern));
             $files = array_diff($files, array('.', '..'));
         }
