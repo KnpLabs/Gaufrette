@@ -116,6 +116,9 @@ class Filesystem
     /**
      * Returns an array of all keys matching the specified pattern
      *
+     * @param string $pattern
+     * @param boolean $recursive
+     *
      * @return array
      */
     public function keys($pattern = '', $recursive = true)
