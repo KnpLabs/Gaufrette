@@ -87,11 +87,11 @@ class Local implements Adapter
     /**
      * {@InheritDoc}
      */
-    public function keys()
+    public function keys($pattern = '', $recursive = true)
     {
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator(
-                $this->directory,
+                $this->computePath($pattern),
                 FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
             )
         );
