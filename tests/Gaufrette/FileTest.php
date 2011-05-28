@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette\Filesystem;
+namespace Gaufrette;
 
 class FileTest extends \PHPUnit_Framework_TestCase
 {
@@ -65,6 +65,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     protected function getFilesystemMock()
     {
-        return $this->getMock('Gaufrette\Filesystem\Filesystem', array(), array(), '', false);
+        return $this->getMock('Gaufrette\Filesystem', array(), array(), '', false);
     }
 }

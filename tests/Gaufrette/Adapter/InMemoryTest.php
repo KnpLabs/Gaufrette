@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette\Filesystem\Adapter;
+namespace Gaufrette\Adapter;
 
 use Gaufrette\Checksum;
 

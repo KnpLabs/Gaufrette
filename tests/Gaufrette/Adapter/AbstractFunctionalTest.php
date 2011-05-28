@@ -1,10 +1,10 @@
 <?php
 
-namespace Gaufrette\Filesystem\Adapter;
+namespace Gaufrette\Adapter;
 
-use Gaufrette\Filesystem\File;
-use Gaufrette\Filesystem\Filesystem;
-use Gaufrette\Filesystem\Adapter;
+use Gaufrette\File;
+use Gaufrette\Filesystem;
+use Gaufrette\Adapter;
 
 abstract class AbstractFunctionalTest extends \PHPUnit_Framework_TestCase
 {

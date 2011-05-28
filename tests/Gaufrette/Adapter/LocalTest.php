@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette\Filesystem\Adapter;
+namespace Gaufrette\Adapter;
 
 class LocalTest extends \PHPUnit_Framework_TestCase
 {

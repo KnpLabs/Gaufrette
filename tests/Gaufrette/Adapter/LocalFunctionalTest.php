@@ -1,8 +1,8 @@
 <?php
 
-namespace Gaufrette\Filesystem\Adapter;
+namespace Gaufrette\Adapter;
 
-use Gaufrette\Filesystem\Adapter\Local;
+use Gaufrette\Adapter\Local;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;

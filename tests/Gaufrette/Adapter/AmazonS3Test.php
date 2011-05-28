@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette\Filesystem\Adapter;
+namespace Gaufrette\Adapter;
 
 class AmazonS3Test extends \PHPUnit_Framework_TestCase
 {

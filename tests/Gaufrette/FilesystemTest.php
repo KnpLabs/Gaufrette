@@ -1,8 +1,8 @@
 <?php
 
-namespace Gaufrette\Filesystem;
+namespace Gaufrette;
 
-use Gaufrette\Filesystem\Adapter\InMemory;
+use Gaufrette\Adapter\InMemory;
 
 class FilesystemTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,7 +16,7 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 
         $file = $fs->get('myFile');
 
-        $this->assertInstanceOf('Gaufrette\Filesystem\File', $file);
+        $this->assertInstanceOf('Gaufrette\File', $file);
         $this->assertEquals('myFile', $file->getKey());
         $this->assertEquals($fs, $file->getFilesystem());
     }
