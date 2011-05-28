@@ -47,7 +47,7 @@ interface Adapter
      *
      * @return array
      */
-    function keys($pattern = null, $recursive = true);
+    function keys($pattern = '', $recursive = true);
 
     /**
      * Returns the last modified time
