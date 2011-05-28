@@ -1,8 +1,8 @@
 <?php
 
-namespace Gaufrette\Filesystem\Adapter;
+namespace Gaufrette\Adapter;
 
-use Gaufrette\Filesystem\Adapter;
+use Gaufrette\Adapter;
 
 class Sftp implements Adapter
 {

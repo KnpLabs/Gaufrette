@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette\Filesystem;
+namespace Gaufrette;
 
 /**
  * A filesystem is used to store and retrieve files

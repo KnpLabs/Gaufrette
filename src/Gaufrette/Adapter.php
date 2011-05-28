@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette\Filesystem;
+namespace Gaufrette;
 
 /**
  * Interface for the filesystem adapters

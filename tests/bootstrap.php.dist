@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__.'/../src/Gaufrette/Autoload/UniversalClassLoader.php';
+require_once __DIR__.'/../vendor/symfony-class-loader/UniversalClassLoader.php';
 
-use Gaufrette\Autoload\UniversalClassLoader;
+use Symfony\Component\ClassLoader\UniversalClassLoader;
 
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(

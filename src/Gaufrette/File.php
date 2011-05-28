@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette\Filesystem;
+namespace Gaufrette;
 
 /**
  * Points to a file in a filesystem
