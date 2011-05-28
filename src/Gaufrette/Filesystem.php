@@ -118,7 +118,7 @@ class Filesystem
      *
      * @return array
      */
-    public function keys()
+    public function keys($pattern = '', $recursive = true)
     {
         return $this->adapter->keys();
     }

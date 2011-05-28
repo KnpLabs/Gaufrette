@@ -123,7 +123,7 @@ class Ftp implements Adapter
     /**
      * {@InheritDoc}
      */
-    public function keys()
+    public function keys($pattern = '', $recursive = true)
     {
         return $this->listDirectory($this->directory);
     }

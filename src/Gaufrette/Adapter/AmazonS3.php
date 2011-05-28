@@ -95,7 +95,7 @@ class AmazonS3 implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($pattern = '', $recursive = true)
     {
         $this->ensureBucketExists();
 
