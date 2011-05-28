@@ -115,9 +115,23 @@ class InMemory implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($pattern = '', $recursive = true)
     {
-        return array_keys($this->files);
+        if(!$pattern && $recursive) {
+
+            return array_keys($this->files);
+        }
+        elseif($pattern && $recursive) {
+            $strlen = strlen($pattern);
+            $files = array();
+            foreach ($this->files as $key => $value) {
+                if (substr($key, 0, $strlen) == $pattern) {
+                    $files[] = $key;
+                }
+            }
+
+            return $files;
+        }
     }
 
     /**
