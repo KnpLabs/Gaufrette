@@ -105,9 +105,9 @@ class Cache implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($pattern = '', $recursive = true)
     {
-        return $this->source->keys();
+        return $this->source->keys($pattern, $recursive);
     }
 
     /**
