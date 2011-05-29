@@ -87,22 +87,27 @@ class Local implements Adapter
     /**
      * {@InheritDoc}
      */
-    public function keys()
+    public function keys($pattern = '', $recursive = true)
     {
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator(
-                $this->directory,
-                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
-            )
-        );
+        if ($recursive) {
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator(
+                    $this->computePath($pattern),
+                    FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+                )
+            );
 
-        $files = iterator_to_array($iterator);
+            $files = iterator_to_array($iterator);
+        } else {
+            $files = scandir($this->computePath($pattern));
+            $files = array_diff($files, array('.', '..'));
+        }
 
         $self = $this;
         return array_values(
             array_map(
                 function($file) use ($self) {
-                    return $self->computeKey(strval($file));
+                    return $self->computeKey($pattern . '/' . strval($file));
                 },
                 $files
             )

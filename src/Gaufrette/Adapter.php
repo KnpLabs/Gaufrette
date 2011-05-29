@@ -42,9 +42,12 @@ interface Adapter
     /**
      * Returns an array of all keys matching the specified pattern
      *
+     * @param string $pattern
+     * @param boolean $recursive
+     *
      * @return array
      */
-    function keys();
+    function keys($pattern = '', $recursive = true);
 
     /**
      * Returns the last modified time

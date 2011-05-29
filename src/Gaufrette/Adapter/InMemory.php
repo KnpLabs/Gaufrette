@@ -115,7 +115,7 @@ class InMemory implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($pattern = '', $recursive = true)
     {
         return array_keys($this->files);
     }

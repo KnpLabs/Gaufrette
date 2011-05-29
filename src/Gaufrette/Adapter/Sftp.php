@@ -90,7 +90,7 @@ class Sftp implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($pattern = '', $recursive = true)
     {
         $this->initialize();
 
