@@ -52,7 +52,6 @@ class File
     public function setFilesystem(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
-        $this->exists = $filesystem->has($this->key);
     }
 
     /**
