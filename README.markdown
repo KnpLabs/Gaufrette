@@ -25,36 +25,42 @@ Try it!
 
 ### Setup your filesystem
 
-    <?php
+```php
+<?php
 
-    use Gaufrette\Filesystem\Filesystem;
-    use Gaufrette\Filesystem\Adapter\Local as LocalAdapter;
-    
-    $adapter = new LocalAdapter('/var/media');
-    $filesystem = new Filesystem($adapter)
+use Gaufrette\Filesystem\Filesystem;
+use Gaufrette\Filesystem\Adapter\Local as LocalAdapter;
+
+$adapter = new LocalAdapter('/var/media');
+$filesystem = new Filesystem($adapter)
+```
 
 ### Use the filesystem
 
-    <?php
-    
-    // ... setup your filesystem
+```php
+<?php
 
-    $content = $filesystem->read('myFile');
-    
-    $content = 'Hello I am the new content';
+// ... setup your filesystem
 
-    $filesystem->write('myFile', $content);
+$content = $filesystem->read('myFile');
+
+$content = 'Hello I am the new content';
+
+$filesystem->write('myFile', $content);
+```
 
 ### Use file objects
 
 Gaufrette also provide a File class that is a representation of files in a filesystem
 
-    <?php
+```php
+<?php
 
-    $file = new File('newFile', $filesystem);
-    $file->setContent('Hello World');
+$file = new File('newFile', $filesystem);
+$file->setContent('Hello World');
 
-    echo $file->getContent(); // Hello World
+echo $file->getContent(); // Hello World
+```
 
 ### Cache a slow filesystem
 
@@ -67,17 +73,19 @@ It consist of an adapter itself composed of two adapters:
 
 Here is an exemple of how to cache an ftp filesystem:
 
-    <?php
+```php
+<?php
 
-    use Gaufrette\Filesystem\Filesystem;
-    use Gaufrette\Filesystem\Adapter\Ftp as FtpAdapter;
-    use Gaufrette\Filesystem\Adapter\Local as LocalAdapter;
+use Gaufrette\Filesystem\Filesystem;
+use Gaufrette\Filesystem\Adapter\Ftp as FtpAdapter;
+use Gaufrette\Filesystem\Adapter\Local as LocalAdapter;
 
-    // create an ftp adapter instance as $ftp and a local one as $local
+// create an ftp adapter instance as $ftp and a local one as $local
 
-    $cachedFtp = new CacheAdapter($ftp, $local, 10);
+$cachedFtp = new CacheAdapter($ftp, $local, 10);
 
-    $filesystem = new Filestystem($cachedFtp);
+$filesystem = new Filestystem($cachedFtp);
+```
 
 The third parameter of the cache adapter is the time to live of the cache.
 
