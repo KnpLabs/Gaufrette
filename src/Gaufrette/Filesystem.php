@@ -22,6 +22,16 @@ class Filesystem
     }
 
     /**
+     * Returns the adapter
+     *
+     * @return Adapter
+     */
+    public function getAdapter()
+    {
+        return $this->adapter;
+    }
+
+    /**
      * Indicates whether the file matching the specified key exists
      *
      * @param  string $key
