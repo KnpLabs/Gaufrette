@@ -84,7 +84,7 @@ use Gaufrette\Filesystem\Adapter\Local as LocalAdapter;
 
 $cachedFtp = new CacheAdapter($ftp, $local, 10);
 
-$filesystem = new Filestystem($cachedFtp);
+$filesystem = new Filesystem($cachedFtp);
 ```
 
 The third parameter of the cache adapter is the time to live of the cache.
