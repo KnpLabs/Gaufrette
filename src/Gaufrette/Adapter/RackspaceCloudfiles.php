@@ -55,7 +55,7 @@ class RackspaceCloudfiles implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content)
+    public function write($key, $content, $metadata=null)
     {
         $object = $this->tryGetObject($key);
         if (false === $object) {
@@ -179,4 +179,12 @@ class RackspaceCloudfiles implements Adapter
 
         return $d;
     }
+    
+    /**
+    * {@InheritDoc}
+    */
+    public function supportsMetadata()
+    {
+    	return false;
+    }    
 }

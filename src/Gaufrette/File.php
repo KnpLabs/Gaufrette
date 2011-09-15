@@ -11,6 +11,7 @@ class File
 {
     protected $key;
     protected $filesystem;
+    protected $metadata = null;
 
     /**
      * Constructor
@@ -80,7 +81,6 @@ class File
         } else if (!$this->exists()) {
             throw new \LogicException('The file does not exists in the filesystem.');
         }
-
         return $this->filesystem->read($this->key);
     }
 
@@ -99,6 +99,42 @@ class File
         }
 
         return $this->filesystem->write($this->key, $content, true);
+    }
+    
+    /**
+    * Gets the metadata array if the adapter can support it
+    *
+    * @return array $metadata or null
+    */
+    public function getMetadata()
+    {
+		if ($this->filesystem->supportsMetadata())
+		{
+			return $this->metadata;
+		}    
+		else
+		{
+			throw new Exception("This filesystem adapter does not support metadata");	
+		}
+    	return null;    	 
+    }
+    
+    
+    /**
+     * Sets the metadata array to be stored in adapters that can support it
+	 *
+     * @param array $metadata
+     */    
+    public function setMetadata(array $metadata)
+    {
+		if ($this->filesystem->supportsMetadata())
+		{			
+			$this->metadata = $metadata;
+		}    
+		else
+		{
+			throw new Exception("This filesystem adapter does not support metadata");				
+		}	    	
     }
 
     /**

@@ -47,7 +47,7 @@ class AmazonS3 implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content)
+    public function write($key, $content, $metadata=null)
     {
         $this->ensureBucketExists();
 
@@ -211,4 +211,12 @@ class AmazonS3 implements Adapter
 
         return $d;
     }
+    
+    /**
+    * {@InheritDoc}
+    */
+    public function supportsMetadata()
+    {
+    	return false;
+    }    
 }

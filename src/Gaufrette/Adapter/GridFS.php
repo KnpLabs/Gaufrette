@@ -10,60 +10,87 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 /**
- * Adapter for the local filesystem
+ * Adapter for the GridFS filesystem on MongoDB database
  *
- * @author Antoine Hérault <antoine.herault@gmail.com>
+ * @author Tomi Saarinen <tomi.saarinen@rohea.com>
  */
-class Local implements Adapter
+class GridFS implements Adapter
 {
-    protected $directory;
-
+	//protected $gridfs; //MongoGridFS object
+	protected static $gridfsInstances = array(); //Array of connections
+	//Name of the instance for this adapter
+	protected $instanceName = '';
+	
     /**
      * Constructor
      *
-     * @param  string  $directory Directory where the filesystem is located
-     * @param  boolean $create    Whether to create the directory if it does not
-     *                            exist (default FALSE)
-     *
-     * @throws RuntimeException if the specified directory does not exist and
-     *                          could not be created
+     * @param  string  $collectionName Name of the collection in which the filesystem is located
      */
-    public function __construct($directory, $create = false)
+    public function __construct($serverUri, $databaseName='', $collectionName='')
     {
-        $this->directory = $this->normalizePath($directory);
-        $this->ensureDirectoryExists($this->directory, $create);
+    	//Generate instance name hash from all given parameters combined
+    	$this->instanceName = md5(trim($serverUri).trim($databaseName).trim($collectionName));
+    	//If instance already exists, no need to create a new one (request level performance)
+    	if (array_key_exists($this->instanceName, self::$gridfsInstances))
+    	{
+    		return true;
+    	}   
+    	//Create a new GridFS instance 
+    	$mongoInstance = new \Mongo($serverUri);
+    	$mongoDatabase = $mongoInstance->$databaseName;
+        	
+    	if (isset($collectionName) && strlen($collectionName) > 0)
+    	{
+	    	self::$gridfsInstances[$this->instanceName] = new \MongoGridFS($mongoDatabase, $collectionName);
+    	}
+    	else
+    	{
+	    	self::$gridfsInstances[$this->instanceName] = new \MongoGridFS($mongoDatabase);
+    	}    	    	  	
+    	return true;
     }
 
+    /**
+     * Gets file object by key
+     * 
+     * @param string $key
+     * @return File file object
+     */
+    public function get($key, $filesystem)
+    {
+    	$gridfsFile = self::$gridfsInstances[$this->instanceName]->findOne(array('filename'=>$key));
+    	$file = new File($key, $filesystem);
+		$file->setMetadata($gridfsFile->file['metadata']);    	
+    	return $file;
+    }
+    
     /**
      * {@InheritDoc}
      */
     public function read($key)
     {
-        $content = file_get_contents($this->computePath($key));
-
-        if (false === $content) {
-            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
-        }
-
-        return $content;
+    	//var_dump( Path::normalize($key));
+    	$gridfsFile = self::$gridfsInstances[$this->instanceName]->findOne(array('filename'=>$key));
+    	return $gridfsFile->getBytes(); 
     }
 
     /**
      * {@InheritDoc}
      */
     public function write($key, $content, $metadata=null)
-    {
-        $path = $this->computePath($key);
+    {    	
+    	//Test if file already exists
+    	if ($this->exists($key))
+    	{
+    		throw new \Exception("File already exists with key '$key'. Cannot write (delete first).");
+    	}
+    	
+    	$mongoId = self::$gridfsInstances[$this->instanceName]->storeBytes($content, array('filename'=>$key,'metadata' => $metadata));    	
 
-        $this->ensureDirectoryExists(dirname($path), true);
+    	$numBytes = strlen($content); //TODO: How to count bytes from gridfs insetion
 
-        $numBytes = file_put_contents($this->computePath($key), $content);
-
-        if (false === $numBytes) {
-            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
-        }
-
-        return $numBytes;
+    	return $numBytes;
+		//Would be better to return some kind of File Abstraction object    	     	
     }
 
     /**
@@ -71,9 +98,10 @@ class Local implements Adapter
      */
     public function rename($key, $new)
     {
-        if (!rename($this->computePath($key), $this->computePath($new))) {
-            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
-        }
+    	//Rename = delete + write with a new name
+		$file = $this->get($key);
+    	$content  = $this->read($key);
+    	return $this->write($key, $content, $file->getMetadata());
     }
 
     /**
@@ -81,7 +109,8 @@ class Local implements Adapter
      */
     public function exists($key)
     {
-        return is_file($this->computePath($key));
+    	//Test if file already exists
+    	return is_object(self::$gridfsInstances[$this->instanceName]->findOne(array('filename'=>$key)));
     }
 
     /**
@@ -89,6 +118,8 @@ class Local implements Adapter
      */
     public function keys()
     {
+    	//NOT IMPLEMENTED
+    	/*
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator(
                 $this->directory,
@@ -107,6 +138,7 @@ class Local implements Adapter
                 $files
             )
         );
+        */
     }
 
     /**
@@ -114,7 +146,8 @@ class Local implements Adapter
      */
     public function mtime($key)
     {
-        return filemtime($this->computePath($key));
+    	//NOT IMPLEMENTED YET    	
+        //return filemtime($this->computePath($key));
     }
 
     /**
@@ -122,7 +155,8 @@ class Local implements Adapter
      */
     public function checksum($key)
     {
-        return Checksum::fromFile($this->computePath($key));
+    	//NOT IMPLEMENTED
+        //return Checksum::fromFile($this->computePath($key));
     }
 
     /**
@@ -130,9 +164,13 @@ class Local implements Adapter
      */
     public function delete($key)
     {
-        if (!unlink($this->computePath($key))) {
-            throw new \RuntimeException(sprintf('Could not remove the \'%s\' file.', $key));
-        }
+    	//Test if file exists
+    	if (! $this->exists($key))
+       	{
+    		throw new \Exception("File does not exists with key '$key'. Cannot remove.");
+    	}
+    	self::$gridfsInstances[$this->instanceName]->remove(array('filename'=>$key));
+    	return true;    	
     }
 
     /**
@@ -145,6 +183,7 @@ class Local implements Adapter
      * @throws OutOfBoundsException If the computed path is out of the
      *                              directory
      */
+    /*
     public function computePath($key)
     {
         $path = $this->normalizePath($this->directory . '/' . $key);
@@ -155,7 +194,16 @@ class Local implements Adapter
 
         return $path;
     }
-
+	*/
+    /**
+     * {@InheritDoc}
+     */
+    public function supportsMetadata()
+    {
+    	return true;	
+    }
+    
+    
     /**
      * Normalizes the given path
      *
@@ -163,10 +211,12 @@ class Local implements Adapter
      *
      * @return string
      */
+    /*
     public function normalizePath($path)
     {
         return Path::normalize($path);
     }
+    */
 
     /**
      * Computes the key from the specified path
@@ -175,6 +225,7 @@ class Local implements Adapter
      *
      * return string
      */
+    /*
     public function computeKey($path)
     {
         $path = $this->normalizePath($path);
@@ -184,6 +235,7 @@ class Local implements Adapter
 
         return ltrim(substr($path, strlen($this->directory)), '/');
     }
+    */
 
     /**
      * Ensures the specified directory exists, creates it if it does not
@@ -195,6 +247,7 @@ class Local implements Adapter
      * @throws RuntimeException if the directory does not exists and could not
      *                          be created
      */
+    /* TURHA?
     public function ensureDirectoryExists($directory, $create = false)
     {
         if (!is_dir($directory)) {
@@ -205,7 +258,7 @@ class Local implements Adapter
             $this->createDirectory($directory);
         }
     }
-
+	*/
     /**
      * Creates the specified directory and its parents
      *
@@ -214,6 +267,7 @@ class Local implements Adapter
      * @throws InvalidArgumentException if the directory already exists
      * @throws RuntimeException         if the directory could not be created
      */
+    /* TURHA?
     public function createDirectory($directory)
     {
         if (is_dir($directory)) {
@@ -228,12 +282,5 @@ class Local implements Adapter
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
         }
     }
-    
-    /**
-    * {@InheritDoc}
     */
-    public function supportsMetadata()
-    {
-    	return false;
-    }    
 }

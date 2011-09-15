@@ -82,13 +82,13 @@ class Filesystem
      *
      * @return integer The number of bytes that were written into the file
      */
-    public function write($key, $content, $overwrite = false)
+    public function write($key, $content, $overwrite = false, $metadata=null)
     {
         if (!$overwrite && $this->has($key)) {
             throw new \InvalidArgumentException(sprintf('The file %s already exists and can not be overwritten.', $key));
         }
 
-        return $this->adapter->write($key, $content);
+        return $this->adapter->write($key, $content, $metadata);
     }
 
     /**
@@ -103,7 +103,6 @@ class Filesystem
         if (!$this->has($key)) {
             throw new \InvalidArgumentException(sprintf('The file %s does not exist.', $key));
         }
-
         return $this->adapter->read($key);
     }
 
@@ -166,6 +165,20 @@ class Filesystem
      */
     protected function createFileInstance($key)
     {
-        return new File($key, $this);
+    	if (is_callable(array($this->adapter, 'get')))
+    	{
+    		//If possible, deleagte getting the file object to the adapter.
+    		return $this->adapter->get($key, $this);	
+    	}
+    	else
+    	{
+	        return new File($key, $this);
+    	}
+    }
+    
+    
+    public function supportsMetadata()
+    {
+    	return $this->adapter->supportsMetadata();	
     }
 }

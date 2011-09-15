@@ -69,7 +69,7 @@ class Ftp implements Adapter
     /**
      * {@InheritDoc}
      */
-    public function write($key, $content)
+    public function write($key, $content, $metadata=null)
     {
         $path = $this->computePath($key);
         $directory = dirname($path);
@@ -369,4 +369,12 @@ class Ftp implements Adapter
             ftp_close($this->connection);
         }
     }
+    
+    /**
+    * {@InheritDoc}
+    */
+    public function supportsMetadata()
+    {
+    	return false;
+    }    
 }
