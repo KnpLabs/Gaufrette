@@ -24,9 +24,12 @@ class GridFS implements Adapter
     /**
      * Constructor
      *
-     * @param  string  $collectionName Name of the collection in which the filesystem is located
+     * @param string $serverUri for opening a new Mongo instance
+     * @param string $databaseName Name of the database
+     * @param string $collectionName Name of the collection in which the filesystem is located (equivalent for sql's tables)
+     * @param array $options Additional options for initializing Mongo instance (see MongoDB documentation)
      */
-    public function __construct($serverUri, $databaseName='', $collectionName='')
+    public function __construct($serverUri, $databaseName, $collectionName='', $options=array())
     {
     	//Generate instance name hash from all given parameters combined
     	$this->instanceName = md5(trim($serverUri).trim($databaseName).trim($collectionName));
@@ -36,7 +39,7 @@ class GridFS implements Adapter
     		return true;
     	}   
     	//Create a new GridFS instance 
-    	$mongoInstance = new \Mongo($serverUri);
+    	$mongoInstance = new \Mongo($serverUri, $options);
     	$mongoDatabase = $mongoInstance->$databaseName;
         	
     	if (isset($collectionName) && strlen($collectionName) > 0)
