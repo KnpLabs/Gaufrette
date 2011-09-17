@@ -8,11 +8,11 @@ class AmazonS3Test extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        if (!class_exists('Zend\Service\Amazon\S3\S3')) {
+        if (!class_exists('\AmazonS3')) {
             $this->markTestSkipped('The zend amazon s3 service class is not available.');
         }
 
-        $this->service = $this->getMock('Zend\Service\Amazon\S3\S3', array(), array(), '', false);
+        $this->service = $this->getMock('\AmazonS3', array(), array(), '', false);
     }
 
     public function testComputePath()

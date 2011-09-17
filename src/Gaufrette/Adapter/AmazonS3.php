@@ -94,6 +94,7 @@ class AmazonS3 implements Adapter
     public function mtime($key)
     {
         $headers = $this->getHeaders($key);
+        
         return strtotime($headers['Last-modified']);
     }
 
@@ -103,6 +104,7 @@ class AmazonS3 implements Adapter
     public function checksum($key)
     {
         $headers = $this->getHeaders($key);
+        
         return strtotime($headers['etag']);
     }
     
@@ -155,7 +157,6 @@ class AmazonS3 implements Adapter
         if (!$response->isOK()) {
             throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
         }
-
     }
 
     /**
