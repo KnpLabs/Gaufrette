@@ -105,7 +105,8 @@ The tests use PHPUnit.
 
 As some filesystem adapters use vendor libraries, you should install the vendors:
 
-    $ ./vendors.sh
+    $ cd gaufrette
+    $ bin/install_vendors.sh
 
 It will avoid skip a lot of tests.
 
