@@ -89,6 +89,16 @@ $filesystem = new Filesystem($cachedFtp);
 
 The third parameter of the cache adapter is the time to live of the cache.
 
+Using Amazon S3
+---------------
+You will need to specify a CA certificate to be able to talk to Amazon servers
+in https. You can use the one which is shipped with the SDK by defining before
+creating the ``\AmazonS3`` object:
+
+```php
+define("AWS_CERTIFICATE_AUTHORITY", true);
+```
+
 Using Gaufrette in a Symfony2 project
 -------------------------------------
 
@@ -128,6 +138,14 @@ As an example, here is services declaration to use Amazon S3:
 <service id="acme.fs" class="Gaufrette\FileSystem">
     <argument type="service" id="acme.s3.adapter"></argument>
 </service>
+```
+
+Don't forget to set the constant to tell the AWS SDK to use its CA cert (somewhere
+that will be executed before creating the ``\AmazonS3`` object):
+```php
+define("AWS_CERTIFICATE_AUTHORITY", true);
+$fs = $container->get('acme.fs');
+// use $fs
 ```
 
 Running the Tests
