@@ -89,12 +89,64 @@ $filesystem = new Filesystem($cachedFtp);
 
 The third parameter of the cache adapter is the time to live of the cache.
 
+Using Amazon S3
+---------------
+You will need to specify a CA certificate to be able to talk to Amazon servers
+in https. You can use the one which is shipped with the SDK by defining before
+creating the ``\AmazonS3`` object:
+
+```php
+define("AWS_CERTIFICATE_AUTHORITY", true);
+```
+
 Using Gaufrette in a Symfony2 project
 -------------------------------------
 
 As you can see, Gaufrette provides an elegant way to declare your filesystems.
-If you want to use them in a Symfony2 project, you can simply add them as
-services of your dependency injection container.
+
+In your Symdon2 project, add to ``deps``:
+
+```ini
+[gaufrette]
+    git=https://github.com/qpleple/Gaufrette.git
+
+[aws-sdk]
+    git=https://github.com/amazonwebservices/aws-sdk-for-php
+```
+
+and to ``app/autoload.php``, at the end:
+
+```php
+// AWS SDK needs a special autoloader
+require_once __DIR__.'/../vendor/aws-sdk/sdk.class.php';
+```
+
+And then, you can simply add them as services of your dependency injection container.
+As an example, here is services declaration to use Amazon S3:
+
+```xml
+<service id="acme.s3" class="AmazonS3">
+    <argument>%acme.aws_key%</argument>
+    <argument>%acme.aws_secret_key%</argument>
+</service>
+
+<service id="acme.s3.adapter" class="Gaufrette\Adapter\AmazonS3">
+    <argument type="service" id="acme.s3"></argument>
+    <argument>%acme.s3.bucket_name%</argument>
+</service>
+
+<service id="acme.fs" class="Gaufrette\FileSystem">
+    <argument type="service" id="acme.s3.adapter"></argument>
+</service>
+```
+
+Don't forget to set the constant to tell the AWS SDK to use its CA cert (somewhere
+that will be executed before creating the ``\AmazonS3`` object):
+```php
+define("AWS_CERTIFICATE_AUTHORITY", true);
+$fs = $container->get('acme.fs');
+// use $fs
+```
 
 Running the Tests
 -----------------
@@ -105,7 +157,8 @@ The tests use PHPUnit.
 
 As some filesystem adapters use vendor libraries, you should install the vendors:
 
-    $ ./vendors.sh
+    $ cd gaufrette
+    $ bin/install_vendors.sh
 
 It will avoid skip a lot of tests.
 
