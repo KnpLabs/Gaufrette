@@ -3,7 +3,6 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-use Zend\Service\Amazon\S3\S3;
 
 /**
  * Amazon S3 adapter
@@ -18,7 +17,7 @@ class AmazonS3 implements Adapter
     protected $ensureBucket = false;
     protected $create;
 
-    public function __construct(S3 $service, $bucket, $create = false)
+    public function __construct(\AmazonS3 $service, $bucket, $create = false)
     {
         $this->service = $service;
         $this->bucket = $bucket;
@@ -32,7 +31,12 @@ class AmazonS3 implements Adapter
     {
         $this->ensureBucketExists();
 
-        return $this->service->getObject($this->computePath($key));
+        $response = $this->service->get_object($this->bucket, $key);
+        if (!$response->isOK()) {
+            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
+        }
+        
+        return $response->body;
     }
 
     /**
@@ -40,7 +44,21 @@ class AmazonS3 implements Adapter
      */
     public function rename($key, $new)
     {
-        $this->write($new, $this->read($key));
+        $source = array(
+            "bucket" => $this->bucket,
+            "filename" => $key,
+        );
+        
+        $destination = array(
+            "bucket" => $this->bucket,
+            "filename" => $new,
+        );
+        
+        $response = $this->service->copy_object($source, $destination);
+        if (!$response->isOK()) {
+            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file.', $key));
+        }
+        
         $this->delete($key);
     }
 
@@ -50,12 +68,14 @@ class AmazonS3 implements Adapter
     public function write($key, $content, $metadata=null)
     {
         $this->ensureBucketExists();
-
-        if (!$this->service->putObject($this->computePath($key), $content)) {
+        
+        $opt = array("body" => $content);
+        $response = $this->service->create_object($this->bucket, $key, $opt);
+        if (!$response->isOK()) {
             throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
         }
 
-        return $this->getStringNumBytes($content);
+        return intval($response->header["x-aws-requestheaders"]["Content-Length"]);
     }
 
     /**
@@ -65,7 +85,7 @@ class AmazonS3 implements Adapter
     {
         $this->ensureBucketExists();
 
-        return $this->service->isObjectAvailable($this->computePath($key));
+        return $this->service->if_object_exists($this->bucket, $key);
     }
 
     /**
@@ -73,11 +93,9 @@ class AmazonS3 implements Adapter
      */
     public function mtime($key)
     {
-        $this->ensureBucketExists();
-
-        $info = $this->service->getInfo($this->computePath($key));
-
-        return $info['mtime'];
+        $headers = $this->getHeaders($key);
+        
+        return strtotime($headers['Last-modified']);
     }
 
     /**
@@ -85,11 +103,27 @@ class AmazonS3 implements Adapter
      */
     public function checksum($key)
     {
+        $headers = $this->getHeaders($key);
+        
+        return strtotime($headers['etag']);
+    }
+    
+    /**
+     * Fetch the headers of an object
+     * 
+     * @param type $key Object of which to get the headers
+     * @return type array Object headers
+     */
+    protected function getHeaders($key)
+    {
         $this->ensureBucketExists();
-
-        $info = $this->service->getInfo($this->computePath($key));
-
-        return trim($info['etag'], '"');
+        $response = $this->service->get_object_metadata($this->bucket, $key);
+        
+        if ($response === false) {
+            throw new \RuntimeException(sprintf('The \'%s\' file does not exist.', $key));
+        }
+        
+        return $response["Headers"];
     }
 
     /**
@@ -99,7 +133,17 @@ class AmazonS3 implements Adapter
     {
         $this->ensureBucketExists();
 
-        return $this->service->getObjectsByBucket($this->bucket);
+        $response = $this->service->list_objects($this->bucket);
+        if (!$response->isOK()) {
+            throw new \RuntimeException(sprintf('Could not get the keys.', $key));
+        }
+        
+        $keys = array();
+        foreach ($response->body->Contents as $object) {
+            $keys[] = $object->Key->to_string();
+        }
+        
+        return $keys;
     }
 
     /**
@@ -108,8 +152,9 @@ class AmazonS3 implements Adapter
     public function delete($key)
     {
         $this->ensureBucketExists();
-
-        if (!$this->removeObject($this->computePath($key))) {
+        
+        $response = $this->service->delete_object($this->bucket, $key);
+        if (!$response->isOK()) {
             throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
         }
     }
@@ -119,9 +164,6 @@ class AmazonS3 implements Adapter
      * and the create parameter is set to true, it will try to create the
      * bucket
      *
-     * @param  string  $bucket The name of the bucket
-     * @param  boolean $create Whether to create the bucket
-     *
      * @throws RuntimeException if the bucket does not exists or could not be
      *                          created
      */
@@ -129,10 +171,11 @@ class AmazonS3 implements Adapter
     {
         if (!$this->ensureBucket) {
 
-            $available = $this->service->isBucketAvailable($this->bucket);
+            $available = $this->service->if_bucket_exists($this->bucket);
 
             if (!$available && $this->create) {
-                $created = $this->service->createBucket($this->bucket);
+                $response = $this->service->createBucket($this->bucket, \AmazonS3::REGION_US_E1);
+                $created = $response->isOK();
                 if (!$created) {
                     throw new \RuntimeException(sprintf('Could not create the \'%s\' bucket.', $this->bucket));
                 }
@@ -219,4 +262,5 @@ class AmazonS3 implements Adapter
     {
     	return false;
     }    
+
 }
