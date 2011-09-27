@@ -7,12 +7,15 @@ use Gaufrette\Checksum;
 use Gaufrette\Path;
 use Gaufrette\File;
 
-use Gaufrette\FileCursor;
+use Gaufrette\FileCursor\GridFS as GridFSFileCursor;
 use Gaufrette\Filesystem;
 
 /**
  * Helper class for looping files efficiently without assoc arrays
+ * 
+ * This should be in a separate file but that would require refactoring whole Adapter folder
  */
+/*
 class GridFSFileCursor extends FileCursor
 {
 	public function __construct(\Iterator $parentCursor, Filesystem $filesystem)
@@ -20,9 +23,6 @@ class GridFSFileCursor extends FileCursor
 		parent::__construct($parentCursor, $filesystem);
 	}
 	
-	/**
-	* {@InheritDoc}
-	*/
 	public function current()
 	{
 		$r = $this->parentCursor->current();
@@ -36,6 +36,7 @@ class GridFSFileCursor extends FileCursor
 		return $file;
 	}
 }
+*/
 
 /**
  * Adapter for the GridFS filesystem on MongoDB database
@@ -114,8 +115,7 @@ class GridFS implements Adapter
     public function write($key, $content, $metadata=null)
     {    	
     	//Test if file already exists
-    	if ($this->exists($key))
-    	{
+    	if ($this->exists($key)) {
     		throw new \Exception("File already exists with key '$key'. Cannot write (delete first).");
     	}    	
 		//Break down key, assume '/' is used for delimiter and last part is the filename

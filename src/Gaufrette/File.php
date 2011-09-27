@@ -95,19 +95,16 @@ class File
     public function getContent()
     {
     	//If content has already been read for this file, just return it immediately
-    	if (isset($this->content))
-    	{    		
+    	if (isset($this->content)) {    		
     		return $this->content;	
     	}    	
-        if (null === $this->filesystem)
-        {
+        if (null === $this->filesystem) {
             throw new \LogicException('The filesystem is not defined.');
-        }
-        else if (!$this->exists())
-        {
+        } else if (!$this->exists()) {
             throw new \LogicException('The file does not exists in the filesystem.');
         }
         $this->content = $this->filesystem->read($this->key);        
+
         return $this->content;
     }
 
@@ -121,13 +118,13 @@ class File
      */
     public function setContent($content)
     {
-        if (null === $this->filesystem)
-        {
+        if (null === $this->filesystem) {
             throw new \LogicException('The filesystem is not defined.');
         }
 		$this->content = $content;
+		
 		//To maintain consistency between this object and filesystem, write immediately when content is being set.
-        return $this->filesystem->write($this->key, $this->content, true);
+		return $this->filesystem->write($this->key, $this->content, true);
     }
     
     /**
@@ -137,15 +134,13 @@ class File
     */
     public function getMetadata()
     {
-		if ($this->filesystem->supportsMetadata())
-		{
+		if ($this->filesystem->supportsMetadata()) {
 			return $this->metadata;
-		}    
-		else
-		{
+		} else {
 			throw new Exception("This filesystem adapter does not support metadata");	
 		}
-    	return null;    	 
+
+		return null;    	 
     }
     
     
@@ -156,12 +151,9 @@ class File
      */    
     public function setMetadata(array $metadata)
     {
-		if ($this->filesystem->supportsMetadata())
-		{			
+		if ($this->filesystem->supportsMetadata()) {			
 			$this->metadata = $metadata;
-		}    
-		else
-		{
+		} else {
 			throw new Exception("This filesystem adapter does not support metadata");				
 		}	    	
     }
@@ -170,6 +162,7 @@ class File
     {
     	return $this->name;	
     }
+    
     public function setName($name)
     {
     	$this->name = $name;	
