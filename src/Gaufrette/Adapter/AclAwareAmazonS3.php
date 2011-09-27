@@ -27,11 +27,11 @@ class AclAwareAmazonS3 implements Adapter
 
     public function setAclConstant($constant)
     {
-        if (!defined($constant = 'AmazonS3::'.strtoupper($constant))) {
+        if (!defined($constant = 'AmazonS3::ACL_'.strtoupper($constant))) {
             throw new \InvalidArgumentException(sprintf('The ACL constant "%s" does not exist on AmazonS3.', $constant));
         }
 
-        $this->aclConstant = constant('AmazonS3::'.$constant);
+        $this->aclConstant = constant($constant);
     }
 
     public function setUsers(array $users)
