@@ -83,13 +83,13 @@ interface Adapter
      * @throws RuntimeException on failure
      */
     public function rename($key, $new);
-    
-    
+
+
     /**
      * If the adapter can allow inserting metadata
-     * 
+     *
      * @param bool true if supports metadata false if not
      */
     public function supportsMetadata();
-    
+
 }

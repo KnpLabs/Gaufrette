@@ -165,31 +165,32 @@ class Filesystem
      */
     protected function createFileInstance($key)
     {
-    	if (is_callable(array($this->adapter, 'get')))
-    	{
-    		//If possible, deleagte getting the file object to the adapter.
-    		return $this->adapter->get($key, $this);	
-    	}
-    	else
-    	{
-	        return new File($key, $this);
-    	}
+        if (is_callable(array($this->adapter, 'get')))
+        {
+            //If possible, delegate getting the file object to the adapter.
+            return $this->adapter->get($key, $this);
+        }
+        else
+        {
+            return new File($key, $this);
+        }
     }
-    
-	/**
-	 * Query a group of files using partial key
-	 * 
-     * @param string keyFragment partial key for regex
+
+    /**
+     * Query a group of files using partial key. Partial key must be a substring from
+     * the first char to any char before the last char.
+     *
+     * @param string keyFragment partial key for quering
      * @param Filesystem filesystem object
      * @return Iterator of File objects
-     */    
-    public function query($keyFragment)
+     */
+    public function query($keyFragment, $sortKey='name', $sortDirection='asc')
     {
-    	return $this->adapter->query($keyFragment, $this);
-    }    
-    
+        return $this->adapter->query($keyFragment, $this, $sortKey, $sortDirection);
+    }
+
     public function supportsMetadata()
     {
-    	return $this->adapter->supportsMetadata();	
+        return $this->adapter->supportsMetadata();
     }
 }

@@ -14,42 +14,42 @@ use Gaufrette\File;
  */
 abstract class FileCursor implements \Iterator
 {
-	protected $filesystem;
-	protected $parentCursor = null;
-	
-	public function __construct(\Iterator $parentCursor, Filesystem $filesystem)
-	{
-		$this->filesystem = $filesystem;
-		$this->parentCursor = $parentCursor;
-	}
-	
-	public function rewind()
-	{
-		$this->parentCursor->rewind();
-	}
-	
-	/**
-	* Overload at least this function in subclass to return a proper fully prepared File object
-	* @return \Gaufrette\File
-	*/
-	public function current()
-	{
-		return $this->parentCursor->current();		
-	}
-	
-	public function key()
-	{
-		return $this->parentCursor->key();
-	}
-	
-	public function next()
-	{
-		$this->parentCursor->next();
-	}
-	
-	public function valid()
-	{
-		return $this->parentCursor->valid();
-	}
-	
+    protected $filesystem;
+    protected $parentCursor = null;
+
+    public function __construct(\Iterator $parentCursor, Filesystem $filesystem)
+    {
+        $this->filesystem = $filesystem;
+        $this->parentCursor = $parentCursor;
+    }
+
+    public function rewind()
+    {
+        $this->parentCursor->rewind();
+    }
+
+    /**
+    * Overload at least this function in subclass to return a proper fully prepared File object
+    * @return \Gaufrette\File
+    */
+    public function current()
+    {
+        return $this->parentCursor->current();
+    }
+
+    public function key()
+    {
+        return $this->parentCursor->key();
+    }
+
+    public function next()
+    {
+        $this->parentCursor->next();
+    }
+
+    public function valid()
+    {
+        return $this->parentCursor->valid();
+    }
+
 }

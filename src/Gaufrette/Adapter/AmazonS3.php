@@ -35,7 +35,7 @@ class AmazonS3 implements Adapter
         if (!$response->isOK()) {
             throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
         }
-        
+
         return $response->body;
     }
 
@@ -48,17 +48,17 @@ class AmazonS3 implements Adapter
             "bucket" => $this->bucket,
             "filename" => $key,
         );
-        
+
         $destination = array(
             "bucket" => $this->bucket,
             "filename" => $new,
         );
-        
+
         $response = $this->service->copy_object($source, $destination);
         if (!$response->isOK()) {
             throw new \RuntimeException(sprintf('Could not rename the \'%s\' file.', $key));
         }
-        
+
         $this->delete($key);
     }
 
@@ -68,7 +68,7 @@ class AmazonS3 implements Adapter
     public function write($key, $content)
     {
         $this->ensureBucketExists();
-        
+
         $opt = array("body" => $content);
         $response = $this->service->create_object($this->bucket, $key, $opt);
         if (!$response->isOK()) {
@@ -94,7 +94,7 @@ class AmazonS3 implements Adapter
     public function mtime($key)
     {
         $headers = $this->getHeaders($key);
-        
+
         return strtotime($headers['Last-modified']);
     }
 
@@ -104,13 +104,13 @@ class AmazonS3 implements Adapter
     public function checksum($key)
     {
         $headers = $this->getHeaders($key);
-        
+
         return strtotime($headers['etag']);
     }
-    
+
     /**
      * Fetch the headers of an object
-     * 
+     *
      * @param type $key Object of which to get the headers
      * @return type array Object headers
      */
@@ -118,11 +118,11 @@ class AmazonS3 implements Adapter
     {
         $this->ensureBucketExists();
         $response = $this->service->get_object_metadata($this->bucket, $key);
-        
+
         if ($response === false) {
             throw new \RuntimeException(sprintf('The \'%s\' file does not exist.', $key));
         }
-        
+
         return $response["Headers"];
     }
 
@@ -137,12 +137,12 @@ class AmazonS3 implements Adapter
         if (!$response->isOK()) {
             throw new \RuntimeException(sprintf('Could not get the keys.', $key));
         }
-        
+
         $keys = array();
         foreach ($response->body->Contents as $object) {
             $keys[] = $object->Key->to_string();
         }
-        
+
         return $keys;
     }
 
@@ -152,7 +152,7 @@ class AmazonS3 implements Adapter
     public function delete($key)
     {
         $this->ensureBucketExists();
-        
+
         $response = $this->service->delete_object($this->bucket, $key);
         if (!$response->isOK()) {
             throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
@@ -218,6 +218,6 @@ class AmazonS3 implements Adapter
     */
     public function supportsMetadata()
     {
-    	return false;
+        return false;
     }
 }
