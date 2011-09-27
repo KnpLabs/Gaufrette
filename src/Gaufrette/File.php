@@ -11,8 +11,26 @@ class File
 {
     protected $key;
     protected $filesystem;
+    
+    /**
+     * Content variable is lazy. It will not be read from filesystem until it's requested first time
+     * @var content
+     */    
+    protected $content = null;
+    
+    /**
+     * Enter description here ...
+     * @var array metadata in associative array. Only for adapters that support metadata
+     */    
     protected $metadata = null;
 
+    
+    /**
+     * Human readable filename (usually the end of the key)
+     * @var string name
+     */
+    protected $name = '';
+    
     /**
      * Constructor
      *
@@ -76,12 +94,21 @@ class File
      */
     public function getContent()
     {
-        if (null === $this->filesystem) {
+    	//If content has already been read for this file, just return it immediately
+    	if (isset($this->content))
+    	{    		
+    		return $this->content;	
+    	}    	
+        if (null === $this->filesystem)
+        {
             throw new \LogicException('The filesystem is not defined.');
-        } else if (!$this->exists()) {
+        }
+        else if (!$this->exists())
+        {
             throw new \LogicException('The file does not exists in the filesystem.');
         }
-        return $this->filesystem->read($this->key);
+        $this->content = $this->filesystem->read($this->key);        
+        return $this->content;
     }
 
     /**
@@ -94,11 +121,13 @@ class File
      */
     public function setContent($content)
     {
-        if (null === $this->filesystem) {
+        if (null === $this->filesystem)
+        {
             throw new \LogicException('The filesystem is not defined.');
         }
-
-        return $this->filesystem->write($this->key, $content, true);
+		$this->content = $content;
+		//To maintain consistency between this object and filesystem, write immediately when content is being set.
+        return $this->filesystem->write($this->key, $this->content, true);
     }
     
     /**
@@ -135,6 +164,15 @@ class File
 		{
 			throw new Exception("This filesystem adapter does not support metadata");				
 		}	    	
+    }
+    
+    public function getName()
+    {
+    	return $this->name;	
+    }
+    public function setName($name)
+    {
+    	$this->name = $name;	
     }
 
     /**

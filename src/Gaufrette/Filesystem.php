@@ -176,6 +176,17 @@ class Filesystem
     	}
     }
     
+	/**
+	 * Query a group of files using partial key
+	 * 
+     * @param string keyFragment partial key for regex
+     * @param Filesystem filesystem object
+     * @return Iterator of File objects
+     */    
+    public function query($keyFragment)
+    {
+    	return $this->adapter->query($keyFragment, $this);
+    }    
     
     public function supportsMetadata()
     {
