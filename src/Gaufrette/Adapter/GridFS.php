@@ -94,36 +94,13 @@ class GridFS implements Adapter
 		$file->setMetadata($gridfsFile->file['metadata']);    	
     	return $file;
     }
-	
-    /*
-	private function _get_multiple($query, $filesystem)
-	{
-		$data = false;
-    	$gridfsFile = self::$gridfsInstances[$this->instanceName]->find($query);
-		
-		if($gridfsFile->count() > 0)
-		{
-			foreach($gridfsFile as $row)
-			{
-				$metadata = (array)$row->file['metadata'];
-				$metadata['_id'] = $row->file['_id'];
-				
-		    	$file = new File($row->file['key'], $filesystem);
-				$file->setMetadata($metadata);
-				
-				$data[] = $file;
-			}
-		}
-    	return $data;
-	}
-	*/
-
     
     /**
      * {@InheritDoc}
      */
     public function read($key)
     {
+    	//TODO: Normalize key somehow
     	//var_dump( Path::normalize($key));
     	$gridfsFile = self::$gridfsInstances[$this->instanceName]->findOne(array('key'=>$key));
     	return $gridfsFile->getBytes(); 
