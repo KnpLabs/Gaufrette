@@ -17,9 +17,18 @@ use Gaufrette\Filesystem;
  */
 class GridFS implements Adapter
 {
-    //protected $gridfs; //MongoGridFS object
+    /**
+     * Static array of connection instances operates as a request-level cache
+     * that removes the need for constructing this class multiple times per request
+     *
+     * @var static array gridfsInstances
+     */
     protected static $gridfsInstances = array(); //Array of connections
-    //Name of the instance for this adapter
+
+    /**
+     * Name of the instance for this adapter
+     * @var string instanceName
+     */
     protected $instanceName = '';
 
     /**
@@ -49,6 +58,7 @@ class GridFS implements Adapter
         } else {
             self::$gridfsInstances[$this->instanceName] = new \MongoGridFS($mongoDatabase);
         }
+
         return true;
     }
 
@@ -66,6 +76,7 @@ class GridFS implements Adapter
         $file->setName($gridfsFile->file['filename']);
         $file->setCreated($gridfsFile->file['uploadDate']->sec);
         $file->setSize($gridfsFile->file['length']);
+
         return $file;
     }
 
@@ -77,6 +88,7 @@ class GridFS implements Adapter
         //TODO: Normalize key somehow
         //var_dump( Path::normalize($key));
         $gridfsFile = self::$gridfsInstances[$this->instanceName]->findOne(array('key'=>$key));
+
         return $gridfsFile->getBytes();
     }
 
@@ -104,6 +116,7 @@ class GridFS implements Adapter
         $mongoId = self::$gridfsInstances[$this->instanceName]->storeBytes($content, $dataArray);
         //TODO: How to do better counting of bytes for gridfs insertion
         $numBytes = strlen($content);
+
         return $numBytes;
     }
 
@@ -121,6 +134,7 @@ class GridFS implements Adapter
         $returnValue = $this->write($new, $content, $file->getMetadata());
         //Delete old file
         $this->delete($key);
+
         return $returnValue;
     }
 
@@ -194,6 +208,7 @@ class GridFS implements Adapter
         {
             $temp[] = $f->file['key'];
         }
+
         return $temp;
     }
 
@@ -227,6 +242,7 @@ class GridFS implements Adapter
             throw new \Exception("File does not exists with key '$key'. Cannot remove.");
         }
         self::$gridfsInstances[$this->instanceName]->remove(array('key'=>$key));
+
         return true;
     }
 
