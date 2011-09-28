@@ -14,8 +14,8 @@ use Gaufrette\File;
 class GridFS extends FileCursor
 {
     /**
-    * {@InheritDoc}
-    */
+     * {@InheritDoc}
+     */
     public function current()
     {
         $r = $this->parentCursor->current();
