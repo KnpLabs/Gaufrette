@@ -186,9 +186,9 @@ class File
     }
 
     /**
-     * @param DateTime created
+     * @param \DateTime created
      */
-    public function setCreated($created)
+    public function setCreated(\DateTime $created)
     {
         $this->created = $created;
     }

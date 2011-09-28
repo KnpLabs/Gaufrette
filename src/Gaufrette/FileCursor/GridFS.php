@@ -23,7 +23,7 @@ class GridFS extends FileCursor
         $file = new File($key, $this->filesystem);
         $file->setMetadata($r->file['metadata']);
         $file->setName($r->file['filename']);
-        $file->setCreated($r->file['uploadDate']->sec);
+        $file->setCreated(new \DateTime("@".$r->file['uploadDate']->sec));
         $file->setSize($r->file['length']);
 
         return $file;
