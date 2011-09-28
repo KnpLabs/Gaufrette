@@ -181,7 +181,7 @@ class Filesystem
      *
      * @param string keyFragment partial key for quering
      * @param Filesystem filesystem object
-     * @return Iterator of File objects
+     * @return \Iterator of File objects
      */
     public function query($keyFragment, $sortKey = 'name', $sortDirection = 'asc')
     {
