@@ -104,11 +104,8 @@ class File
     {
         if ($this->filesystem->supportsMetadata()) {
             return $this->metadata;
-        } else {
-            throw new Exception("This filesystem adapter does not support metadata");
         }
-
-        return null;
+        throw new \LogicException("This filesystem adapter does not support metadata");
     }
 
     /**
