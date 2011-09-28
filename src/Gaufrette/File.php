@@ -99,6 +99,7 @@ class File
     * Gets the metadata array if the adapter can support it
     *
     * @return array $metadata or null
+    * @throws LogicException if metadata is not supported
     */
     public function getMetadata()
     {
