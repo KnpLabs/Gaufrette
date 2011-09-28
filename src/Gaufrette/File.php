@@ -19,7 +19,6 @@ class File
     protected $content = null;
 
     /**
-     * Enter description here ...
      * @var array metadata in associative array. Only for adapters that support metadata
      */
     protected $metadata = null;
