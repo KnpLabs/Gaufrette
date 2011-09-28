@@ -97,9 +97,9 @@ class GridFS implements Adapter
      */
     public function write($key, $content, $metadata=null)
     {
-        //Test if file already exists
+        //If a file exists with the same key, delete it
         if ($this->exists($key)) {
-            throw new \Exception("File already exists with key '$key'. Cannot write (delete first).");
+            $this->delete($key);
         }
         //Break down key, assume '/' is used for delimiter and last part is the filename
         $keyParts = array_filter(explode('/', $key));
