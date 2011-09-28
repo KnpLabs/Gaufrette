@@ -228,12 +228,12 @@ class Local implements Adapter
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
         }
     }
-    
+
     /**
     * {@InheritDoc}
     */
     public function supportsMetadata()
     {
-    	return false;
-    }    
+        return false;
+    }
 }

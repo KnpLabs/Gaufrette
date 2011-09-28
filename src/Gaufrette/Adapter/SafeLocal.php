@@ -29,5 +29,5 @@ class SafeLocal extends Local
     {
         return base64_decode(parent::computeKey($path));
     }
-    
+
 }

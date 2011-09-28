@@ -201,12 +201,12 @@ class Sftp implements Adapter
     {
         return mkdir($this->sftp->getUrl($directory), 0777, true);
     }
-    
+
     /**
     * {@InheritDoc}
     */
     public function supportsMetadata()
     {
-    	return false;
-    }    
+        return false;
+    }
 }

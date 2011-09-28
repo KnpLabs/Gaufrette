@@ -151,6 +151,6 @@ class InMemory implements Adapter
     */
     public function supportsMetadata()
     {
-    	return false;
+        return false;
     }
 }

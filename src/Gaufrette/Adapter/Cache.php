@@ -139,12 +139,12 @@ class Cache implements Adapter
             return true;
         }
     }
-    
+
     /**
     * {@InheritDoc}
     */
     public function supportsMetadata()
     {
-    	return false;
-    }    
+        return false;
+    }
 }

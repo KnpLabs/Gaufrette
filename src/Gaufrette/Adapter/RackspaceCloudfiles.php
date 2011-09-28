@@ -179,12 +179,12 @@ class RackspaceCloudfiles implements Adapter
 
         return $d;
     }
-    
+
     /**
     * {@InheritDoc}
     */
     public function supportsMetadata()
     {
-    	return false;
-    }    
+        return false;
+    }
 }

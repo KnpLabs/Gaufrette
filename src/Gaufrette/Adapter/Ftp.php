@@ -369,12 +369,12 @@ class Ftp implements Adapter
             ftp_close($this->connection);
         }
     }
-    
+
     /**
     * {@InheritDoc}
     */
     public function supportsMetadata()
     {
-    	return false;
-    }    
+        return false;
+    }
 }
