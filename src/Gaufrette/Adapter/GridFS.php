@@ -45,9 +45,9 @@ class GridFS implements Adapter
 
         $this->instanceName = md5(trim($serverUri).trim($databaseName).trim($collectionName));
         //If instance already exists, no need to create a new one (request level performance)
-        if (array_key_exists($this->instanceName, self::$gridfsInstances))
-        {
-            return true;
+        if (array_key_exists($this->instanceName, self::$gridfsInstances)) {
+
+            return;
         }
         //Create a new GridFS instance
         $mongoInstance = new \Mongo($serverUri, $options);
@@ -137,7 +137,6 @@ class GridFS implements Adapter
      */
     public function exists($key)
     {
-        //Test if file already exists
         return is_object(self::$gridfsInstances[$this->instanceName]->findOne(array('key'=>$key)));
     }
 
