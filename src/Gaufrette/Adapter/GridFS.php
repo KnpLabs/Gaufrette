@@ -233,6 +233,4 @@ class GridFS implements Adapter
     {
         return true;
     }
-
-
 }
