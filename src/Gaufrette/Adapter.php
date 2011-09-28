@@ -29,7 +29,7 @@ interface Adapter
      *
      * @throws RuntimeException on failure
      */
-    function write($key, $content, $metadata=null);
+    function write($key, $content, array $metadata = null);
 
     /**
      * Indicates whether the file exists

@@ -69,7 +69,7 @@ class Ftp implements Adapter
     /**
      * {@InheritDoc}
      */
-    public function write($key, $content, $metadata=null)
+    public function write($key, $content, array $metadata = null)
     {
         $path = $this->computePath($key);
         $directory = dirname($path);

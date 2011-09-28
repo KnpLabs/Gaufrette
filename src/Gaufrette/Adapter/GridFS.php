@@ -95,7 +95,7 @@ class GridFS implements Adapter
      * @param array metadata any metadata in assoc array format
      * @param string filename human readable (e.g. someImage.jpg) NOT IN USE ATM.
      */
-    public function write($key, $content, $metadata=null)
+    public function write($key, $content, array $metadata=null)
     {
         //If a file exists with the same key, delete it
         if ($this->exists($key)) {

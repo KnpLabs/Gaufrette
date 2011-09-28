@@ -97,7 +97,7 @@ class InMemory implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content, $metadata=null)
+    public function write($key, $content, array $metadata = null)
     {
         $this->files[$key]['content']  = $content;
         $this->files[$key]['mtime']    = time();

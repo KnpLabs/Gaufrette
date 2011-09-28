@@ -55,7 +55,7 @@ class RackspaceCloudfiles implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content, $metadata=null)
+    public function write($key, $content, array $metadata = null)
     {
         $object = $this->tryGetObject($key);
         if (false === $object) {

@@ -72,7 +72,7 @@ class Cache implements Adapter
     /**
      * {@InheritDoc}
      */
-    public function write($key, $content, $metadata=null)
+    public function write($key, $content, array $metadata = null)
     {
         $this->source->write($key, $content);
         $this->cache->write($key, $content);
