@@ -162,9 +162,6 @@ class GridFS implements Adapter
         } else {
             throw new \InvalidArgumentException("Invalid value for sortDirection. Must be 'asc' or 'desc'.");
         }
-        if ($sortDirection == 'desc') {
-            $direction = -1;
-        }
 
         switch($sortKey) {
             case 'size':
