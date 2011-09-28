@@ -84,12 +84,10 @@ interface Adapter
      */
     function rename($key, $new);
 
-
     /**
      * If the adapter can allow inserting metadata
      *
      * @return bool true if supports metadata, false if not
      */
     function supportsMetadata();
-
 }
