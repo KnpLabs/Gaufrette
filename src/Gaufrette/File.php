@@ -125,9 +125,9 @@ class File
         if ((int)$this->created > 0) {
 
             return $this->created;
-        } else {
-            throw new \LogicException("Created timestamp has not been set for the file '$this->key'");
         }
+
+        return null;
     }
 
     /**
