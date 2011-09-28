@@ -161,17 +161,14 @@ class Filesystem
      *
      * @param  string $key
      *
-     * @return $file
+     * @return File $file
      */
     protected function createFileInstance($key)
     {
-        if (is_callable(array($this->adapter, 'get')))
-        {
+        if (is_callable(array($this->adapter, 'get'))) {
             //If possible, delegate getting the file object to the adapter.
             return $this->adapter->get($key, $this);
-        }
-        else
-        {
+        } else {
             return new File($key, $this);
         }
     }
