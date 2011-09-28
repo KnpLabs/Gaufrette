@@ -30,15 +30,15 @@ class File
     protected $name = '';
 
     /**
-    * Unix Timestamp of the initial creation
-    * @var int created
-    */
+     * Unix Timestamp of the initial creation
+     * @var int created
+     */
     protected $created = 0;
 
     /**
-    * File size in bytes
-    * @var int size
-    */
+     * File size in bytes
+     * @var int size
+     */
     protected $size = 0;
 
     /**
@@ -96,11 +96,11 @@ class File
     }
 
     /**
-    * Gets the metadata array if the adapter can support it
-    *
-    * @return array $metadata or null
-    * @throws LogicException if metadata is not supported
-    */
+     * Gets the metadata array if the adapter can support it
+     *
+     * @return array $metadata or null
+     * @throws LogicException if metadata is not supported
+     */
     public function getMetadata()
     {
         if ($this->filesystem->supportsMetadata()) {
@@ -118,8 +118,8 @@ class File
     }
 
     /**
-    * @return int created timestamp
-    */
+     * @return int created timestamp
+     */
     public function getCreated()
     {
         if ((int)$this->created > 0) {
@@ -131,8 +131,8 @@ class File
     }
 
     /**
-    * @return int size of the file
-    */
+     * @return int size of the file
+     */
     public function getSize()
     {
         return $this->size;
