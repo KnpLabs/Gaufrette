@@ -58,8 +58,6 @@ class GridFS implements Adapter
         } else {
             self::$gridfsInstances[$this->instanceName] = new \MongoGridFS($mongoDatabase);
         }
-
-        return true;
     }
 
     /**
