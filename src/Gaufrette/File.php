@@ -171,38 +171,39 @@ class File
      * Sets the metadata array to be stored in adapters that can support it
      *
      * @param array $metadata
+     * @throws LogicException if metadata is not supported
      */
     public function setMetadata(array $metadata)
     {
         if ($this->filesystem->supportsMetadata()) {
             $this->metadata = $metadata;
         } else {
-            throw new Exception("This filesystem adapter does not support metadata");
+            throw new \LogicException("This filesystem adapter does not support metadata");
         }
     }
 
     /**
-    * @param string name of the file
-    */
+     * @param string name of the file
+     */
     public function setName($name)
     {
         $this->name = $name;
     }
 
     /**
-    * @param int created timestamp
-    */
+     * @param int created timestamp
+     */
     public function setCreated($created)
     {
         $this->created = (int)$created;
     }
 
     /**
-    * @return int size of the file
-    */
-    public function setSize()
+     * @param int size of the file
+     */
+    public function setSize($size)
     {
-        $this->size;
+        $this->size = $size;
     }
 
     /**
