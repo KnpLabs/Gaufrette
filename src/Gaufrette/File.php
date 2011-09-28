@@ -30,8 +30,8 @@ class File
     protected $name = null;
 
     /**
-     * Unix Timestamp of the initial creation
-     * @var int created
+     * Moment of the initial creation
+     * @var DateTime created
      */
     protected $created = null;
 
@@ -118,16 +118,11 @@ class File
     }
 
     /**
-     * @return int created timestamp
+     * @return DateTime created
      */
     public function getCreated()
     {
-        if ((int)$this->created > 0) {
-
-            return $this->created;
-        }
-
-        return null;
+        return $this->created;
     }
 
     /**
@@ -191,11 +186,11 @@ class File
     }
 
     /**
-     * @param int created timestamp
+     * @param DateTime created
      */
     public function setCreated($created)
     {
-        $this->created = (int)$created;
+        $this->created = $created;
     }
 
     /**
@@ -230,6 +225,7 @@ class File
         if (!$this->exists()) {
             throw new \LogicException('The file could not be deleted as it does not exist.');
         }
+
         return $this->filesystem->delete($this->key);
     }
 }
