@@ -141,8 +141,8 @@ class Cache implements Adapter
     }
 
     /**
-    * {@InheritDoc}
-    */
+     * {@InheritDoc}
+     */
     public function supportsMetadata()
     {
         return false;
