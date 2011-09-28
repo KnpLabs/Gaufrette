@@ -88,7 +88,7 @@ interface Adapter
     /**
      * If the adapter can allow inserting metadata
      *
-     * @param bool true if supports metadata false if not
+     * @return bool true if supports metadata, false if not
      */
     function supportsMetadata();
 
