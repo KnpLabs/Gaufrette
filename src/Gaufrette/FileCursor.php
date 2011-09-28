@@ -29,9 +29,9 @@ abstract class FileCursor implements \Iterator
     }
 
     /**
-    * Overload at least this function in subclass to return a proper fully prepared File object
-    * @return \Gaufrette\File
-    */
+     * Overload at least this function in subclass to return a proper fully prepared File object
+     * @return \Gaufrette\File
+     */
     public function current()
     {
         return $this->parentCursor->current();
