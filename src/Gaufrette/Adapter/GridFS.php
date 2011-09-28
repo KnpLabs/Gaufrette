@@ -103,14 +103,12 @@ class GridFS implements Adapter
         }
         //Break down key, assume '/' is used for delimiter and last part is the filename
         $keyParts = array_filter(explode('/', $key));
-        //Prepare data array
         $dataArray = array(
             'key' => $key,
             'filename' => $keyParts[count($keyParts)],
             'uploadDate' => new \MongoDate(),
             'metadata' => $metadata,
         );
-        //Store
         $mongoId = self::$gridfsInstances[$this->instanceName]->storeBytes($content, $dataArray);
         //TODO: How to do better counting of bytes for gridfs insertion
         $numBytes = strlen($content);
@@ -126,11 +124,9 @@ class GridFS implements Adapter
     {
         //Fetch file
         $file = $this->get($key);
-        //Read content
         $content  = $this->read($key);
-        //Write a new file
+        //Write a new file and delete old
         $returnValue = $this->write($new, $content, $file->getMetadata());
-        //Delete old file
         $this->delete($key);
 
         return $returnValue;
