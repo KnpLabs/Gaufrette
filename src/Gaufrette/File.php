@@ -86,7 +86,8 @@ class File
         }
         if (null === $this->filesystem) {
             throw new \LogicException('The filesystem is not defined.');
-        } else if (!$this->exists()) {
+        }
+        if (!$this->exists()) {
             throw new \LogicException('The file does not exists in the filesystem.');
         }
         $this->content = $this->filesystem->read($this->key);
