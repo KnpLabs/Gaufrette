@@ -183,7 +183,7 @@ class Filesystem
      * @param Filesystem filesystem object
      * @return Iterator of File objects
      */
-    public function query($keyFragment, $sortKey='name', $sortDirection='asc')
+    public function query($keyFragment, $sortKey = 'name', $sortDirection = 'asc')
     {
         return $this->adapter->query($keyFragment, $this, $sortKey, $sortDirection);
     }
