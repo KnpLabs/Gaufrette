@@ -149,7 +149,7 @@ class GridFS implements Adapter
      * @param string sortDirection. Alternatives: 'asc' or 'desc'
      * @return Iterator for File objects (can be array or anything that implements Iterator interface)
      */
-    public function query($keyFragment, $filesystem, $sortKey='name', $sortDirection='asc')
+    public function query($keyFragment, $filesystem, $sortKey = 'name', $sortDirection = 'asc')
     {
         $regex = new \MongoRegex("/^".$keyFragment."/");
         $gridfsCursor = self::$gridfsInstances[$this->instanceName]->find(array('key'=>$regex));
