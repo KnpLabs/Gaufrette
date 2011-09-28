@@ -27,19 +27,19 @@ class File
      * Human readable filename (usually the end of the key)
      * @var string name
      */
-    protected $name = '';
+    protected $name = null;
 
     /**
      * Unix Timestamp of the initial creation
      * @var int created
      */
-    protected $created = 0;
+    protected $created = null;
 
     /**
      * File size in bytes
      * @var int size
      */
-    protected $size = 0;
+    protected $size = null;
 
     /**
      * Constructor
