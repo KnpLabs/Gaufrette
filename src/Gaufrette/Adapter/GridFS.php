@@ -161,14 +161,13 @@ class GridFS implements Adapter
         } elseif($sortDirection == 'desc') {
             $direction = -1;
         } else {
-            throw new \LogicException("Invalid value for sortDirection. Must be 'asc' or 'desc'.");
+            throw new \InvalidArgumentException("Invalid value for sortDirection. Must be 'asc' or 'desc'.");
         }
         if ($sortDirection == 'desc') {
             $direction = -1;
         }
 
-        switch($sortKey)
-        {
+        switch($sortKey) {
             case 'size':
                 $gridfsCursor->sort(array('length' => $direction));
                 break;
@@ -179,7 +178,7 @@ class GridFS implements Adapter
                 $gridfsCursor->sort(array('filename' => $direction));
                 break;
             default:
-                throw new \LogicException("Invalid sortKey argument for find. Must be 'created', 'name' or 'size'.");
+                throw new \InvalidArgumentException("Invalid sortKey argument for find. Must be 'created', 'name' or 'size'.");
                 break;
         }
 
@@ -198,8 +197,7 @@ class GridFS implements Adapter
          */
         $cursor = self::$gridfsInstances[$this->instanceName]->find(array(), array('key'));
         $temp = array();
-        foreach($cursor as $f)
-        {
+        foreach($cursor as $f) {
             $temp[] = $f->file['key'];
         }
 
@@ -207,23 +205,19 @@ class GridFS implements Adapter
     }
 
     /**
-     * NOT IMPLEMENTED YET
      * {@InheritDoc}
      */
     public function mtime($key)
     {
-        //NOT IMPLEMENTED YET
-        //return filemtime($this->computePath($key));
+        throw new \BadMethodCallException("Method not implemented yet.");
     }
 
     /**
-     * NOT IMPLEMENTED YET
      * {@inheritDoc}
      */
     public function checksum($key)
     {
-        //NOT IMPLEMENTED
-        //return Checksum::fromFile($this->computePath($key));
+        throw new \BadMethodCallException("Method not implemented yet.");
     }
 
     /**
@@ -231,13 +225,9 @@ class GridFS implements Adapter
      */
     public function delete($key)
     {
-        //Test if file exists
-        if (! $this->exists($key)) {
-            throw new \Exception("File does not exists with key '$key'. Cannot remove.");
-        }
-        self::$gridfsInstances[$this->instanceName]->remove(array('key'=>$key));
+        $success = self::$gridfsInstances[$this->instanceName]->remove(array('key'=>$key));
 
-        return true;
+        return $success;
     }
 
     /**
