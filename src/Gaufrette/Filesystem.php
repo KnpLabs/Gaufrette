@@ -170,10 +170,9 @@ class Filesystem
 
             //If possible, delegate getting the file object to the adapter.
             return $this->adapter->get($key, $this);
-        } else {
-
-            return new File($key, $this);
         }
+
+        return new File($key, $this);
     }
 
     /**
