@@ -82,7 +82,7 @@ class Filesystem
      *
      * @return integer The number of bytes that were written into the file
      */
-    public function write($key, $content, $overwrite = false, $metadata=null)
+    public function write($key, $content, $overwrite = false, array $metadata = null)
     {
         if (!$overwrite && $this->has($key)) {
             throw new \InvalidArgumentException(sprintf('The file %s already exists and can not be overwritten.', $key));
