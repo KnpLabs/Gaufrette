@@ -103,6 +103,7 @@ class Filesystem
         if (!$this->has($key)) {
             throw new \InvalidArgumentException(sprintf('The file %s does not exist.', $key));
         }
+
         return $this->adapter->read($key);
     }
 
@@ -166,9 +167,11 @@ class Filesystem
     protected function createFileInstance($key)
     {
         if (is_callable(array($this->adapter, 'get'))) {
+
             //If possible, delegate getting the file object to the adapter.
             return $this->adapter->get($key, $this);
         } else {
+
             return new File($key, $this);
         }
     }
