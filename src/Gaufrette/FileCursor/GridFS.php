@@ -13,11 +13,6 @@ use Gaufrette\File;
  */
 class GridFS extends FileCursor
 {
-    public function __construct(\Iterator $parentCursor, Filesystem $filesystem)
-    {
-        parent::__construct($parentCursor, $filesystem);
-    }
-
     /**
     * {@InheritDoc}
     */
@@ -30,6 +25,7 @@ class GridFS extends FileCursor
         $file->setName($r->file['filename']);
         $file->setCreated($r->file['uploadDate']->sec);
         $file->setSize($r->file['length']);
+
         return $file;
     }
 }
