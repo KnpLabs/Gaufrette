@@ -162,7 +162,7 @@ class Filesystem
      *
      * @param  string $key
      *
-     * @return File $file
+     * @return $file
      */
     protected function createFileInstance($key)
     {
