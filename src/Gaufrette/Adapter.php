@@ -16,7 +16,7 @@ interface Adapter
      *
      * @return string
      */
-    public function read($key);
+    function read($key);
 
     /**
      * Writes the given content into the file
@@ -29,7 +29,7 @@ interface Adapter
      *
      * @throws RuntimeException on failure
      */
-    public function write($key, $content, $metadata=null);
+    function write($key, $content, $metadata=null);
 
     /**
      * Indicates whether the file exists
@@ -38,14 +38,14 @@ interface Adapter
      *
      * @return boolean
      */
-    public function exists($key);
+    function exists($key);
 
     /**
      * Returns an array of all keys matching the specified pattern
      *
      * @return array
      */
-    public function keys();
+    function keys();
 
     /**
      * Returns the last modified time
@@ -54,7 +54,7 @@ interface Adapter
      *
      * @return integer An UNIX like timestamp
      */
-    public function mtime($key);
+    function mtime($key);
 
     /**
      * Returns the checksum of the file
@@ -63,7 +63,7 @@ interface Adapter
      *
      * @return string
      */
-    public function checksum($key);
+    function checksum($key);
 
     /**
      * Deletes the file
@@ -72,7 +72,7 @@ interface Adapter
      *
      * @throws RuntimeException on failure
      */
-    public function delete($key);
+    function delete($key);
 
     /**
      * Renames a file
@@ -82,7 +82,7 @@ interface Adapter
      *
      * @throws RuntimeException on failure
      */
-    public function rename($key, $new);
+    function rename($key, $new);
 
 
     /**
@@ -90,6 +90,6 @@ interface Adapter
      *
      * @param bool true if supports metadata false if not
      */
-    public function supportsMetadata();
+    function supportsMetadata();
 
 }
