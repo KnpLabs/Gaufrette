@@ -14,41 +14,72 @@ use Gaufrette\Filesystem;
  */
 abstract class IteratorWrapper implements FileCursor
 {
+    protected $iterator;
     protected $filesystem;
-    protected $parentCursor = null;
 
-    public function __construct(\Iterator $parentCursor, Filesystem $filesystem)
+    public function __construct(\Iterator $iterator, Filesystem $filesystem)
     {
+        $this->iterator   = $iterator;
         $this->filesystem = $filesystem;
-        $this->parentCursor = $parentCursor;
     }
 
+    /**
+     * Returns a File instance for the given current of the inner iterator
+     *
+     * @param  mixed $current
+     *
+     * @return File
+     */
+    protected abstract function createFile($current);
+
+    /**
+     * Delegates to the inner iterator
+     *
+     * @see Iterator::rewind()
+     */
     public function rewind()
     {
         $this->parentCursor->rewind();
     }
 
     /**
-     * Overload at least this function in subclass to return a proper fully prepared File object
-     * @return \Gaufrette\File
+     * Returns the file returned by the ->createFile() method called with the
+     * current value of the inner iterator
+     *
+     * @return File
      */
     public function current()
     {
-        return $this->parentCursor->current();
+        return $this->createFile($this->iterator->current());
     }
 
+    /**
+     * Delegates to the inner iterator
+     *
+     * @see Iterator::key()
+     */
     public function key()
     {
-        return $this->parentCursor->key();
+        return $this->iterator->key();
     }
 
+    /**
+     * Delegates to the inner iterator
+     *
+     * @see Iterator::next()
+     */
     public function next()
     {
-        $this->parentCursor->next();
+        $this->iterator->next();
     }
 
+    /**
+     * Delegates to the inner iterator
+     *
+     * @see Iterator::valid()
+     */
     public function valid()
     {
-        return $this->parentCursor->valid();
+        return $this->iterator->valid();
     }
 }

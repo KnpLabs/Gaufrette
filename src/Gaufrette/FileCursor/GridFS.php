@@ -16,15 +16,15 @@ class GridFS extends IteratorWrapper
     /**
      * {@InheritDoc}
      */
-    public function current()
+    protected function createFile($current)
     {
-        $r = $this->parentCursor->current();
-        $key = $r->file['key'];
+        $key  = $current->file['key'];
         $file = new File($key, $this->filesystem);
-        $file->setMetadata($r->file['metadata']);
-        $file->setName($r->file['filename']);
-        $file->setCreated(new \DateTime("@".$r->file['uploadDate']->sec));
-        $file->setSize($r->file['length']);
+
+        $file->setMetadata($current->file['metadata']);
+        $file->setName($current->file['filename']);
+        $file->setCreated(new \DateTime("@".$current->file['uploadDate']->sec));
+        $file->setSize($current->file['length']);
 
         return $file;
     }
