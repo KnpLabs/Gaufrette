@@ -51,7 +51,7 @@ class Local implements Adapter
     /**
      * {@InheritDoc}
      */
-    public function write($key, $content)
+    public function write($key, $content, array $metadata = null)
     {
         $path = $this->computePath($key);
 
@@ -227,5 +227,13 @@ class Local implements Adapter
         if (!$created) {
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
         }
+    }
+
+    /**
+     * {@InheritDoc}
+     */
+    public function supportsMetadata()
+    {
+        return false;
     }
 }

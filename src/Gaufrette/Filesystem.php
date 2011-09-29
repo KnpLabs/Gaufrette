@@ -82,13 +82,13 @@ class Filesystem
      *
      * @return integer The number of bytes that were written into the file
      */
-    public function write($key, $content, $overwrite = false)
+    public function write($key, $content, $overwrite = false, array $metadata = null)
     {
         if (!$overwrite && $this->has($key)) {
             throw new \InvalidArgumentException(sprintf('The file %s already exists and can not be overwritten.', $key));
         }
 
-        return $this->adapter->write($key, $content);
+        return $this->adapter->write($key, $content, $metadata);
     }
 
     /**
@@ -166,6 +166,29 @@ class Filesystem
      */
     protected function createFileInstance($key)
     {
+        if (is_callable(array($this->adapter, 'get'))) {
+            //If possible, delegate getting the file object to the adapter.
+            return $this->adapter->get($key, $this);
+        }
+
         return new File($key, $this);
+    }
+
+    /**
+     * Query a group of files using partial key. Partial key must be a substring from
+     * the first char to any char before the last char.
+     *
+     * @param string keyFragment partial key for quering
+     * @param Filesystem filesystem object
+     * @return \Iterator of File objects
+     */
+    public function query($keyFragment, $sortKey = 'name', $sortDirection = 'asc')
+    {
+        return $this->adapter->query($keyFragment, $this, $sortKey, $sortDirection);
+    }
+
+    public function supportsMetadata()
+    {
+        return $this->adapter->supportsMetadata();
     }
 }

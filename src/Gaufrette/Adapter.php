@@ -23,12 +23,13 @@ interface Adapter
      *
      * @param  string $key
      * @param  string $content
+     * @param  array $metadata or null if none (optional)
      *
      * @return integer The number of bytes that were written into the file
      *
      * @throws RuntimeException on failure
      */
-    function write($key, $content);
+    function write($key, $content, array $metadata = null);
 
     /**
      * Indicates whether the file exists
@@ -82,4 +83,11 @@ interface Adapter
      * @throws RuntimeException on failure
      */
     function rename($key, $new);
+
+    /**
+     * If the adapter can allow inserting metadata
+     *
+     * @return bool true if supports metadata, false if not
+     */
+    function supportsMetadata();
 }
