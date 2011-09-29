@@ -11,7 +11,7 @@ use Gaufrette\File;
  *
  * @author Tomi Saarinen <tomi.saarinen@rohea.com>
  */
-class GridFS extends FileCursor
+class GridFS extends IteratorWrapper
 {
     /**
      * {@InheritDoc}
