@@ -30,7 +30,7 @@ abstract class IteratorWrapper implements FileCursor
      *
      * @return File
      */
-    protected abstract function createFile($current);
+    abstract protected function createFile($current);
 
     /**
      * Delegates to the inner iterator
@@ -39,7 +39,7 @@ abstract class IteratorWrapper implements FileCursor
      */
     public function rewind()
     {
-        $this->parentCursor->rewind();
+        $this->iterator->rewind();
     }
 
     /**
