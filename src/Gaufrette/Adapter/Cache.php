@@ -72,7 +72,7 @@ class Cache implements Adapter
     /**
      * {@InheritDoc}
      */
-    public function write($key, $content)
+    public function write($key, $content, array $metadata = null)
     {
         $this->source->write($key, $content);
         $this->cache->write($key, $content);
@@ -138,5 +138,13 @@ class Cache implements Adapter
         } catch (\RuntimeException $e) {
             return true;
         }
+    }
+
+    /**
+     * {@InheritDoc}
+     */
+    public function supportsMetadata()
+    {
+        return false;
     }
 }

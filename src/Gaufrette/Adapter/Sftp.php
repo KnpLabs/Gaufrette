@@ -58,7 +58,7 @@ class Sftp implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content)
+    public function write($key, $content, array $metadata = null)
     {
         $this->initialize();
 
@@ -200,5 +200,13 @@ class Sftp implements Adapter
     protected function createDirectory($directory)
     {
         return mkdir($this->sftp->getUrl($directory), 0777, true);
+    }
+
+    /**
+     * {@InheritDoc}
+     */
+    public function supportsMetadata()
+    {
+        return false;
     }
 }

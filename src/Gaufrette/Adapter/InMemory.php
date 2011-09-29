@@ -97,7 +97,7 @@ class InMemory implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content)
+    public function write($key, $content, array $metadata = null)
     {
         $this->files[$key]['content']  = $content;
         $this->files[$key]['mtime']    = time();
@@ -144,5 +144,13 @@ class InMemory implements Adapter
         unset($this->files[$key]);
 
         return true;
+    }
+
+    /**
+     * {@InheritDoc}
+     */
+    public function supportsMetadata()
+    {
+        return false;
     }
 }
