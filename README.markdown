@@ -108,7 +108,7 @@ In your Symdon2 project, add to ``deps``:
 
 ```ini
 [gaufrette]
-    git=https://github.com/qpleple/Gaufrette.git
+    git=https://github.com/knplabs/Gaufrette.git
 
 [aws-sdk]
     git=https://github.com/amazonwebservices/aws-sdk-for-php
