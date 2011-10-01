@@ -91,7 +91,7 @@ class AclAwareAmazonS3 implements Adapter
      */
     public function write($key, $content, array $metadata = null)
     {
-        $rs = $this->delegate->write($key, $content);
+        $rs = $this->delegate->write($key, $content, $metadata);
 
         try {
             $this->updateAcl($key);
