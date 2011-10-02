@@ -86,6 +86,11 @@ class AmazonS3 implements Adapter
                     continue;
                 }
 
+                if ('content-encoding' === $lk) {
+                    $opt['headers']['Content-Encoding'] = $v;
+                    continue;
+                }
+
                 $opt['meta'][$k] = $v;
             }
         }
