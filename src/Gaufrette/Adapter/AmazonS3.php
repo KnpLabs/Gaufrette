@@ -81,6 +81,11 @@ class AmazonS3 implements Adapter
                     continue;
                 }
 
+                if ('expires' === $lk) {
+                    $opt['headers']['Expires'] = $v;
+                    continue;
+                }
+
                 $opt['meta'][$k] = $v;
             }
         }
