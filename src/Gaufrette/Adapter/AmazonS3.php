@@ -70,6 +70,31 @@ class AmazonS3 implements Adapter
         $this->ensureBucketExists();
 
         $opt = array("body" => $content);
+
+        if (null !== $metadata) {
+            $opt['meta'] = array();
+            foreach ($metadata as $k => $v) {
+                $lk = strtolower($k);
+
+                if ('content-type' === $lk) {
+                    $opt['contentType'] = $v;
+                    continue;
+                }
+
+                if ('expires' === $lk) {
+                    $opt['headers']['Expires'] = $v;
+                    continue;
+                }
+
+                if ('content-encoding' === $lk) {
+                    $opt['headers']['Content-Encoding'] = $v;
+                    continue;
+                }
+
+                $opt['meta'][$k] = $v;
+            }
+        }
+
         $response = $this->service->create_object($this->bucket, $key, $opt);
         if (!$response->isOK()) {
             throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
