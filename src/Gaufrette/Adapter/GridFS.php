@@ -18,46 +18,19 @@ use Gaufrette\Filesystem;
 class GridFS implements Adapter
 {
     /**
-     * Static array of connection instances operates as a request-level cache
-     * that removes the need for constructing this class multiple times per request
-     *
-     * @var static array gridfsInstances
+     * GridFS Instance
+     * @var \MongoGridFS instance
      */
-    protected static $gridfsInstances = array(); //Array of connections
-
-    /**
-     * Name of the instance for this adapter
-     * @var string instanceName
-     */
-    protected $instanceName = '';
+    protected $gridfsInstance = null;
 
     /**
      * Constructor
      *
-     * @param string $serverUri for opening a new Mongo instance
-     * @param string $databaseName Name of the database
-     * @param string $collectionName Name of the collection in which the filesystem is located (equivalent for sql's tables)
-     * @param array $options Additional options for initializing Mongo instance (see MongoDB documentation)
+     * @param \MongoGridFS instance
      */
-    public function __construct($serverUri, $databaseName, $collectionName='', $options=array())
+    public function __construct(\MongoGridFS $instance)
     {
-        //Generate instance name hash from all given parameters combined
-
-        $this->instanceName = md5(trim($serverUri).trim($databaseName).trim($collectionName));
-        //If instance already exists, no need to create a new one (request level performance)
-        if (array_key_exists($this->instanceName, self::$gridfsInstances)) {
-
-            return;
-        }
-        //Create a new GridFS instance
-        $mongoInstance = new \Mongo($serverUri, $options);
-        $mongoDatabase = $mongoInstance->$databaseName;
-        //Use specified collection or default collection
-        if (isset($collectionName) && strlen($collectionName) > 0) {
-            self::$gridfsInstances[$this->instanceName] = new \MongoGridFS($mongoDatabase, $collectionName);
-        } else {
-            self::$gridfsInstances[$this->instanceName] = new \MongoGridFS($mongoDatabase);
-        }
+        $this->gridfsInstance = $instance;
     }
 
     /**
@@ -68,7 +41,7 @@ class GridFS implements Adapter
      */
     public function get($key, $filesystem)
     {
-        $gridfsFile = self::$gridfsInstances[$this->instanceName]->findOne(array('key'=>$key));
+        $gridfsFile = $this->gridfsInstance->findOne(array('key'=>$key));
         $file = new File($key, $filesystem);
         $file->setMetadata($gridfsFile->file['metadata']);
         $file->setName($gridfsFile->file['filename']);
@@ -85,7 +58,7 @@ class GridFS implements Adapter
     {
         //TODO: Normalize key somehow
         //var_dump( Path::normalize($key));
-        $gridfsFile = self::$gridfsInstances[$this->instanceName]->findOne(array('key'=>$key));
+        $gridfsFile = $this->gridfsInstance->findOne(array('key'=>$key));
 
         return $gridfsFile->getBytes();
     }
@@ -109,7 +82,7 @@ class GridFS implements Adapter
             'uploadDate' => new \MongoDate(),
             'metadata' => $metadata,
         );
-        $mongoId = self::$gridfsInstances[$this->instanceName]->storeBytes($content, $dataArray);
+        $mongoId = $this->gridfsInstance->storeBytes($content, $dataArray);
         //TODO: How to do better counting of bytes for gridfs insertion
         $numBytes = strlen($content);
 
@@ -137,7 +110,7 @@ class GridFS implements Adapter
      */
     public function exists($key)
     {
-        return is_object(self::$gridfsInstances[$this->instanceName]->findOne(array('key'=>$key)));
+        return is_object($this->gridfsInstance->findOne(array('key'=>$key)));
     }
 
     /**
@@ -152,7 +125,7 @@ class GridFS implements Adapter
     public function query($keyFragment, $filesystem, $sortKey = 'name', $sortDirection = 'asc')
     {
         $regex = new \MongoRegex("/^".$keyFragment."/");
-        $gridfsCursor = self::$gridfsInstances[$this->instanceName]->find(array('key'=>$regex));
+        $gridfsCursor = $this->gridfsInstance->find(array('key'=>$regex));
 
         //Sort cursor
         if ($sortDirection == 'asc') {
@@ -191,7 +164,7 @@ class GridFS implements Adapter
         /**
          * This seems to work but performance is a big question...
          */
-        $cursor = self::$gridfsInstances[$this->instanceName]->find(array(), array('key'));
+        $cursor = $this->gridfsInstance->find(array(), array('key'));
         $temp = array();
         foreach($cursor as $f) {
             $temp[] = $f->file['key'];
@@ -221,7 +194,7 @@ class GridFS implements Adapter
      */
     public function delete($key)
     {
-        $success = self::$gridfsInstances[$this->instanceName]->remove(array('key'=>$key));
+        $success = $this->gridfsInstance->remove(array('key'=>$key));
 
         return $success;
     }
