@@ -5,7 +5,7 @@ namespace Gaufrette;
 /**
  * A filesystem is used to store and retrieve files
  *
- * @author Antoine HÃ©rault <antoine.herault@gmail.com>
+ * @author Antoine Hérault <antoine.herault@gmail.com>
  */
 class Filesystem
 {
@@ -190,8 +190,7 @@ class Filesystem
      * Creates a new File instance and returns it
      *
      * @param  string $key
-     *
-     * @return $file
+     * @return File
      */
     protected function createFileInstance($key)
     {

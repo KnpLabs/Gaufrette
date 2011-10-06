@@ -3,12 +3,13 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Gaufrette\File;
 
 /**
  * Cache adapter
  *
  * @package Gaufrette
- * @author  Antoine HÃ©rault <antoine.herault@gmail.com>
+ * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
 class Cache implements Adapter
 {
@@ -108,6 +109,22 @@ class Cache implements Adapter
     public function keys()
     {
         return $this->source->keys();
+    }
+
+    /**
+     * Creates a new File instance and returns it
+     *
+     * @param  string $key
+     * @return File
+     */
+    public function get($key, $filesystem)
+    {
+        if (is_callable(array($this->source, 'get'))) {
+            //If possible, delegate getting the file object to the source adapter.
+            return $this->source->get($key, $filesystem);
+        }
+
+        return new File($key, $filesystem);
     }
     
     /**

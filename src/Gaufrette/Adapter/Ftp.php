@@ -3,6 +3,8 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Gaufrette\File;
+use Gaufrette\Filesystem;
 
 /**
  * Ftp adapter
@@ -11,7 +13,7 @@ use Gaufrette\Adapter;
  * CachedFtp adapter which is a proxy class implementing a cache layer.
  *
  * @packageGaufrette
- * @author  Antoine HÃ©rault <antoine.herault@gmail.com>
+ * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
 class Ftp implements Adapter
 {
@@ -23,6 +25,7 @@ class Ftp implements Adapter
     protected $password;
     protected $passive;
     protected $create;
+    protected $keys;
 
     /**
      * Constructor
@@ -64,6 +67,39 @@ class Ftp implements Adapter
         fclose($temp);
 
         return $contents;
+    }
+    
+    /**
+     * @param string $key
+     * @param Filesystem $key
+     * @return File
+     */
+    public function get($key, Filesystem $filesystem)
+    {
+        if ($this->exists($key)) {
+            $file = new File($key, $filesystem);
+            
+            if (!$this->keys) {
+                $path = dirname($key) == '.' ? '' : dirname($key);
+                $this->listDirectory($path, true);
+            }
+            
+            if (array_key_exists($key, $this->keys)) {
+                $fileData = $this->keys[$key];
+                
+                $created = new \DateTime();
+                $created->setTimestamp($fileData['time']);
+                
+                $file->setName($fileData['name']);
+                $file->setCreated($created);
+                $file->setSize($fileData['size']);
+            }
+            
+            return $file;
+        }
+        else {
+            throw new \RuntimeException(sprintf('The \'%s\' file does not exist.', $key));
+        }
     }
 
     /**
@@ -110,9 +146,10 @@ class Ftp implements Adapter
      */
     public function exists($key)
     {
-        $files = ftp_nlist($this->getConnection(), dirname($this->computePath($key)));
-        foreach ($files as $file) {
-            if ($key === $file) {
+        $file = $this->computePath($key);
+        $items = ftp_nlist($this->getConnection(), dirname($file));
+        foreach ($items as $item) {
+            if ($file === $item) {
                 return true;
             }
         }
@@ -125,8 +162,24 @@ class Ftp implements Adapter
      */
     public function keys()
     {
-        $items = $this->listDirectory();
-        return array_keys($items['files']);
+        if (!$this->keys) {
+            $this->fetchKeys();
+        }
+        
+        return array_keys($this->keys);
+    }
+    
+    /**
+     * Fetch all Keys recursive
+     * 
+     * @param string $directory 
+     */
+    private function fetchKeys($directory = '')
+    {
+        $items = $this->listDirectory($directory, true);
+        foreach ($items['dirs'] as $dir) {
+            $this->fetchKeys($dir['path']);
+        }
     }
 
     /**
@@ -226,24 +279,24 @@ class Ftp implements Adapter
     }
 
     /**
-     * Recursively lists files from the specified directory. If a pattern is
+     * Lists files from the specified directory. If a pattern is
      * specified, it only returns files matching it.
      *
-     * @param  string $directory The path of the directory to list files from
-     *
-     * @return array An array of file keys
+     * @param  string $directory The path of the directory to list from
+     * 
+     * @return array An array of files and items
      */
-    public function listDirectory($directory = '')
+    public function listDirectory($directory = '', $keyCreation = false)
     {
-        $directory = $this->directory . preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
+        $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
         
         $items = $this->parseRawlist(
-            ftp_rawlist($this->getConnection(), $directory ) ? : array()
+            ftp_rawlist($this->getConnection(), $this->directory . $directory ) ? : array()
         );
         
         $files = $dirs = array();
         foreach ($items as $item) {
-            $item['path'] = trim($directory . '/' . $item['name'], '/');
+            $item['path'] = trim(($directory ? $directory . '/' : '') . $item['name'], '/');
             if ('-' === substr($item['perms'], 0, 1)) {
                 unset($item['perms']);
                 $files[$item['path']] = $item;
@@ -252,6 +305,13 @@ class Ftp implements Adapter
                 unset($item['perms']);
                 $dirs[$item['path']] = $item;
             }
+        }
+        
+        if ($keyCreation) {
+            if(!$this->keys) {
+                $this->keys = array();
+            }
+            $this->keys = array_merge($files, $this->keys);
         }
         
         return array(
@@ -292,12 +352,10 @@ class Ftp implements Adapter
      * Computes the path for the given key
      *
      * @param  string $key
-     *
-     * @todo Rename this method (is it really mandatory)
      */
     public function computePath($key)
     {
-        return $key;
+        return $this->directory . '/' . $key;
     }
 
     /**
