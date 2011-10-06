@@ -134,6 +134,35 @@ class Filesystem
     }
 
     /**
+     * Returns an array of all items (files and directories) matching the specified pattern
+     *
+     * @return array
+     */
+    public function listDirectory($directory = '')
+    {
+        if (method_exists($this->adapter, 'listDirectory')) {
+            $listing = $this->adapter->listDirectory($directory);
+        }
+        
+        if (!$listing) {
+            $keys = $this->keys();
+            $listing = array(
+                'keys'  => array(), 
+                'dirs'  => array()
+            );
+            
+            foreach ($keys AS $key) {
+                $listing['keys'][$key] = array(
+                    'name'  => substr($key, strrpos('/', $key)),
+                    'path'  => $key,
+                );
+            }
+        }
+        
+        return $listing;
+    }
+
+    /**
      * Returns the last modified time of the specified file
      *
      * @param  string $key

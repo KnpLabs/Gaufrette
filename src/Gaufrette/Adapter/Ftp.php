@@ -125,7 +125,8 @@ class Ftp implements Adapter
      */
     public function keys()
     {
-        return $this->listDirectory($this->directory);
+        $items = $this->listDirectory();
+        return array_keys($items['files']);
     }
 
     /**
@@ -232,20 +233,31 @@ class Ftp implements Adapter
      *
      * @return array An array of file keys
      */
-    public function listDirectory($directory)
+    public function listDirectory($directory = '')
     {
-        $keys = array();
-        $files = $this->parseRawlist(
-            ftp_rawlist($this->getConnection(), $directory) ? : array()
+        $directory = $this->directory . preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
+        
+        $items = $this->parseRawlist(
+            ftp_rawlist($this->getConnection(), $directory ) ? : array()
         );
-
-        foreach ($files as $file) {
-            if ('-' === substr($file['perms'], 0, 1)) {
-                $keys[] = trim($directory . '/' . $file['name'], '/');
+        
+        $files = $dirs = array();
+        foreach ($items as $item) {
+            $item['path'] = trim($directory . '/' . $item['name'], '/');
+            if ('-' === substr($item['perms'], 0, 1)) {
+                unset($item['perms']);
+                $files[$item['path']] = $item;
+            }
+            else if('d' === substr($item['perms'], 0, 1)) {
+                unset($item['perms']);
+                $dirs[$item['path']] = $item;
             }
         }
-
-        return $keys;
+        
+        return array(
+           'files'  => $files,
+           'dirs'   => $dirs
+        );
     }
 
     /**
@@ -260,16 +272,14 @@ class Ftp implements Adapter
         $parsed = array();
         foreach ($rawlist as $line) {
             $infos = preg_split("/[\s]+/", $line, 9);
+            $infos[7] = (strrpos($infos[7], ':') != 2 ) ? ($infos[7] . ' 00:00') : (date('Y') . ' ' . $infos[7]);
+            
             if ('total' !== $infos[0]) {
                 $parsed[] = array(
                     'perms' => $infos[0],
                     'num'   => $infos[1],
-                    'owner' => $infos[2],
-                    'group' => $infos[3],
                     'size'  => $infos[4],
-                    'month' => $infos[5],
-                    'day'   => $infos[6],
-                    'time'  => $infos[7],
+                    'time'  => strtotime($infos[5] . ' ' . $infos[6] . '. ' . $infos[7]),
                     'name'  => $infos[8]
                 );
             }

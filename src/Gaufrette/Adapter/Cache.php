@@ -109,6 +109,19 @@ class Cache implements Adapter
     {
         return $this->source->keys();
     }
+    
+    /**
+     * @return array
+     */
+    public function listDirectory($directory = '')
+    {
+        if (method_exists($this->source, 'listDirectory')) {
+            return $this->source->listDirectory($directory);
+        }
+        else {
+            return null;
+        }
+    }
 
     /**
      * {@InheritDoc}
