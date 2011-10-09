@@ -5,7 +5,7 @@ namespace Gaufrette;
 /**
  * Points to a file in a filesystem
  *
- * @author Antoine Hérault <antoine.herault@gmail.com>
+ * @author Antoine Hérault <antoine.hérault@gmail.com>
  */
 class File
 {

@@ -5,7 +5,7 @@ namespace Gaufrette;
 /**
  * A filesystem is used to store and retrieve files
  *
- * @author Antoine H�rault <antoine.herault@gmail.com>
+ * @author Antoine Hérault <antoine.hérault@gmail.com>
  */
 class Filesystem
 {
@@ -147,12 +147,12 @@ class Filesystem
         if (!$listing) {
             $keys = $this->keys();
             $listing = array(
-                'keys'  => array(), 
+                'files'  => array(), 
                 'dirs'  => array()
             );
             
             foreach ($keys AS $key) {
-                $listing['keys'][$key] = array(
+                $listing['files'][$key] = array(
                     'name'  => substr($key, strrpos('/', $key)),
                     'path'  => $key,
                 );

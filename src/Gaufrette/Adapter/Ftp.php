@@ -13,7 +13,7 @@ use Gaufrette\Filesystem;
  * CachedFtp adapter which is a proxy class implementing a cache layer.
  *
  * @packageGaufrette
- * @author  Antoine Hérault <antoine.herault@gmail.com>
+ * @author  Antoine HÃ©rault <antoine.herault@gmail.com>
  */
 class Ftp implements Adapter
 {
@@ -70,6 +70,8 @@ class Ftp implements Adapter
     }
     
     /**
+     * Creates a new File instance and returns it
+	 
      * @param string $key
      * @param Filesystem $key
      * @return File
@@ -79,21 +81,19 @@ class Ftp implements Adapter
         if ($this->exists($key)) {
             $file = new File($key, $filesystem);
             
-            if (!$this->keys) {
+            if (!$this->keys || !array_key_exists($key, $this->keys)) {
                 $path = dirname($key) == '.' ? '' : dirname($key);
                 $this->listDirectory($path, true);
             }
             
-            if (array_key_exists($key, $this->keys)) {
-                $fileData = $this->keys[$key];
-                
-                $created = new \DateTime();
-                $created->setTimestamp($fileData['time']);
-                
-                $file->setName($fileData['name']);
-                $file->setCreated($created);
-                $file->setSize($fileData['size']);
-            }
+			$fileData = $this->keys[$key];
+			
+			$created = new \DateTime();
+			$created->setTimestamp($fileData['time']);
+			
+			$file->setName($fileData['name']);
+			$file->setCreated($created);
+			$file->setSize($fileData['size']);
             
             return $file;
         }

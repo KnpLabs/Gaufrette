@@ -9,7 +9,7 @@ use Gaufrette\File;
  * Cache adapter
  *
  * @package Gaufrette
- * @author  Antoine Hérault <antoine.herault@gmail.com>
+ * @author  Antoine HÃ©rault <antoine.herault@gmail.com>
  */
 class Cache implements Adapter
 {
