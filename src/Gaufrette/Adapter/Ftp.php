@@ -25,7 +25,7 @@ class Ftp implements Adapter
     protected $password;
     protected $passive;
     protected $create;
-    protected $keys;
+    protected $keys = array();
 
     /**
      * Constructor
@@ -81,9 +81,9 @@ class Ftp implements Adapter
         if ($this->exists($key)) {
             $file = new File($key, $filesystem);
             
-            if (!$this->keys || !array_key_exists($key, $this->keys)) {
-                $path = dirname($key) == '.' ? '' : dirname($key);
-                $this->listDirectory($path, true);
+            if (!array_key_exists($key, $this->keys)) {
+                $directory = dirname($key) == '.' ? '' : dirname($key);
+                $this->listDirectory($directory);
             }
             
             $fileData = $this->keys[$key];
@@ -146,15 +146,21 @@ class Ftp implements Adapter
      */
     public function exists($key)
     {
-        $file = $this->computePath($key);
-        $items = ftp_nlist($this->getConnection(), dirname($file));
-        foreach ($items as $item) {
-            if ($file === $item) {
-                return true;
-            }
+        if (array_key_exists($key, $this->keys)) {
+            return true;
         }
+        else {
+            $file = $this->computePath($key);
+            
+            $items = ftp_nlist($this->getConnection(), dirname($file));
+            foreach ($items as $item) {
+                if ($file === $item) {
+                    return true;
+                }
+            }
 
-        return false;
+            return false;
+        }
     }
 
     /**
@@ -176,7 +182,7 @@ class Ftp implements Adapter
      */
     private function fetchKeys($directory = '')
     {
-        $items = $this->listDirectory($directory, true);
+        $items = $this->listDirectory($directory);
         foreach ($items['dirs'] as $dir) {
             $this->fetchKeys($dir['path']);
         }
@@ -284,9 +290,9 @@ class Ftp implements Adapter
      *
      * @param  string $directory The path of the directory to list from
      * 
-     * @return array An array of files and items
+     * @return array An array of files and dirs
      */
-    public function listDirectory($directory = '', $keyCreation = false)
+    public function listDirectory($directory = '')
     {
         $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
         
@@ -295,24 +301,23 @@ class Ftp implements Adapter
         );
         
         $files = $dirs = array();
-        foreach ($items as $item) {
-            $item['path'] = trim(($directory ? $directory . '/' : '') . $item['name'], '/');
-            if ('-' === substr($item['perms'], 0, 1)) {
-                unset($item['perms']);
+        foreach ($items as $itemData) {
+            $item = array(
+                'name' => $itemData['name'],
+                'path' => trim(($directory ? $directory . '/' : '') . $itemData['name'], '/'),
+                'time'    => $itemData['time'],
+                'size'    => $itemData['size'],
+            );
+            
+            if ('-' === substr($itemData['perms'], 0, 1)) {
                 $files[$item['path']] = $item;
             }
-            else if('d' === substr($item['perms'], 0, 1)) {
-                unset($item['perms']);
+            else if('d' === substr($itemData['perms'], 0, 1)) {
                 $dirs[$item['path']] = $item;
             }
         }
         
-        if ($keyCreation) {
-            if(!$this->keys) {
-                $this->keys = array();
-            }
-            $this->keys = array_merge($files, $this->keys);
-        }
+        $this->keys = array_merge($files, $this->keys);
         
         return array(
            'files'  => $files,

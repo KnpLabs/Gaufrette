@@ -153,7 +153,7 @@ class Filesystem
             
             foreach ($keys AS $key) {
                 $listing['files'][$key] = array(
-                    'name'  => substr($key, strrpos('/', $key)),
+                    'name'  => substr($key, strrpos('/', $key) + 1),
                     'path'  => $key,
                 );
             }
