@@ -71,7 +71,7 @@ class Ftp implements Adapter
     
     /**
      * Creates a new File instance and returns it
-	 
+     
      * @param string $key
      * @param Filesystem $key
      * @return File
@@ -86,14 +86,14 @@ class Ftp implements Adapter
                 $this->listDirectory($path, true);
             }
             
-			$fileData = $this->keys[$key];
-			
-			$created = new \DateTime();
-			$created->setTimestamp($fileData['time']);
-			
-			$file->setName($fileData['name']);
-			$file->setCreated($created);
-			$file->setSize($fileData['size']);
+            $fileData = $this->keys[$key];
+            
+            $created = new \DateTime();
+            $created->setTimestamp($fileData['time']);
+            
+            $file->setName($fileData['name']);
+            $file->setCreated($created);
+            $file->setSize($fileData['size']);
             
             return $file;
         }
