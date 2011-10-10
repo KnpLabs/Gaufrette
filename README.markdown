@@ -109,12 +109,13 @@ Using Gaufrette in a Symfony2 project
 
 As you can see, Gaufrette provides an elegant way to declare your filesystems.
 
-In your Symdon2 project, add to ``deps``:
+In your Symfony2 project, add to ``deps``:
 
 ```ini
 [gaufrette]
     git=https://github.com/knplabs/Gaufrette.git
 
+// if you want to use Amazon S3
 [aws-sdk]
     git=https://github.com/amazonwebservices/aws-sdk-for-php
 ```
