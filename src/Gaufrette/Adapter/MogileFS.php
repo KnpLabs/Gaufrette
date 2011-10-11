@@ -2,6 +2,12 @@
 namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 
+/**
+* Adapter for the MogileFS filesystem.
+*
+* Bases partly on Wikimedia MogileFS client code by Jens Frank and Domas Mituzas, 2007.
+* See more: http://svn.wikimedia.org/viewvc/mediawiki/trunk/extensions/MogileClient/
+*/
 class MogileFS implements Adapter
 {
     protected $socket;
@@ -14,7 +20,7 @@ class MogileFS implements Adapter
      * @param domain MogileFS domain
      * @param hosts  Array of MogileFS trackers
      */
-    function __construct($domain = null, array $hosts = null)
+    public function __construct($domain = null, array $hosts = null)
     {
         if (strlen($domain) < 1 || sizeof($hosts) < 1) {
             throw new \Exception("invalid parameters");
@@ -28,7 +34,7 @@ class MogileFS implements Adapter
     /**
      * {@InheritDoc}
      */
-    function read( $key )
+    public function read( $key )
     {
         $data = '';
         $paths = $this->getPaths($key);
@@ -55,7 +61,7 @@ class MogileFS implements Adapter
     /**
      * {@InheritDoc}
      */
-    function write($key, $content, array $metadata = null)
+    public function write($key, $content, array $metadata = null)
     {
         $closeres = false;
 
@@ -96,7 +102,7 @@ class MogileFS implements Adapter
     /**
      * {@InheritDoc}
      */
-    function delete($key)
+    public function delete($key)
     {
         $res = $this->doRequest("DELETE", array("key" => $key));
         if ($res === false) {
@@ -109,7 +115,7 @@ class MogileFS implements Adapter
     /**
      * {@InheritDoc}
      */
-    function rename($key, $new)
+    public function rename($key, $new)
     {
         $res = $this->doRequest("RENAME", array("from_key" => $key, "to_key" => $new));
         if ($res === false) {
@@ -122,7 +128,7 @@ class MogileFS implements Adapter
     /**
      * {@InheritDoc}
      */
-    function exists($key)
+    public function exists($key)
     {
         return $this->read($key) ? true : false;
     }
@@ -130,7 +136,7 @@ class MogileFS implements Adapter
     /**
      * {@InheritDoc}
      */
-    function keys()
+    public function keys()
     {
         throw new \BadMethodCallException("Method not implemented yet.");
     }
@@ -138,7 +144,7 @@ class MogileFS implements Adapter
     /**
      * {@InheritDoc}
      */
-    function mtime($key)
+    public function mtime($key)
     {
         throw new \BadMethodCallException("Method not implemented yet.");
     }
@@ -146,7 +152,7 @@ class MogileFS implements Adapter
     /**
      * {@InheritDoc}
      */
-    function checksum($key)
+    public function checksum($key)
     {
         throw new \BadMethodCallException("Method not implemented yet.");
     }
@@ -154,7 +160,7 @@ class MogileFS implements Adapter
     /**
      * {@InheritDoc}
      */
-    function supportsMetadata()
+    public function supportsMetadata()
     {
         return true;
     }
@@ -167,8 +173,7 @@ class MogileFS implements Adapter
      */
     private function connect()
     {
-        if ($this->socket)
-        {
+        if ($this->socket) {
             return $this->socket;
         }
 
