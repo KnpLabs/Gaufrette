@@ -25,6 +25,7 @@ class Ftp implements Adapter
     protected $password;
     protected $passive;
     protected $create;
+    protected $mode;
     protected $keys = array();
 
     /**
@@ -39,8 +40,9 @@ class Ftp implements Adapter
      *                           mode (default FALSE)
      * @param  string $create    Whether to create the directory if it does not
      *                           exist
+     * @param  string $mode      Transfer-Mode (FTP_ASCII oder FTP_BINARY)
      */
-    public function __construct($directory, $host, $username = null, $password = null, $port = 21, $passive = false, $create = false)
+    public function __construct($directory, $host, $username = null, $password = null, $port = 21, $passive = false, $create = false, $mode = FTP_ASCII)
     {
         $this->directory = $directory;
         $this->host = $host;
@@ -49,6 +51,7 @@ class Ftp implements Adapter
         $this->password = $password;
         $this->passive = $passive;
         $this->create = $create;
+        $this->mode = $mode;
     }
 
     /**
@@ -57,11 +60,11 @@ class Ftp implements Adapter
     public function read($key)
     {
         $temp = fopen('php://temp', 'r+');
-
-        if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), FTP_ASCII)) {
+        
+        if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), $this->mode)) {
             throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
         }
-
+        
         rewind($temp);
         $contents = stream_get_contents($temp);
         fclose($temp);

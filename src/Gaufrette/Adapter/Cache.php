@@ -108,7 +108,12 @@ class Cache implements Adapter
      */
     public function keys()
     {
-        return $this->source->keys();
+        $cacheFile = '__keys.cache';
+        if ($this->needsReload($cacheFile, false)) {
+            $this->cache->write($cacheFile, serialize($this->source->keys()));
+        }
+        
+        return unserialize($this->cache->read($cacheFile));
     }
 
     /**
@@ -133,7 +138,13 @@ class Cache implements Adapter
     public function listDirectory($directory = '')
     {
         if (method_exists($this->source, 'listDirectory')) {
-            return $this->source->listDirectory($directory);
+            $cacheFile = '__listDirectory-' . md5($directory) . '.cache';
+            
+            if ($this->needsReload($cacheFile, false)) {
+                $this->cache->write($cacheFile, serialize($this->source->listDirectory($directory)));
+            }
+
+            return unserialize($this->cache->read($cacheFile));
         }
         else {
             return null;
@@ -153,8 +164,9 @@ class Cache implements Adapter
      * Indicates whether the cache for the specified key needs to be reloaded
      *
      * @param  string $key
+     * @param  boolean $checkSource
      */
-    public function needsReload($key)
+    public function needsReload($key, $checkSource = true)
     {
         if (!$this->cache->exists($key)) {
             return true;
@@ -162,9 +174,15 @@ class Cache implements Adapter
 
         try {
             $dateCache = $this->cache->mtime($key);
-            $dateSource = $this->source->mtime($key);
+            
+            if (time() - $this->ttl > $dateCache) {
+                $dateSource = $this->source->mtime($key);
 
-            return time() - $this->ttl > $dateCache && $dateCache < $dateSource;
+                return $checkSource ? $dateCache < $dateSource : false;
+            }
+            else {
+                return false;
+            }
         } catch (\RuntimeException $e) {
             return true;
         }
