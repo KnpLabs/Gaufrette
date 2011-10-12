@@ -161,7 +161,6 @@ class MogileFS implements Adapter
     /**
      * Tries to connect MogileFS tracker
      *
-     * @access Private
      * @return mixed Socket on success, false on failure
      */
     private function connect()
@@ -191,7 +190,6 @@ class MogileFS implements Adapter
     /**
      * Close connection to MogileFS tracker
      *
-     * @access Private
      * @return boolean
      */
     private function close()
@@ -206,7 +204,6 @@ class MogileFS implements Adapter
     /**
      * Makes request to MogileFS tracker
      *
-     * @access Private
      * @param cmd Command
      * @param args Array of arguments
      * @return mixed Array on success, false on failure
@@ -238,7 +235,6 @@ class MogileFS implements Adapter
     /**
      * Get file location at server from MogileFS tracker
      *
-     * @access Private
      * @param key File key
      * @return mixed Array on success, false on failure
      */
@@ -253,7 +249,6 @@ class MogileFS implements Adapter
     /**
      * Sends file to MogileFS tracker
      *
-     * @access Private
      * @param path Save path at server
      * @param data Data to save
      * @return boolean
