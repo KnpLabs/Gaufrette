@@ -60,18 +60,18 @@ class Ftp implements Adapter
     public function read($key)
     {
         $temp = fopen('php://temp', 'r+');
-        
+
         if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), $this->mode)) {
             throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
         }
-        
+
         rewind($temp);
         $contents = stream_get_contents($temp);
         fclose($temp);
 
         return $contents;
     }
-    
+
     /**
      * Creates a new File instance and returns it
      
@@ -81,28 +81,27 @@ class Ftp implements Adapter
      */
     public function get($key, Filesystem $filesystem)
     {
-        if ($this->exists($key)) {
-            $file = new File($key, $filesystem);
-            
-            if (!array_key_exists($key, $this->keys)) {
-                $directory = dirname($key) == '.' ? '' : dirname($key);
-                $this->listDirectory($directory);
-            }
-            
-            $fileData = $this->keys[$key];
-            
-            $created = new \DateTime();
-            $created->setTimestamp($fileData['time']);
-            
-            $file->setName($fileData['name']);
-            $file->setCreated($created);
-            $file->setSize($fileData['size']);
-            
-            return $file;
-        }
-        else {
+        if (!$this->exists($key)) {
             throw new \RuntimeException(sprintf('The \'%s\' file does not exist.', $key));
         }
+
+        $file = new File($key, $filesystem);
+
+        if (!array_key_exists($key, $this->fileData)) {
+            $directory = dirname($key) == '.' ? '' : dirname($key);
+            $this->listDirectory($directory);
+        }
+
+        $fileData = $this->fileData[$key];
+
+        $created = new \DateTime();
+        $created->setTimestamp($fileData['time']);
+
+        $file->setName($fileData['name']);
+        $file->setCreated($created);
+        $file->setSize($fileData['size']);
+
+        return $file;
     }
 
     /**
@@ -149,21 +148,22 @@ class Ftp implements Adapter
      */
     public function exists($key)
     {
-        if (array_key_exists($key, $this->keys)) {
-            return true;
-        }
-        else {
+        $exists = false;
+
+        if (array_key_exists($key, $this->fileData)) {
+            $exists = true;
+        } else {
             $file = $this->computePath($key);
-            
+
             $items = ftp_nlist($this->getConnection(), dirname($file));
             foreach ($items as $item) {
                 if ($file === $item) {
-                    return true;
+                    $exists = true;
                 }
             }
-
-            return false;
         }
+
+        return $exists;
     }
 
     /**
@@ -171,24 +171,7 @@ class Ftp implements Adapter
      */
     public function keys()
     {
-        if (!$this->keys) {
-            $this->fetchKeys();
-        }
-        
-        return array_keys($this->keys);
-    }
-    
-    /**
-     * Fetch all Keys recursive
-     * 
-     * @param string $directory 
-     */
-    private function fetchKeys($directory = '')
-    {
-        $items = $this->listDirectory($directory);
-        foreach ($items['dirs'] as $dir) {
-            $this->fetchKeys($dir);
-        }
+        return $this->fetchKeys();
     }
 
     /**
@@ -298,11 +281,11 @@ class Ftp implements Adapter
     public function listDirectory($directory = '')
     {
         $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
-        
+
         $items = $this->parseRawlist(
             ftp_rawlist($this->getConnection(), $this->directory . $directory ) ? : array()
         );
-        
+
         $fileData = $dirs = array();
         foreach ($items as $itemData) {
             $item = array(
@@ -311,21 +294,45 @@ class Ftp implements Adapter
                 'time'  => $itemData['time'],
                 'size'  => $itemData['size'],
             );
-            
+
             if ('-' === substr($itemData['perms'], 0, 1)) {
                 $fileData[$item['path']] = $item;
-            }
-            else if('d' === substr($itemData['perms'], 0, 1)) {
+            } elseif('d' === substr($itemData['perms'], 0, 1)) {
                 $dirs[] = $item['path'];
             }
         }
-        
+
         $this->fileData = array_merge($fileData, $this->fileData);
-        
+
         return array(
            'keys'   => array_keys($fileData),
            'dirs'   => $dirs
         );
+    }
+
+    /**
+     * {@InheritDoc}
+     */
+    public function supportsMetadata()
+    {
+        return false;
+    }
+
+    /**
+     * Fetch all Keys recursive
+     * 
+     * @param string $directory 
+     */
+    private function fetchKeys($directory = '')
+    {
+        $items = $this->listDirectory($directory);
+
+        $keys = array();
+        foreach ($items['dirs'] as $dir) {
+            $keys = $this->fetchKeys($dir);
+        }
+
+        return array_merge($items['keys'], $keys);
     }
 
     /**
@@ -335,13 +342,13 @@ class Ftp implements Adapter
      *
      * @return array
      */
-    public function parseRawlist(array $rawlist)
+    private function parseRawlist(array $rawlist)
     {
         $parsed = array();
         foreach ($rawlist as $line) {
             $infos = preg_split("/[\s]+/", $line, 9);
             $infos[7] = (strrpos($infos[7], ':') != 2 ) ? ($infos[7] . ' 00:00') : (date('Y') . ' ' . $infos[7]);
-            
+
             if ('total' !== $infos[0]) {
                 $parsed[] = array(
                     'perms' => $infos[0],
@@ -361,7 +368,7 @@ class Ftp implements Adapter
      *
      * @param  string $key
      */
-    public function computePath($key)
+    private function computePath($key)
     {
         return $this->directory . '/' . $key;
     }
@@ -371,7 +378,7 @@ class Ftp implements Adapter
      *
      * @return boolean
      */
-    public function isConnected()
+    private function isConnected()
     {
         return is_resource($this->connection);
     }
@@ -382,7 +389,7 @@ class Ftp implements Adapter
      *
      * @return resource The ftp connection
      */
-    public function getConnection()
+    private function getConnection()
     {
         if (!$this->isConnected()) {
             $this->connect();
@@ -396,7 +403,7 @@ class Ftp implements Adapter
      *
      * @throws RuntimeException if could not connect
      */
-    public function connect()
+    private function connect()
     {
         // open ftp connection
         $this->connection = ftp_connect($this->host, $this->port);
@@ -439,18 +446,10 @@ class Ftp implements Adapter
     /**
      * Closes the adapter's ftp connection
      */
-    public function close()
+    private function close()
     {
         if ($this->isConnected()) {
             ftp_close($this->connection);
         }
-    }
-
-    /**
-     * {@InheritDoc}
-     */
-    public function supportsMetadata()
-    {
-        return false;
     }
 }

@@ -33,14 +33,12 @@ class Cache implements Adapter
         $this->source = $source;
         $this->cache = $cache;
         $this->ttl = $ttl;
-        
+
         if ($serializeCache instanceof Adapter) {
             $this->serializeCache = $serializeCache;
-        }
-        elseif (is_string($serializeCache)) {
+        } elseif (is_string($serializeCache)) {
             $this->serializeCache = new LocalAdapter($serializeCache, true);
-        }
-        else {
+        } else {
             $this->serializeCache = new InMemoryAdapter();
         }
     }
@@ -69,10 +67,13 @@ class Cache implements Adapter
     public function read($key)
     {
         if ($this->needsReload($key)) {
-            $this->cache->write($key, $this->source->read($key));
+            $contents = $this->source->read($key);
+            $this->cache->write($key, $contents);
+        } else {
+            $contents = $this->cache->read($key);
         }
 
-        return $this->cache->read($key);
+        return $contents;
     }
 
     /**
@@ -124,10 +125,13 @@ class Cache implements Adapter
     {
         $cacheFile = '.keys.cache';
         if ($this->needsRebuild($cacheFile)) {
-            $this->serializeCache->write($cacheFile, serialize($this->source->keys()));
+            $keys = $this->source->keys();
+            $this->serializeCache->write($cacheFile, serialize($keys));
+        } else {
+            $keys = unserialize($this->serializeCache->read($cacheFile));
         }
-        
-        return unserialize($this->serializeCache->read($cacheFile));
+
+        return $keys;
     }
 
     /**
@@ -139,30 +143,32 @@ class Cache implements Adapter
     public function get($key, $filesystem)
     {
         if (is_callable(array($this->source, 'get'))) {
-            //If possible, delegate getting the file object to the source adapter.
+            // If possible, delegate getting the file object to the source adapter.
             return $this->source->get($key, $filesystem);
         }
 
         return new File($key, $filesystem);
     }
-    
+
     /**
      * @return array
      */
     public function listDirectory($directory = '')
     {
+        $listing = null;
+
         if (method_exists($this->source, 'listDirectory')) {
             $cacheFile = '.dir-' . md5($directory) . '.cache';
-            
-            if ($this->needsRebuild($cacheFile)) {
-                $this->serializeCache->write($cacheFile, serialize($this->source->listDirectory($directory)));
-            }
 
-            return unserialize($this->serializeCache->read($cacheFile));
+            if ($this->needsRebuild($cacheFile)) {
+                $listing = $this->source->listDirectory($directory);
+                $this->serializeCache->write($cacheFile, serialize($listing));
+            } else {
+                $listing = unserialize($this->serializeCache->read($cacheFile));
+            }
         }
-        else {
-            return null;
-        }
+
+        return $listing;
     }
 
     /**
@@ -181,24 +187,22 @@ class Cache implements Adapter
      */
     public function needsReload($key)
     {
-        if (!$this->cache->exists($key)) {
-            return true;
+        $needsReload = true;
+
+        if ($this->cache->exists($key)) {
+            try {
+                $dateCache = $this->cache->mtime($key);
+
+                if (time() - $this->ttl < $dateCache) {
+                    $dateSource = $this->source->mtime($key);
+                    $needsReload = $dateCache < $dateSource;
+                } else {
+                    $needsReload = false;
+                }
+            } catch (\RuntimeException $e) { }
         }
 
-        try {
-            $dateCache = $this->cache->mtime($key);
-            
-            if (time() - $this->ttl > $dateCache) {
-                $dateSource = $this->source->mtime($key);
-
-                return $dateCache < $dateSource;
-            }
-            else {
-                return false;
-            }
-        } catch (\RuntimeException $e) {
-            return true;
-        }
+        return $needsReload;
     }
 
     /**
@@ -208,22 +212,21 @@ class Cache implements Adapter
      */
     public function needsRebuild($cacheFile)
     {
-        if (!$this->serializeCache->exists($key)) {
-            return true;
+        $needsRebuild = true;
+
+        if ($this->serializeCache->exists($key)) {
+            try {
+                $dateCache = $this->serializeCache->mtime($key);
+
+                if (time() - $this->ttl > $dateCache) {
+                    $needsRebuild = true;
+                } else {
+                    $needsRebuild = false;
+                }
+            } catch (\RuntimeException $e) { }
         }
 
-        try {
-            $dateCache = $this->serializeCache->mtime($key);
-            
-            if (time() - $this->ttl > $dateCache) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        } catch (\RuntimeException $e) {
-            return true;
-        }
+        return $needsRebuild;
     }
 
     /**
