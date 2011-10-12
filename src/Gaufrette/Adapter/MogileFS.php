@@ -22,10 +22,10 @@ class MogileFS implements Adapter
      * @param domain MogileFS domain
      * @param hosts  Array of MogileFS trackers
      */
-    public function __construct($domain = null, array $hosts = null)
+    public function __construct($domain, array $hosts)
     {
         if (strlen($domain) < 1 || sizeof($hosts) < 1) {
-            throw new \Exception("invalid parameters");
+            throw new \InvalidArgumentException("invalid parameters");
         }
 
         $this->domain = $domain;
