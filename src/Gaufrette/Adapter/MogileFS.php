@@ -3,11 +3,13 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 
 /**
-* Adapter for the MogileFS filesystem.
-*
-* Bases partly on Wikimedia MogileFS client code by Jens Frank and Domas Mituzas, 2007.
-* See more: http://svn.wikimedia.org/viewvc/mediawiki/trunk/extensions/MogileClient/
-*/
+ * Adapter for the MogileFS filesystem.
+ *
+ * @author Mikko Tarvainen 2011 <mtarvainen@gmail.com>
+ *
+ * Bases partly on Wikimedia MogileFS client code by Jens Frank and Domas Mituzas, 2007.
+ * See more: http://svn.wikimedia.org/viewvc/mediawiki/trunk/extensions/MogileClient/
+ */
 class MogileFS implements Adapter
 {
     protected $socket;
@@ -34,7 +36,7 @@ class MogileFS implements Adapter
     /**
      * {@InheritDoc}
      */
-    public function read( $key )
+    public function read($key)
     {
         $data = '';
         $paths = $this->getPaths($key);
