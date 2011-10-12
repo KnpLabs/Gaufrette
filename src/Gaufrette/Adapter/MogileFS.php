@@ -71,7 +71,6 @@ class MogileFS implements Adapter
             $res = $this->doRequest("CREATE_OPEN", array("key" => $key, "class" => $metadata['mogile_class']));
 
             if ($res && preg_match('/^http:\/\/([a-z0-9.-]*):([0-9]*)\/(.*)$/', $res['path'], $matches)) {
-
                 $host = $matches[1];
                 $port = $matches[2];
                 $path = $matches[3];
