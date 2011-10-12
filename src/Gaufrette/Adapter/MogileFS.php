@@ -1,5 +1,7 @@
 <?php
+
 namespace Gaufrette\Adapter;
+
 use Gaufrette\Adapter;
 
 /**
