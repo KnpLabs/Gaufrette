@@ -5,7 +5,7 @@ namespace Gaufrette;
 /**
  * A filesystem is used to store and retrieve files
  *
- * @author Antoine Hérault <antoine.hérault@gmail.com>
+ * @author Antoine Hérault <antoine.herault@gmail.com>
  */
 class Filesystem
 {

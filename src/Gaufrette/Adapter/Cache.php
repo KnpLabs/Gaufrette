@@ -13,6 +13,8 @@ use Gaufrette\File;
  */
 class Cache implements Adapter
 {
+    const cachePath = '.gaufrette/';
+
     protected $source;
     protected $cache;
     protected $ttl;
@@ -108,7 +110,7 @@ class Cache implements Adapter
      */
     public function keys()
     {
-        $cacheFile = '__keys.cache';
+        $cacheFile = self:cachePath . '.keys.cache';
         if ($this->needsReload($cacheFile, false)) {
             $this->cache->write($cacheFile, serialize($this->source->keys()));
         }
@@ -138,7 +140,7 @@ class Cache implements Adapter
     public function listDirectory($directory = '')
     {
         if (method_exists($this->source, 'listDirectory')) {
-            $cacheFile = '__listDirectory-' . md5($directory) . '.cache';
+            $cacheFile = self:cachePath . '.dir-' . md5($directory) . '.cache';
             
             if ($this->needsReload($cacheFile, false)) {
                 $this->cache->write($cacheFile, serialize($this->source->listDirectory($directory)));
