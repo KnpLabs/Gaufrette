@@ -155,7 +155,7 @@ class MogileFS implements Adapter
      */
     public function supportsMetadata()
     {
-        return true;
+        return false;
     }
 
     /**
