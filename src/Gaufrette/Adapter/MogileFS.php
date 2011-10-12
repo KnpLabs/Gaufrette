@@ -67,8 +67,7 @@ class MogileFS implements Adapter
     {
         $closeres = false;
 
-        if (mb_strlen($content) > 0)
-        {
+        if (mb_strlen($content) > 0) {
             $res = $this->doRequest("CREATE_OPEN", array("key" => $key, "class" => $metadata['mogile_class']));
 
             if ($res && preg_match('/^http:\/\/([a-z0-9.-]*):([0-9]*)\/(.*)$/', $res['path'], $matches)) {
@@ -79,16 +78,9 @@ class MogileFS implements Adapter
 
                 $status = $this->putFile($res['path'], $content);
 
-                if ($status)
-                {
-                    $params = array
-                    (
-                        "key" => $key,
-                        "class" => $metadata['mogile_class'],
-                        "devid" => $res['devid'],
-                        "fid" => $res['fid'],
-                        "path" => urldecode($res['path'])
-                    );
+                if ($status) {
+                    $params = array("key" => $key, "class" => $metadata['mogile_class'], "devid" => $res['devid'],
+                                    "fid" => $res['fid'], "path" => urldecode($res['path']));
                     $closeres = $this->doRequest("CREATE_CLOSE", $params);
                 }
             }
