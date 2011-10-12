@@ -26,7 +26,7 @@ class Ftp implements Adapter
     protected $passive;
     protected $create;
     protected $mode;
-    protected $keys = array();
+    protected $fileData = array();
 
     /**
      * Constructor
@@ -187,7 +187,7 @@ class Ftp implements Adapter
     {
         $items = $this->listDirectory($directory);
         foreach ($items['dirs'] as $dir) {
-            $this->fetchKeys($dir['path']);
+            $this->fetchKeys($dir);
         }
     }
 
@@ -293,7 +293,7 @@ class Ftp implements Adapter
      *
      * @param  string $directory The path of the directory to list from
      * 
-     * @return array An array of files and dirs
+     * @return array An array of keys and dirs
      */
     public function listDirectory($directory = '')
     {
@@ -303,27 +303,27 @@ class Ftp implements Adapter
             ftp_rawlist($this->getConnection(), $this->directory . $directory ) ? : array()
         );
         
-        $files = $dirs = array();
+        $fileData = $dirs = array();
         foreach ($items as $itemData) {
             $item = array(
-                'name' => $itemData['name'],
-                'path' => trim(($directory ? $directory . '/' : '') . $itemData['name'], '/'),
-                'time'    => $itemData['time'],
-                'size'    => $itemData['size'],
+                'name'  => $itemData['name'],
+                'path'  => trim(($directory ? $directory . '/' : '') . $itemData['name'], '/'),
+                'time'  => $itemData['time'],
+                'size'  => $itemData['size'],
             );
             
             if ('-' === substr($itemData['perms'], 0, 1)) {
-                $files[$item['path']] = $item;
+                $fileData[$item['path']] = $item;
             }
             else if('d' === substr($itemData['perms'], 0, 1)) {
-                $dirs[$item['path']] = $item;
+                $dirs[] = $item['path'];
             }
         }
         
-        $this->keys = array_merge($files, $this->keys);
+        $this->fileData = array_merge($fileData, $this->fileData);
         
         return array(
-           'files'  => $files,
+           'keys'   => array_keys($fileData),
            'dirs'   => $dirs
         );
     }

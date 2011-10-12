@@ -4,6 +4,8 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\File;
+use Gaufrette\Adapter\Local as LocalAdapter;
+use Gaufrette\Adapter\InMemory as InMemoryAdapter;
 
 /**
  * Cache adapter
@@ -13,11 +15,10 @@ use Gaufrette\File;
  */
 class Cache implements Adapter
 {
-    const cachePath = '.gaufrette/';
-
     protected $source;
     protected $cache;
     protected $ttl;
+    protected $serializeCache;
 
     /**
      * Constructor
@@ -25,12 +26,23 @@ class Cache implements Adapter
      * @param  Adapter $source  The source adapter that must be cached
      * @param  Adapter $cache   The adapter used to cache the source
      * @param  integer $ttl     Time to live of a cached file
+     * @param  null|Adapter|string $serializeCache     The adapter used to cache serializations
      */
-    public function __construct(Adapter $source, Adapter $cache, $ttl = 0)
+    public function __construct(Adapter $source, Adapter $cache, $ttl = 0, $serializeCache = null)
     {
         $this->source = $source;
         $this->cache = $cache;
         $this->ttl = $ttl;
+        
+        if ($serializeCache instanceof Adapter) {
+            $this->serializeCache = $serializeCache;
+        }
+        elseif (is_string($serializeCache)) {
+            $this->serializeCache = new LocalAdapter($serializeCache, true);
+        }
+        else {
+            $this->serializeCache = new InMemoryAdapter();
+        }
     }
 
     /**
@@ -110,12 +122,12 @@ class Cache implements Adapter
      */
     public function keys()
     {
-        $cacheFile = self:cachePath . '.keys.cache';
-        if ($this->needsReload($cacheFile, false)) {
-            $this->cache->write($cacheFile, serialize($this->source->keys()));
+        $cacheFile = '.keys.cache';
+        if ($this->needsRebuild($cacheFile)) {
+            $this->serializeCache->write($cacheFile, serialize($this->source->keys()));
         }
         
-        return unserialize($this->cache->read($cacheFile));
+        return unserialize($this->serializeCache->read($cacheFile));
     }
 
     /**
@@ -140,13 +152,13 @@ class Cache implements Adapter
     public function listDirectory($directory = '')
     {
         if (method_exists($this->source, 'listDirectory')) {
-            $cacheFile = self:cachePath . '.dir-' . md5($directory) . '.cache';
+            $cacheFile = '.dir-' . md5($directory) . '.cache';
             
-            if ($this->needsReload($cacheFile, false)) {
-                $this->cache->write($cacheFile, serialize($this->source->listDirectory($directory)));
+            if ($this->needsRebuild($cacheFile)) {
+                $this->serializeCache->write($cacheFile, serialize($this->source->listDirectory($directory)));
             }
 
-            return unserialize($this->cache->read($cacheFile));
+            return unserialize($this->serializeCache->read($cacheFile));
         }
         else {
             return null;
@@ -166,9 +178,8 @@ class Cache implements Adapter
      * Indicates whether the cache for the specified key needs to be reloaded
      *
      * @param  string $key
-     * @param  boolean $checkSource
      */
-    public function needsReload($key, $checkSource = true)
+    public function needsReload($key)
     {
         if (!$this->cache->exists($key)) {
             return true;
@@ -180,7 +191,32 @@ class Cache implements Adapter
             if (time() - $this->ttl > $dateCache) {
                 $dateSource = $this->source->mtime($key);
 
-                return $checkSource ? $dateCache < $dateSource : false;
+                return $dateCache < $dateSource;
+            }
+            else {
+                return false;
+            }
+        } catch (\RuntimeException $e) {
+            return true;
+        }
+    }
+
+    /**
+     * Indicates whether the serialized cache file needs to be rebuild
+     *
+     * @param  string $cacheFile
+     */
+    public function needsRebuild($cacheFile)
+    {
+        if (!$this->serializeCache->exists($key)) {
+            return true;
+        }
+
+        try {
+            $dateCache = $this->serializeCache->mtime($key);
+            
+            if (time() - $this->ttl > $dateCache) {
+                return true;
             }
             else {
                 return false;

@@ -144,19 +144,12 @@ class Filesystem
             $listing = $this->adapter->listDirectory($directory);
         }
         
+        // Cache adapter returns null if source-Adapter does not provide the listDirectory method
         if (!$listing) {
-            $keys = $this->keys();
             $listing = array(
-                'files'  => array(), 
+                'keys'  => $this->keys(), 
                 'dirs'  => array()
             );
-            
-            foreach ($keys AS $key) {
-                $listing['files'][$key] = array(
-                    'name'  => substr($key, strrpos('/', $key) + 1),
-                    'path'  => $key,
-                );
-            }
         }
         
         return $listing;
