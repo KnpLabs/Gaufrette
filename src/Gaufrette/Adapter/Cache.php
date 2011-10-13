@@ -123,7 +123,7 @@ class Cache implements Adapter
      */
     public function keys()
     {
-        $cacheFile = '.keys.cache';
+        $cacheFile = 'keys.cache';
         if ($this->needsRebuild($cacheFile)) {
             $keys = $this->source->keys();
             $this->serializeCache->write($cacheFile, serialize($keys));
@@ -158,7 +158,7 @@ class Cache implements Adapter
         $listing = null;
 
         if (method_exists($this->source, 'listDirectory')) {
-            $cacheFile = '.dir-' . md5($directory) . '.cache';
+            $cacheFile = 'dir-' . md5($directory) . '.cache';
 
             if ($this->needsRebuild($cacheFile)) {
                 $listing = $this->source->listDirectory($directory);
@@ -214,9 +214,9 @@ class Cache implements Adapter
     {
         $needsRebuild = true;
 
-        if ($this->serializeCache->exists($key)) {
+        if ($this->serializeCache->exists($cacheFile)) {
             try {
-                $dateCache = $this->serializeCache->mtime($key);
+                $dateCache = $this->serializeCache->mtime($cacheFile);
 
                 if (time() - $this->ttl > $dateCache) {
                     $needsRebuild = true;
