@@ -4,7 +4,6 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\File;
-use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Adapter\InMemory as InMemoryAdapter;
 
 /**
@@ -15,32 +14,44 @@ use Gaufrette\Adapter\InMemory as InMemoryAdapter;
  */
 class Cache implements Adapter
 {
+	/**
+	 * @var Adapter
+	 */
     protected $source;
+
+	/**
+	 * @var Adapter
+	 */
     protected $cache;
+
+	/**
+	 * @var integer
+	 */
     protected $ttl;
+
+	/**
+	 * @var Adapter
+	 */
     protected $serializeCache;
 
     /**
      * Constructor
      *
-     * @param  Adapter $source  The source adapter that must be cached
-     * @param  Adapter $cache   The adapter used to cache the source
-     * @param  integer $ttl     Time to live of a cached file
-     * @param  null|Adapter|string $serializeCache     The adapter used to cache serializations
+     * @param  Adapter $source  		The source adapter that must be cached
+     * @param  Adapter $cache   		The adapter used to cache the source
+     * @param  integer $ttl     		Time to live of a cached file
+     * @param  Adapter $serializeCache  The adapter used to cache serializations
      */
-    public function __construct(Adapter $source, Adapter $cache, $ttl = 0, $serializeCache = null)
+    public function __construct(Adapter $source, Adapter $cache, $ttl = 0, Adapter $serializeCache = null)
     {
         $this->source = $source;
         $this->cache = $cache;
         $this->ttl = $ttl;
 
-        if ($serializeCache instanceof Adapter) {
-            $this->serializeCache = $serializeCache;
-        } elseif (is_string($serializeCache)) {
-            $this->serializeCache = new LocalAdapter($serializeCache, true);
-        } else {
-            $this->serializeCache = new InMemoryAdapter();
+        if (!$serializeCache) {
+            $serializeCache = new InMemoryAdapter();
         }
+        $this->serializeCache = $serializeCache;
     }
 
     /**
