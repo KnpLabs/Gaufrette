@@ -28,8 +28,8 @@ Try it!
 ```php
 <?php
 
-use Gaufrette\Filesystem\Filesystem;
-use Gaufrette\Filesystem\Adapter\Local as LocalAdapter;
+use Gaufrette\Filesystem;
+use Gaufrette\Adapter\Local as LocalAdapter;
 
 $adapter = new LocalAdapter('/var/media');
 $filesystem = new Filesystem($adapter)
@@ -76,13 +76,18 @@ Here is an exemple of how to cache an ftp filesystem:
 ```php
 <?php
 
-use Gaufrette\Filesystem\Filesystem;
-use Gaufrette\Filesystem\Adapter\Ftp as FtpAdapter;
-use Gaufrette\Filesystem\Adapter\Local as LocalAdapter;
+use Gaufrette\Filesystem;
+use Gaufrette\Adapter\Ftp as FtpAdapter;
+use Gaufrette\Adapter\Local as LocalAdapter;
+use Gaufrette\Adapter\Cache as CacheAdapter;
 
-// create an ftp adapter instance as $ftp and a local one as $local
+// Locale Cache-Directory (e.g. '%kernel.root_dir%/cache/%kernel.environment%/filesystem') with create = true
+$local = new LocalAdapter($cacheDirectory, true);
+// FTP Adapter with a defined root-path
+$ftp = new FtpAdapter($path, $host, $username, $password, $port);
 
-$cachedFtp = new CacheAdapter($ftp, $local, 10);
+// Cached Adapter with 3600 seconds time to live
+$cachedFtp = new CacheAdapter($ftp, $local, 3600);
 
 $filesystem = new Filesystem($cachedFtp);
 ```
@@ -104,12 +109,13 @@ Using Gaufrette in a Symfony2 project
 
 As you can see, Gaufrette provides an elegant way to declare your filesystems.
 
-In your Symdon2 project, add to ``deps``:
+In your Symfony2 project, add to ``deps``:
 
 ```ini
 [gaufrette]
     git=https://github.com/knplabs/Gaufrette.git
 
+# if you want to use Amazon S3
 [aws-sdk]
     git=https://github.com/amazonwebservices/aws-sdk-for-php
 ```
