@@ -134,6 +134,28 @@ class Filesystem
     }
 
     /**
+     * Returns an array of all items (files and directories) matching the specified pattern
+     *
+     * @return array
+     */
+    public function listDirectory($directory = '')
+    {
+        if (method_exists($this->adapter, 'listDirectory')) {
+            $listing = $this->adapter->listDirectory($directory);
+        }
+
+        // Cache adapter returns null if source-Adapter does not provide the listDirectory method
+        if (!$listing) {
+            $listing = array(
+                'keys'  => $this->keys(), 
+                'dirs'  => array()
+            );
+        }
+
+        return $listing;
+    }
+
+    /**
      * Returns the last modified time of the specified file
      *
      * @param  string $key
@@ -161,8 +183,7 @@ class Filesystem
      * Creates a new File instance and returns it
      *
      * @param  string $key
-     *
-     * @return $file
+     * @return File
      */
     protected function createFileInstance($key)
     {

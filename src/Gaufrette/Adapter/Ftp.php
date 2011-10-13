@@ -3,6 +3,8 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Gaufrette\File;
+use Gaufrette\Filesystem;
 
 /**
  * Ftp adapter
@@ -23,6 +25,8 @@ class Ftp implements Adapter
     protected $password;
     protected $passive;
     protected $create;
+    protected $mode;
+    protected $fileData = array();
 
     /**
      * Constructor
@@ -36,8 +40,9 @@ class Ftp implements Adapter
      *                           mode (default FALSE)
      * @param  string $create    Whether to create the directory if it does not
      *                           exist
+     * @param  string $mode      Transfer-Mode (FTP_ASCII oder FTP_BINARY)
      */
-    public function __construct($directory, $host, $username = null, $password = null, $port = 21, $passive = false, $create = false)
+    public function __construct($directory, $host, $username = null, $password = null, $port = 21, $passive = false, $create = false, $mode = FTP_ASCII)
     {
         $this->directory = $directory;
         $this->host = $host;
@@ -46,6 +51,7 @@ class Ftp implements Adapter
         $this->password = $password;
         $this->passive = $passive;
         $this->create = $create;
+        $this->mode = $mode;
     }
 
     /**
@@ -55,7 +61,7 @@ class Ftp implements Adapter
     {
         $temp = fopen('php://temp', 'r+');
 
-        if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), FTP_ASCII)) {
+        if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), $this->mode)) {
             throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
         }
 
@@ -64,6 +70,38 @@ class Ftp implements Adapter
         fclose($temp);
 
         return $contents;
+    }
+
+    /**
+     * Creates a new File instance and returns it
+     
+     * @param string $key
+     * @param Filesystem $key
+     * @return File
+     */
+    public function get($key, Filesystem $filesystem)
+    {
+        if (!$this->exists($key)) {
+            throw new \RuntimeException(sprintf('The \'%s\' file does not exist.', $key));
+        }
+
+        $file = new File($key, $filesystem);
+
+        if (!array_key_exists($key, $this->fileData)) {
+            $directory = dirname($key) == '.' ? '' : dirname($key);
+            $this->listDirectory($directory);
+        }
+
+        $fileData = $this->fileData[$key];
+
+        $created = new \DateTime();
+        $created->setTimestamp($fileData['time']);
+
+        $file->setName($fileData['name']);
+        $file->setCreated($created);
+        $file->setSize($fileData['size']);
+
+        return $file;
     }
 
     /**
@@ -110,14 +148,22 @@ class Ftp implements Adapter
      */
     public function exists($key)
     {
-        $files = ftp_nlist($this->getConnection(), dirname($this->computePath($key)));
-        foreach ($files as $file) {
-            if ($key === $file) {
-                return true;
+        $exists = false;
+
+        if (array_key_exists($key, $this->fileData)) {
+            $exists = true;
+        } else {
+            $file = $this->computePath($key);
+
+            $items = ftp_nlist($this->getConnection(), dirname($file));
+            foreach ($items as $item) {
+                if ($file === $item) {
+                    $exists = true;
+                }
             }
         }
 
-        return false;
+        return $exists;
     }
 
     /**
@@ -125,7 +171,7 @@ class Ftp implements Adapter
      */
     public function keys()
     {
-        return $this->listDirectory($this->directory);
+        return $this->fetchKeys();
     }
 
     /**
@@ -225,27 +271,68 @@ class Ftp implements Adapter
     }
 
     /**
-     * Recursively lists files from the specified directory. If a pattern is
+     * Lists files from the specified directory. If a pattern is
      * specified, it only returns files matching it.
      *
-     * @param  string $directory The path of the directory to list files from
-     *
-     * @return array An array of file keys
+     * @param  string $directory The path of the directory to list from
+     * 
+     * @return array An array of keys and dirs
      */
-    public function listDirectory($directory)
+    public function listDirectory($directory = '')
     {
-        $keys = array();
-        $files = $this->parseRawlist(
-            ftp_rawlist($this->getConnection(), $directory) ? : array()
+        $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
+
+        $items = $this->parseRawlist(
+            ftp_rawlist($this->getConnection(), $this->directory . $directory ) ? : array()
         );
 
-        foreach ($files as $file) {
-            if ('-' === substr($file['perms'], 0, 1)) {
-                $keys[] = trim($directory . '/' . $file['name'], '/');
+        $fileData = $dirs = array();
+        foreach ($items as $itemData) {
+            $item = array(
+                'name'  => $itemData['name'],
+                'path'  => trim(($directory ? $directory . '/' : '') . $itemData['name'], '/'),
+                'time'  => $itemData['time'],
+                'size'  => $itemData['size'],
+            );
+
+            if ('-' === substr($itemData['perms'], 0, 1)) {
+                $fileData[$item['path']] = $item;
+            } elseif('d' === substr($itemData['perms'], 0, 1)) {
+                $dirs[] = $item['path'];
             }
         }
 
-        return $keys;
+        $this->fileData = array_merge($fileData, $this->fileData);
+
+        return array(
+           'keys'   => array_keys($fileData),
+           'dirs'   => $dirs
+        );
+    }
+
+    /**
+     * {@InheritDoc}
+     */
+    public function supportsMetadata()
+    {
+        return false;
+    }
+
+    /**
+     * Fetch all Keys recursive
+     * 
+     * @param string $directory 
+     */
+    private function fetchKeys($directory = '')
+    {
+        $items = $this->listDirectory($directory);
+
+        $keys = array();
+        foreach ($items['dirs'] as $dir) {
+            $keys = $this->fetchKeys($dir);
+        }
+
+        return array_merge($items['keys'], $keys);
     }
 
     /**
@@ -255,21 +342,19 @@ class Ftp implements Adapter
      *
      * @return array
      */
-    public function parseRawlist(array $rawlist)
+    private function parseRawlist(array $rawlist)
     {
         $parsed = array();
         foreach ($rawlist as $line) {
             $infos = preg_split("/[\s]+/", $line, 9);
+            $infos[7] = (strrpos($infos[7], ':') != 2 ) ? ($infos[7] . ' 00:00') : (date('Y') . ' ' . $infos[7]);
+
             if ('total' !== $infos[0]) {
                 $parsed[] = array(
                     'perms' => $infos[0],
                     'num'   => $infos[1],
-                    'owner' => $infos[2],
-                    'group' => $infos[3],
                     'size'  => $infos[4],
-                    'month' => $infos[5],
-                    'day'   => $infos[6],
-                    'time'  => $infos[7],
+                    'time'  => strtotime($infos[5] . ' ' . $infos[6] . '. ' . $infos[7]),
                     'name'  => $infos[8]
                 );
             }
@@ -282,12 +367,10 @@ class Ftp implements Adapter
      * Computes the path for the given key
      *
      * @param  string $key
-     *
-     * @todo Rename this method (is it really mandatory)
      */
-    public function computePath($key)
+    private function computePath($key)
     {
-        return $key;
+        return $this->directory . '/' . $key;
     }
 
     /**
@@ -295,7 +378,7 @@ class Ftp implements Adapter
      *
      * @return boolean
      */
-    public function isConnected()
+    private function isConnected()
     {
         return is_resource($this->connection);
     }
@@ -306,7 +389,7 @@ class Ftp implements Adapter
      *
      * @return resource The ftp connection
      */
-    public function getConnection()
+    private function getConnection()
     {
         if (!$this->isConnected()) {
             $this->connect();
@@ -320,7 +403,7 @@ class Ftp implements Adapter
      *
      * @throws RuntimeException if could not connect
      */
-    public function connect()
+    private function connect()
     {
         // open ftp connection
         $this->connection = ftp_connect($this->host, $this->port);
@@ -363,18 +446,10 @@ class Ftp implements Adapter
     /**
      * Closes the adapter's ftp connection
      */
-    public function close()
+    private function close()
     {
         if ($this->isConnected()) {
             ftp_close($this->connection);
         }
-    }
-
-    /**
-     * {@InheritDoc}
-     */
-    public function supportsMetadata()
-    {
-        return false;
     }
 }
