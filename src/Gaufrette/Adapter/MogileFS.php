@@ -218,7 +218,7 @@ class MogileFS implements Adapter
         return $domains;
     }
 
-        /**
+    /**
      * Close connection to MogileFS tracker
      *
      * @return boolean
