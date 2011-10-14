@@ -147,7 +147,7 @@ class Filesystem
         // Cache adapter returns null if source-Adapter does not provide the listDirectory method
         if (!$listing) {
             $listing = array(
-                'keys'  => $this->keys(), 
+                'keys'  => $this->keys(),
                 'dirs'  => array()
             );
         }
@@ -180,22 +180,6 @@ class Filesystem
     }
 
     /**
-     * Creates a new File instance and returns it
-     *
-     * @param  string $key
-     * @return File
-     */
-    protected function createFileInstance($key)
-    {
-        if (is_callable(array($this->adapter, 'get'))) {
-            //If possible, delegate getting the file object to the adapter.
-            return $this->adapter->get($key, $this);
-        }
-
-        return new File($key, $this);
-    }
-
-    /**
      * Query a group of files using partial key. Partial key must be a substring from
      * the first char to any char before the last char.
      *
@@ -211,5 +195,33 @@ class Filesystem
     public function supportsMetadata()
     {
         return $this->adapter->supportsMetadata();
+    }
+
+    /**
+     * Creates a new file stream for the specified key
+     *
+     * @param  string $key
+     *
+     * @return FileStream
+     */
+    public function createFileStream($key)
+    {
+        return $this->adapter->createFileStream($key);
+    }
+
+    /**
+     * Creates a new File instance and returns it
+     *
+     * @param  string $key
+     * @return File
+     */
+    protected function createFileInstance($key)
+    {
+        if (is_callable(array($this->adapter, 'get'))) {
+            //If possible, delegate getting the file object to the adapter.
+            return $this->adapter->get($key, $this);
+        }
+
+        return new File($key, $this);
     }
 }

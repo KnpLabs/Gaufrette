@@ -90,4 +90,11 @@ interface Adapter
      * @return bool true if supports metadata, false if not
      */
     function supportsMetadata();
+
+    /**
+     * Creates a new file stream instance of the specified key
+     *
+     * @return FileStream
+     */
+    function createFileStream($key);
 }
