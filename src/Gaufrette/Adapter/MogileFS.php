@@ -2,8 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
-
 /**
  * Adapter for the MogileFS filesystem.
  *
@@ -12,7 +10,7 @@ use Gaufrette\Adapter;
  * Bases partly on Wikimedia MogileFS client code by Jens Frank and Domas Mituzas, 2007.
  * See more: http://svn.wikimedia.org/viewvc/mediawiki/trunk/extensions/MogileClient/
  */
-class MogileFS implements Adapter
+class MogileFS extends Base
 {
     protected $socket;
     protected $hosts;

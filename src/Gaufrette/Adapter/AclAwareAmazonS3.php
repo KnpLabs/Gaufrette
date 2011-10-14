@@ -2,15 +2,13 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
-
 /**
  * Makes the AmazonS3 adapter ACL aware.
  *
  * @package Gaufrette
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-class AclAwareAmazonS3 implements Adapter
+class AclAwareAmazonS3 extends Base
 {
     protected $delegate;
     protected $s3;

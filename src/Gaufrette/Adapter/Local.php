@@ -2,7 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
 use Gaufrette\Checksum;
 use Gaufrette\Path;
 use FilesystemIterator;
@@ -14,7 +13,7 @@ use RecursiveIteratorIterator;
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Local implements Adapter
+class Local extends Base
 {
     protected $directory;
 

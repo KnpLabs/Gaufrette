@@ -92,9 +92,22 @@ interface Adapter
     function supportsMetadata();
 
     /**
-     * Creates a new file stream instance of the specified key
+     * Creates an new file instance for the specified file
+     *
+     * @param  string     $key
+     * @param  Filesystem $filesystem
+     *
+     * @return File
+     */
+    function createFile($key, Filesystem $filesystem);
+
+    /**
+     * Creates a new file stream instance of the specified file
+     *
+     * @param  string     $key
+     * @param  Filesystem $filesystem
      *
      * @return FileStream
      */
-    function createFileStream($key);
+    function createFileStream($key, Filesystem $filesystem);
 }

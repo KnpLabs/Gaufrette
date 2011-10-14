@@ -2,7 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
 use Gaufrette\File;
 use Gaufrette\Filesystem;
 
@@ -15,7 +14,7 @@ use Gaufrette\Filesystem;
  * @packageGaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
-class Ftp implements Adapter
+class Ftp extends Base
 {
     protected $connection = null;
     protected $directory;
@@ -74,7 +73,7 @@ class Ftp implements Adapter
 
     /**
      * Creates a new File instance and returns it
-     
+
      * @param string $key
      * @param Filesystem $key
      * @return File
@@ -275,7 +274,7 @@ class Ftp implements Adapter
      * specified, it only returns files matching it.
      *
      * @param  string $directory The path of the directory to list from
-     * 
+     *
      * @return array An array of keys and dirs
      */
     public function listDirectory($directory = '')
@@ -320,8 +319,8 @@ class Ftp implements Adapter
 
     /**
      * Fetch all Keys recursive
-     * 
-     * @param string $directory 
+     *
+     * @param string $directory
      */
     private function fetchKeys($directory = '')
     {

@@ -2,7 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
 use CF_Container;
 
 /**
@@ -11,7 +10,7 @@ use CF_Container;
  * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
-class RackspaceCloudfiles implements Adapter
+class RackspaceCloudfiles extends Base
 {
     protected $container;
 
