@@ -165,7 +165,7 @@ class MogileFS implements Adapter
      *
      * @return mixed Socket on success, false on failure
      */
-    private function connect()
+    public function connect()
     {
         if ($this->socket) {
             return $this->socket;
@@ -190,6 +190,35 @@ class MogileFS implements Adapter
     }
 
     /**
+     * Get available domains and classes from tracker
+     *
+     * @return mixed Array on success, false on failure
+     */
+    public function getDomains()
+    {
+        $res = $this->doRequest('GET_DOMAINS');
+        if (!$res) {
+            return false;
+        }
+
+        $domains = array();
+
+        for ($i = 1; $i <= $res['domains']; $i++) {
+            $dom = 'domain' . $i;
+            $classes = array();
+
+            // Associate classes to current domain (class name => mindevcount)
+            for ($j = 1; $j <= $res[$dom.'classes']; $j++) {
+                $classes[$res[$dom . 'class' . $j . 'name']] = $res[$dom . 'class' . $j . 'mindevcount'];
+            }
+
+            $domains[] = array('name' => $res[$dom], 'classes' => $classes);
+        }
+
+        return $domains;
+    }
+
+        /**
      * Close connection to MogileFS tracker
      *
      * @return boolean
