@@ -165,6 +165,61 @@ class InMemoryBufferTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $file->getContent());
     }
 
+    public function testWrite()
+    {
+        $file = $this->createNonExistingFile();
+        $stream = new InMemoryBuffer($file->getKey(), $file->getFilesystem());
+        $stream->open('w');
+        $stream->write('Some content');
+        $this->assertStreamStatus('Some content', 12, false, true, false, $stream);
+        $this->assertEquals('', $file->getContent());
+
+        $file = $this->createExistingFile('foo content');
+        $stream = new InMemoryBuffer($file->getKey(), $file->getFilesystem());
+        $stream->open('r+');
+        $stream->write('bar');
+        $this->assertStreamStatus('bar content', 3, true, true, false, $stream);
+
+        $file = $this->createExistingFile('some content');
+        $stream = new InMemoryBuffer($file->getKey(), $file->getFilesystem());
+        $stream->open('r+');
+        $stream->write('some new content');
+        $this->assertStreamStatus('some new content', 16, true, true, false, $stream);
+    }
+
+    /**
+     * @expectedException LogicException
+     */
+    public function testWriteWhenAllowWriteEqualsFalse()
+    {
+        $file = $this->createExistingFile('Some content');
+        $stream = new InMemoryBuffer($file->getKey(), $file->getFilesystem());
+        $stream->open('r');
+        $stream->write('Some new content');
+    }
+
+    public function testFlush()
+    {
+        $file = $this->createNonExistingFile();
+        $stream = new InMemoryBuffer($file->getKey(), $file->getFilesystem());
+        $stream->open('w');
+        $stream->write('Some content');
+        $this->assertEquals('', $file->getFilesystem()->read($file->getKey()));
+        $stream->flush();
+        $this->assertEquals('Some content', $file->getFilesystem()->read($file->getKey()));
+    }
+
+    public function testClose()
+    {
+        $file = $this->createNonExistingFile();
+        $stream = new InMemoryBuffer($file->getKey(), $file->getFilesystem());
+        $stream->open('w');
+        $stream->write('Some content');
+        $this->assertEquals('', $file->getFilesystem()->read($file->getKey()));
+        $stream->close();
+        $this->assertEquals('Some content', $file->getFilesystem()->read($file->getKey()));
+    }
+
     private function assertStreamStatus($content, $position, $allowRead, $allowWrite, $synchronized, $stream)
     {
         $this->assertAttributeEquals($content, 'content', $stream, 'The content is valid');

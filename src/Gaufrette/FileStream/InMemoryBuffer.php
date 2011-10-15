@@ -11,6 +11,7 @@ class InMemoryBuffer implements FileStream
     private $filesystem;
     private $binary;
     private $content;
+    private $numBytes;
     private $position;
     private $allowRead;
     private $allowWrite;
@@ -50,6 +51,7 @@ class InMemoryBuffer implements FileStream
                     return false;
                 }
                 $this->content    = $this->filesystem->read($this->key);
+                $this->numBytes   = strlen($this->content);
                 $this->position   = 0;
                 $this->allowRead  = true;
                 $this->allowWrite = $modePlus;
@@ -58,6 +60,7 @@ class InMemoryBuffer implements FileStream
                 // the file is truncated to zero length
                 $this->filesystem->write($this->key, '', true);
                 $this->content    = '';
+                $this->numBytes   = 0;
                 $this->position   = 0;
                 $this->allowRead  = $modePlus;
                 $this->allowWrite = true;
@@ -69,7 +72,8 @@ class InMemoryBuffer implements FileStream
                     $this->filesystem->write($this->key, '');
                     $this->content = '';
                 }
-                $this->position   = strlen($this->content);
+                $this->numBytes   = strlen($this->content);
+                $this->position   = $this->numBytes;
                 $this->allowRead  = $modePlus;
                 $this->allowWrite = true;
                 break;
@@ -79,6 +83,7 @@ class InMemoryBuffer implements FileStream
                 }
                 $this->filesystem->write($this->key, '');
                 $this->content    = '';
+                $this->numBytes   = 0;
                 $this->position   = 0;
                 $this->allowRead  = $modePlus;
                 $this->allowWrite = true;
@@ -86,9 +91,11 @@ class InMemoryBuffer implements FileStream
             case 'c':
                 if ($this->filesystem->has($this->key)) {
                     $this->content  = $this->filesystem->read($this->key);
+                    $this->numBytes = strlen($this->content);
                 } else {
                     $this->filesystem->write($this->key, '');
-                    $this->content    = '';
+                    $this->content  = '';
+                    $this->numBytes = 0;
                 }
 
                 $this->position   = 0;
@@ -104,29 +111,97 @@ class InMemoryBuffer implements FileStream
 
     public function read($count)
     {
+        if (false === $this->allowRead) {
+            throw new \LogicException('The stream does not allow read.');
+        }
+
+        if (0 === $count) {
+            return '';
+        }
+
+        $chunk = substr($this->content, $this->position, $count);
+
+        $this->position+= $chunk;
+
+        return $chunk;
     }
 
     public function write($data)
     {
+        if (false === $this->allowWrite) {
+            throw new \LogicException('The stream does not allow write.');
+        }
+
+        if ('' === $data) {
+            return 0;
+        }
+
+        $numWrittenBytes = strlen($data);
+        $newPosition     = $this->position + $numWrittenBytes;
+        $newNumBytes     = $newPosition > $this->numBytes ? $newPosition : $this->numBytes;
+
+        if ($this->eof()) {
+            $this->numBytes+= $numWrittenBytes;
+            $this->content.= $data;
+        } else {
+            $before = substr($this->content, 0, $this->position);
+            $after  = $newNumBytes > $newPosition ? substr($this->content, $newPosition) : '';
+            $this->content  = $before . $data . $after;
+        }
+
+        $this->position     = $newPosition;
+        $this->numBytes     = $newNumBytes;
+        $this->synchronized = false;
+
+        return $numWrittenBytes;
     }
 
     public function close()
     {
+        if ( ! $this->synchronized) {
+            $this->flush();
+        }
     }
 
     public function seek($offset, $whence = SEEK_SET)
     {
+        switch ($whence) {
+            case SEEK_SET:
+                $this->position = $offset;
+                break;
+            case SEEK_CUR:
+                $this->position+= $offset;
+                break;
+            case SEEK_END:
+                $this->position = $this->numBytes + $offset;
+                break;
+            default:
+                throw new \InvalidArgumentException('Invalid $whence.');
+        }
     }
 
     public function tell()
     {
+        return $this->position;
     }
 
     public function flush()
     {
+        if ($this->synchronized) {
+            return true;
+        }
+
+        try {
+            $this->filesystem->write($this->key, $this->content, true);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 
     public function eof()
     {
+        return $this->position >= $this->numBytes;
     }
 }
