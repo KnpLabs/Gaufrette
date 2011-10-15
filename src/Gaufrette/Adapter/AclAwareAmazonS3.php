@@ -2,6 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Adapter;
+
 /**
  * Makes the AmazonS3 adapter ACL aware.
  *
