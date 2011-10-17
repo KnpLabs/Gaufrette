@@ -15,8 +15,8 @@ class MogileFSTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        if (!class_exists('MogileFS')) {
-            $this->markTestSkipped('Class not found.');
+        if (!class_exists('Gaufrette\Adapter\MogileFS')) {
+            $this->markTestSkipped('MogileFS adapter not found.');
         }
 
         $mogile = new MogileFS($this->testDomain, $this->testHost);
