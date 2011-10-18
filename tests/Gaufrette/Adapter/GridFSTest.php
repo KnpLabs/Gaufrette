@@ -3,7 +3,6 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-
 use Gaufrette\Filesystem;
 
 class GridFSTest extends \PHPUnit_Framework_TestCase
