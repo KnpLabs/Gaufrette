@@ -34,24 +34,6 @@ class GridFS implements Adapter
     }
 
     /**
-     * Gets file object by key
-     *
-     * @param string $key
-     * @return File file object
-     */
-    public function get($key, $filesystem)
-    {
-        $gridfsFile = $this->gridfsInstance->findOne(array('key'=>$key));
-        $file = new File($key, $filesystem);
-        $file->setMetadata($gridfsFile->file['metadata']);
-        $file->setName($gridfsFile->file['filename']);
-        $file->setCreated($gridfsFile->file['uploadDate']->sec);
-        $file->setSize($gridfsFile->file['length']);
-
-        return $file;
-    }
-
-    /**
      * {@InheritDoc}
      */
     public function read($key)
@@ -78,7 +60,7 @@ class GridFS implements Adapter
         $keyParts = array_filter(explode('/', $key));
         $dataArray = array(
             'key' => $key,
-            'filename' => $keyParts[count($keyParts)],
+            'filename' => isset($keyParts[count($keyParts)]) ? $keyParts[count($keyParts)] : '',
             'uploadDate' => new \MongoDate(),
             'metadata' => $metadata,
         );
@@ -91,18 +73,24 @@ class GridFS implements Adapter
 
     /**
      * Rename = fetch old + write new + delete old
-     * {@InheritDoc}
+     *
+     * @param key Current key (from)
+     * @param new New key (to)
+     * @return boolean
      */
     public function rename($key, $new)
     {
-        //Fetch file
-        $file = $this->get($key);
-        $content  = $this->read($key);
-        //Write a new file and delete old
-        $returnValue = $this->write($new, $content, $file->getMetadata());
-        $this->delete($key);
+        $gridfsFile = $this->gridfsInstance->findOne(array('key' => $key));
 
-        return $returnValue;
+        if (is_object($gridfsFile)) {
+            $retval = $this->write($new, $gridfsFile->getBytes(), $gridfsFile->file['metadata']);
+
+            if ($retval > 0) {
+                return $this->delete($key);
+            }
+        }
+
+        return false;
     }
 
     /**
