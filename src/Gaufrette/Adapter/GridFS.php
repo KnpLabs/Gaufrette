@@ -33,6 +33,24 @@ class GridFS implements Adapter
         $this->gridfsInstance = $instance;
     }
 
+   /**
+    * Gets file object by key
+    *
+    * @param string $key
+    * @return File file object
+    */
+    public function get($key, $filesystem)
+    {
+        $gridfsFile = $this->gridfsInstance->findOne(array('key' => $key));
+        $file = new File($key, $filesystem);
+        $file->setMetadata($gridfsFile->file['metadata']);
+        $file->setName($gridfsFile->file['filename']);
+        $file->setCreated($gridfsFile->file['uploadDate']->sec);
+        $file->setSize($gridfsFile->file['length']);
+
+        return $file;
+    }
+
     /**
      * {@InheritDoc}
      */
