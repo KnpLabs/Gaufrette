@@ -16,7 +16,7 @@ interface FileStream
      *
      * @return Boolean TRUE on success or FALSE on failure
      */
-    public function open($mode);
+    function open($mode);
 
     /**
      * Reads the specified number of bytes from the current position
@@ -28,7 +28,7 @@ interface FileStream
      *
      * @return string
      */
-    public function read($count);
+    function read($count);
 
     /**
      * Writes the specified data
@@ -40,7 +40,7 @@ interface FileStream
      *
      * @return integer The number of bytes that were successfully written
      */
-    public function write($data);
+    function write($data);
 
     /**
      * Closes the stream
@@ -50,7 +50,7 @@ interface FileStream
      *
      * @return void
      */
-    public function close();
+    function close();
 
     /**
      * Flushes the output
@@ -60,7 +60,7 @@ interface FileStream
      *
      * @return Boolean TRUE on success or FALSE on failure
      */
-    public function flush();
+    function flush();
 
     /**
      * Seeks to the specified offset
@@ -70,19 +70,19 @@ interface FileStream
      *
      * @return Boolean
      */
-    public function seek($offset, $whence = SEEK_SET);
+    function seek($offset, $whence = SEEK_SET);
 
     /**
      * Returns the current position
      *
      * @return integer
      */
-    public function tell();
+    function tell();
 
     /**
      * Indicates whether the current position is the end-of-file
      *
      * @return Boolean
      */
-    public function eof();
+    function eof();
 }
