@@ -5,9 +5,6 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Checksum;
 use Gaufrette\Path;
-use FilesystemIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 
 /**
  * Adapter for the local filesystem
@@ -89,10 +86,10 @@ class Local implements Adapter
      */
     public function keys()
     {
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator(
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator(
                 $this->directory,
-                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+                \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
             )
         );
 

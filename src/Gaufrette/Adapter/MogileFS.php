@@ -26,8 +26,8 @@ class MogileFS implements Adapter
      */
     public function __construct($domain, array $hosts)
     {
-        if (strlen($domain) < 1 || sizeof($hosts) < 1) {
-            throw new \InvalidArgumentException("invalid parameters");
+        if (strlen($domain) < 1 || count($hosts) < 1) {
+            throw new \InvalidArgumentException('Invalid parameters. Given domain is too short or you not given any host.');
         }
 
         $this->domain = $domain;
@@ -55,7 +55,7 @@ class MogileFS implements Adapter
                     $data .= fread($fh, 8192);
                 }
 
-                fclose( $fh );
+                fclose($fh);
             }
         }
 
@@ -257,7 +257,7 @@ class MogileFS implements Adapter
             parse_str(trim($words[1]), $result);
         } else {
             $result = false;
-            $this->error = join(" ", $words);
+            $this->error = join(' ', $words);
         }
 
         return $result;

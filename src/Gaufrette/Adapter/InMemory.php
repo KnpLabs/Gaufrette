@@ -35,8 +35,7 @@ class InMemory implements Adapter
     public function setFiles(array $files)
     {
         $this->files = array();
-        foreach ($files as $key => $file)
-        {
+        foreach ($files as $key => $file) {
             if (!is_array($file)) {
                 $file = array('content' => $file);
             }
