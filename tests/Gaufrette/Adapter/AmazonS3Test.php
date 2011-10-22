@@ -15,6 +15,11 @@ class AmazonS3Test extends \PHPUnit_Framework_TestCase
         $this->service = $this->getMock('\AmazonS3', array(), array(), '', false);
     }
 
+    public function tearDown()
+    {
+        $this->service = null;
+    }
+
     public function testComputePath()
     {
         $adapter = new AmazonS3($this->service, 'foobucket');

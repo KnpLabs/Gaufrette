@@ -3,9 +3,6 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter\Local;
-use FilesystemIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 
 require_once __DIR__ . '/AbstractFunctionalTest.php';
 
@@ -28,10 +25,10 @@ class LocalFunctionalTest extends AbstractFunctionalTest
             return;
         }
 
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator(
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator(
                 $this->directory,
-                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+                \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
             )
         );
 

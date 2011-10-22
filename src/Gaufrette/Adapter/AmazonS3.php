@@ -195,7 +195,6 @@ class AmazonS3 implements Adapter
     protected function ensureBucketExists()
     {
         if (!$this->ensureBucket) {
-
             $available = $this->service->if_bucket_exists($this->bucket);
 
             if (!$available && $this->create) {
