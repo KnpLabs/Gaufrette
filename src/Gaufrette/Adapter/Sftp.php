@@ -94,7 +94,7 @@ class Sftp implements Adapter
     {
         $this->initialize();
 
-        throw new \Exception('Not implemented yet.');
+        throw new \BadMethodCallException('Not implemented yet.');
     }
 
     /**

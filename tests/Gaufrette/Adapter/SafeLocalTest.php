@@ -11,6 +11,11 @@ class SafeLocalTest extends \PHPUnit_Framework_TestCase
         $this->adapter = new SafeLocal(__DIR__);
     }
 
+    public function tearDown()
+    {
+        $this->adapter = null;
+    }
+
     /**
      * @dataProvider getKeyPathData
      */

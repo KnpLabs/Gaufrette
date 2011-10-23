@@ -227,13 +227,7 @@ class Cache implements Adapter
 
         if ($this->serializeCache->exists($cacheFile)) {
             try {
-                $dateCache = $this->serializeCache->mtime($cacheFile);
-
-                if (time() - $this->ttl > $dateCache) {
-                    $needsRebuild = true;
-                } else {
-                    $needsRebuild = false;
-                }
+                $needsRebuild = time() - $this->ttl > $this->serializeCache->mtime($cacheFile);
             } catch (\RuntimeException $e) { }
         }
 

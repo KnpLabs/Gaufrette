@@ -74,7 +74,7 @@ class Ftp implements Adapter
 
     /**
      * Creates a new File instance and returns it
-     
+     *
      * @param string $key
      * @param Filesystem $key
      * @return File
@@ -148,22 +148,20 @@ class Ftp implements Adapter
      */
     public function exists($key)
     {
-        $exists = false;
-
         if (array_key_exists($key, $this->fileData)) {
-            $exists = true;
+            return true;
         } else {
             $file = $this->computePath($key);
 
             $items = ftp_nlist($this->getConnection(), dirname($file));
             foreach ($items as $item) {
                 if ($file === $item) {
-                    $exists = true;
+                    return true;
                 }
             }
         }
 
-        return $exists;
+        return false;
     }
 
     /**

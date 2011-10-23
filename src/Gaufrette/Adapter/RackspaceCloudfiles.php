@@ -150,7 +150,6 @@ class RackspaceCloudfiles implements Adapter
         $d = 0;
         $strlen_var = strlen($string);
         for ($c = 0; $c < $strlen_var; ++$c) {
-
             $ord_var_c = ord($string{$d});
 
             switch (true) {
