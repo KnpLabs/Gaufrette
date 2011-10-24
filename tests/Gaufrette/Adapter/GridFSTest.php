@@ -18,10 +18,6 @@ class GridFSTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        if (!class_exists('Gaufrette\Adapter\GridFS')) {
-            $this->markTestSkipped('GridFS adapter not found');
-        }
-
         if (!class_exists('\Mongo')) {
             $this->markTestSkipped('Mongo class not found.');
         }
