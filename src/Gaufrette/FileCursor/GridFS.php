@@ -20,11 +20,13 @@ class GridFS extends IteratorWrapper
     {
         $key  = $current->file['key'];
         $file = new File($key, $this->filesystem);
-
-        $file->setMetadata($current->file['metadata']);
         $file->setName($current->file['filename']);
         $file->setCreated(new \DateTime("@".$current->file['uploadDate']->sec));
         $file->setSize($current->file['length']);
+
+        if (isset($current->file['metadata'])) {
+            $file->setMetadata($current->file['metadata']);
+        }
 
         return $file;
     }
