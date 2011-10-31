@@ -7,6 +7,8 @@ use Gaufrette\Path;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Gaufrette\Filesystem;
+use Gaufrette\FileStream;
 
 /**
  * Adapter for the local filesystem
@@ -234,5 +236,13 @@ class Local extends Base
     public function supportsMetadata()
     {
         return false;
+    }
+
+    /**
+     * {@InheritDoc}
+     */
+    public function createFileStream($key, Filesystem $filesystem)
+    {
+        return new FileStream\Local($this->computePath($key));
     }
 }
