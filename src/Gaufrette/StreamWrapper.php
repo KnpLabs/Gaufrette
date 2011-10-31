@@ -20,7 +20,7 @@ class StreamWrapper
      */
     static public function register($scheme = 'gaufrette')
     {
-        stream_wrapper_unregister($scheme);
+        @stream_wrapper_unregister($scheme);
 
         if ( ! stream_wrapper_register($scheme, __CLASS__)) {
             throw new \RuntimeException(sprintf(
@@ -103,6 +103,11 @@ class StreamWrapper
         return $this->stream->eof();
     }
 
+    public function stream_stat()
+    {
+        return null;
+    }
+
     private function createStream($path)
     {
         $parts = array_merge(
@@ -117,7 +122,15 @@ class StreamWrapper
         );
 
         $domain = $parts['host'];
-        $key    = sprintf('%s?%s#%s', $parts['path'], $parts['query'], $parts['fragment']);
+        $key    = $parts['path'];
+
+        if (null !== $parts['query']) {
+            $key.= '?' . $parts['query'];
+        }
+
+        if (null !== $parts['fragment']) {
+            $key.= '#' . $parts['fragment'];
+        }
 
         if (empty($domain) || empty($key)) {
             throw new \InvalidArgumentException(sprintf(
