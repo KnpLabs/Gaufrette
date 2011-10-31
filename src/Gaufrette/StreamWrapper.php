@@ -2,6 +2,11 @@
 
 namespace Gaufrette;
 
+/**
+ * Stream wrapper class for the Gaufrette filesystems
+ *
+ * @author Antoine Hérault <antoine.herault@gmail.com>
+ */
 class StreamWrapper
 {
     static private $filesystems = array();
@@ -60,7 +65,7 @@ class StreamWrapper
     {
         $this->stream = $this->createStream($path);
 
-        return $this->stream->open($mode);
+        return $this->stream->open($this->createStreamMode($mode));
     }
 
     public function stream_read($count)
@@ -122,5 +127,10 @@ class StreamWrapper
         }
 
         return static::getFilesystem($domain)->createFileStream($key);
+    }
+
+    private function createStreamMode($mode)
+    {
+        return new StreamMode($mode);
     }
 }

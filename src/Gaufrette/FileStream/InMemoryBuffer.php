@@ -4,17 +4,16 @@ namespace Gaufrette\FileStream;
 
 use Gaufrette\FileStream;
 use Gaufrette\Filesystem;
+use Gaufrette\StreamMode;
 
 class InMemoryBuffer implements FileStream
 {
     private $key;
     private $filesystem;
-    private $binary;
+    private $mode;
     private $content;
     private $numBytes;
     private $position;
-    private $allowRead;
-    private $allowWrite;
     private $synchronized;
 
     /**
@@ -31,78 +30,26 @@ class InMemoryBuffer implements FileStream
     /**
      * {@inheritDoc}
      */
-    public function open($mode)
+    public function open(StreamMode $mode)
     {
-        if ( ! preg_match('/^(?<group>[rwaxc])(?<plus>\+)?(?<binary>b)?$/', $mode, $matches)) {
-            throw new \InvalidArgumentException(sprintf(
-                'The specified mode (%s) is invalid.',
-                $mode
-            ));
+        $this->mode = $mode;
+
+        $exists = $this->filesystem->has($this->key);
+
+        if (($exists && !$mode->allowsExistingFileOpening())
+            || (!$exists && !$mode->allowsNewFileOpening())) {
+            return false;
         }
 
-        $modeGroup  = $matches['group'];
-        $modePlus   = isset($matches['plus']);
-        $modeBinary = isset($matches['binary']);
-
-        switch ($modeGroup) {
-            case 'r':
-                // the file must exist
-                if ( ! $this->filesystem->has($this->key)) {
-                    return false;
-                }
-                $this->content    = $this->filesystem->read($this->key);
-                $this->numBytes   = strlen($this->content);
-                $this->position   = 0;
-                $this->allowRead  = true;
-                $this->allowWrite = $modePlus;
-                break;
-            case 'w':
-                // the file is truncated to zero length
-                $this->filesystem->write($this->key, '', true);
-                $this->content    = '';
-                $this->numBytes   = 0;
-                $this->position   = 0;
-                $this->allowRead  = $modePlus;
-                $this->allowWrite = true;
-                break;
-            case 'a':
-                if ($this->filesystem->has($this->key)) {
-                    $this->content = $this->filesystem->read($this->key);
-                } else {
-                    $this->filesystem->write($this->key, '');
-                    $this->content = '';
-                }
-                $this->numBytes   = strlen($this->content);
-                $this->position   = $this->numBytes;
-                $this->allowRead  = $modePlus;
-                $this->allowWrite = true;
-                break;
-            case 'x':
-                if ($this->filesystem->has($this->key)) {
-                    return false;
-                }
-                $this->filesystem->write($this->key, '');
-                $this->content    = '';
-                $this->numBytes   = 0;
-                $this->position   = 0;
-                $this->allowRead  = $modePlus;
-                $this->allowWrite = true;
-                break;
-            case 'c':
-                if ($this->filesystem->has($this->key)) {
-                    $this->content  = $this->filesystem->read($this->key);
-                    $this->numBytes = strlen($this->content);
-                } else {
-                    $this->filesystem->write($this->key, '');
-                    $this->content  = '';
-                    $this->numBytes = 0;
-                }
-
-                $this->position   = 0;
-                $this->allowRead  = $modePlus;
-                $this->allowWrite = true;
-                break;
+        if ($mode->impliesExistingContentDeletion()) {
+            $this->filesystem->write($this->key, '', true);
+            $this->content = '';
+        } else {
+            $this->content = $this->filesystem->read($this->key);
         }
+
+        $this->numBytes = strlen($this->content);
+        $this->position = $mode->impliesPositioningCursorAtTheEnd() ? 0 : $this->numBytes;
 
         $this->synchronized = true;
 
@@ -111,7 +58,7 @@ class InMemoryBuffer implements FileStream
 
     public function read($count)
     {
-        if (false === $this->allowRead) {
+        if (false === $this->mode->allowsRead()) {
             throw new \LogicException('The stream does not allow read.');
         }
 
@@ -128,7 +75,7 @@ class InMemoryBuffer implements FileStream
 
     public function write($data)
     {
-        if (false === $this->allowWrite) {
+        if (false === $this->mode->allowsWrite()) {
             throw new \LogicException('The stream does not allow write.');
         }
 
@@ -176,7 +123,10 @@ class InMemoryBuffer implements FileStream
                 $this->position = $this->numBytes + $offset;
                 break;
             default:
-                throw new \InvalidArgumentException('Invalid $whence.');
+                throw new \InvalidArgumentException(sprintf(
+                    'The $whence "%s" is not supported.',
+                    $whence,
+                ));
         }
     }
 

@@ -2,6 +2,11 @@
 
 namespace Gaufrette;
 
+/**
+ * Represents a stream mode
+ *
+ * @author Antoine Hérault <antoine.herault@gmail.com>
+ */
 class StreamMode
 {
     private $mode;
@@ -16,12 +21,24 @@ class StreamMode
      */
     public function __construct($mode)
     {
+        $this->mode = $mode;
+
         $mode = substr($mode, 0, 3);
         $rest = substr($mode, 1);
 
         $this->base = substr($mode, 0, 1);
         $this->plus = false !== strpos($rest, '+');
         $this->flag = trim($rest, '+');
+    }
+
+    /**
+     * Returns the underlying mode
+     *
+     * @return string
+     */
+    public function getMode()
+    {
+        return $this->mode;
     }
 
     /**

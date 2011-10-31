@@ -12,11 +12,11 @@ interface FileStream
     /**
      * Opens the stream in the specified mode
      *
-     * @param  string $mode
+     * @param  StreamMode $mode
      *
      * @return Boolean TRUE on success or FALSE on failure
      */
-    function open($mode);
+    function open(StreamMode $mode);
 
     /**
      * Reads the specified number of bytes from the current position
