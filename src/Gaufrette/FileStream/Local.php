@@ -13,6 +13,7 @@ use Gaufrette\StreamMode;
 class Local implements FileStream
 {
     private $path;
+    private $mode;
     private $fileHandle;
 
     /**
@@ -47,6 +48,10 @@ class Local implements FileStream
      */
     public function read($count)
     {
+        if (false === $this->mode->allowsRead()) {
+            throw new \LogicException('The stream does not allow read.');
+        }
+
         return fread($this->fileHandle, $count);
     }
 
@@ -55,6 +60,10 @@ class Local implements FileStream
      */
     public function write($data)
     {
+        if (false === $this->mode->allowsWrite()) {
+            throw new \LogicException('The stream does not allow write.');
+        }
+
         return fwrite($this->fileHandle, $data);
     }
 
