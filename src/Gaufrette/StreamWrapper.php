@@ -9,9 +9,33 @@ namespace Gaufrette;
  */
 class StreamWrapper
 {
-    static private $filesystems = array();
+    static private $filesystemMap = array();
 
     private $stream;
+
+    /**
+     * Defines the filesystem map
+     *
+     * @param  FilesystemMap $map
+     */
+    static public function setFilesystemMap(FilesystemMap $map)
+    {
+        static::$filesystemMap = $map;
+    }
+
+    /**
+     * Returns the filesystem map
+     *
+     * @return FilesystemMap $map
+     */
+    static public function getFilesystemMap()
+    {
+        if (null === static::$filesystemMap) {
+            static::$filesystemMap = static::createFilesystemMap();
+        }
+
+        return static::$filesystemMap;
+    }
 
     /**
      * Registers the stream wrapper to handle the specified scheme
@@ -108,7 +132,7 @@ class StreamWrapper
         return null;
     }
 
-    private function createStream($path)
+    protected function createStream($path)
     {
         $parts = array_merge(
             array(
@@ -139,11 +163,16 @@ class StreamWrapper
             ));
         }
 
-        return static::getFilesystem($domain)->createFileStream($key);
+        return static::getFilesystemMap()->get($domain)->createFileStream($key);
     }
 
-    private function createStreamMode($mode)
+    protected function createStreamMode($mode)
     {
         return new StreamMode($mode);
+    }
+
+    static protected function createFilesystemMap()
+    {
+        return new FilesystemMap();
     }
 }
