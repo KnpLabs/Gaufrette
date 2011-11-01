@@ -3,13 +3,13 @@
 namespace Gaufrette\FileStream;
 
 use Gaufrette\FileStream;
-use Gaufrette\Filesystem;
+use Gaufrette\Adapter;
 use Gaufrette\StreamMode;
 
 class InMemoryBuffer implements FileStream
 {
+    private $adapter;
     private $key;
-    private $filesystem;
     private $mode;
     private $content;
     private $numBytes;
@@ -19,12 +19,13 @@ class InMemoryBuffer implements FileStream
     /**
      * Constructor
      *
-     * @param  File $file
+     * @param  Adapter $adapter The adapter managing the file to stream
+     * @param  string  $key     The file key
      */
-    public function __construct($key, Filesystem $filesystem)
+    public function __construct(Adapter $adapter, $key)
     {
-        $this->key        = $key;
-        $this->filesystem = $filesystem;
+        $this->adapter = $adapter;
+        $this->key     = $key;
     }
 
     /**
@@ -34,7 +35,7 @@ class InMemoryBuffer implements FileStream
     {
         $this->mode = $mode;
 
-        $exists = $this->filesystem->has($this->key);
+        $exists = $this->adapter->exists($this->key);
 
         if (($exists && !$mode->allowsExistingFileOpening())
             || (!$exists && !$mode->allowsNewFileOpening())) {
@@ -42,10 +43,10 @@ class InMemoryBuffer implements FileStream
         }
 
         if ($mode->impliesExistingContentDeletion()) {
-            $this->filesystem->write($this->key, '', true);
+            $this->adapter->write($this->key, '');
             $this->content = '';
         } else {
-            $this->content = $this->filesystem->read($this->key);
+            $this->content = $this->adapter->read($this->key);
         }
 
         $this->numBytes = strlen($this->content);
@@ -142,7 +143,7 @@ class InMemoryBuffer implements FileStream
         }
 
         try {
-            $this->filesystem->write($this->key, $this->content, true);
+            $this->adapter->write($this->key, $this->content);
         } catch (\Exception $e) {
             return false;
         }

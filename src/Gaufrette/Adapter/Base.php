@@ -22,6 +22,6 @@ abstract class Base implements Adapter
      */
     public function createFileStream($key, Filesystem $filesystem)
     {
-        return new FileStream\InMemoryBuffer($key, $filesystem);
+        return new FileStream\InMemoryBuffer($this, $key);
     }
 }
