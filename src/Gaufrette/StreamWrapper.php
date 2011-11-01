@@ -122,7 +122,7 @@ class StreamWrapper
         );
 
         $domain = $parts['host'];
-        $key    = $parts['path'];
+        $key    = substr($parts['path'], 1);
 
         if (null !== $parts['query']) {
             $key.= '?' . $parts['query'];
