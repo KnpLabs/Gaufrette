@@ -49,7 +49,7 @@ class InMemoryBuffer implements FileStream
         }
 
         $this->numBytes = strlen($this->content);
-        $this->position = $mode->impliesPositioningCursorAtTheEnd() ? 0 : $this->numBytes;
+        $this->position = $mode->impliesPositioningCursorAtTheEnd() ? $this->numBytes : 0;
 
         $this->synchronized = true;
 
@@ -68,7 +68,7 @@ class InMemoryBuffer implements FileStream
 
         $chunk = substr($this->content, $this->position, $count);
 
-        $this->position+= $chunk;
+        $this->position+= strlen($chunk);
 
         return $chunk;
     }
@@ -125,7 +125,7 @@ class InMemoryBuffer implements FileStream
             default:
                 throw new \InvalidArgumentException(sprintf(
                     'The $whence "%s" is not supported.',
-                    $whence,
+                    $whence
                 ));
         }
     }
