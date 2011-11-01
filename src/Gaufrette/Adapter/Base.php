@@ -5,6 +5,7 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Filesystem;
 use Gaufrette\File;
+use Gaufrette\FileStream;
 
 abstract class Base implements Adapter
 {
@@ -21,6 +22,6 @@ abstract class Base implements Adapter
      */
     public function createFileStream($key, Filesystem $filesystem)
     {
-        return new FileStream($key, $filesystem);
+        return new FileStream\InMemoryBuffer($key, $filesystem);
     }
 }
