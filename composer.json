@@ -1,0 +1,44 @@
+{
+    "name": "knplabs/Gaufrette",
+    "type": "library",
+    "description": "PHP5 library that provides a filesystem abstraction layer - will be a feast for your files!",
+    "keywords": ["filesystem", "amazon", "gridfs", "mongofs", "rackspace", "ftp", "sftp"],
+    "homepage": "https://github.com/knplabs/Gaufrette",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "KnpLabs Team",
+            "homepage": "http://knplabs.com/"
+        }
+    ],
+    "repositories": {
+        "amazonwebservices com": {
+            "pear": {
+                "url": "pear.amazonwebservices.com"
+            }
+        },
+        "rackspace com": {
+            "package": {
+                "name": "php-cloudfiles",
+                "source": {
+                    "url": "git://github.com/rackspace/php-cloudfiles.git",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        }
+    },
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "suggest": {
+        "aws-sdk": ">=1.4.5",
+        "php-cloudfiles": "*",
+        "ext-curl": "*",
+        "ext-mbstring": "*",
+        "ext-mongo": "*"
+    },
+    "autoload": {
+        "psr-0": { "Gaufrette": "src/" }
+    }
+}
