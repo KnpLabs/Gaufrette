@@ -154,6 +154,24 @@ $fs = $container->get('acme.fs');
 // use $fs
 ```
 
+Streaming Files
+---------------
+
+Sometimes, you don't have the choice, you must get a streamable file URL (i.e
+to transform an image). Let's take a look at the following exemple:
+
+```php
+$adapter = new InMemoryAdapter(array('hello.txt' => 'Hello World!'));
+$filesystem = new Filename($adapter);
+
+$map = StreamWrapper::getFilesystemMap();
+$map->set('foo', $filesystem);
+
+StreamWrapper::register();
+
+echo file_get_contents('gaufrette://foo/hello.txt'); // Says "Hello World!"
+```
+
 Running the Tests
 -----------------
 
