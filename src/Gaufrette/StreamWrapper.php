@@ -9,7 +9,7 @@ namespace Gaufrette;
  */
 class StreamWrapper
 {
-    static private $filesystemMap = array();
+    static private $filesystemMap;
 
     private $stream;
 
