@@ -35,11 +35,12 @@
         "php": ">=5.3.0"
     },
     "suggest": {
-        "aws-sdk":          ">=1.4.5",
-        "php-cloudfiles":   "*",
-        "ext-curl":         "*",
-        "ext-mbstring":     "*",
-        "ext-mongo":        "*"
+        "knplabs/knp-gaufrette-bundle": "*",
+        "aws-sdk":                      ">=1.4.5",
+        "php-cloudfiles":               "*",
+        "ext-curl":                     "*",
+        "ext-mbstring":                 "*",
+        "ext-mongo":                    "*"
     },
     "autoload": {
         "psr-0": { "Gaufrette": "src/" }
