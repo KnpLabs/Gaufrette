@@ -140,6 +140,8 @@ class Filesystem
      */
     public function listDirectory($directory = '')
     {
+        $listing = null;
+        
         if (method_exists($this->adapter, 'listDirectory')) {
             $listing = $this->adapter->listDirectory($directory);
         }
