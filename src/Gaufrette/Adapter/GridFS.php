@@ -43,10 +43,12 @@ class GridFS implements Adapter
     {
         $gridfsFile = $this->gridfsInstance->findOne(array('key' => $key));
         $file = new File($key, $filesystem);
-        $file->setMetadata($gridfsFile->file['metadata']);
         $file->setName($gridfsFile->file['filename']);
-        $file->setCreated($gridfsFile->file['uploadDate']->sec);
+        $file->setCreated(new \DateTime("@".$gridfsFile->file['uploadDate']->sec));
         $file->setSize($gridfsFile->file['length']);
+        if (isset($gridfsFile->file['metadata'])) {
+            $file->setMetadata($gridfsFile->file['metadata']);
+        }
 
         return $file;
     }
