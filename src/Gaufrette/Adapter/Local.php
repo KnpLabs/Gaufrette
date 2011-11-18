@@ -28,6 +28,9 @@ class Local implements Adapter
     public function __construct($directory, $create = false)
     {
         $this->directory = $this->normalizePath($directory);
+        if (is_link($this->directory)) {
+            $this->directory = readlink($this->directory);
+        }
         $this->ensureDirectoryExists($this->directory, $create);
     }
 
