@@ -14,12 +14,12 @@ class Sftp implements Adapter
     /**
      * Constructor
      *
-     * @param  Ssh\Sftp $sftp      An Sftp instance
+     * @param  \Ssh\Sftp $sftp     An Sftp instance
      * @param  string   $directory The distant directory
      * @param  boolean  $create    Whether to create the remote directory if it
      *                             does not exist
      */
-    public function __construct(Ssh\Sftp $sftp, $directory = null, $create = false)
+    public function __construct(\Ssh\Sftp $sftp, $directory = null, $create = false)
     {
         $this->sftp      = $sftp;
         $this->directory = $directory;
