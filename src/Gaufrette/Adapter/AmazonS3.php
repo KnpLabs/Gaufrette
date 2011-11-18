@@ -14,6 +14,7 @@ class AmazonS3 extends Base
     protected $bucket;
     protected $ensureBucket = false;
     protected $create;
+    protected $directory;
 
     public function __construct(\AmazonS3 $service, $bucket, $create = false)
     {
@@ -22,12 +23,35 @@ class AmazonS3 extends Base
         $this->create = $create;
     }
 
+    /** 
+     * Set the base directory the user will have access to
+     *
+     * @param String $directory
+     */
+    public function setDirectory($directory)
+    {
+        $this->directory  = $directory;
+    }
+
+    /** 
+     * Get the directory the user has access to
+     * 
+     * @return String
+     */
+    public function getDirectory()
+    {
+        return $this->directory;
+    }
+
+
     /**
      * {@inheritDoc}
      */
     public function read($key)
     {
         $this->ensureBucketExists();
+
+        $key = $this->prependBaseDirectory($key);
 
         $response = $this->service->get_object($this->bucket, $key);
         if (!$response->isOK()) {
@@ -42,6 +66,9 @@ class AmazonS3 extends Base
      */
     public function rename($key, $new)
     {
+        $key = $this->prependBaseDirectory($key);
+        $new = $this->prependBaseDirectory($new);
+
         $source = array(
             "bucket" => $this->bucket,
             "filename" => $key,
@@ -65,6 +92,8 @@ class AmazonS3 extends Base
      */
     public function write($key, $content, array $metadata = null)
     {
+        $key = $this->prependBaseDirectory($key);
+
         $this->ensureBucketExists();
 
         $opt = array("body" => $content);
@@ -106,6 +135,8 @@ class AmazonS3 extends Base
      */
     public function exists($key)
     {
+        $key = $this->prependBaseDirectory($key);
+        
         $this->ensureBucketExists();
 
         return $this->service->if_object_exists($this->bucket, $key);
@@ -116,6 +147,8 @@ class AmazonS3 extends Base
      */
     public function mtime($key)
     {
+        $key = $this->prependBaseDirectory($key);
+
         $headers = $this->getHeaders($key);
 
         return strtotime($headers['Last-modified']);
@@ -126,6 +159,8 @@ class AmazonS3 extends Base
      */
     public function checksum($key)
     {
+        $key = $this->prependBaseDirectory($key);
+        
         $headers = $this->getHeaders($key);
 
         return strtotime($headers['etag']);
@@ -139,6 +174,8 @@ class AmazonS3 extends Base
      */
     protected function getHeaders($key)
     {
+        $key = $this->prependBaseDirectory($key);
+
         $this->ensureBucketExists();
         $response = $this->service->get_object_metadata($this->bucket, $key);
 
@@ -176,12 +213,21 @@ class AmazonS3 extends Base
     {
         $this->ensureBucketExists();
 
-        $response = $this->service->delete_object($this->bucket, $key);
+        $response = $this->service->delete_object($this->bucket, $this->prependBaseDirectory($key));
         if (!$response->isOK()) {
             throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
         }
     }
 
+    public function prependBaseDirectory($key)
+    {
+        if (!$directory = $this->getDirectory()) {
+            
+            return $key;
+        }
+
+        return $directory . '/' . $key;
+    }
     /**
      * Ensures the specified bucket exists. If the bucket does not exists
      * and the create parameter is set to true, it will try to create the
@@ -218,7 +264,13 @@ class AmazonS3 extends Base
      */
     public function computePath($key)
     {
-        return $this->bucket . '/' . $key;
+        $path = $this->bucket . '/';
+        if ($directory = $this->getDirectory()) {
+            $path .= $directory . '/';
+        }
+        $path .= $key;
+
+        return $path;
     }
 
     /**
@@ -232,7 +284,12 @@ class AmazonS3 extends Base
             throw new \InvalidArgumentException(sprintf('The specified path \'%s\' is out of the bucket \'%s\'.', $path, $this->bucket));
         }
 
-        return ltrim(substr($path, strlen($this->bucket)), '/');
+        $basePath = $this->bucket;
+        if ($directory = $this->getDirectory()) {
+            $basePath .= '/' . $directory;
+        }
+
+        return ltrim(substr($path, strlen($basePath)), '/');
     }
 
     /**
