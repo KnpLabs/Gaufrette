@@ -72,39 +72,6 @@ class Ftp extends Base
     }
 
     /**
-     * Creates a new File instance and returns it
-     *
-     * @param  string     $key
-     * @param  Filesystem $filesystem
-     *
-     * @return File
-     */
-    public function get($key, Filesystem $filesystem)
-    {
-        if (!$this->exists($key)) {
-            throw new \RuntimeException(sprintf('The \'%s\' file does not exist.', $key));
-        }
-
-        $file = new File($key, $filesystem);
-
-        if (!array_key_exists($key, $this->fileData)) {
-            $directory = dirname($key) == '.' ? '' : dirname($key);
-            $this->listDirectory($directory);
-        }
-
-        $fileData = $this->fileData[$key];
-
-        $created = new \DateTime();
-        $created->setTimestamp($fileData['time']);
-
-        $file->setName($fileData['name']);
-        $file->setCreated($created);
-        $file->setSize($fileData['size']);
-
-        return $file;
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function write($key, $content, array $metadata = null)
@@ -314,6 +281,34 @@ class Ftp extends Base
     public function supportsMetadata()
     {
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function createFile($key, Filesystem $filesystem)
+    {
+        if (!$this->exists($key)) {
+            throw new \RuntimeException(sprintf('The \'%s\' file does not exist.', $key));
+        }
+
+        $file = new File($key, $filesystem);
+
+        if (!array_key_exists($key, $this->fileData)) {
+            $directory = dirname($key) == '.' ? '' : dirname($key);
+            $this->listDirectory($directory);
+        }
+
+        $fileData = $this->fileData[$key];
+
+        $created = new \DateTime();
+        $created->setTimestamp($fileData['time']);
+
+        $file->setName($fileData['name']);
+        $file->setCreated($created);
+        $file->setSize($fileData['size']);
+
+        return $file;
     }
 
     /**
