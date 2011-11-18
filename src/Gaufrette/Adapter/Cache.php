@@ -2,7 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
 use Gaufrette\File;
 use Gaufrette\Adapter\InMemory as InMemoryAdapter;
 
@@ -12,7 +11,7 @@ use Gaufrette\Adapter\InMemory as InMemoryAdapter;
  * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
-class Cache implements Adapter
+class Cache extends Base
 {
 	/**
 	 * @var Adapter

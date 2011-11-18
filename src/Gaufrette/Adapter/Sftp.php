@@ -2,9 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
-
-class Sftp implements Adapter
+class Sftp extends Base
 {
     protected $sftp;
     protected $directory;

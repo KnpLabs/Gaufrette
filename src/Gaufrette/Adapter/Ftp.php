@@ -2,7 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
 use Gaufrette\File;
 use Gaufrette\Filesystem;
 
@@ -12,10 +11,10 @@ use Gaufrette\Filesystem;
  * This adapter is not cached, if you need it to be cached, please see the
  * CachedFtp adapter which is a proxy class implementing a cache layer.
  *
- * @packageGaufrette
+ * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
-class Ftp implements Adapter
+class Ftp extends Base
 {
     protected $connection = null;
     protected $directory;
@@ -55,7 +54,7 @@ class Ftp implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function read($key)
     {
@@ -75,8 +74,9 @@ class Ftp implements Adapter
     /**
      * Creates a new File instance and returns it
      *
-     * @param string $key
-     * @param Filesystem $key
+     * @param  string     $key
+     * @param  Filesystem $filesystem
+     *
      * @return File
      */
     public function get($key, Filesystem $filesystem)
@@ -105,7 +105,7 @@ class Ftp implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function write($key, $content, array $metadata = null)
     {
@@ -128,7 +128,7 @@ class Ftp implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function rename($key, $new)
     {
@@ -144,7 +144,7 @@ class Ftp implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function exists($key)
     {
@@ -165,7 +165,7 @@ class Ftp implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function keys()
     {
@@ -173,7 +173,7 @@ class Ftp implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function mtime($key)
     {
@@ -196,7 +196,7 @@ class Ftp implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function delete($key)
     {
@@ -273,7 +273,7 @@ class Ftp implements Adapter
      * specified, it only returns files matching it.
      *
      * @param  string $directory The path of the directory to list from
-     * 
+     *
      * @return array An array of keys and dirs
      */
     public function listDirectory($directory = '')
@@ -309,7 +309,7 @@ class Ftp implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function supportsMetadata()
     {
@@ -318,8 +318,8 @@ class Ftp implements Adapter
 
     /**
      * Fetch all Keys recursive
-     * 
-     * @param string $directory 
+     *
+     * @param string $directory
      */
     private function fetchKeys($directory = '')
     {

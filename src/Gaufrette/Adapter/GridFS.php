@@ -2,7 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
 use Gaufrette\Checksum;
 use Gaufrette\Path;
 use Gaufrette\File;
@@ -15,7 +14,7 @@ use Gaufrette\Filesystem;
  *
  * @author Tomi Saarinen <tomi.saarinen@rohea.com>
  */
-class GridFS implements Adapter
+class GridFS extends Base
 {
     /**
      * GridFS Instance

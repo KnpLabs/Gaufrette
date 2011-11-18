@@ -70,7 +70,7 @@ class Filesystem
             throw new \InvalidArgumentException(sprintf('The file %s does not exist.', $key));
         }
 
-        return $this->createFileInstance($key);
+        return $this->createFile($key);
     }
 
     /**
@@ -141,7 +141,7 @@ class Filesystem
     public function listDirectory($directory = '')
     {
         $listing = null;
-        
+
         if (method_exists($this->adapter, 'listDirectory')) {
             $listing = $this->adapter->listDirectory($directory);
         }
@@ -200,18 +200,26 @@ class Filesystem
     }
 
     /**
+     * Creates a new file stream for the specified key
+     *
+     * @param  string $key
+     *
+     * @return FileStream
+     */
+    public function createFileStream($key)
+    {
+        return $this->adapter->createFileStream($key, $this);
+    }
+
+    /**
      * Creates a new File instance and returns it
      *
      * @param  string $key
+     *
      * @return File
      */
-    protected function createFileInstance($key)
+    public function createFile($key)
     {
-        if (is_callable(array($this->adapter, 'get'))) {
-            //If possible, delegate getting the file object to the adapter.
-            return $this->adapter->get($key, $this);
-        }
-
-        return new File($key, $this);
+        return $this->adapter->createFile($key, $this);
     }
 }

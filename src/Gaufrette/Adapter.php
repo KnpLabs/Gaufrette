@@ -90,4 +90,24 @@ interface Adapter
      * @return bool true if supports metadata, false if not
      */
     function supportsMetadata();
+
+    /**
+     * Creates an new file instance for the specified file
+     *
+     * @param  string     $key
+     * @param  Filesystem $filesystem
+     *
+     * @return File
+     */
+    function createFile($key, Filesystem $filesystem);
+
+    /**
+     * Creates a new file stream instance of the specified file
+     *
+     * @param  string     $key
+     * @param  Filesystem $filesystem
+     *
+     * @return FileStream
+     */
+    function createFileStream($key, Filesystem $filesystem);
 }

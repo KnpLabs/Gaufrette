@@ -2,16 +2,17 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
 use Gaufrette\Checksum;
 use Gaufrette\Path;
+use Gaufrette\Filesystem;
+use Gaufrette\FileStream;
 
 /**
  * Adapter for the local filesystem
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Local implements Adapter
+class Local extends Base
 {
     protected $directory;
 
@@ -28,14 +29,16 @@ class Local implements Adapter
     public function __construct($directory, $create = false)
     {
         $this->directory = $this->normalizePath($directory);
+
         if (is_link($this->directory)) {
             $this->directory = readlink($this->directory);
         }
+
         $this->ensureDirectoryExists($this->directory, $create);
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function read($key)
     {
@@ -49,7 +52,7 @@ class Local implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function write($key, $content, array $metadata = null)
     {
@@ -67,7 +70,7 @@ class Local implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function rename($key, $new)
     {
@@ -77,7 +80,7 @@ class Local implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function exists($key)
     {
@@ -85,7 +88,7 @@ class Local implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function keys()
     {
@@ -110,7 +113,7 @@ class Local implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function mtime($key)
     {
@@ -126,7 +129,7 @@ class Local implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function delete($key)
     {
@@ -230,10 +233,18 @@ class Local implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function supportsMetadata()
     {
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function createFileStream($key, Filesystem $filesystem)
+    {
+        return new FileStream\Local($this->computePath($key));
     }
 }

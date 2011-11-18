@@ -2,15 +2,13 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
-
 /**
  * Amazon S3 adapter
  *
  * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
-class AmazonS3 implements Adapter
+class AmazonS3 extends Base
 {
     protected $service;
     protected $bucket;

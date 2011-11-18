@@ -10,7 +10,7 @@ use Gaufrette\Adapter;
  * @package Gaufrette
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-class AclAwareAmazonS3 implements Adapter
+class AclAwareAmazonS3 extends Base
 {
     protected $delegate;
     protected $s3;

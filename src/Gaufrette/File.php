@@ -228,4 +228,18 @@ class File
 
         return $this->filesystem->delete($this->key);
     }
+
+    /**
+     * Creates a new file stream instance of the file
+     *
+     * @return  FileStream
+     */
+    public function createFileStream()
+    {
+        if (null === $this->filesystem) {
+            throw new \LogicException('Cannot create stream for the file because the filesystem is not defined.');
+        }
+
+        $this->filesystem->createFileStream($this->key);
+    }
 }

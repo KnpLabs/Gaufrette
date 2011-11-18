@@ -2,7 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
 use Gaufrette\Checksum;
 
 /**
@@ -13,7 +12,7 @@ use Gaufrette\Checksum;
  * @package Gaufrette
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class InMemory implements Adapter
+class InMemory extends Base
 {
     protected $files = array();
 
@@ -146,7 +145,7 @@ class InMemory implements Adapter
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function supportsMetadata()
     {
