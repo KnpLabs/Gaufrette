@@ -34,6 +34,22 @@ class AmazonS3Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals('foobar', $adapter->computeKey('foobucket/foobar'));
     }
 
+    public function testComputePathWithBaseDirectory()
+    {
+        $adapter = new AmazonS3($this->service, 'foobucket');
+        $adapter->setDirectory('subdirectory');
+
+        $this->assertEquals('foobucket/subdirectory/foobar', $adapter->computePath('foobar'));
+    }
+
+    public function testComputeKeyWithBaseDirectory()
+    {
+        $adapter = new AmazonS3($this->service, 'foobucket');
+        $adapter->setDirectory('subdirectory');
+
+        $this->assertEquals('foobar', $adapter->computeKey('foobucket/subdirectory/foobar'));
+    }
+
     public function testComputeKeyThrowsAnExceptionWhenTheSpecifiedPathIsNotValid()
     {
         $adapter = new AmazonS3($this->service, 'foobucket');
