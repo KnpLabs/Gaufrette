@@ -92,7 +92,21 @@ class Sftp extends Base
     {
         $this->initialize();
 
-        throw new \BadMethodCallException('Not implemented yet.');
+        return $this->listDirectory();
+    }
+
+    public function listDirectory($directory = '')
+    {
+        $this->initialize();
+
+        $path = $directory ? $this->computePath($directory) : $this->directory;
+
+        $contents = $this->sftp->listDirectory($path, true);
+        $directory = $this->directory;
+        array_walk($contents, function(&$input) use ($directory) {
+            $input = str_replace("$directory/", '', $input);
+        });
+        return $contents;
     }
 
     /**
