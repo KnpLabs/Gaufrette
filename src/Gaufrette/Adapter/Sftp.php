@@ -122,7 +122,7 @@ class Sftp extends Base
     {
         $this->initialize();
 
-        if (unlink($this->sftp->getUrl($this->computePath($key)))) {
+        if (!unlink($this->sftp->getUrl($this->computePath($key)))) {
             throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
         }
     }
