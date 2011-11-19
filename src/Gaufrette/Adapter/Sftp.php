@@ -82,7 +82,7 @@ class Sftp extends Base
 
         $url = $this->sftp->getUrl($this->computePath($key));
 
-        return file_exists($url) && is_file($url);
+        return file_exists($url);
     }
 
     /**
@@ -183,7 +183,7 @@ class Sftp extends Base
     {
         $url = $this->sftp->getUrl($directory);
 
-        if (!is_dir($url) && (!$create || !$this->createDirectory($directory))) {
+        if (false === @opendir($url) && (!$create || !$this->createDirectory($directory))) {
             throw new \RuntimeException(sprintf('The directory \'%s\' does not exist and could not be created.', $directory));
         }
     }
