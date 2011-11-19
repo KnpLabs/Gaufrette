@@ -166,7 +166,7 @@ class Sftp extends Base
             return;
         }
 
-        $this->ensureDirectoryExists($directory, $this->create);
+        $this->ensureDirectoryExists($this->directory, $this->create);
         $this->initialized = true;
     }
 
