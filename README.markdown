@@ -143,7 +143,7 @@ As an example, here is services declaration to use Amazon S3:
     <argument>%acme.s3.bucket_name%</argument>
 </service>
 
-<service id="acme.fs" class="Gaufrette\FileSystem">
+<service id="acme.fs" class="Gaufrette\Filesystem">
     <argument type="service" id="acme.s3.adapter"></argument>
 </service>
 ```
