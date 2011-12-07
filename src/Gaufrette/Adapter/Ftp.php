@@ -122,7 +122,7 @@ class Ftp extends Base
 
             $items = ftp_nlist($this->getConnection(), dirname($file));
             foreach ($items as $item) {
-                if ($file === $item) {
+                if (basename($file) === $item) {
                     return true;
                 }
             }
