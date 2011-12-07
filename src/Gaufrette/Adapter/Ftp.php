@@ -85,7 +85,7 @@ class Ftp extends Base
         $size = fwrite($temp, $content);
         rewind($temp);
 
-        if (!ftp_fput($this->getConnection(), $path, $temp, FTP_ASCII)) {
+        if (!ftp_fput($this->getConnection(), $path, $temp, $this->mode)) {
             throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
         }
 
