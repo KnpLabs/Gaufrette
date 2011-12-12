@@ -25,7 +25,7 @@ class Apc extends Base
     public function __construct($prefix, $ttl = 0)
     {
         if (!extension_loaded('apc')) {
-            throw new \RuntimeException('Unable to use Gaufrette\\Adapter\\Apc as the APC extension is not enabled.');
+            throw new \RuntimeException('Unable to use Gaufrette\\Adapter\\Apc as the APC extension is not available.');
         }
 
         $this->prefix = $prefix;
@@ -37,9 +37,13 @@ class Apc extends Base
      */
     public function read($key)
     {
-        $object = $this->fetchObject($key);
+        $content = apc_fetch($this->computePath($key));
 
-        return $object['content'];
+        if (false === $content) {
+            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
+        }
+
+        return $content;
     }
 
     /**
@@ -47,13 +51,13 @@ class Apc extends Base
      */
     public function write($key, $content, array $metadata = null)
     {
-        $object = array(
-            'content'   => $content,
-            'checksum'  => Checksum::fromContent($content),
-            'mtime'     => time(),
-        );
+        $result = apc_store($this->computePath($key), $content, $this->ttl);
 
-        return $this->storeObject($key, $object);
+        if (false === $result) {
+            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
+        }
+
+        return mb_strlen($content);
     }
 
     /**
@@ -69,16 +73,18 @@ class Apc extends Base
      */
     public function keys()
     {
-        $cachedKeys = new \APCIterator('user', sprintf('/^%s/', preg_quote($this->prefix)), APC_ITER_NONE);
+        $pattern = sprintf('/^%s/', preg_quote($this->prefix));
+        $cachedKeys = new \APCIterator('user', $pattern, APC_ITER_NONE);
 
         if (null === $cachedKeys) {
             throw new \RuntimeException('Could not get the keys.');
         }
 
         $keys = array();
-        foreach (iterator_to_array($cachedKeys) as $key => $value) {
-            $keys[] = str_replace($this->prefix, '', $key);
+        foreach ($cachedKeys as $key => $value) {
+            $keys[] = preg_replace($pattern, '', $key);
         }
+        sort($keys);
 
         return $keys;
     }
@@ -88,9 +94,10 @@ class Apc extends Base
      */
     public function mtime($key)
     {
-        $object = $this->fetchObject($key);
+        $pattern = sprintf('/^%s/', preg_quote($this->prefix . $key));
+        $cachedKeys = iterator_to_array(new \APCIterator('user', $pattern, APC_ITER_MTIME));
 
-        return $object['mtime'];
+        return $cachedKeys[$this->computePath($key)]['mtime'];
     }
 
     /**
@@ -98,9 +105,7 @@ class Apc extends Base
      */
     public function checksum($key)
     {
-        $object = $this->fetchObject($key);
-
-        return $object['checksum'];
+        return Checksum::fromContent($this->read($key));
     }
 
     /**
@@ -121,10 +126,9 @@ class Apc extends Base
     public function rename($key, $new)
     {
         try {
-            $object = $this->fetchObject($key);
-            $object['mtime'] = time();
-
-            $this->storeObject($new, $object);
+            // TODO: this probably allows for race conditions...
+            $content = $this->read($key);
+            $this->write($new, $content);
             $this->delete($key);
         } catch (\Exception $e) {
             throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
@@ -148,42 +152,5 @@ class Apc extends Base
     public function computePath($key)
     {
         return $this->prefix . $key;
-    }
-
-    /**
-     * Fetch object from APC
-     *
-     * @throws \RuntimeException
-     * @param string $key
-     * @return array
-     */
-    public function fetchObject($key)
-    {
-        $object = apc_fetch($this->computePath($key));
-
-        if (false === $object) {
-            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
-        }
-
-        return $object;
-    }
-
-    /**
-     * Store object in APC
-     *
-     * @throws \RuntimeException
-     * @param $key
-     * @param $object
-     * @return int
-     */
-    public function storeObject($key, $object)
-    {
-        $result = apc_store($this->computePath($key), $object, $this->ttl);
-
-        if (false === $result) {
-            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
-        }
-
-        return mb_strlen($object);
     }
 }

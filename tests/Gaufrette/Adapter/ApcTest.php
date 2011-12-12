@@ -5,6 +5,8 @@ namespace Gaufrette\Adapter;
 class ApcTest extends \PHPUnit_Framework_TestCase
 {
     const PREFIX = 'test-suite.';
+    const KEY = 'test-key';
+    const CONTENT = 'Yummy, some test content!';
 
     protected function setUp()
     {
@@ -33,24 +35,94 @@ class ApcTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::PREFIX . 'foobar', $adapter->computePath('foobar'));
     }
 
-    public function testStoreAndFetchObject()
+    /**
+     * @depends testComputePath
+     */
+    public function testWriteAndRead()
     {
         $adapter = new Apc(self::PREFIX);
-        $content = 'Yummy, some test content!';
-        $key = 'test-key';
+        $adapter->write(self::KEY, self::CONTENT);
 
-        $adapter->storeObject($key, $content);
-        $this->assertEquals($content, $adapter->fetchObject($key));
+        $this->assertEquals(self::CONTENT, $adapter->read(self::KEY));
     }
 
+    /**
+     * @depends testWriteAndRead
+     */
+    public function testExists()
+    {
+        $adapter = new Apc(self::PREFIX);
+        $adapter->write(self::KEY, null);
+
+        $this->assertTrue($adapter->exists(self::KEY));
+        $this->assertFalse($adapter->exists('non-existing-key'));
+    }
+
+    /**
+     * @depends testWriteAndRead
+     */
     public function testKeys()
     {
         $adapter = new Apc(self::PREFIX);
-        $content = 'Yummy, some test content!';
+        $adapter->write('test-key1', null);
+        $adapter->write('test-key2', null);
+        $adapter->write(self::PREFIX, null);
 
-        $adapter->storeObject('test-key1', $content);
-        $adapter->storeObject('test-key2', $content);
+        $this->assertEquals(array('test-key1', 'test-key2', self::PREFIX), $adapter->keys());
+    }
 
-        $this->assertEquals(array('test-key1', 'test-key2'), $adapter->keys());
+    /**
+     * @depends testWriteAndRead
+     */
+    public function testMtime()
+    {
+        $adapter = new Apc(self::PREFIX);
+        $adapter->write(self::KEY, null);
+
+        $this->assertTrue(time() >= $adapter->mtime(self::KEY));
+    }
+
+    /**
+     * @depends testWriteAndRead
+     */
+    public function testChecksum()
+    {
+        $adapter = new Apc(self::PREFIX);
+        $adapter->write(self::KEY, self::CONTENT);
+
+        $this->assertEquals(md5(self::CONTENT), $adapter->checksum(self::KEY));
+    }
+
+    /**
+     * @depends testWriteAndRead
+     */
+    public function testDelete()
+    {
+        $adapter = new Apc(self::PREFIX);
+
+        $adapter->write(self::KEY, null);
+        $adapter->delete(self::KEY);
+
+        $this->assertFalse($adapter->exists(self::KEY));
+    }
+
+    /**
+     * @depends testWriteAndRead
+     */
+    public function testRename()
+    {
+        $adapter = new Apc(self::PREFIX);
+        $adapter->write(self::KEY, null);
+        $adapter->rename(self::KEY, 'new-key');
+
+        $this->assertTrue($adapter->exists('new-key'));
+        $this->assertFalse($adapter->exists(self::KEY));
+    }
+
+    public function testSupportsMetadata()
+    {
+        $adapter = new Apc(self::PREFIX);
+
+        $this->assertFalse($adapter->supportsMetadata());
     }
 }
