@@ -195,7 +195,7 @@ class AmazonS3 extends Base
 
         $response = $this->service->list_objects($this->bucket);
         if (!$response->isOK()) {
-            throw new \RuntimeException(sprintf('Could not get the keys.', $key));
+            throw new \RuntimeException('Could not get the keys.');
         }
 
         $keys = array();
