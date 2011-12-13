@@ -14,24 +14,24 @@ use Gaufrette\Adapter\InMemory as InMemoryAdapter;
  */
 class Cache extends Base
 {
-	/**
-	 * @var Adapter
-	 */
+    /**
+     * @var Adapter
+     */
     protected $source;
 
-	/**
-	 * @var Adapter
-	 */
+    /**
+     * @var Adapter
+     */
     protected $cache;
 
-	/**
-	 * @var integer
-	 */
+    /**
+     * @var integer
+     */
     protected $ttl;
 
-	/**
-	 * @var Adapter
-	 */
+    /**
+     * @var Adapter
+     */
     protected $serializeCache;
 
     /**
