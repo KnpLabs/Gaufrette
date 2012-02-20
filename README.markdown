@@ -134,8 +134,10 @@ As an example, here is services declaration to use Amazon S3:
 
 ```xml
 <service id="acme.s3" class="AmazonS3">
-    <argument>%acme.aws_key%</argument>
-    <argument>%acme.aws_secret_key%</argument>
+    <argument type="collection">
+        <argument key="key">%acme.aws_key%</argument>
+        <argument key="secret">%acme.aws_secret_key%</argument>
+    </argument>
 </service>
 
 <service id="acme.s3.adapter" class="Gaufrette\Adapter\AmazonS3">
