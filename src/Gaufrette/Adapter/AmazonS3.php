@@ -151,7 +151,7 @@ class AmazonS3 extends Base
 
         $headers = $this->getHeaders($key);
 
-        return strtotime($headers['Last-modified']);
+        return strtotime($headers['last-modified']);
     }
 
     /**
