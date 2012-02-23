@@ -45,7 +45,7 @@ interface Adapter
      *
      * @return array
      */
-    function keys();
+    function keys($prefix = null);
 
     /**
      * Returns the last modified time

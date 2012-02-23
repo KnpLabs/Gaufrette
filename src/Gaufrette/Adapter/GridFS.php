@@ -166,8 +166,11 @@ class GridFS extends Base
     /**
      * {@InheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
+		if (null !== $prefix) {
+		    throw new \BadMethodCallException("Usage of prefix filter not implemented yet.");
+		}
         /**
          * This seems to work but performance is a big question...
          */

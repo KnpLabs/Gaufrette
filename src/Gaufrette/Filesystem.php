@@ -128,9 +128,9 @@ class Filesystem
      *
      * @return array
      */
-    public function keys()
+    public function keys($prefix = null)
     {
-        return $this->adapter->keys();
+        return $this->adapter->keys($prefix);
     }
 
     /**
@@ -149,7 +149,7 @@ class Filesystem
         // Cache adapter returns null if source-Adapter does not provide the listDirectory method
         if (!$listing) {
             $listing = array(
-                'keys'  => $this->keys(),
+                'keys'  => $this->keys($directory),
                 'dirs'  => array()
             );
         }
