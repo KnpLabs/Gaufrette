@@ -97,6 +97,15 @@ class Cache extends Base
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function copy($key, $new)
+    {
+        $this->source->copy($key, $new);
+        $this->cache->copy($key, $new);
+    }
+
+    /**
      * {@InheritDoc}
      */
     public function write($key, $content, array $metadata = null)
@@ -132,8 +141,11 @@ class Cache extends Base
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
+		if (null !== $prefix) {
+		    throw new \BadMethodCallException("Usage of prefix filter not implemented yet.");
+		}
         $cacheFile = 'keys.cache';
         if ($this->needsRebuild($cacheFile)) {
             $keys = $this->source->keys();

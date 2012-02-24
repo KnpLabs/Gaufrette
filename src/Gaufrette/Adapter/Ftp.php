@@ -113,6 +113,14 @@ class Ftp extends Base
     /**
      * {@inheritDoc}
      */
+    public function copy($key, $new)
+    {
+        throw new \BadMethodCallException('Not implemented yet.');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function exists($key)
     {
         if (array_key_exists($key, $this->fileData)) {
@@ -134,8 +142,11 @@ class Ftp extends Base
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
+		if (null !== $prefix) {
+		    throw new \BadMethodCallException("Usage of prefix filter not implemented yet.");
+		}
         return $this->fetchKeys();
     }
 

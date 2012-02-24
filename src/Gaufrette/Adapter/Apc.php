@@ -71,8 +71,11 @@ class Apc extends Base
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
+		if (null !== $prefix) {
+		    throw new \BadMethodCallException("Usage of prefix filter not implemented yet.");
+		}
         $pattern = sprintf('/^%s/', preg_quote($this->prefix));
         $cachedKeys = new \APCIterator('user', $pattern, APC_ITER_NONE);
 
@@ -135,6 +138,20 @@ class Apc extends Base
         }
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    public function copy($key, $new)
+    {
+        try {
+            // TODO: this probably allows for race conditions...
+            $content = $this->read($key);
+            $this->write($new, $content);
+        } catch (\Exception $e) {
+            throw new \RuntimeException(sprintf('Could not copy the \'%s\' file to \'%s\'.', $key, $new));
+        }
+    }
+	
     /**
      * {@inheritDoc}
      */

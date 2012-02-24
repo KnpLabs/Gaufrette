@@ -55,6 +55,19 @@ class Filesystem
     {
         return $this->adapter->rename($key, $new);
     }
+	
+    /**
+     * Copy a file
+     *
+     * @param string $key
+     * @param string $new
+     *
+     * @return boolean TRUE if the copy was successful, FALSE otherwise
+     */
+    public function copy($key, $new)
+    {
+        return $this->adapter->copy($key, $new);
+    }
 
     /**
      * Returns the file matching the specified key
@@ -128,9 +141,9 @@ class Filesystem
      *
      * @return array
      */
-    public function keys()
+    public function keys($prefix = null)
     {
-        return $this->adapter->keys();
+        return $this->adapter->keys($prefix);
     }
 
     /**
@@ -149,7 +162,7 @@ class Filesystem
         // Cache adapter returns null if source-Adapter does not provide the listDirectory method
         if (!$listing) {
             $listing = array(
-                'keys'  => $this->keys(),
+                'keys'  => $this->keys($directory),
                 'dirs'  => array()
             );
         }

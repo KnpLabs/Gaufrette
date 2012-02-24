@@ -113,6 +113,24 @@ class GridFS extends Base
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function copy($key, $new)
+    {
+        $gridfsFile = $this->gridfsInstance->findOne(array('key' => $key));
+
+        if (is_object($gridfsFile)) {
+            $retval = $this->write($new, $gridfsFile->getBytes(), $gridfsFile->file['metadata']);
+
+            if ($retval > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * {@InheritDoc}
      */
     public function exists($key)
@@ -166,8 +184,11 @@ class GridFS extends Base
     /**
      * {@InheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
+		if (null !== $prefix) {
+		    throw new \BadMethodCallException("Usage of prefix filter not implemented yet.");
+		}
         /**
          * This seems to work but performance is a big question...
          */

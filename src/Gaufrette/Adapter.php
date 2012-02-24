@@ -45,7 +45,7 @@ interface Adapter
      *
      * @return array
      */
-    function keys();
+    function keys($prefix = null);
 
     /**
      * Returns the last modified time
@@ -83,6 +83,16 @@ interface Adapter
      * @throws RuntimeException on failure
      */
     function rename($key, $new);
+
+    /**
+     * Copy a file
+     *
+     * @param string $key
+     * @param string $new
+     *
+     * @throws RuntimeException on failure
+     */
+    function copy($key, $new);
 
     /**
      * If the adapter can allow inserting metadata

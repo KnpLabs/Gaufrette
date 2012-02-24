@@ -66,6 +66,20 @@ class AmazonS3 extends Base
      */
     public function rename($key, $new)
     {
+		try {
+			$this->copy($key, $new);
+		} catch(\RuntimeException $exception) {
+			throw new \RuntimeException(sprintf('Could not rename the \'%s\' file.', $key));
+		}
+
+        $this->delete($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function copy($key, $new)
+    {
         $key = $this->prependBaseDirectory($key);
         $new = $this->prependBaseDirectory($new);
 
@@ -81,10 +95,8 @@ class AmazonS3 extends Base
 
         $response = $this->service->copy_object($source, $destination);
         if (!$response->isOK()) {
-            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file.', $key));
+            throw new \RuntimeException(sprintf('Could not copy the \'%s\' file.', $key));
         }
-
-        $this->delete($key);
     }
 
     /**
@@ -151,7 +163,7 @@ class AmazonS3 extends Base
 
         $headers = $this->getHeaders($key);
 
-        return strtotime($headers['Last-modified']);
+        return strtotime($headers['last-modified']);
     }
 
     /**
@@ -189,11 +201,15 @@ class AmazonS3 extends Base
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
         $this->ensureBucketExists();
 
-        $response = $this->service->list_objects($this->bucket);
+		$options = array();
+	    if (null !== $prefix) {
+	        $options['prefix'] = $prefix;
+	    }
+        $response = $this->service->list_objects($this->bucket, $options);
         if (!$response->isOK()) {
             throw new \RuntimeException('Could not get the keys.');
         }

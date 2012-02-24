@@ -54,6 +54,14 @@ class RackspaceCloudfiles extends Base
     /**
      * {@inheritDoc}
      */
+    public function copy($key, $new)
+    {
+        throw new \BadMethodCallException('Not implemented yet.');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function write($key, $content, array $metadata = null)
     {
         $object = $this->tryGetObject($key);
@@ -80,8 +88,11 @@ class RackspaceCloudfiles extends Base
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
+		if (null !== $prefix) {
+		    throw new \BadMethodCallException("Usage of prefix filter not implemented yet.");
+		}
         return $this->container->list_objects(0, null, null);
     }
 

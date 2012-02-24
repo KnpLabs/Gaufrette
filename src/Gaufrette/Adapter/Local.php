@@ -82,6 +82,14 @@ class Local extends Base
     /**
      * {@inheritDoc}
      */
+    public function copy($key, $new)
+    {
+        throw new \BadMethodCallException('Not implemented yet.');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function exists($key)
     {
         return is_file($this->computePath($key));
@@ -90,8 +98,11 @@ class Local extends Base
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
+		if (null !== $prefix) {
+		    throw new \BadMethodCallException("Usage of prefix filter not implemented yet.");
+		}
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator(
                 $this->directory,
