@@ -85,6 +85,16 @@ interface Adapter
     function rename($key, $new);
 
     /**
+     * Copy a file
+     *
+     * @param string $key
+     * @param string $new
+     *
+     * @throws RuntimeException on failure
+     */
+    function copy($key, $new);
+
+    /**
      * If the adapter can allow inserting metadata
      *
      * @return bool true if supports metadata, false if not

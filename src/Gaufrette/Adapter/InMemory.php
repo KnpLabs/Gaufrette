@@ -95,6 +95,17 @@ class InMemory extends Base
     /**
      * {@inheritDoc}
      */
+    public function copy($key, $new)
+    {
+        $this->files[$new] = $this->files[$key];
+        $this->files[$new]['mtime'] = time();
+
+		return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function write($key, $content, array $metadata = null)
     {
         $this->files[$key]['content']  = $content;

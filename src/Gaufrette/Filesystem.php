@@ -55,6 +55,19 @@ class Filesystem
     {
         return $this->adapter->rename($key, $new);
     }
+	
+    /**
+     * Copy a file
+     *
+     * @param string $key
+     * @param string $new
+     *
+     * @return boolean TRUE if the copy was successful, FALSE otherwise
+     */
+    public function copy($key, $new)
+    {
+        return $this->adapter->copy($key, $new);
+    }
 
     /**
      * Returns the file matching the specified key

@@ -113,6 +113,14 @@ class Ftp extends Base
     /**
      * {@inheritDoc}
      */
+    public function copy($key, $new)
+    {
+        throw new \BadMethodCallException('Not implemented yet.');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function exists($key)
     {
         if (array_key_exists($key, $this->fileData)) {

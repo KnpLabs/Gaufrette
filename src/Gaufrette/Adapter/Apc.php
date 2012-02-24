@@ -138,6 +138,20 @@ class Apc extends Base
         }
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    public function copy($key, $new)
+    {
+        try {
+            // TODO: this probably allows for race conditions...
+            $content = $this->read($key);
+            $this->write($new, $content);
+        } catch (\Exception $e) {
+            throw new \RuntimeException(sprintf('Could not copy the \'%s\' file to \'%s\'.', $key, $new));
+        }
+    }
+	
     /**
      * {@inheritDoc}
      */
