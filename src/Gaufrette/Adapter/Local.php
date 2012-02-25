@@ -10,7 +10,7 @@ use Gaufrette\FileStream;
 /**
  * Adapter for the local filesystem
  *
- * @author Antoine HÃ©rault <antoine.herault@gmail.com>
+ * @author Antoine Hérault <antoine.herault@gmail.com>
  */
 class Local extends Base
 {
