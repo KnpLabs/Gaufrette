@@ -129,7 +129,7 @@ class MogileFS extends Base
     /**
      * {@InheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
         throw new \BadMethodCallException("Method not implemented yet.");
     }

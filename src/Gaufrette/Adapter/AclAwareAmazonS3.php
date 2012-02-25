@@ -131,9 +131,9 @@ class AclAwareAmazonS3 extends Base
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
-        return $this->delegate->keys();
+        return $this->delegate->keys($prefix);
     }
 
     /**
