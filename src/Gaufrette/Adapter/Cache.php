@@ -97,6 +97,15 @@ class Cache extends Base
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function copy($key, $new)
+    {
+        $this->source->copy($key, $new);
+        $this->cache->copy($key, $new);
+    }
+
+    /**
      * {@InheritDoc}
      */
     public function write($key, $content, array $metadata = null)

@@ -119,6 +119,14 @@ class MogileFS extends Base
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function copy($key, $new)
+    {
+        throw new \BadMethodCallException('Not implemented yet.');
+    }
+
+    /**
      * {@InheritDoc}
      */
     public function exists($key)

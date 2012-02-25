@@ -56,6 +56,14 @@ class Sftp extends Base
     /**
      * {@inheritDoc}
      */
+    public function copy($key, $new)
+    {
+        throw new \BadMethodCallException('Not implemented yet.');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function write($key, $content, array $metadata = null)
     {
         $this->initialize();
