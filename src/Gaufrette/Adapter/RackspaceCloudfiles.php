@@ -44,7 +44,7 @@ class RackspaceCloudfiles extends Base
     public function rename($key, $new)
     {
         try {
-            $this->write($new, $this->read($key));
+            $this->copy($key, $new);
             $this->delete($key);
         } catch (\Exception $e) {
             throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
@@ -56,7 +56,11 @@ class RackspaceCloudfiles extends Base
      */
     public function copy($key, $new)
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        try {
+            $this->write($new, $this->read($key));
+        } catch (\Exception $e) {
+            throw new \RuntimeException(sprintf('Could not copy the \'%s\' file to \'%s\'.', $key, $new));
+       }
     }
 
     /**

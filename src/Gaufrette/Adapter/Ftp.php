@@ -115,7 +115,11 @@ class Ftp extends Base
      */
     public function copy($key, $new)
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        try {
+            $this->write($new, $this->read($key));
+        } catch (\RuntimeException $e) {
+            throw new \RuntimeException(sprintf('Could not copy the \'%s\' file to \'%s\'.', $key, $new));
+        }
     }
 
     /**

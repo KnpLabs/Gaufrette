@@ -84,7 +84,9 @@ class Local extends Base
      */
     public function copy($key, $new)
     {
-        throw new \BadMethodCallException('Not implemented yet.');
+        if (!copy($this->computePath($key), $this->computePath($new))) {
+            throw new \RuntimeException(sprintf('Could not copy the \'%s\' file to \'%s\'.', $key, $new));
+        }
     }
 
     /**
