@@ -74,9 +74,11 @@ class Apc extends Base
     public function keys($prefix = null)
     {
 		if (null !== $prefix) {
-		    throw new \BadMethodCallException("Usage of prefix filter not implemented yet.");
+		    $prefix = $this->computePath($prefix);
+		} else {
+			$prefix = $this->prefix;
 		}
-        $pattern = sprintf('/^%s/', preg_quote($this->prefix));
+        $pattern = sprintf('/^%s/', preg_quote($prefix));
         $cachedKeys = new \APCIterator('user', $pattern, APC_ITER_NONE);
 
         if (null === $cachedKeys) {

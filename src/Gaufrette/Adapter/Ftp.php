@@ -137,7 +137,7 @@ class Ftp extends Base
     public function keys($prefix = null)
     {
 		if (null !== $prefix) {
-		    throw new \BadMethodCallException("Usage of prefix filter not implemented yet.");
+		    return $this->fetchKeys($prefix);
 		}
         return $this->fetchKeys();
     }

@@ -169,12 +169,13 @@ class GridFS extends Base
     public function keys($prefix = null)
     {
 		if (null !== $prefix) {
-		    throw new \BadMethodCallException("Usage of prefix filter not implemented yet.");
-		}
-        /**
-         * This seems to work but performance is a big question...
-         */
-        $cursor = $this->gridfsInstance->find(array(), array('key'));
+		    $cursor = $this->gridfsInstance->find(array('key' => sprintf('/^%s/', preg_quote($prefix)) ), array('key'));
+		} else {
+            /**
+             * This seems to work but performance is a big question...
+             */
+            $cursor = $this->gridfsInstance->find(array(), array('key'));
+        }
         $temp = array();
         foreach($cursor as $f) {
             $temp[] = $f->file['key'];
