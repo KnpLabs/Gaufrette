@@ -86,14 +86,14 @@ class AclAwareAmazonS3 extends Base
         }
     }
 
-	/**
+    /**
      * {@inheritDoc}
      */
     public function copy($key, $new)
     {
         $this->delegate->copy($key, $new);
 
-        $this->updateAcl($key);
+        $this->updateAcl($new);
     }
 
     /**
