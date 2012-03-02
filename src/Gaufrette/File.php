@@ -240,6 +240,6 @@ class File
             throw new \LogicException('Cannot create stream for the file because the filesystem is not defined.');
         }
 
-        $this->filesystem->createFileStream($this->key);
+        return $this->filesystem->createFileStream($this->key);
     }
 }
