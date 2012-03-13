@@ -129,7 +129,7 @@ class RackspaceCloudfiles extends Base
     protected function tryGetObject($key)
     {
         try {
-            return $this->container->getObject($key);
+            return $this->container->get_object($key);
         } catch (\NoSuchObjectException $e) {
             // the NoSuchObjectException is thrown by the CF_Object during it's
             // creation if the object doesn't exist
