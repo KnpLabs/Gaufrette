@@ -115,7 +115,7 @@ In your Symfony2 project, add to ``deps``:
 
 ```ini
 [gaufrette]
-    git=https://github.com/knplabs/Gaufrette.git
+    git=https://github.com/KnpLabs/Gaufrette.git
 
 # if you want to use Amazon S3
 [aws-sdk]
