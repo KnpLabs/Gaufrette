@@ -17,7 +17,7 @@ The filesystem abstraction layer permits you to develop your application without
 the need to know were all those medias will be stored and how.
 
 Another advantage of this is the possibility to update the files location
-without any impact on the code apart from the definition of your filesystem.
+without any impact on the codea part from the definition of your filesystem.
 In exemple, if your project grows up very fast and if your server reaches its
 limits, you can easily move your medias in an Amazon S3 server or any other
 solution.
@@ -166,7 +166,7 @@ to transform an image). Let's take a look at the following exemple:
 
 ```php
 $adapter = new InMemoryAdapter(array('hello.txt' => 'Hello World!'));
-$filesystem = new Filename($adapter);
+$filesystem = new Filesystem($adapter);
 
 $map = StreamWrapper::getFilesystemMap();
 $map->set('foo', $filesystem);
