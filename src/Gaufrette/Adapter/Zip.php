@@ -3,7 +3,6 @@ namespace Gaufrette\Adapter;
 
 use ZipArchive;
 
-
 /**
  * ZIP Archive adapter
  *
@@ -12,9 +11,15 @@ use ZipArchive;
  */
 class Zip extends Base {
 
-    protected $_zipFile;
+    /**
+     * @var string The zip archive full path
+     */
+    protected $zipFile;
 
-    protected $_zipArchive;
+    /**
+     * @var ZipArchive
+     */
+    protected $zipArchive;
 
     public function __construct($zipFile)
     {
@@ -22,72 +27,8 @@ class Zip extends Base {
             throw new \RuntimeException(sprintf('Unable to use %s without ZIP extension installed. See http://www.php.net/manual/en/zip.installation.php', __CLASS__));
         }
 
-        $this->_setZipFile($zipFile)
-            ->_initZipArchive();
-    }
-
-    protected function _setZipFile($zipFile)
-    {
-        $this->_zipFile = $zipFile;
-
-        return $this;
-    }
-
-    public function getZipFile()
-    {
-        return $this->_zipFile;
-    }
-
-    protected function _initZipArchive()
-    {
-        $this->_zipArchive = new ZipArchive();
-
-        if (true !== ($resultCode = $this->_getZipArchive()->open($this->getZipFile(), ZipArchive::CREATE))) {
-            switch($resultCode) {
-                case ZipArchive::ER_EXISTS:
-                    $errMsg = 'File already exists';
-                break;
-                case ZipArchive::ER_INCONS:
-                    $errMsg = 'Zip archive inconsistent.';
-                break;
-                case ZipArchive::ER_INVAL:
-                    $errMsg = 'Invalid argument.';
-                break;
-                case ZipArchive::ER_MEMORY:
-                    $errMsg = 'Malloc failure.';
-                break;
-                case ZipArchive::ER_NOENT:
-                    $errMsg = 'Invalid argument.';
-                break;
-                case ZipArchive::ER_NOZIP:
-                    $errMsg = 'Not a zip archive.';
-                break;
-                case ZipArchive::ER_OPEN:
-                    $errMsg = 'Can\'t open file.';
-                break;
-                case ZipArchive::ER_READ:
-                    $errMsg = 'Read error.';
-                break;
-                case ZipArchive::ER_SEEK;
-                    $errMsg = 'Seek error.';
-                break;
-                default:
-                    $errMsg = 'Unknown error';
-                break;
-            }
-
-            throw new \RuntimeException(sprintf('%s', $errMsg));
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return ZipArchive
-     */
-    protected function _getZipArchive()
-    {
-        return $this->_zipArchive;
+        $this->zipFile = $zipFile;
+        $this->initZipArchive();
     }
 
     /**
@@ -99,7 +40,7 @@ class Zip extends Base {
      */
     public function read($key)
     {
-        if (false === ($content = $this->_getZipArchive()->getFromName($key, 0))) {
+        if (false === ($content = $this->zipArchive->getFromName($key, 0))) {
             throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
         }
 
@@ -119,12 +60,12 @@ class Zip extends Base {
      */
     public function write($key, $content, array $metadata = null)
     {
-        if (!$this->_getZipArchive()->addFromString($key, $content)) {
+        if (!$this->zipArchive->addFromString($key, $content)) {
             // This should never happen though...
             throw new \RuntimeException(sprintf('Unable to write content to :\'%s\' file.', $key));
         }
 
-        $this->_save();
+        $this->save();
 
         return mb_strlen($content);
     }
@@ -150,8 +91,8 @@ class Zip extends Base {
     {
         $keys = array();
 
-        for ($i = 0; $i < $this->_getZipArchive()->numFiles; ++$i) {
-            $keys[$i] = $this->_getZipArchive()->getNameIndex($i);
+        for ($i = 0; $i < $this->zipArchive->numFiles; ++$i) {
+            $keys[$i] = $this->zipArchive->getNameIndex($i);
         }
 
         return $keys;
@@ -166,7 +107,6 @@ class Zip extends Base {
      */
     public function mtime($key)
     {
-
         $stat = $this->getStat($key);
 
         return $stat['mtime'];
@@ -179,7 +119,7 @@ class Zip extends Base {
      *
      * @return string
      */
-    function checksum($key)
+    public function checksum($key)
     {
         $stat = $this->getStat($key);
 
@@ -193,13 +133,13 @@ class Zip extends Base {
      *
      * @throws RuntimeException on failure
      */
-    function delete($key)
+    public function delete($key)
     {
-        if (!$this->_getZipArchive()->deleteName($key)) {
+        if (!$this->zipArchive->deleteName($key)) {
             throw new \RuntimeException(sprintf('Unable to delete \'%s\'.', $key));
         }
 
-        $this->_save();
+        $this->save();
     }
 
     /**
@@ -210,13 +150,13 @@ class Zip extends Base {
      *
      * @throws RuntimeException on failure
      */
-    function rename($key, $new)
+    public function rename($key, $new)
     {
-        if (!$this->_getZipArchive()->renameName($key, $new)) {
+        if (!$this->zipArchive->renameName($key, $new)) {
             throw new \RuntimeException(sprintf('Unable to rename \'%s\' to \'%s\'.', $key, $new));
         }
 
-        $this->_save();
+        $this->save();
     }
 
     /**
@@ -230,7 +170,7 @@ class Zip extends Base {
      */
     public function getStat($key, $throwException = true)
     {
-        if (false === ($stat = $this->_getZipArchive()->statName($key)) && true === $throwException) {
+        if (false === ($stat = $this->zipArchive->statName($key)) && true === $throwException) {
             throw new \RuntimeException(sprintf('Unable to stat \'%s\'.', $key));
         }
 
@@ -242,9 +182,59 @@ class Zip extends Base {
      *
      * @return bool true if supports metadata, false if not
      */
-    function supportsMetadata()
+    public function supportsMetadata()
     {
         return false;
+    }
+
+    public function __destruct()
+    {
+        $this->zipArchive->close();
+        unset($this->zipArchive);
+    }
+
+    protected function initZipArchive()
+    {
+        $this->zipArchive = new ZipArchive();
+
+        if (true !== ($resultCode = $this->zipArchive->open($this->zipFile, ZipArchive::CREATE))) {
+            switch($resultCode) {
+                case ZipArchive::ER_EXISTS:
+                    $errMsg = 'File already exists';
+                    break;
+                case ZipArchive::ER_INCONS:
+                    $errMsg = 'Zip archive inconsistent.';
+                    break;
+                case ZipArchive::ER_INVAL:
+                    $errMsg = 'Invalid argument.';
+                    break;
+                case ZipArchive::ER_MEMORY:
+                    $errMsg = 'Malloc failure.';
+                    break;
+                case ZipArchive::ER_NOENT:
+                    $errMsg = 'Invalid argument.';
+                    break;
+                case ZipArchive::ER_NOZIP:
+                    $errMsg = 'Not a zip archive.';
+                    break;
+                case ZipArchive::ER_OPEN:
+                    $errMsg = 'Can\'t open file.';
+                    break;
+                case ZipArchive::ER_READ:
+                    $errMsg = 'Read error.';
+                    break;
+                case ZipArchive::ER_SEEK;
+                    $errMsg = 'Seek error.';
+                    break;
+                default:
+                    $errMsg = 'Unknown error';
+                    break;
+            }
+
+            throw new \RuntimeException(sprintf('%s', $errMsg));
+        }
+
+        return $this;
     }
 
     /**
@@ -252,20 +242,14 @@ class Zip extends Base {
      *
      * @throws \RuntimeException If file could not be saved
      */
-    protected function _save()
+    protected function save()
     {
         // Close to save modification
-        if (!$this->_getZipArchive()->close()) {
-            throw new \RuntimeException(sprintf('Unable to save ZIP archive: %s', $this->getZipFile()));
+        if (!$this->zipArchive->close()) {
+            throw new \RuntimeException(sprintf('Unable to save ZIP archive: %s', $this->zipFile));
         }
 
         // Re-initialize to get updated version
-        $this->_initZipArchive();
-    }
-
-    public function __destruct()
-    {
-        $this->_getZipArchive()->close();
-        unset($this->_zipArchive);
+            $this->initZipArchive();
     }
 }
