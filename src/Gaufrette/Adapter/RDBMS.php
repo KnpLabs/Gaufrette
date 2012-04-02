@@ -8,7 +8,7 @@ namespace Gaufrette\Adapter;
  * @package Gaufrette
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class MySQL extends Base
+class RDBMS extends Base
 {
     /**
      * @var PDO
@@ -25,7 +25,6 @@ class MySQL extends Base
         $this->adapter = $adapter;
         $this->adapter->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $this->adapter->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_OBJ);
-        $this->adapter->query("SET NAMES 'utf8'");
 
         $this->options = array_merge(array(
             'tableName'       => 'files',
@@ -45,7 +44,7 @@ class MySQL extends Base
      */
     public function read($key)
     {
-        $stmt = $this->adapter->prepare("SELECT f.`{$this->options['binaryColumn']}` FROM `{$this->options['tableName']}` f WHERE f.`{$this->options['keyColumn']}` = ? LIMIT 1");
+        $stmt = $this->adapter->prepare("SELECT f.{$this->options['binaryColumn']} FROM {$this->options['tableName']} as f WHERE f.{$this->options['keyColumn']} = ? LIMIT 1");
         $stmt->bindParam(1, $key);
         $stmt->execute();
         $binary = $stmt->fetchColumn();
@@ -62,7 +61,7 @@ class MySQL extends Base
     public function exists($key)
     {
         try {
-            $stmt = $this->adapter->prepare("SELECT * FROM `{$this->options['tableName']}` f WHERE f.`{$this->options['keyColumn']}` = ?");
+            $stmt = $this->adapter->prepare("SELECT * FROM {$this->options['tableName']} as f WHERE f.{$this->options['keyColumn']} = ?");
             $stmt->execute(array($key));
             $row = $stmt->fetch();
         } catch (\PDOException $e) {
@@ -82,7 +81,7 @@ class MySQL extends Base
     public function delete($key)
     {
         try {
-            $stmt = $this->adapter->prepare("DELETE FROM `{$this->options['tableName']}` WHERE `{$this->options['keyColumn']}` = ?");
+            $stmt = $this->adapter->prepare("DELETE FROM {$this->options['tableName']} WHERE {$this->options['keyColumn']} = ?");
             $stmt->bindParam(1, $key);
             $stmt->execute();
             return 1 === $stmt->rowCount();
@@ -98,7 +97,7 @@ class MySQL extends Base
      */
     public function keys()
     {
-        $query = $this->adapter->query("SELECT f.`{$this->options['keyColumn']}` FROM `{$this->options['tableName']}` f");
+        $query = $this->adapter->query("SELECT f.{$this->options['keyColumn']} FROM {$this->options['tableName']} as f");
         $keys = array();
         foreach ($query->fetchAll() as $row) {
             $keys[] = $row->key;
@@ -129,15 +128,13 @@ class MySQL extends Base
 
         try {
             $stmt = $this->adapter->prepare("
-            INSERT INTO `{$this->options['tableName']}` (
-                `{$this->options['keyColumn']}`, `{$this->options['binaryColumn']}`, `{$this->options['metadataColumn']}`, `{$this->options['updatedAtColumn']}`
+            INSERT INTO {$this->options['tableName']} (
+                {$this->options['keyColumn']}, {$this->options['binaryColumn']}, {$this->options['metadataColumn']}, {$this->options['updatedAtColumn']}
             ) VALUES (
-              :key, :binary, :metadata, NOW()
+              ?, ?, ?, ?
             )");
-            $stmt->bindParam('key', $key);
-            $stmt->bindParam('binary', $content);
-            $stmt->bindParam('metadata', serialize($metadata));
-            if (false === $stmt->execute()) {
+            $result = $stmt->execute(array($key, $content, serialize($metadata), date(DATE_ISO8601)));
+            if (false === $result) {
                 $this->adapter->rollBack();
                 throw new \RuntimeException(sprintf('Unable to save file %s', $key));
             }
@@ -157,7 +154,7 @@ class MySQL extends Base
      */
     public function checksum($key)
     {
-        $stmt = $this->adapter->prepare("SELECT MD5(f.`{$this->options['binaryColumn']}`) as checksum FROM `{$this->options['tableName']}` f WHERE f.`{$this->options['keyColumn']}` = ? LIMIT 1");
+        $stmt = $this->adapter->prepare("SELECT MD5(f.{$this->options['binaryColumn']}) as checksum FROM {$this->options['tableName']} as f WHERE f.{$this->options['keyColumn']} = ? LIMIT 1");
         $stmt->bindParam(1, $key);
         $stmt->execute();
         $checksum = $stmt->fetchColumn();
@@ -173,10 +170,13 @@ class MySQL extends Base
      */
     public function mtime($key)
     {
-        $stmt = $this->adapter->prepare("SELECT UNIX_TIMESTAMP(`{$this->options['createdAtColumn']}`) as mtime FROM `{$this->options['tableName']}` f WHERE f.`{$this->options['keyColumn']}` = ? LIMIT 1");
+        $stmt = $this->adapter->prepare("SELECT {$this->options['createdAtColumn']}) as mtime FROM {$this->options['tableName']} as f WHERE f.{$this->options['keyColumn']} = ? LIMIT 1");
         $stmt->bindParam(1, $key);
         $stmt->execute();
         $mtime = $stmt->fetchColumn();
+
+        $datetime = new \DateTime($mtime);
+        $mtime    = $datetime->getTimestamp();
 
         return false === $mtime ? false : (integer) $mtime;
     }
@@ -192,7 +192,7 @@ class MySQL extends Base
     public function rename($key, $new)
     {
         try {
-            $stmt = $this->adapter->prepare("UPDATE `{$this->options['tableName']}` f SET f.`{$this->options['keyColumn']}` = ? WHERE f.`{$this->options['keyColumn']}` = ?");
+            $stmt = $this->adapter->prepare("UPDATE {$this->options['tableName']} as f SET f.{$this->options['keyColumn']} = ? WHERE f.{$this->options['keyColumn']} = ?");
             $stmt->execute(array($new, $key));
             return 1 === $stmt->rowCount();
         } catch (\PDOException $e) {
