@@ -113,6 +113,11 @@ class AmazonS3 extends Base
                     continue;
                 }
 
+                if ('cache-control' === $lk) {
+                    $opt['headers']['Cache-Control'] = $v;
+                    continue;
+                }
+
                 if ('content-encoding' === $lk) {
                     $opt['headers']['Content-Encoding'] = $v;
                     continue;
