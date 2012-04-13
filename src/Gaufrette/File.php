@@ -45,9 +45,9 @@ class File
      * Constructor
      *
      * @param  string     $key
-     * @param  Filesystem $filesystem An optional filesystem
+     * @param  Filesystem $filesystem
      */
-    public function __construct($key, Filesystem $filesystem = null)
+    public function __construct($key, Filesystem $filesystem)
     {
         $this->key = $key;
         $this->filesystem = $filesystem;
@@ -83,9 +83,6 @@ class File
         //If content has already been read for this file, just return it immediately
         if (isset($this->content)) {
             return $this->content;
-        }
-        if (null === $this->filesystem) {
-            throw new \LogicException('The filesystem is not defined.');
         }
         if (!$this->exists()) {
             throw new \LogicException('The file does not exists in the filesystem.');
@@ -134,16 +131,6 @@ class File
     }
 
     /**
-     * Sets the filesystem
-     *
-     * @param  Filesystem $filesystem
-     */
-    public function setFilesystem(Filesystem $filesystem)
-    {
-        $this->filesystem = $filesystem;
-    }
-
-    /**
      * Sets the content
      *
      * @param  string $content
@@ -153,9 +140,6 @@ class File
      */
     public function setContent($content)
     {
-        if (null === $this->filesystem) {
-            throw new \LogicException('The filesystem is not defined.');
-        }
         $this->content = $content;
 
         //To maintain consistency between this object and filesystem, write immediately when content is being set.
@@ -208,10 +192,6 @@ class File
      */
     public function exists()
     {
-        if (null === $this->filesystem) {
-            return false;
-        }
-
         return $this->filesystem->has($this->key);
     }
 
@@ -236,10 +216,6 @@ class File
      */
     public function createFileStream()
     {
-        if (null === $this->filesystem) {
-            throw new \LogicException('Cannot create stream for the file because the filesystem is not defined.');
-        }
-
         return $this->filesystem->createFileStream($this->key);
     }
 }

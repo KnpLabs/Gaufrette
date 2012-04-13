@@ -19,15 +19,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $file->getContent('myFile');
     }
 
-    public function testGetContentThrowsAnExceptionIfNoFilesystemIsConfigured()
-    {
-        $file = new File('myFile');
-
-        $this->setExpectedException('LogicException');
-
-        $file->getContent();
-    }
-
     public function testGetContentThrowsAnExceptionIfTheFileDoesNotExistsInTheFilesystem()
     {
         $fs = $this->getFilesystemMock();
@@ -51,15 +42,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
            ->with($this->equalTo('myFile'), $this->equalTo('some content'));
 
         $file = new File('myFile', $fs);
-        $file->setContent('some content');
-    }
-
-    public function testSetContentThrowsAnExceptionIfNoFilesystemIsConfigured()
-    {
-        $file = new File('myFile');
-
-        $this->setExpectedException('LogicException');
-
         $file->setContent('some content');
     }
 
