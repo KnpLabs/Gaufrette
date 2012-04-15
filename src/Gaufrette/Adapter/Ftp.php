@@ -203,7 +203,7 @@ class Ftp extends Base
      */
     public function directoryExists($directory)
     {
-        if (!ftp_chdir($this->getConnection(), $directory)) {
+        if (!@ftp_chdir($this->getConnection(), $directory)) {
             return false;
         }
 
@@ -408,7 +408,7 @@ class Ftp extends Base
         $password = $this->password ? : '';
 
         // login ftp user
-        if (!ftp_login($this->connection, $username, $password)) {
+        if (!@ftp_login($this->connection, $username, $password)) {
             $this->close();
             throw new \RuntimeException(sprintf('Could not login as %s.', $this->username));
         }
@@ -429,7 +429,7 @@ class Ftp extends Base
             }
 
             // change the current directory for the adapter's directory
-            if (!ftp_chdir($this->connection, $this->directory)) {
+            if (!@ftp_chdir($this->connection, $this->directory)) {
                 $this->close();
                 throw new \RuntimeException(sprintf('Could not change current directory for the \'%s\' directory.', $this->directory));
             }
