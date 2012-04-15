@@ -82,7 +82,7 @@ class Sftp extends Base
 
         $url = $this->sftp->getUrl($this->computePath($key));
 
-        return file_exists($url) && is_file($url);
+        return file_exists($url);
     }
 
     /**
@@ -92,7 +92,21 @@ class Sftp extends Base
     {
         $this->initialize();
 
-        throw new \BadMethodCallException('Not implemented yet.');
+        return $this->listDirectory();
+    }
+
+    public function listDirectory($directory = '')
+    {
+        $this->initialize();
+
+        $path = $directory ? $this->computePath($directory) : $this->directory;
+
+        $contents = $this->sftp->listDirectory($path, true);
+        $directory = $this->directory;
+        array_walk($contents, function(&$input) use ($directory) {
+            $input = str_replace("$directory/", '', $input);
+        });
+        return $contents;
     }
 
     /**
@@ -122,7 +136,7 @@ class Sftp extends Base
     {
         $this->initialize();
 
-        if (unlink($this->sftp->getUrl($this->computePath($key)))) {
+        if (!unlink($this->sftp->getUrl($this->computePath($key)))) {
             throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
         }
     }
@@ -166,7 +180,7 @@ class Sftp extends Base
             return;
         }
 
-        $this->ensureDirectoryExists($directory, $this->create);
+        $this->ensureDirectoryExists($this->directory, $this->create);
         $this->initialized = true;
     }
 
@@ -183,7 +197,7 @@ class Sftp extends Base
     {
         $url = $this->sftp->getUrl($directory);
 
-        if (!is_dir($url) && (!$create || !$this->createDirectory($directory))) {
+        if (false === @opendir($url) && (!$create || !$this->createDirectory($directory))) {
             throw new \RuntimeException(sprintf('The directory \'%s\' does not exist and could not be created.', $directory));
         }
     }
