@@ -174,7 +174,7 @@ class Filesystem
      *
      * @param  string $key
      *
-     * @return integer An UNIX like timestamp
+     * @return string A MD5 hash
      */
     public function checksum($key)
     {
