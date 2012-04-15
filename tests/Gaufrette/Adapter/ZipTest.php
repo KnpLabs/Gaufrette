@@ -111,33 +111,13 @@ class ZipTest extends \PHPUnit_Framework_TestCase
 
     public function testMtime()
     {
-        /* Result got from unzip -vl adapter.zip
+        $tmp = tempnam(sys_get_temp_dir(), uniqid());
+        copy(__DIR__ . '/fixtures/adapter.zip', $tmp);
 
-           Length   Method    Size  Ratio   Date   Time   CRC-32    Name
-           --------  ------  ------- -----   ----   ----   ------    ----
-                 0  Stored        0   0%  03-30-12 20:22  00000000  bar/
-                 0  Stored        0   0%  03-30-12 22:17  00000000  bar/far/
-                22  Defl:N       27 -23%  03-30-12 20:18  5d177919  bar/far/boo.txt
-                 0  Stored        0   0%  03-30-12 22:17  00000000  empty/
-                23  Defl:N       28 -22%  03-30-12 20:15  77d273e4  foo.txt
-             15425  Defl:N    15262   1%  03-29-12 11:58  a6d764b9  geek.gif
-        */
+        $adapter = new Zip($tmp);
+        $adapter->write('foo', 'Hello world');
 
-        $expectedMtimes = array(
-            'bar/'            => '03-30-12 20:22',
-            'bar/far/'        => '03-30-12 22:17',
-            'bar/far/boo.txt' => '03-30-12 20:18',
-            'empty/'          => '03-30-12 22:17',
-            'foo.txt'         => '03-30-12 20:15',
-            'geek.gif'        => '03-29-12 11:58',
-        );
-
-        $actualMtimes = array();
-        foreach ($this->filesystem->keys() as $key) {
-            $actualMtimes[$key] = date('m-d-y H:i', $this->filesystem->mtime($key));
-        }
-
-        $this->assertEquals($expectedMtimes, $actualMtimes);
+        $this->assertEquals(time(), $adapter->mtime('foo'), null, 1);
     }
 
     public function testDelete()
