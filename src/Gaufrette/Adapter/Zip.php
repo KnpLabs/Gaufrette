@@ -2,6 +2,7 @@
 namespace Gaufrette\Adapter;
 
 use ZipArchive;
+use Gaufrette\Checksum;
 
 /**
  * ZIP Archive adapter
@@ -121,9 +122,7 @@ class Zip extends Base {
      */
     public function checksum($key)
     {
-        $stat = $this->getStat($key);
-
-        return $stat['crc'];
+        return Checksum::fromContent($this->read($key));
     }
 
     /**

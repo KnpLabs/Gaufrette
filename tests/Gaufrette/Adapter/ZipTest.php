@@ -4,11 +4,7 @@ namespace Gaufrette\Adapter;
 
 class ZipTest extends \PHPUnit_Framework_TestCase
 {
-
-    /**
-     * @var Zip
-     */
-    protected $_zipFixture;
+    private $filesystem;
 
     public function setUp()
     {
@@ -16,8 +12,7 @@ class ZipTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('The zip extension is not available.');
         }
 
-        $this->_zipFixture = new Zip(__DIR__ . '/fixtures/adapter.zip');
-
+        $this->filesystem = new Zip(__DIR__ . '/fixtures/adapter.zip');
     }
 
     /**
@@ -31,7 +26,7 @@ class ZipTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStat()
     {
-        $stat = $this->_zipFixture->getStat('bar/far/boo.txt');
+        $stat = $this->filesystem->getStat('bar/far/boo.txt');
         $this->assertCount(7, $stat);
     }
 
@@ -40,7 +35,7 @@ class ZipTest extends \PHPUnit_Framework_TestCase
      */
     public function testExists()
     {
-        $this->assertTrue($this->_zipFixture->exists('bar/far/boo.txt'));
+        $this->assertTrue($this->filesystem->exists('bar/far/boo.txt'));
     }
 
     /**
@@ -48,7 +43,7 @@ class ZipTest extends \PHPUnit_Framework_TestCase
      */
     public function testNotExists()
     {
-        $this->assertFalse($this->_zipFixture->exists('in/exist/ing/file'));
+        $this->assertFalse($this->filesystem->exists('in/exist/ing/file'));
     }
 
     public function testKeys()
@@ -62,43 +57,27 @@ class ZipTest extends \PHPUnit_Framework_TestCase
             'geek.gif',
         );
 
-        $this->assertSame($exceptedKeys, $this->_zipFixture->keys());
+        $this->assertSame($exceptedKeys, $this->filesystem->keys());
     }
 
     /**
      * @depends testKeys
      * @depends testGetStat
+     *
+     * @dataProvider getChecksumData
      */
-    public function testChecksum()
+    public function testChecksum($filename, $expected)
     {
-        /* Result got from unzip -vl adapter.zip
+        $this->assertEquals($expected, $this->filesystem->checksum($filename));
+    }
 
-           Length   Method    Size  Ratio   Date   Time   CRC-32    Name
-           --------  ------  ------- -----   ----   ----   ------    ----
-                 0  Stored        0   0%  03-30-12 20:22  00000000  bar/
-                 0  Stored        0   0%  03-30-12 22:17  00000000  bar/far/
-                22  Defl:N       27 -23%  03-30-12 20:18  5d177919  bar/far/boo.txt
-                 0  Stored        0   0%  03-30-12 22:17  00000000  empty/
-                23  Defl:N       28 -22%  03-30-12 20:15  77d273e4  foo.txt
-             15425  Defl:N    15262   1%  03-29-12 11:58  a6d764b9  geek.gif
-        */
-
-        $expectedChecksums = array(
-            'bar/'            => hexdec('00000000'),
-            'bar/far/'        => hexdec('00000000'),
-            'bar/far/boo.txt' => hexdec('5d177919'),
-            'empty/'          => hexdec('00000000'),
-            'foo.txt'         => hexdec('77d273e4'),
-            'geek.gif'        => hexdec('a6d764b9'),
+    public function getChecksumData()
+    {
+        return array(
+            array('bar/far/boo.txt', '19d59dc3323f18b76fa6e9f24e7ca343'),
+            array('foo.txt', 'c1693cc0335be737c0acbdcbd1ccae28'),
+            array('geek.gif', '07d496967969a8b2b30e4df7e21a393b'),
         );
-
-        $actualChecksums = array();
-        foreach ($this->_zipFixture->keys() as $key) {
-            $actualChecksums[$key] = $this->_zipFixture->checksum($key);
-        }
-
-        $this->assertEquals($expectedChecksums, $actualChecksums);
-
     }
 
     /**
@@ -107,7 +86,7 @@ class ZipTest extends \PHPUnit_Framework_TestCase
     public function testRead()
     {
         // We except 2 blank lines at the end of the file
-        $this->assertEquals("http://borisguery.com\n\n", $this->_zipFixture->read('foo.txt'));
+        $this->assertEquals("http://borisguery.com\n\n", $this->filesystem->read('foo.txt'));
     }
 
     /**
@@ -125,7 +104,7 @@ class ZipTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($writtenBytes, mb_strlen($content));
         $this->assertEquals($content, $za->read('in/exist/ing/directory/foo.txt'));
-        $this->assertEquals(crc32($content), $za->checksum('in/exist/ing/directory/foo.txt'));
+        $this->assertEquals(md5($content), $za->checksum('in/exist/ing/directory/foo.txt'));
 
         unlink($tmp);
     }
@@ -154,8 +133,8 @@ class ZipTest extends \PHPUnit_Framework_TestCase
         );
 
         $actualMtimes = array();
-        foreach ($this->_zipFixture->keys() as $key) {
-            $actualMtimes[$key] = date('m-d-y H:i', $this->_zipFixture->mtime($key));
+        foreach ($this->filesystem->keys() as $key) {
+            $actualMtimes[$key] = date('m-d-y H:i', $this->filesystem->mtime($key));
         }
 
         $this->assertEquals($expectedMtimes, $actualMtimes);
@@ -180,7 +159,7 @@ class ZipTest extends \PHPUnit_Framework_TestCase
      */
     public function testDeleteAnInexistingFileThrowARuntimeException()
     {
-        $this->_zipFixture->delete('in/exist/ing/directory/foo.txt');
+        $this->filesystem->delete('in/exist/ing/directory/foo.txt');
     }
 
     public function testRename()
@@ -205,12 +184,12 @@ class ZipTest extends \PHPUnit_Framework_TestCase
      */
     public function testRenameAnInexistingFileThrowARuntimeException()
     {
-        $this->_zipFixture->rename('in/exist/ing/directory/foo.txt', 'that is not important');
+        $this->filesystem->rename('in/exist/ing/directory/foo.txt', 'that is not important');
     }
 
     public function testNotSupportingMetadata()
     {
-        $this->assertFalse($this->_zipFixture->supportsMetadata());
+        $this->assertFalse($this->filesystem->supportsMetadata());
     }
 
     public function testCreateNewZipArchive()
@@ -241,6 +220,6 @@ class ZipTest extends \PHPUnit_Framework_TestCase
     public function testNewlyCreatedZipArchiveRead($za)
     {
         $this->assertEquals('Bonjour le monde!', $za->read('foo.txt'));
-        $this->assertEquals(crc32('Bonjour le monde!'), $za->checksum('foo.txt'));
+        $this->assertEquals(md5('Bonjour le monde!'), $za->checksum('foo.txt'));
     }
 }
