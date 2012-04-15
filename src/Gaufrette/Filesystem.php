@@ -181,19 +181,6 @@ class Filesystem
         return $this->adapter->checksum($key);
     }
 
-    /**
-     * Query a group of files using partial key. Partial key must be a substring from
-     * the first char to any char before the last char.
-     *
-     * @param string keyFragment partial key for quering
-     * @param Filesystem filesystem object
-     * @return \Iterator of File objects
-     */
-    public function query($keyFragment, $sortKey = 'name', $sortDirection = 'asc')
-    {
-        return $this->adapter->query($keyFragment, $this, $sortKey, $sortDirection);
-    }
-
     public function supportsMetadata()
     {
         return $this->adapter->supportsMetadata();

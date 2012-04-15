@@ -121,49 +121,6 @@ class GridFS extends Base
     }
 
     /**
-     * Query a group of files using partial key
-     *
-     * @param string keyFragment partial key from the beginning of the key
-     * @param Filesystem filesystem object
-     * @param string sortKey defines the variable that is used for sorting. Alternatives: 'name', 'created' or 'size'
-     * @param string sortDirection. Alternatives: 'asc' or 'desc'
-     * @return Iterator for File objects (can be array or anything that implements Iterator interface)
-     */
-    public function query($keyFragment, $filesystem, $sortKey = 'name', $sortDirection = 'asc')
-    {
-        $regex = new \MongoRegex("/^".$keyFragment."/");
-        $gridfsCursor = $this->gridfsInstance->find(array('key'=>$regex));
-
-        //Sort cursor
-        if ($sortDirection == 'asc') {
-            $direction = 1;
-        } elseif($sortDirection == 'desc') {
-            $direction = -1;
-        } else {
-            throw new \InvalidArgumentException("Invalid value for sortDirection. Must be 'asc' or 'desc'.");
-        }
-
-        switch($sortKey) {
-            case 'size':
-                $gridfsCursor->sort(array('length' => $direction));
-                break;
-            case 'created':
-                $gridfsCursor->sort(array('uploadDate' => $direction));
-                break;
-            case 'name':
-                $gridfsCursor->sort(array('filename' => $direction));
-                break;
-            default:
-                throw new \InvalidArgumentException("Invalid sortKey argument for find. Must be 'created', 'name' or 'size'.");
-                break;
-        }
-
-        //Return as a FileCursor (not prepared array) for lesser memory consumption
-        return new GridFSFileCursor($gridfsCursor, $filesystem);
-    }
-
-
-    /**
      * {@InheritDoc}
      */
     public function keys()
