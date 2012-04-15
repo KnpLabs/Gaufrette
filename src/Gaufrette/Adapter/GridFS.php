@@ -123,12 +123,16 @@ class GridFS extends Base
     /**
      * {@InheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
-        /**
-         * This seems to work but performance is a big question...
-         */
-        $cursor = $this->gridfsInstance->find(array(), array('key'));
+		if (null !== $prefix) {
+		    $cursor = $this->gridfsInstance->find(array('key' => sprintf('/^%s/', preg_quote($prefix)) ), array('key'));
+		} else {
+            /**
+             * This seems to work but performance is a big question...
+             */
+            $cursor = $this->gridfsInstance->find(array(), array('key'));
+        }
         $temp = array();
         foreach($cursor as $f) {
             $temp[] = $f->file['key'];

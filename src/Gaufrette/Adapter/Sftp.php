@@ -88,7 +88,7 @@ class Sftp extends Base
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
         $this->initialize();
 

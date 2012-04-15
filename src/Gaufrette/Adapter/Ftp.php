@@ -134,8 +134,11 @@ class Ftp extends Base
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
+		if (null !== $prefix) {
+		    return $this->fetchKeys($prefix);
+		}
         return $this->fetchKeys();
     }
 

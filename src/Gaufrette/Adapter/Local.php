@@ -90,8 +90,11 @@ class Local extends Base
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
+		if (null !== $prefix) {
+		    throw new \BadMethodCallException("Usage of prefix filter not implemented yet.");
+		}
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator(
                 $this->directory,
