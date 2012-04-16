@@ -213,12 +213,4 @@ class Sftp extends Base
     {
         return mkdir($this->sftp->getUrl($directory), 0777, true);
     }
-
-    /**
-     * {@InheritDoc}
-     */
-    public function supportsMetadata()
-    {
-        return false;
-    }
 }

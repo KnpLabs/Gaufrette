@@ -136,14 +136,6 @@ class Apc extends Base
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function supportsMetadata()
-    {
-        return false;
-    }
-
-    /**
      * Computes the path for the given key
      *
      * @param string $key

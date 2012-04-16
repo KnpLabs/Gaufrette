@@ -144,11 +144,4 @@ class InMemory extends Base
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function supportsMetadata()
-    {
-        return false;
-    }
 }

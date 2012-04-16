@@ -177,12 +177,4 @@ class RackspaceCloudfiles extends Base
 
         return $d;
     }
-
-    /**
-     * {@InheritDoc}
-     */
-    public function supportsMetadata()
-    {
-        return false;
-    }
 }

@@ -10,8 +10,8 @@ use Gaufrette\Checksum;
  * @package Gaufrette
  * @author  Boris Guéry <guery.b@gmail.com>
  */
-class Zip extends Base {
-
+class Zip extends Base
+{
     /**
      * @var string The zip archive full path
      */
@@ -174,16 +174,6 @@ class Zip extends Base {
         }
 
         return $stat;
-    }
-
-    /**
-     * If the adapter can allow inserting metadata
-     *
-     * @return bool true if supports metadata, false if not
-     */
-    public function supportsMetadata()
-    {
-        return false;
     }
 
     public function __destruct()

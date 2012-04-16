@@ -233,12 +233,4 @@ class Cache extends Base
 
         return $needsRebuild;
     }
-
-    /**
-     * {@InheritDoc}
-     */
-    public function supportsMetadata()
-    {
-        return false;
-    }
 }

@@ -278,14 +278,6 @@ class Ftp extends Base
     /**
      * {@inheritDoc}
      */
-    public function supportsMetadata()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function createFile($key, Filesystem $filesystem)
     {
         if (!$this->exists($key)) {

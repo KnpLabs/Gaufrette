@@ -144,14 +144,6 @@ class AclAwareAmazonS3 extends Base
         $this->delegate->delete($key);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function supportsMetadata()
-    {
-        return false;
-    }
-
     protected function getAcl()
     {
         if (empty($this->users)) {

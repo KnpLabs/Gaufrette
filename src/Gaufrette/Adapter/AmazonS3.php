@@ -23,7 +23,7 @@ class AmazonS3 extends Base
         $this->create = $create;
     }
 
-    /** 
+    /**
      * Set the base directory the user will have access to
      *
      * @param String $directory
@@ -33,9 +33,9 @@ class AmazonS3 extends Base
         $this->directory  = $directory;
     }
 
-    /** 
+    /**
      * Get the directory the user has access to
-     * 
+     *
      * @return String
      */
     public function getDirectory()
@@ -141,7 +141,7 @@ class AmazonS3 extends Base
     public function exists($key)
     {
         $key = $this->prependBaseDirectory($key);
-        
+
         $this->ensureBucketExists();
 
         return $this->service->if_object_exists($this->bucket, $key);
@@ -165,7 +165,7 @@ class AmazonS3 extends Base
     public function checksum($key)
     {
         $key = $this->prependBaseDirectory($key);
-        
+
         $headers = $this->getHeaders($key);
 
         return strtotime($headers['etag']);
@@ -227,12 +227,13 @@ class AmazonS3 extends Base
     public function prependBaseDirectory($key)
     {
         if (!$directory = $this->getDirectory()) {
-            
+
             return $key;
         }
 
         return $directory . '/' . $key;
     }
+
     /**
      * Ensures the specified bucket exists. If the bucket does not exists
      * and the create parameter is set to true, it will try to create the
@@ -295,13 +296,5 @@ class AmazonS3 extends Base
         }
 
         return ltrim(substr($path, strlen($basePath)), '/');
-    }
-
-    /**
-     * {@InheritDoc}
-     */
-    public function supportsMetadata()
-    {
-        return false;
     }
 }

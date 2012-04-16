@@ -235,14 +235,6 @@ class Local extends Base
     /**
      * {@inheritDoc}
      */
-    public function supportsMetadata()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function createFileStream($key, Filesystem $filesystem)
     {
         return new FileStream\Local($this->computePath($key));
