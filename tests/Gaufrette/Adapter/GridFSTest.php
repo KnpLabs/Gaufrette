@@ -70,28 +70,4 @@ class GridFSTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->gridfs->exists($this->testFileKey));
         $this->assertTrue($this->gridfs->delete($newTestFileKey));
     }
-
-    public function testQuery()
-    {
-        $filenames = array($this->testFileKey, $this->testFileKey . '.rtf', $this->testFileKey . '.pdf');
-
-        // Query requires Filesystem object
-        if (!class_exists('Gaufrette\Filesystem')) {
-            $this->markTestSkipped('Cannot find Filesystem object. Test for query() -method skipped.');
-        }
-
-        foreach ($filenames as $file) {
-            $this->assertGreaterThan(0, $this->gridfs->write($file, $this->testFileContent, $this->testFileMetadata));
-        }
-
-        $rs = $this->gridfs->query('/testkey/', new Filesystem($this->gridfs));
-        $i = 0;
-
-        foreach ($rs as $row) {
-            $this->gridfs->delete($row->getKey());
-            $i++;
-        }
-
-        $this->assertEquals($i, count($filenames));
-    }
 }
