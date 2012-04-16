@@ -8,9 +8,6 @@ use Gaufrette\Filesystem;
 /**
  * Ftp adapter
  *
- * This adapter is not cached, if you need it to be cached, please see the
- * CachedFtp adapter which is a proxy class implementing a cache layer.
- *
  * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
