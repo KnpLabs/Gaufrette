@@ -7,14 +7,7 @@ use Gaufrette\Filesystem;
 
 class GridFSTest extends \PHPUnit_Framework_TestCase
 {
-    protected $testHost = 'localhost:27017';
-    protected $testDatabase = 'gaufrette_test';
-
-    private $testFileKey = '/testkey/memo.txt';
-    private $testFileContent = 'Lorem Ipsum...';
-    private $testFileMetadata = array('foo' => 'bar');
-
-    protected $gridfs;
+    protected $adapter;
 
     public function setUp()
     {
@@ -22,52 +15,36 @@ class GridFSTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('Mongo class not found.');
         }
 
-        // Connect to MongoDB
-        $connection = new \Mongo($this->testHost);
+        $mongo = new \Mongo($_SERVER['MONGO_SERVER']);
 
-        if (!$connection->connected) {
-            $this->markTestSkipped('Cannot connect to Mongo server.');
+        if (!$mongo->connected) {
+            $this->markTestSkipped(sprintf(
+                'Cannot connect to Mongo server (%s).',
+                $_SERVER['MONGO_SERVER']
+            ));
         }
 
-        // Get MongoGridFS object
-        $obj = $connection->selectDB($this->testDatabase)->getGridFS();
+        $db = $mongo->selectDB($_SERVER['MONGO_DATABASE']);
 
-        if (!($obj instanceof \MongoGridFS)) {
-            $this->markTestSkipped('Cannot fetch MongoGridFS object.');
-        }
+        $grid = $db->getGridFS();
+        $grid->remove();
 
-        // Create instance of the adapter
-        $this->gridfs = new GridFS($obj);
-
-        if (!is_object($this->gridfs)) {
-            $this->markTestSkipped('Cannot create object from adapter.');
-        }
+        $this->adapter = new GridFS($grid);
     }
 
     public function testWriteReadDelete()
     {
-        $this->assertGreaterThan(0, $this->gridfs->write($this->testFileKey, $this->testFileContent, $this->testFileMetadata));
-        $this->assertTrue($this->gridfs->exists($this->testFileKey));
-
-        $this->assertEquals($this->gridfs->read($this->testFileKey), $this->testFileContent);
-
-        $this->assertTrue($this->gridfs->delete($this->testFileKey));
-        $this->assertFalse($this->gridfs->exists($this->testFileKey));
-    }
-
-    public function testRename()
-    {
-        $newTestFileKey = '/newtestkey/updated_memo.txt';
-
-        $this->assertGreaterThan(0, $this->gridfs->write($this->testFileKey, $this->testFileContent, $this->testFileMetadata));
-        $this->assertTrue($this->gridfs->exists($this->testFileKey));
-
-        $this->assertTrue($this->gridfs->rename($this->testFileKey, $newTestFileKey));
-        $this->assertTrue($this->gridfs->exists($newTestFileKey));
-
-        $this->assertEquals($this->gridfs->read($newTestFileKey), $this->testFileContent);
-
-        $this->assertFalse($this->gridfs->exists($this->testFileKey));
-        $this->assertTrue($this->gridfs->delete($newTestFileKey));
+        $this->assertFalse($this->adapter->exists('foo'));
+        $this->adapter->write('foo', 'The content of foo');
+        $this->assertTrue($this->adapter->exists('foo'));
+        $this->assertEquals('The content of foo', $this->adapter->read('foo'));
+        $this->assertEquals(md5('The content of foo'), $this->adapter->checksum('foo'));
+        $this->assertEquals(time(), $this->adapter->mtime('foo'), null, 1);
+        $this->adapter->rename('foo', 'bar');
+        $this->assertFalse($this->adapter->exists('foo'));
+        $this->assertTrue($this->adapter->exists('bar'));
+        $this->assertEquals('The content of foo', $this->adapter->read('bar'));
+        $this->adapter->delete('bar');
+        $this->assertFalse($this->adapter->exists('bar'));
     }
 }

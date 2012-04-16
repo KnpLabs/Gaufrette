@@ -24,4 +24,12 @@ abstract class Base implements Adapter
     {
         return new FileStream\InMemoryBuffer($this, $key);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function supportsMetadata()
+    {
+        return false;
+    }
 }

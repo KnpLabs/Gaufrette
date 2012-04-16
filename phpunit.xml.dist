@@ -11,6 +11,12 @@
          syntaxCheck="false"
          bootstrap="tests/bootstrap.php.dist"
 >
+
+    <php>
+        <server name="MONGO_SERVER" value="localhost:27017" />
+        <server name="MONGO_DATABASE" value="gaufrette" />
+    </php>
+
     <testsuites>
         <testsuite name="SimplePHPEasyPlus Test Suite">
             <directory>./tests</directory>

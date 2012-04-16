@@ -2,114 +2,58 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Checksum;
-use Gaufrette\Path;
-use Gaufrette\File;
-
-use Gaufrette\FileCursor\GridFS as GridFSFileCursor;
-use Gaufrette\Filesystem;
-
 /**
  * Adapter for the GridFS filesystem on MongoDB database
  *
  * @author Tomi Saarinen <tomi.saarinen@rohea.com>
+ * @author Antoine Hérault <antoine.herault@gmail.com>
  */
 class GridFS extends Base
 {
-    /**
-     * GridFS Instance
-     * @var \MongoGridFS instance
-     */
-    protected $gridfsInstance = null;
+    protected $gridFS = null;
 
     /**
      * Constructor
      *
-     * @param \MongoGridFS instance
+     * @param \MongoGridFS $gridFS
      */
-    public function __construct(\MongoGridFS $instance)
+    public function __construct(\MongoGridFS $gridFS)
     {
-        $this->gridfsInstance = $instance;
-    }
-
-   /**
-    * Gets file object by key
-    *
-    * @param string $key
-    * @return File file object
-    */
-    public function get($key, $filesystem)
-    {
-        $gridfsFile = $this->gridfsInstance->findOne(array('key' => $key));
-        $file = new File($key, $filesystem);
-        $file->setName($gridfsFile->file['filename']);
-        $file->setCreated(new \DateTime("@".$gridfsFile->file['uploadDate']->sec));
-        $file->setSize($gridfsFile->file['length']);
-        if (isset($gridfsFile->file['metadata'])) {
-            $file->setMetadata($gridfsFile->file['metadata']);
-        }
-
-        return $file;
+        $this->gridFS = $gridFS;
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function read($key)
     {
-        //TODO: Normalize key somehow
-        //var_dump( Path::normalize($key));
-        $gridfsFile = $this->gridfsInstance->findOne(array('key'=>$key));
-
-        return $gridfsFile->getBytes();
+        return $this->findOrError($key)->getBytes();
     }
 
     /**
-     * {@InheritDoc}
-     * @param array metadata any metadata in assoc array format
-     * @param string filename human readable (e.g. someImage.jpg) NOT IN USE ATM.
+     * {@inheritDoc}
      */
-    public function write($key, $content, array $metadata=null)
+    public function write($key, $content, array $metadata = null)
     {
-        //If a file exists with the same key, delete it
         if ($this->exists($key)) {
             $this->delete($key);
         }
-        //Break down key, assume '/' is used for delimiter and last part is the filename
-        $keyParts = array_filter(explode('/', $key));
-        $dataArray = array(
-            'key' => $key,
-            'filename' => isset($keyParts[count($keyParts)]) ? $keyParts[count($keyParts)] : '',
-            'uploadDate' => new \MongoDate(),
-            'metadata' => $metadata,
-        );
-        $mongoId = $this->gridfsInstance->storeBytes($content, $dataArray);
-        //TODO: How to do better counting of bytes for gridfs insertion
-        $numBytes = strlen($content);
 
-        return $numBytes;
+        $id   = $this->gridFS->storeBytes($content, array('filename' => $key, 'date' => new \MongoDate()));
+        $file = $this->gridFS->findOne(array('_id' => $id));
+
+        return $file->getSize();
     }
 
     /**
-     * Rename = fetch old + write new + delete old
-     *
-     * @param key Current key (from)
-     * @param new New key (to)
-     * @return boolean
+     * {@inheritDoc}
      */
     public function rename($key, $new)
     {
-        $gridfsFile = $this->gridfsInstance->findOne(array('key' => $key));
+        $file = $this->findOrError($key);
 
-        if (is_object($gridfsFile)) {
-            $retval = $this->write($new, $gridfsFile->getBytes(), $gridfsFile->file['metadata']);
-
-            if ($retval > 0) {
-                return $this->delete($key);
-            }
-        }
-
-        return false;
+        $this->write($new, $file->getBytes());
+        $this->delete($key);
     }
 
     /**
@@ -117,7 +61,7 @@ class GridFS extends Base
      */
     public function exists($key)
     {
-        return is_object($this->gridfsInstance->findOne(array('key'=>$key)));
+        return null !== $this->gridFS->findOne($key);
     }
 
     /**
@@ -125,16 +69,14 @@ class GridFS extends Base
      */
     public function keys()
     {
-        /**
-         * This seems to work but performance is a big question...
-         */
-        $cursor = $this->gridfsInstance->find(array(), array('key'));
-        $temp = array();
-        foreach($cursor as $f) {
-            $temp[] = $f->file['key'];
+        $keys   = array();
+        $cursor = $this->gridFS->find(array(), array('filename'));
+
+        foreach ($cursor as $file) {
+            $keys[] = $file->getFilename();
         }
 
-        return $temp;
+        return $keys;
     }
 
     /**
@@ -142,7 +84,7 @@ class GridFS extends Base
      */
     public function mtime($key)
     {
-        throw new \BadMethodCallException("Method not implemented yet.");
+        return $this->findOrError($key, array('date'))->file['date']->sec;
     }
 
     /**
@@ -150,24 +92,38 @@ class GridFS extends Base
      */
     public function checksum($key)
     {
-        throw new \BadMethodCallException("Method not implemented yet.");
+        return $this->findOrError($key, array('md5'))->file['md5'];
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function delete($key)
     {
-        $success = $this->gridfsInstance->remove(array('key'=>$key));
-
-        return $success;
+        if (!$this->gridFS->remove(array('filename' => $key))) {
+            throw new \RuntimeException(sprintf(
+                'Cannot delete file "%s" from the Mongo GridFS.',
+                $key
+            ));
+        }
     }
 
-    /**
-     * {@InheritDoc}
-     */
-    public function supportsMetadata()
+    private function findOrError($key, array $fields = array())
     {
-        return true;
+        $file = $this->find($key, $fields);
+
+        if (null === $file) {
+            throw new \InvalidArgumentException(sprintf(
+                'The file "%s" was not found in the Mongo GridFS.',
+                $key
+            ));
+        }
+
+        return $file;
+    }
+
+    private function find($key, array $fields = array())
+    {
+        return $this->gridFS->findOne($key, $fields);
     }
 }
