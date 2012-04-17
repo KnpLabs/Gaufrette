@@ -3,6 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Checksum;
+use Gaufrette\Exception;
 
 /**
  * In memory adapter
@@ -79,6 +80,8 @@ class InMemory extends Base
      */
     public function read($key)
     {
+        $this->assertExists($key);
+
         return $this->files[$key]['content'];
     }
 
@@ -87,6 +90,8 @@ class InMemory extends Base
      */
     public function rename($key, $new)
     {
+        $this->assertExists($key);
+
         $this->files[$new] = $this->files[$key];
         unset($this->files[$key]);
         $this->files[$new]['mtime'] = time();
@@ -123,6 +128,8 @@ class InMemory extends Base
      */
     public function mtime($key)
     {
+        $this->assertExists($key);
+
         return $this->files[$key]['mtime'];
     }
 
@@ -131,6 +138,8 @@ class InMemory extends Base
      */
     public function checksum($key)
     {
+        $this->assertExists($key);
+
         return $this->files[$key]['checksum'];
     }
 
@@ -139,9 +148,17 @@ class InMemory extends Base
      */
     public function delete($key)
     {
+        $this->assertExists($key);
+
         unset($this->files[$key]);
 
         return true;
     }
 
+    private function assertExists($key)
+    {
+        if (!$this->exists($key)) {
+            throw new Exception\FileNotFound($key);
+        }
+    }
 }

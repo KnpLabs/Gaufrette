@@ -15,6 +15,8 @@ interface Adapter
      * @param  string $key
      *
      * @return string
+     *
+     * @throws Exception\FileNotFound
      */
     function read($key);
 
@@ -26,8 +28,6 @@ interface Adapter
      * @param  array $metadata or null if none (optional)
      *
      * @return integer The number of bytes that were written into the file
-     *
-     * @throws RuntimeException on failure
      */
     function write($key, $content, array $metadata = null);
 
@@ -36,7 +36,7 @@ interface Adapter
      *
      * @param  string $key
      *
-     * @return boolean
+     * @return Boolean
      */
     function exists($key);
 
@@ -53,6 +53,8 @@ interface Adapter
      * @param  string $key
      *
      * @return integer An UNIX like timestamp
+     *
+     * @throws Exception\FileNotFound
      */
     function mtime($key);
 
@@ -62,6 +64,8 @@ interface Adapter
      * @param  string $key
      *
      * @return string
+     *
+     * @throws Exception\FileNotFound
      */
     function checksum($key);
 
@@ -70,7 +74,7 @@ interface Adapter
      *
      * @param  string $key
      *
-     * @throws RuntimeException on failure
+     * @throws Exception\FileNotFound
      */
     function delete($key);
 
@@ -80,7 +84,7 @@ interface Adapter
      * @param string $key
      * @param string $new
      *
-     * @throws RuntimeException on failure
+     * @throws Exception\FileNotFound
      */
     function rename($key, $new);
 

@@ -4,8 +4,18 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Checksum;
 
-class InMemoryTest extends \PHPUnit_Framework_TestCase
+class InMemoryTest extends FunctionalTestCase
 {
+    public function setUp()
+    {
+        $this->adapter = new InMemory();
+    }
+
+    public function tearDown()
+    {
+        $this->adapter = null;
+    }
+
     public function testSetFiles()
     {
         $adapter = new InMemory(array(
@@ -18,18 +28,6 @@ class InMemoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Foo content', $adapter->read('foo'));
         $this->assertTrue($adapter->exists('bar'));
         $this->assertEquals('Bar content', $adapter->read('bar'));
-    }
-
-    public function testWriteAndRead()
-    {
-        $adapter = new InMemory();
-
-        $this->assertFalse($adapter->exists('foobar'));
-
-        $adapter->write('foobar', 'Some content');
-
-        $this->assertTrue($adapter->exists('foobar'));
-        $this->assertEquals('Some content', $adapter->read('foobar'));
     }
 
     public function testChecksumIsAutomaticallySetFromContent()
