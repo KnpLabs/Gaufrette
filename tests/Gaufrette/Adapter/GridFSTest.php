@@ -5,14 +5,12 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Filesystem;
 
-class GridFSTest extends \PHPUnit_Framework_TestCase
+class GridFSTest extends FunctionalTestCase
 {
-    protected $adapter;
-
     public function setUp()
     {
         if (!class_exists('\Mongo')) {
-            $this->markTestSkipped('Mongo class not found.');
+            return $this->markTestSkipped('Mongo class not found.');
         }
 
         $mongo = new \Mongo($_SERVER['MONGO_SERVER']);
@@ -32,19 +30,12 @@ class GridFSTest extends \PHPUnit_Framework_TestCase
         $this->adapter = new GridFS($grid);
     }
 
-    public function testWriteReadDelete()
+    public function tearDown()
     {
-        $this->assertFalse($this->adapter->exists('foo'));
-        $this->adapter->write('foo', 'The content of foo');
-        $this->assertTrue($this->adapter->exists('foo'));
-        $this->assertEquals('The content of foo', $this->adapter->read('foo'));
-        $this->assertEquals(md5('The content of foo'), $this->adapter->checksum('foo'));
-        $this->assertEquals(time(), $this->adapter->mtime('foo'), null, 1);
-        $this->adapter->rename('foo', 'bar');
-        $this->assertFalse($this->adapter->exists('foo'));
-        $this->assertTrue($this->adapter->exists('bar'));
-        $this->assertEquals('The content of foo', $this->adapter->read('bar'));
-        $this->adapter->delete('bar');
-        $this->assertFalse($this->adapter->exists('bar'));
+        if (null === $this->adapter) {
+            return;
+        }
+
+        $this->adapter = null;
     }
 }

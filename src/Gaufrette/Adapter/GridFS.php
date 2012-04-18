@@ -2,6 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Exception;
+
 /**
  * Adapter for the GridFS filesystem on MongoDB database
  *
@@ -100,7 +102,9 @@ class GridFS extends Base
      */
     public function delete($key)
     {
-        if (!$this->gridFS->remove(array('filename' => $key))) {
+        $file = $this->findOrError($key, array('_id'));
+
+        if (!$this->gridFS->delete($file->file['_id'])) {
             throw new \RuntimeException(sprintf(
                 'Cannot delete file "%s" from the Mongo GridFS.',
                 $key
@@ -113,10 +117,7 @@ class GridFS extends Base
         $file = $this->find($key, $fields);
 
         if (null === $file) {
-            throw new \InvalidArgumentException(sprintf(
-                'The file "%s" was not found in the Mongo GridFS.',
-                $key
-            ));
+            throw new Exception\FileNotFound($key);
         }
 
         return $file;
