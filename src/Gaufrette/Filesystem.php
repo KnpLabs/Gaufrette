@@ -149,7 +149,7 @@ class Filesystem
         // Cache adapter returns null if source-Adapter does not provide the listDirectory method
         if (!$listing) {
             $listing = array(
-                'keys'  => $this->keys($directory),
+                'keys'  => $this->keys((empty($directory))?null:$directory),
                 'dirs'  => array()
             );
         }
