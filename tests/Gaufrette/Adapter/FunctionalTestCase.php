@@ -86,4 +86,20 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
 
         $this->adapter->delete('foo');
     }
+
+    public function testKeys()
+    {
+        $this->assertEquals(array(), $this->adapter->keys());
+
+        $this->adapter->write('foo', 'Some content');
+        $this->adapter->write('bar', 'Some content');
+        $this->adapter->write('baz', 'Some content');
+
+        $actualKeys = $this->adapter->keys();
+
+        $this->assertEquals(3, count($actualKeys));
+        foreach (array('foo', 'bar', 'baz') as $key) {
+            $this->assertContains($key, $actualKeys);
+        }
+    }
 }

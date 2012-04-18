@@ -6,6 +6,7 @@ use Gaufrette\Checksum;
 use Gaufrette\Path;
 use Gaufrette\Filesystem;
 use Gaufrette\FileStream;
+use Gaufrette\Exception;
 
 /**
  * Adapter for the local filesystem
@@ -42,6 +43,8 @@ class Local extends Base
      */
     public function read($key)
     {
+        $this->assertExists($key);
+
         $content = file_get_contents($this->computePath($key));
 
         if (false === $content) {
@@ -60,7 +63,7 @@ class Local extends Base
 
         $this->ensureDirectoryExists(dirname($path), true);
 
-        $numBytes = file_put_contents($this->computePath($key), $content);
+        $numBytes = file_put_contents($path, $content);
 
         if (false === $numBytes) {
             throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
@@ -74,6 +77,8 @@ class Local extends Base
      */
     public function rename($key, $new)
     {
+        $this->assertExists($key);
+
         if (!rename($this->computePath($key), $this->computePath($new))) {
             throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
         }
@@ -117,6 +122,8 @@ class Local extends Base
      */
     public function mtime($key)
     {
+        $this->assertExists($key);
+
         return filemtime($this->computePath($key));
     }
 
@@ -125,6 +132,8 @@ class Local extends Base
      */
     public function checksum($key)
     {
+        $this->assertExists($key);
+
         return Checksum::fromFile($this->computePath($key));
     }
 
@@ -133,6 +142,8 @@ class Local extends Base
      */
     public function delete($key)
     {
+        $this->assertExists($key);
+
         if (!unlink($this->computePath($key))) {
             throw new \RuntimeException(sprintf('Could not remove the \'%s\' file.', $key));
         }
@@ -238,5 +249,12 @@ class Local extends Base
     public function createFileStream($key, Filesystem $filesystem)
     {
         return new FileStream\Local($this->computePath($key));
+    }
+
+    private function assertExists($key)
+    {
+        if (!$this->exists($key)) {
+            throw new Exception\FileNotFound($key);
+        }
     }
 }

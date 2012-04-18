@@ -2,21 +2,41 @@
 
 namespace Gaufrette\Adapter;
 
-class LocalTest extends \PHPUnit_Framework_TestCase
+class LocalTest extends FunctionalTestCase
 {
-    protected $directory;
+    private $directory;
 
     public function setUp()
     {
-        $this->directory = str_replace('\\', '/', __DIR__) . '/filesystem';
-        if (!file_exists($this->directory) && false === @mkdir($this->directory)) {
-            $this->markTestSkipped('Test directory doesn\'t exists and cannot be created.');
+        $this->directory = sprintf('%s/filesystem', str_replace('\\', '/', __DIR__));
+
+        if (!file_exists($this->directory)) {
+            mkdir($this->directory);
         }
+
+        $this->adapter = new Local($this->directory);
     }
 
     public function tearDown()
     {
-        @unlink($this->directory);
+        $this->adapter = null;
+
+        if (file_exists($this->directory)) {
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator(
+                    $this->directory,
+                    \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
+                )
+            );
+
+            foreach ($iterator as $item) {
+                if ($item->isDir()) {
+                    rmdir(strval($item));
+                } else {
+                    unlink(strval($item));
+                }
+            }
+        }
     }
 
     public function testComputePath()
