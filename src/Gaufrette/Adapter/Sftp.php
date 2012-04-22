@@ -2,6 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Exception;
+
 class Sftp extends Base
 {
     protected $sftp;
@@ -31,6 +33,8 @@ class Sftp extends Base
     {
         $this->initialize();
 
+        $this->assertExists($key);
+
         $content = $this->sftp->read($this->computePath($key));
 
         if (false === $content) {
@@ -45,6 +49,8 @@ class Sftp extends Base
      */
     public function rename($key, $new)
     {
+        $this->assertExists($key);
+
         try {
             $this->write($new, $this->read($key));
             $this->delete($key);
@@ -92,21 +98,9 @@ class Sftp extends Base
     {
         $this->initialize();
 
-        return $this->listDirectory();
-    }
+        $results = $this->sftp->listDirectory($this->directory, true);
 
-    public function listDirectory($directory = '')
-    {
-        $this->initialize();
-
-        $path = $directory ? $this->computePath($directory) : $this->directory;
-
-        $contents = $this->sftp->listDirectory($path, true);
-        $directory = $this->directory;
-        array_walk($contents, function(&$input) use ($directory) {
-            $input = str_replace("$directory/", '', $input);
-        });
-        return $contents;
+        return array_map(array($this, 'computeKey'), $results['files']);
     }
 
     /**
@@ -115,6 +109,8 @@ class Sftp extends Base
     public function mtime($key)
     {
         $this->initialize();
+
+        $this->assertExists($key);
 
         return filemtime($this->sftp->getUrl($this->computePath($key)));
     }
@@ -126,6 +122,8 @@ class Sftp extends Base
     {
         $this->initialize();
 
+        $this->assertExists($key);
+
         return md5_file($this->sftp->getUrl($this->computePath($key)));
     }
 
@@ -135,6 +133,8 @@ class Sftp extends Base
     public function delete($key)
     {
         $this->initialize();
+
+        $this->assertExists($key);
 
         if (!unlink($this->sftp->getUrl($this->computePath($key)))) {
             throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
@@ -212,5 +212,19 @@ class Sftp extends Base
     protected function createDirectory($directory)
     {
         return mkdir($this->sftp->getUrl($directory), 0777, true);
+    }
+
+    /**
+     * Asserts that the specified file exists
+     *
+     * @param  string $key
+     *
+     * @throws Exception\FileNotFound if the file does not exist
+     */
+    private function assertExists($key)
+    {
+        if (!$this->exists($key)) {
+            throw new Exception\FileNotFound($key);
+        }
     }
 }

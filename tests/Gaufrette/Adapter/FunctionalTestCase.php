@@ -6,6 +6,49 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
 {
     protected $adapter;
 
+    public function getAdapterName()
+    {
+        if (!preg_match('/\\\\(\w+)Test$/', get_class($this), $matches)) {
+            throw new \RuntimeException(sprintf(
+                'Unable to guess adapter name from class "%s", '.
+                'please override the ->getAdapterName() method.',
+                get_class($this)
+            ));
+        }
+
+        return $matches[1];
+    }
+
+    public function setUp()
+    {
+        $filename = sprintf(
+            '%s/adapters/%s.php',
+            dirname(dirname(__DIR__)),
+            $this->getAdapterName()
+        );
+
+        if (!file_exists($filename)) {
+            return $this->markTestSkipped(<<<EOF
+To run the {$basename} adapter tests, you must:
+
+ 1. Copy the file "{$filename}.dist" as "{$filename}"
+ 2. Modify the copied file to fit your environment
+EOF
+            );
+        }
+
+        $this->adapter = include $filename;
+    }
+
+    public function tearDown()
+    {
+        if (null === $this->adapter) {
+            return;
+        }
+
+        $this->adapter = null;
+    }
+
     public function testWriteAndRead()
     {
         $this->adapter->write('foo', 'Some content');

@@ -4,7 +4,7 @@ namespace Gaufrette\Adapter;
 
 class ApcTest extends FunctionalTestCase
 {
-    protected function setUp()
+    public function setUp()
     {
         if (!extension_loaded('apc')) {
             return $this->markTestSkipped('The APC extension is not available.');
@@ -17,7 +17,7 @@ class ApcTest extends FunctionalTestCase
         $this->adapter = new Apc('gaufrette-test.');
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
         if (null === $this->adapter) {
             return;
