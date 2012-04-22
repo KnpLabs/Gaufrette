@@ -13,8 +13,10 @@
 >
 
     <php>
+        <!-- Configuration for the GridFS adapter
         <server name="MONGO_SERVER" value="localhost:27017" />
         <server name="MONGO_DATABASE" value="gaufrette" />
+        -->
     </php>
 
     <testsuites>

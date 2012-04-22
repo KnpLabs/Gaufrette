@@ -9,6 +9,10 @@ class GridFSTest extends FunctionalTestCase
 {
     public function setUp()
     {
+        if (!isset($_SERVER['MONGO_SERVER'])) {
+            return $this->markTestSkipped('Mongo server not configured.');
+        }
+
         if (!class_exists('\Mongo')) {
             return $this->markTestSkipped('Mongo class not found.');
         }
