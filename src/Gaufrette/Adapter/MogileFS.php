@@ -2,19 +2,28 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Util;
+use Gaufrette\Exception;
+
 /**
  * Adapter for the MogileFS filesystem.
  *
  * @author Mikko Tarvainen 2011 <mtarvainen@gmail.com>
+ * @author Antoine Hérault <antoine.herault@gmail.com>
  *
  * Bases partly on Wikimedia MogileFS client code by Jens Frank and Domas Mituzas, 2007.
  * See more: http://svn.wikimedia.org/viewvc/mediawiki/trunk/extensions/MogileClient/
  */
 class MogileFS extends Base
 {
-    protected $socket;
-    protected $hosts;
+    const ERR_OTHER       = 0;
+    const ERR_UNKNOWN_KEY = 1;
+    const ERR_EMPTY_FILE  = 2;
+    const ERR_NONE_MATCH  = 3;
+
     protected $domain;
+    protected $hosts;
+    protected $socket;
 
     /**
      * Constructor
@@ -30,16 +39,24 @@ class MogileFS extends Base
 
         $this->domain = $domain;
         $this->hosts  = $hosts;
-        $this->socket = null;
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function read($key)
     {
+        try {
+            $paths = $this->getPaths($key);
+        } catch (\RuntimeException $e) {
+            if (static::ERR_UNKNOWN_KEY === $e->getCode()) {
+                throw new Exception\FileNotFound($key, 0, $e);
+            } else {
+                throw $e;
+            }
+        }
+
         $data = '';
-        $paths = $this->getPaths($key);
 
         if ($paths) {
             foreach ($paths as $path) {
@@ -61,7 +78,7 @@ class MogileFS extends Base
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function write($key, $content, array $metadata = null)
     {
@@ -93,49 +110,80 @@ class MogileFS extends Base
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function delete($key)
     {
-        $res = $this->doRequest("DELETE", array("key" => $key));
-        if ($res === false) {
-            throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
-        }
+        try {
+            $this->doRequest('DELETE', array('key' => $key));
+        } catch(\RuntimeException $e) {
+            if (static::ERR_UNKNOWN_KEY === $e->getCode()) {
+                throw new Exception\FileNotFound($key, 0, $e);
+            }
 
-        return true;
+            throw $e;
+        }
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function rename($key, $new)
     {
-        $res = $this->doRequest("RENAME", array("from_key" => $key, "to_key" => $new));
-        if ($res === false) {
-            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file.', $key));
+        try {
+            $result = $this->doRequest('RENAME', array(
+                'from_key'  => $key,
+                'to_key'    => $new
+            ));
+        } catch (\RuntimeException $e) {
+            if (static::ERR_UNKNOWN_KEY === $e->getCode()) {
+                throw new Exception\FileNotFound($key, 0, $e);
+            }
+
+            throw $e;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function exists($key)
+    {
+        try {
+            $this->getPaths($key);
+        } catch (\RuntimeException $e) {
+            if (static::ERR_UNKNOWN_KEY === $e->getCode()) {
+                return false;
+            }
+
+            throw $e;
         }
 
         return true;
     }
 
     /**
-     * {@InheritDoc}
-     */
-    public function exists($key)
-    {
-        return $this->read($key) ? true : false;
-    }
-
-    /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function keys()
     {
-        throw new \BadMethodCallException("Method not implemented yet.");
+        try {
+            $result = $this->doRequest('LIST_KEYS');
+        } catch (\RuntimeException $e) {
+            if (static::ERR_NONE_MATCH === $e->getCode()) {
+                return array();
+            }
+
+            throw $e;
+        }
+
+        unset($result['key_count'], $result['next_after']);
+
+        return array_values($result);
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function mtime($key)
     {
@@ -143,15 +191,15 @@ class MogileFS extends Base
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function checksum($key)
     {
-        throw new \BadMethodCallException("Method not implemented yet.");
+        return Util\Checksum::fromContent($this->read($key));
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function supportsMetadata()
     {
@@ -161,9 +209,9 @@ class MogileFS extends Base
     /**
      * Tries to connect MogileFS tracker
      *
-     * @return mixed Socket on success, false on failure
+     * @return Socket
      */
-    public function connect()
+    private function connect()
     {
         if ($this->socket) {
             return $this->socket;
@@ -181,7 +229,7 @@ class MogileFS extends Base
         }
 
         if (!$this->socket) {
-            return false;
+            throw new \RuntimeException('Unable to connect to the tracker.');
         }
 
         return $this->socket;
@@ -242,9 +290,7 @@ class MogileFS extends Base
         $args['domain'] = $this->domain;
         $params = http_build_query($args);
 
-        if (!$this->connect()) {
-            return false;
-        }
+        $this->connect();
 
         fwrite($this->socket, "{$cmd} {$params}\n");
         $line = fgets($this->socket);
@@ -254,8 +300,26 @@ class MogileFS extends Base
         if ($words[0] == 'OK') {
             parse_str(trim($words[1]), $result);
         } else {
-            $result = false;
-            $this->error = join(' ', $words);
+            $errorName = empty($words[1]) ? null : $words[1];
+
+            switch ($errorName) {
+                case 'unknown_key':
+                    $errorCode = static::ERR_UNKNOWN_KEY;
+                    break;
+                case 'empty_file':
+                    $errorCode = static::ERR_EMPTY_FILE;
+                    break;
+                case 'none_match':
+                    $errorCode = static::ERR_NONE_MATCH;
+                    break;
+                default:
+                    $errorCode = static::ERR_OTHER;
+            }
+
+            throw new \RuntimeException(
+                sprintf('Error response: %s', $line),
+                $errorCode
+            );
         }
 
         return $result;

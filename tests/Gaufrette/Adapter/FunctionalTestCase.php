@@ -23,7 +23,7 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
     {
         $basename = $this->getAdapterName();
         $filename = sprintf(
-            '%s/adapters/%s.ph',
+            '%s/adapters/%s.php',
             dirname(dirname(__DIR__)),
             $basename
         );
