@@ -89,7 +89,7 @@ class MogileFS extends Base
             throw new \RuntimeException(sprintf('Could not write the \'%s\' file in \'%s\'.',$key, $metadata['mogile_class']));
         }
 
-        return mb_strlen($content);
+        return Util\Size::fromContent($content);
     }
 
     /**
@@ -300,7 +300,7 @@ class MogileFS extends Base
 
         $out  = "PUT ". $url['path']. " HTTP/1.1". $b;
         $out .= "Host: ". $url['host']. $b;
-        $out .= "Content-Length: ". mb_strlen($data). $b. $b;
+        $out .= "Content-Length: ". Util\Size::fromContent($data). $b. $b;
         $out .= $data;
         $out .= $b. $b;
         fwrite($fp, $out);

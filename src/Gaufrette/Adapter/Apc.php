@@ -3,6 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Checksum;
+use Gaufrette\Util;
 use Gaufrette\Exception;
 
 /**
@@ -60,7 +61,7 @@ class Apc extends Base
             throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
         }
 
-        return mb_strlen($content);
+        return Util\Size::fromContent($content);
     }
 
     /**

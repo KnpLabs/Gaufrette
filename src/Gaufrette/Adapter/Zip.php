@@ -2,6 +2,7 @@
 namespace Gaufrette\Adapter;
 
 use ZipArchive;
+use Gaufrette\Util;
 use Gaufrette\Checksum;
 use Gaufrette\Exception;
 
@@ -75,7 +76,7 @@ class Zip extends Base
 
         $this->save();
 
-        return mb_strlen($content);
+        return Util\Size::fromContent($content);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Checksum;
+use Gaufrette\Util;
 use Gaufrette\Exception;
 
 /**
@@ -105,6 +106,8 @@ class InMemory extends Base
         $this->files[$key]['content']  = $content;
         $this->files[$key]['mtime']    = time();
         $this->files[$key]['checksum'] = Checksum::fromContent($content);
+
+        return Util\Size::fromContent($content);
     }
 
     /**

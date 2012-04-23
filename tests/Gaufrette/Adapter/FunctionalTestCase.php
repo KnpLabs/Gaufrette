@@ -21,10 +21,11 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $basename = $this->getAdapterName();
         $filename = sprintf(
-            '%s/adapters/%s.php',
+            '%s/adapters/%s.ph',
             dirname(dirname(__DIR__)),
-            $this->getAdapterName()
+            $basename
         );
 
         if (!file_exists($filename)) {
@@ -51,7 +52,7 @@ EOF
 
     public function testWriteAndRead()
     {
-        $this->adapter->write('foo', 'Some content');
+        $this->assertEquals(12, $this->adapter->write('foo', 'Some content'));
 
         $this->assertEquals('Some content', $this->adapter->read('foo'));
     }
