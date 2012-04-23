@@ -2,7 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Checksum;
+use Gaufrette\Util\Checksum;
 
 class InMemoryTest extends FunctionalTestCase
 {

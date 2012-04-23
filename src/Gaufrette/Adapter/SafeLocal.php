@@ -2,8 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Checksum;
-
 /**
  * Safe local adapter that encodes key to avoid the use of the directories
  * structure

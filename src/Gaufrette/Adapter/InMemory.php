@@ -2,7 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Checksum;
 use Gaufrette\Util;
 use Gaufrette\Exception;
 
@@ -66,7 +65,7 @@ class InMemory extends Base
         }
 
         if (null === $checksum) {
-            $checksum = Checksum::fromContent($content);
+            $checksum = Util\Checksum::fromContent($content);
         }
 
         $this->files[$key] = array(
@@ -105,7 +104,7 @@ class InMemory extends Base
     {
         $this->files[$key]['content']  = $content;
         $this->files[$key]['mtime']    = time();
-        $this->files[$key]['checksum'] = Checksum::fromContent($content);
+        $this->files[$key]['checksum'] = Util\Checksum::fromContent($content);
 
         return Util\Size::fromContent($content);
     }

@@ -3,7 +3,6 @@ namespace Gaufrette\Adapter;
 
 use ZipArchive;
 use Gaufrette\Util;
-use Gaufrette\Checksum;
 use Gaufrette\Exception;
 
 /**
@@ -134,7 +133,7 @@ class Zip extends Base
     {
         $this->assertExists($key);
 
-        return Checksum::fromContent($this->read($key));
+        return Util\Checksum::fromContent($this->read($key));
     }
 
     /**

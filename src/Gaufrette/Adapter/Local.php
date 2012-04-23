@@ -2,8 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Checksum;
 use Gaufrette\Path;
+use Gaufrette\Util;
 use Gaufrette\Filesystem;
 use Gaufrette\FileStream;
 use Gaufrette\Exception;
@@ -134,7 +134,7 @@ class Local extends Base
     {
         $this->assertExists($key);
 
-        return Checksum::fromFile($this->computePath($key));
+        return Util\Checksum::fromFile($this->computePath($key));
     }
 
     /**

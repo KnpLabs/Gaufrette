@@ -2,7 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Checksum;
 use Gaufrette\Util;
 use Gaufrette\Exception;
 
@@ -113,7 +112,7 @@ class Apc extends Base
     {
         $this->assertExists($key);
 
-        return Checksum::fromContent($this->read($key));
+        return Util\Checksum::fromContent($this->read($key));
     }
 
     /**
