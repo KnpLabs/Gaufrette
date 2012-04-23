@@ -2,7 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Path;
 use Gaufrette\Util;
 use Gaufrette\Filesystem;
 use Gaufrette\FileStream;
@@ -179,7 +178,7 @@ class Local extends Base
      */
     public function normalizePath($path)
     {
-        return Path::normalize($path);
+        return Util\Path::normalize($path);
     }
 
     /**

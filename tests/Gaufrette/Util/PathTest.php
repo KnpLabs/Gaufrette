@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette;
+namespace Gaufrette\Util;
 
 class PathTest extends \PHPUnit_Framework_TestCase
 {
