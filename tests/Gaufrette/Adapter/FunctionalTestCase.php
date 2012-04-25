@@ -113,6 +113,16 @@ EOF
         $this->adapter->rename('foo', 'bar');
     }
 
+    public function testRenameToAlreadyExistingFile()
+    {
+        $this->setExpectedException('Gaufrette\Exception\UnexpectedFile');
+
+        $this->adapter->write('foo', 'Some content');
+        $this->adapter->write('bar', 'Some content');
+
+        $this->adapter->rename('foo', 'bar');
+    }
+
     public function testDelete()
     {
         $this->adapter->write('foo', 'Some content');

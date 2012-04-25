@@ -47,15 +47,23 @@ class Sftp extends Base
     /**
      * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        $this->assertExists($key);
+        $this->assertExists($sourceKey);
+
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
 
         try {
-            $this->write($new, $this->read($key));
-            $this->delete($key);
+            $this->write($targetKey, $this->read($sourceKey));
+            $this->delete($sourceKey);
         } catch (\RuntimeException $e) {
-            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
+            throw new \RuntimeException(sprintf(
+                'Could not rename the "%s" file to "%s".',
+                $sourceKey,
+                $targetKey
+            ));
         }
     }
 

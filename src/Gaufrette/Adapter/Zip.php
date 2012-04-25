@@ -155,19 +155,22 @@ class Zip extends Base
     }
 
     /**
-     * Renames a file
-     *
-     * @param string $key
-     * @param string $new
-     *
-     * @throws RuntimeException on failure
+     * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        $this->assertExists($key);
+        $this->assertExists($sourceKey);
 
-        if (!$this->zipArchive->renameName($key, $new)) {
-            throw new \RuntimeException(sprintf('Unable to rename \'%s\' to \'%s\'.', $key, $new));
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
+
+        if (!$this->zipArchive->renameName($sourceKey, $targetKey)) {
+            throw new \RuntimeException(sprintf(
+                'Could not rename the "%s" file to "%s".',
+                $sourceKey,
+                $targetKey
+            ));
         }
 
         $this->save();

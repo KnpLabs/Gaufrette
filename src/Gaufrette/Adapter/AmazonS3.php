@@ -72,23 +72,27 @@ class AmazonS3 extends Base
     /**
      * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
         $this->ensureBucketExists();
+
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
 
         $response = $this->service->copy_object(
             array( // source
                 'bucket'   => $this->bucket,
-                'filename' => $this->computePath($key)
+                'filename' => $this->computePath($sourceKey)
             ),
             array( // target
                 'bucket'   => $this->bucket,
-                'filename' => $this->computePath($key)
+                'filename' => $this->computePath($targetKey)
             )
         );
 
         if (404 === $response->status) {
-            throw new Exception\FileNotFound($key);
+            throw new Exception\FileNotFound($sourceKey);
         } elseif (!$response->isOK()) {
             throw new \RuntimeException(sprintf(
                 'Could not rename the "%s" file into "%s".',
@@ -181,6 +185,10 @@ class AmazonS3 extends Base
     public function delete($key)
     {
         $this->ensureBucketExists();
+
+        if (!$this->exists($key)) {
+            throw new Exception\FileNotFound($key);
+        }
 
         $response = $this->service->delete_object(
             $this->bucket,

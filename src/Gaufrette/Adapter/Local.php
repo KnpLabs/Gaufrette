@@ -74,12 +74,20 @@ class Local extends Base
     /**
      * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        $this->assertExists($key);
+        $this->assertExists($sourceKey);
 
-        if (!rename($this->computePath($key), $this->computePath($new))) {
-            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
+
+        if (!rename($this->computePath($sourceKey), $this->computePath($targetKey))) {
+            throw new \RuntimeException(sprintf(
+                'Could not rename the "%s" file to "%s".',
+                $sourceKey,
+                $targetKey
+            ));
         }
     }
 

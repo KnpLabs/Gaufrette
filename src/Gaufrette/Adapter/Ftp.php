@@ -100,18 +100,25 @@ class Ftp extends Base
     /**
      * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        $this->assertExists($key);
+        $this->assertExists($sourceKey);
 
-        $old = $this->computePath($key);
-        $path = $this->computePath($new);
-        $directory = dirname($new);
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
 
-        $this->ensureDirectoryExists($directory, true);
+        $sourcePath = $this->computePath($sourceKey);
+        $targetPath = $this->computePath($targetKey);
 
-        if(!ftp_rename($this->getConnection(), $old, $path)) {
-            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
+        $this->ensureDirectoryExists(dirname($targetPath), true);
+
+        if(!ftp_rename($this->getConnection(), $sourcePath, $targetPath)) {
+            throw new \RuntimeException(sprintf(
+                'Could not rename the "%s" file to "%s".',
+                $sourceKey,
+                $targetKey
+            ));
         }
     }
 
@@ -120,16 +127,12 @@ class Ftp extends Base
      */
     public function exists($key)
     {
-        if (array_key_exists($key, $this->fileData)) {
-            return true;
-        } else {
-            $file  = $this->computePath($key);
-            $items = ftp_nlist($this->getConnection(), dirname($file));
+        $file  = $this->computePath($key);
+        $items = ftp_nlist($this->getConnection(), dirname($file));
 
-            foreach ($items as $item) {
-                if ($file === $item) {
-                    return true;
-                }
+        foreach ($items as $item) {
+            if ($file === $item) {
+                return true;
             }
         }
 

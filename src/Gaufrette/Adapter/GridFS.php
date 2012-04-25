@@ -50,12 +50,16 @@ class GridFS extends Base
     /**
      * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        $file = $this->findOrError($key);
+        $file = $this->findOrError($sourceKey);
 
-        $this->write($new, $file->getBytes());
-        $this->delete($key);
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
+
+        $this->write($targetKey, $file->getBytes());
+        $this->delete($sourceKey);
     }
 
     /**

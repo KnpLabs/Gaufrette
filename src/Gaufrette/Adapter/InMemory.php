@@ -88,13 +88,17 @@ class InMemory extends Base
     /**
      * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        $this->assertExists($key);
+        $this->assertExists($sourceKey);
 
-        $this->files[$new] = $this->files[$key];
-        unset($this->files[$key]);
-        $this->files[$new]['mtime'] = time();
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
+
+        $this->files[$targetKey] = $this->files[$sourceKey];
+        unset($this->files[$sourceKey]);
+        $this->files[$targetKey]['mtime'] = time();
     }
 
     /**

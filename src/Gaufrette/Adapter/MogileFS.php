@@ -20,6 +20,7 @@ class MogileFS extends Base
     const ERR_UNKNOWN_KEY = 1;
     const ERR_EMPTY_FILE  = 2;
     const ERR_NONE_MATCH  = 3;
+    const ERR_KEY_EXISTS  = 4;
 
     protected $domain;
     protected $hosts;
@@ -128,19 +129,22 @@ class MogileFS extends Base
     /**
      * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
         try {
             $result = $this->doRequest('RENAME', array(
-                'from_key'  => $key,
-                'to_key'    => $new
+                'from_key'  => $sourceKey,
+                'to_key'    => $targetKey
             ));
         } catch (\RuntimeException $e) {
-            if (static::ERR_UNKNOWN_KEY === $e->getCode()) {
-                throw new Exception\FileNotFound($key, 0, $e);
+            switch ($e->getCode()) {
+                case static::ERR_UNKNOWN_KEY:
+                    throw new Exception\FileNotFound($sourceKey, 0, $e);
+                case static::ERR_KEY_EXISTS:
+                    throw new Exception\UnexpectedFile($targetKey, 0, $e);
+                default:
+                    throw $e;
             }
-
-            throw $e;
         }
     }
 
@@ -311,6 +315,9 @@ class MogileFS extends Base
                     break;
                 case 'none_match':
                     $errorCode = static::ERR_NONE_MATCH;
+                    break;
+                case 'key_exists':
+                    $errorCode = static::ERR_KEY_EXISTS;
                     break;
                 default:
                     $errorCode = static::ERR_OTHER;

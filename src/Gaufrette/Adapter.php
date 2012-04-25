@@ -81,12 +81,13 @@ interface Adapter
     /**
      * Renames a file
      *
-     * @param string $key
-     * @param string $new
+     * @param string $sourceKey
+     * @param string $targetKey
      *
-     * @throws Exception\FileNotFound
+     * @throws Exception\FileNotFound   when the source file does not exist
+     * @throws Exception\UnexpectedFile when the target file already exists
      */
-    function rename($key, $new);
+    function rename($sourceKey, $targetKey);
 
     /**
      * If the adapter can allow inserting metadata

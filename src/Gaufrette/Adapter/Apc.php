@@ -132,17 +132,24 @@ class Apc extends Base
     /**
      * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        $this->assertExists($key);
+        $this->assertExists($sourceKey);
+
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
 
         try {
             // TODO: this probably allows for race conditions...
-            $content = $this->read($key);
-            $this->write($new, $content);
-            $this->delete($key);
+            $this->write($targetKey, $this->read($sourceKey));
+            $this->delete($sourceKey);
         } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
+            throw new \RuntimeException(sprintf(
+                'Could not rename the "%s" file to "%s".',
+                $sourceKey,
+                $targetKey
+            ));
         }
     }
 
