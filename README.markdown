@@ -166,7 +166,7 @@ to transform an image). Let's take a look at the following exemple:
 
 ```php
 $adapter = new InMemoryAdapter(array('hello.txt' => 'Hello World!'));
-$filesystem = new Filename($adapter);
+$filesystem = new Filesystem($adapter);
 
 $map = StreamWrapper::getFilesystemMap();
 $map->set('foo', $filesystem);
