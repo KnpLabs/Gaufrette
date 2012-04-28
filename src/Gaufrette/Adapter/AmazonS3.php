@@ -66,6 +66,20 @@ class AmazonS3 extends Base
      */
     public function rename($key, $new)
     {
+		try {
+			$this->copy($key, $new);
+		} catch(\RuntimeException $exception) {
+			throw new \RuntimeException(sprintf('Could not rename the \'%s\' file.', $key));
+		}
+
+        $this->delete($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function copy($key, $new)
+    {
         $key = $this->prependBaseDirectory($key);
         $new = $this->prependBaseDirectory($new);
 
@@ -81,10 +95,8 @@ class AmazonS3 extends Base
 
         $response = $this->service->copy_object($source, $destination);
         if (!$response->isOK()) {
-            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file.', $key));
+            throw new \RuntimeException(sprintf('Could not copy the \'%s\' file.', $key));
         }
-
-        $this->delete($key);
     }
 
     /**

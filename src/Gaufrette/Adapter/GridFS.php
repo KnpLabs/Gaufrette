@@ -57,6 +57,24 @@ class GridFS extends Base
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function copy($key, $new)
+    {
+        $gridfsFile = $this->gridfsInstance->findOne(array('key' => $key));
+
+        if (is_object($gridfsFile)) {
+            $retval = $this->write($new, $gridfsFile->getBytes(), $gridfsFile->file['metadata']);
+
+            if ($retval > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * {@InheritDoc}
      */
     public function exists($key)
