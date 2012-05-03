@@ -21,17 +21,33 @@
             "url":  "pear.amazonwebservices.com"
         },
         {
-            "type": "vcs",
-            "url":  "git://github.com/rackspace/php-cloudfiles.git"
+            "type": "package",
+            "package": {
+                "name": "rackspace/php-cloudfiles",
+                "version": "master",
+                "source": {
+                    "url":  "git://github.com/rackspace/php-cloudfiles.git",
+                    "type": "git",
+                    "reference": "master"
+                },
+                "dist": {
+                    "url": "https://github.com/rackspace/php-cloudfiles/zipball/master",
+                    "type": "zip"
+                }
+            }
         }
     ],
     "require": {
         "php": ">=5.3.0"
     },
+    "require-dev": {
+        "pear-aws/sdk": "*",
+        "rackspace/php-cloudfiles": "*"
+    },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "*",
-        "aws-sdk":                      ">=1.4.5",
-        "php-cloudfiles":               "*",
+        "pear-aws/sdk":                 ">=1.4.5",
+        "rackspace/php-cloudfiles":     "*",
         "ext-curl":                     "*",
         "ext-mbstring":                 "*",
         "ext-mongo":                    "*"
