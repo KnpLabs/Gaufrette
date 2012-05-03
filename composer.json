@@ -15,23 +15,16 @@
             "homepage": "http://github.com/knplabs/Gaufrette/contributors"
         }
     ],
-    "repositories": {
-        "amazonwebservices com": {
-            "pear": {
-                "url": "pear.amazonwebservices.com"
-            }
+    "repositories": [
+        {
+            "type": "pear",
+            "url":  "pear.amazonwebservices.com"
         },
-        "rackspace com": {
-            "package": {
-                "name": "php-cloudfiles",
-                "source": {
-                    "url": "git://github.com/rackspace/php-cloudfiles.git",
-                    "type": "git",
-                    "reference": "master"
-                }
-            }
+        {
+            "type": "vcs",
+            "url":  "git://github.com/rackspace/php-cloudfiles.git"
         }
-    },
+    ],
     "require": {
         "php": ">=5.3.0"
     },
