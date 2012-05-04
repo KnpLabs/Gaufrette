@@ -1,15 +1,3 @@
 <?php
 
-require_once __DIR__.'/../vendor/symfony-class-loader/UniversalClassLoader.php';
-
-use Symfony\Component\ClassLoader\UniversalClassLoader;
-
-$loader = new UniversalClassLoader();
-$loader->registerNamespaces(array(
-    'Gaufrette' => __DIR__.'/../src',
-));
-
-$loader->register();
-
-// AWS SDK needs a special autoloader
-require_once __DIR__.'/../vendor/aws-sdk/sdk.class.php';
+$loader = require_once __DIR__.'/../vendor/autoload.php';
