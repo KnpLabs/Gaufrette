@@ -168,7 +168,7 @@ class AmazonS3 extends Base
 
         $headers = $this->getHeaders($key);
 
-        return strtotime($headers['etag']);
+        return $headers['etag'];
     }
 
     /**
