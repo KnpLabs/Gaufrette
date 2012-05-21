@@ -10,7 +10,7 @@ use Doctrine\DBAL\Connection;
  * @package Gaufrette
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class Dbal extends Base
+class DoctrineDbal extends Base
 {
     /**
      * @var \Doctrine\DBAL\Connection

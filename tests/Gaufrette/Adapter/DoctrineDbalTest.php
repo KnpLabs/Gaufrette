@@ -9,7 +9,7 @@ use Doctrine\DBAL\DriverManager;
  *
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class DbalTest extends \PHPUnit_Framework_TestCase
+class DoctrineDbalTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Dbal
