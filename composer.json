@@ -35,6 +35,10 @@
                     "type": "zip"
                 }
             }
+        },
+        {
+            "type": "pear",
+            "url": "pear.dropbox-php.com"
         }
     ],
     "require": {
@@ -42,6 +46,7 @@
     },
     "require-dev": {
         "pear-aws/sdk": "*",
+        "pear-dropbox-php/Dropbox": "*",
         "rackspace/php-cloudfiles": "*"
     },
     "suggest": {
