@@ -126,30 +126,59 @@ class DropboxTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($checksum, $this->adapter->checksum('foobar'));
     }
 
-    public function testRealTestCase()
+    public function testKeys()
     {
-        if (!isset($_SERVER['DROPBOX_API_CONSUMER_KEY']) || !isset($_SERVER['DROPBOX_API_CONSUMER_SECRET'])) {
-            $this->markTestSkipped('');
-        }
+        $data = array(
+            "size"         => "0 bytes",
+            "hash"         => "37eb1ba1849d4b0fb0b28caf7ef3af52",
+            "bytes"        => 0,
+            "thumb_exists" => false,
+            "rev"          => "714f029684fe",
+            "modified"     => "Wed, 27 Apr 2011 22:18:51 +0000",
+            "path"         => "/Public",
+            "is_dir"       => true,
+            "icon"         => "folder_public",
+            "root"         => "dropbox",
+            "revision"     => 29007,
+            "contents"     => array(
+                array(
+                    "size"         => "0 bytes",
+                    "rev"          => "35c1f029684fe",
+                    "thumb_exists" => false,
+                    "bytes"        => 0,
+                    "modified"     => "Mon, 18 Jul 2011 20:13:43 +0000",
+                    "client_mtime" => "Wed, 20 Apr 2011 16:20:19 +0000",
+                    "path"         => "/Public/newest",
+                    "is_dir"       => true,
+                    "icon"         => "page_white_text",
+                    "root"         => "dropbox",
+                    "mime_type"    => "text/plain",
+                    "revision"     => 220191,
+                ),
+                array(
+                    "size"         => "0 bytes",
+                    "rev"          => "35c1f029684fe",
+                    "thumb_exists" => false,
+                    "bytes"        => 0,
+                    "modified"     => "Mon, 18 Jul 2011 20:13:43 +0000",
+                    "client_mtime" => "Wed, 20 Apr 2011 16:20:19 +0000",
+                    "path"         => "/Public/latest.txt",
+                    "is_dir"       => false,
+                    "icon"         => "page_white_text",
+                    "root"         => "dropbox",
+                    "mime_type"    => "text/plain",
+                    "revision"     => 220191,
+                )
+            )
+        );
 
-        $oauth = new \Dropbox_OAuth_Curl($_SERVER['DROPBOX_API_CONSUMER_KEY'], $_SERVER['DROPBOX_API_CONSUMER_SECRET']);
-        $api = new \Dropbox_API($oauth);
-        $adapter = new Dropbox($api);
+        $this->dropbox->expects($this->once())
+             ->method('getMetadata')
+             ->will($this->returnValue($data));
 
-        $file = 'foobar.txt';
-        $content = 'This is a example content';
+        $keys = $this->adapter->keys();
 
-        $this->assertEquals(strlen($content), $adapter->write($file, $content));
-
-        $this->assertTrue($adapter->exists($file));
-        $this->assertEquals($content, $adapter->read($file));
-
-        $adapter->rename($file, $fileNew = 'foobar_new.txt');
-        $this->assertFalse($adapter->exists($file));
-        $this->assertTrue($adapter->exists($file));
-        $this->assertEquals($content, $adapter->read($fileNew));
-
-        $this->assertNull($adapter->delete($fileNew));
-        $this->assertFalse($adapter->exists($fileNew));
+        $this->assertCount(2, $keys);
+        $this->assertEquals(array('Public/newest', "Public/latest.txt"), $keys);
     }
 }

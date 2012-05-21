@@ -92,7 +92,12 @@ class Dropbox extends Base
      */
     public function keys()
     {
-        throw new \BadMethodCallException('Method "keys" not implemented');
+        $metadata = $this->dropbox->getMetaData('/', true);
+        $files    = isset($metadata['contents']) ? $metadata['contents'] : array();
+
+        return array_map(function($value) {
+            return ltrim($value['path'], '/');
+        }, $files);
     }
 
     /**
