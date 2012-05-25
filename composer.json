@@ -42,12 +42,14 @@
     },
     "require-dev": {
         "pear-aws/sdk": "*",
-        "rackspace/php-cloudfiles": "*"
+        "rackspace/php-cloudfiles": "*",
+        "doctrine/dbal": ">=2.3"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "*",
         "pear-aws/sdk":                 ">=1.4.5",
         "rackspace/php-cloudfiles":     "*",
+        "doctrine/dbal":                ">=2.3",
         "ext-curl":                     "*",
         "ext-mbstring":                 "*",
         "ext-mongo":                    "*"
