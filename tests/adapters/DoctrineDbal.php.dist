@@ -1,22 +1,31 @@
 <?php
 
-$this->conn = DriverManager::getConnection(array(
+use Doctrine\DBAL\DriverManager;
+use Gaufrette\Adapter\DoctrineDbal;
+
+$connection = DriverManager::getConnection(array(
     'driver' => 'pdo_sqlite',
     'memory' => true,
 ));
 
-$sm = $this->conn->getSchemaManager();
-$this->schema = $sm->createSchema();
+$plaftform = $connection->getDatabasePlatform();
 
-$table = $this->schema->createTable('gaufrette');
-$table->addColumn('filename', 'string', array('unique' => true));
+$schemaManager = $connection->getSchemaManager();
+
+if (in_array('gaufrette', $schemaManager->listTableNames())) {
+    $schemaManager->dropTable('gaufrette');
+}
+
+$schema = $schemaManager->createSchema();
+
+$table = $schema->createTable('gaufrette');
+$table->addColumn('key', 'string', array('unique' => true));
 $table->addColumn('content', 'blob');
 $table->addColumn('mtime', 'integer');
 $table->addColumn('checksum', 'string', array('length' => 32));
 
-$queries = $this->schema->toSql($this->conn->getDatabasePlatform());
-foreach ($queries as $query) {
-    $this->conn->exec($query);
+foreach ($schema->toSql($plaftform) as $query) {
+    $connection->exec($query);
 }
 
-$this->adapter = new DoctrineDbal($this->conn);
+return new DoctrineDbal($connection, 'gaufrette');

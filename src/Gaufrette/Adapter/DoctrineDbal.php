@@ -2,145 +2,113 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Util;
+use Gaufrette\Exception;
+
 use Doctrine\DBAL\Connection;
 
 /**
- * Dbal adapter
+ * Doctrine DBAL adapter
  *
- * @package Gaufrette
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
+ * @author Antoine Hérault <antoine.herault@gmail.com>
  */
 class DoctrineDbal extends Base
 {
-    /**
-     * @var \Doctrine\DBAL\Connection
-     */
-    protected $conn;
-
-    /**
-     * @var array
-     */
-    protected $dbOptions;
+    protected $connection;
+    protected $table;
+    protected $columns = array(
+        'key'      => 'key',
+        'content'  => 'content',
+        'mtime'    => 'mtime',
+        'checksum' => 'checksum',
+    );
 
     /**
      * Constructor
      *
-     * @param \Doctrine\DBAL\Connection $conn
-     * @param array $dbOptions
+     * @param  Connection $connection The DBAL connection
+     * @param  string     $table      The files table
+     * @param  array      $columns    The column names
      */
-    public function __construct(Connection $conn, array $dbOptions = array())
+    public function __construct(Connection $connection, $table, array $columns = array())
     {
-        $this->conn = $conn;
-        $this->dbOptions = array_merge(array(
-            'table_name'      => 'gaufrette',
-            'key_column'      => 'filename',
-            'binary_column'   => 'content',
-            'mtime_column'    => 'mtime',
-            'checksum_column' => 'checksum',
-        ), $dbOptions);
+        $this->connection = $connection;
+        $this->table      = $table;
+        $this->columns    = array_replace($this->columns, $columns);
     }
 
     /**
-     * Returns an array of all keys matching the specified pattern
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public function keys()
     {
-        $tableName = $this->dbOptions['table_name'];
-        $keyColumn = $this->dbOptions['key_column'];
-
         $keys = array();
-        foreach ($this->conn->query("SELECT {$keyColumn} FROM {$tableName}")->fetchAll(\PDO::FETCH_NUM) as $row) {
-            $keys[] = $row[0];
+        $stmt = $this->connection->executeQuery(sprintf(
+            'SELECT %s FROM %s',
+            $this->getQuotedColumn('key'),
+            $this->getQuotedTable()
+        ));
+
+        while (false !== $key = $stmt->fetch(\PDO::FETCH_COLUMN)) {
+            $keys[] = $key;
         }
+
         return $keys;
     }
 
     /**
-     * Renames a file
-     *
-     * @param string $key
-     * @param string $new
-     *
-     * @throws RuntimeException on failure
+     * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        $tableName = $this->dbOptions['table_name'];
-        $keyColumn = $this->dbOptions['key_column'];
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
 
-        $this->conn->update(
-            $tableName,
-            array($keyColumn => $new),
-            array($keyColumn => $key)
+        $count = $this->connection->update(
+            $this->table,
+            array($this->getQuotedColumn('key') => $sourceKey),
+            array($this->getQuotedColumn('key') => $targetKey)
         );
+
+        if (0 === $count) {
+            throw new Exception\FileNotFound($sourceKey);
+        }
     }
 
     /**
-     * Returns the last modified time
-     *
-     * @param  string $key
-     *
-     * @return integer An UNIX like timestamp
+     * {@inheritDoc}
      */
     public function mtime($key)
     {
-        $tableName   = $this->dbOptions['table_name'];
-        $keyColumn   = $this->dbOptions['key_column'];
-        $mtimeColumn = $this->dbOptions['mtime_column'];
-
-        $qb = $this->conn->createQueryBuilder();
-        $qb->select('f.'.$mtimeColumn)->from($tableName, 'f')
-           ->where("f.{$keyColumn} = ?")
-           ->setParameter(0, $key)
-           ->setMaxResults(1);
-
-        return $qb->execute()->fetchColumn();
+        return $this->getColumnValue($key, 'mtime');
     }
 
     /**
-     * Returns the checksum of the file
-     *
-     * @param  string $key
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function checksum($key)
     {
-        $tableName      = $this->dbOptions['table_name'];
-        $keyColumn      = $this->dbOptions['key_column'];
-        $checksumColumn = $this->dbOptions['checksum_column'];
-
-        $qb = $this->conn->createQueryBuilder();
-        $qb->select('f.'.$checksumColumn)
-            ->from($tableName, 'f')
-            ->where("f.{$keyColumn} = ?")
-            ->setParameter(0, $key)
-            ->setMaxResults(1);
-
-        return $qb->execute()->fetchColumn();
+        return $this->getColumnValue($key, 'checksum');
     }
 
     /**
-     * Indicates whether the file exists
-     *
-     * @param  string $key
-     *
-     * @return boolean
+     * {@inheritDoc}
      */
     public function exists($key)
     {
-        $tableName    = $this->dbOptions['table_name'];
-        $keyColumn    = $this->dbOptions['key_column'];
+        $count = $this->connection->fetchColumn(
+            sprintf(
+                'SELECT COUNT(%s) FROM %s WHERE %s = :key',
+                $this->getQuotedColumn('key'),
+                $this->getQuotedTable(),
+                $this->getQuotedColumn('key')
+            ),
+            array('key' => $key)
+        );
 
-        $qb = $this->conn->createQueryBuilder();
-        $qb->select("COUNT(f.{$keyColumn})")
-            ->from($tableName, 'f')
-            ->where("f.{$keyColumn} = ?")
-            ->setParameter(0, $key);
-
-        return $qb->execute()->fetchColumn() > 0;
+        return 0 !== (int) $count;
     }
 
     /**
@@ -152,33 +120,22 @@ class DoctrineDbal extends Base
      */
     public function read($key)
     {
-        $tableName    = $this->dbOptions['table_name'];
-        $keyColumn    = $this->dbOptions['key_column'];
-        $binaryColumn = $this->dbOptions['binary_column'];
-
-        $qb = $this->conn->createQueryBuilder();
-        $qb->select('f.'.$binaryColumn)
-            ->from($tableName, 'f')
-            ->where("f.{$keyColumn} = ?")
-            ->setParameter(0, $key)
-            ->setMaxResults(1);
-
-        return $qb->execute()->fetchColumn();
+        return $this->getColumnValue($key, 'content');
     }
 
     /**
-     * Deletes the file
-     *
-     * @param  string $key
-     *
-     * @throws RuntimeException on failure
+     * {@inheritDoc}
      */
     public function delete($key)
     {
-        $tableName = $this->dbOptions['table_name'];
-        $keyColumn = $this->dbOptions['key_column'];
+        $count = $this->connection->delete(
+            $this->table,
+            array($this->getQuotedColumn('key') => $key)
+        );
 
-        return $this->conn->delete($tableName, array($keyColumn => $key));
+        if (0 === $count) {
+            throw new Exception\FileNotFound($key);
+        }
     }
 
     /**
@@ -194,30 +151,52 @@ class DoctrineDbal extends Base
      */
     public function write($key, $content, array $metadata = null)
     {
-        $tableName      = $this->dbOptions['table_name'];
-        $keyColumn      = $this->dbOptions['key_column'];
-        $binaryColumn   = $this->dbOptions['binary_column'];
-        $mtimeColumn    = $this->dbOptions['mtime_column'];
-        $checksumColumn = $this->dbOptions['checksum_column'];
+        $values = array(
+            $this->getQuotedColumn('content')  => $content,
+            $this->getQuotedColumn('mtime')    => time(),
+            $this->getQuotedColumn('checksum') => Util\Checksum::fromContent($content),
+        );
 
         if ($this->exists($key)) {
-            $this->conn->update($tableName, array(
-                $keyColumn => $key,
-                $binaryColumn => $content,
-                $mtimeColumn => time(),
-                $checksumColumn => md5($content)
-            ), array($keyColumn => $key));
+            $this->connection->update(
+                $this->table,
+                $values,
+                array($this->getQuotedColumn('key') => $key)
+            );
         } else {
-            $this->conn->insert($tableName, array(
-                $keyColumn => $key,
-                $binaryColumn => $content,
-                $mtimeColumn => time(),
-                $checksumColumn => md5($content)
-            ));
+            $values[$this->getQuotedColumn('key')] = $key;
+            $this->connection->insert($this->table, $values);
         }
 
-        return strlen($content);
+        return Util\Size::fromContent($content);
     }
 
+    private function getColumnValue($key, $column)
+    {
+        $value = $this->connection->fetchColumn(
+            sprintf(
+                'SELECT %s FROM %s WHERE %s = :key',
+                $this->getQuotedColumn($column),
+                $this->getQuotedTable(),
+                $this->getQuotedColumn('key')
+            ),
+            array('key' => $key)
+        );
 
+        if (false === $value) {
+            throw new Exception\FileNotFound($key);
+        }
+
+        return $value;
+    }
+
+    private function getQuotedTable()
+    {
+        return $this->connection->quoteIdentifier($this->table);
+    }
+
+    private function getQuotedColumn($column)
+    {
+        return $this->connection->quoteIdentifier($this->columns[$column]);
+    }
 }
