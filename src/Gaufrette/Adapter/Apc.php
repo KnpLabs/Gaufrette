@@ -2,13 +2,14 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Checksum;
+use Gaufrette\Util;
+use Gaufrette\Exception;
 
 /**
  * Apc adapter, a non-persistent adapter for when this sort of thing is appropriate
  *
- * @package Gaufrette
- * @author  Alexander Deruwe <alexander.deruwe@gmail.com>
+ * @author Alexander Deruwe <alexander.deruwe@gmail.com>
+ * @author Antoine Hérault <antoine.herault@gmail.com>
  */
 class Apc extends Base
 {
@@ -25,7 +26,7 @@ class Apc extends Base
     public function __construct($prefix, $ttl = 0)
     {
         if (!extension_loaded('apc')) {
-            throw new \RuntimeException('Unable to use Gaufrette\\Adapter\\Apc as the APC extension is not available.');
+            throw new \RuntimeException('Unable to use Gaufrette\Adapter\Apc as the APC extension is not available.');
         }
 
         $this->prefix = $prefix;
@@ -37,6 +38,8 @@ class Apc extends Base
      */
     public function read($key)
     {
+        $this->assertExists($key);
+
         $content = apc_fetch($this->computePath($key));
 
         if (false === $content) {
@@ -57,7 +60,7 @@ class Apc extends Base
             throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
         }
 
-        return mb_strlen($content);
+        return Util\Size::fromContent($content);
     }
 
     /**
@@ -94,6 +97,8 @@ class Apc extends Base
      */
     public function mtime($key)
     {
+        $this->assertExists($key);
+
         $pattern = sprintf('/^%s/', preg_quote($this->prefix . $key));
         $cachedKeys = iterator_to_array(new \APCIterator('user', $pattern, APC_ITER_MTIME));
 
@@ -105,7 +110,9 @@ class Apc extends Base
      */
     public function checksum($key)
     {
-        return Checksum::fromContent($this->read($key));
+        $this->assertExists($key);
+
+        return Util\Checksum::fromContent($this->read($key));
     }
 
     /**
@@ -113,6 +120,8 @@ class Apc extends Base
      */
     public function delete($key)
     {
+        $this->assertExists($key);
+
         $result = apc_delete($this->computePath($key));
 
         if (false === $result) {
@@ -123,15 +132,24 @@ class Apc extends Base
     /**
      * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
+        $this->assertExists($sourceKey);
+
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
+
         try {
             // TODO: this probably allows for race conditions...
-            $content = $this->read($key);
-            $this->write($new, $content);
-            $this->delete($key);
+            $this->write($targetKey, $this->read($sourceKey));
+            $this->delete($sourceKey);
         } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
+            throw new \RuntimeException(sprintf(
+                'Could not rename the "%s" file to "%s".',
+                $sourceKey,
+                $targetKey
+            ));
         }
     }
 
@@ -144,5 +162,12 @@ class Apc extends Base
     public function computePath($key)
     {
         return $this->prefix . $key;
+    }
+
+    private function assertExists($key)
+    {
+        if (!$this->exists($key)) {
+            throw new Exception\FileNotFound($key);
+        }
     }
 }

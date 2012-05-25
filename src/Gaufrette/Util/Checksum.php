@@ -1,11 +1,10 @@
 <?php
 
-namespace Gaufrette;
+namespace Gaufrette\Util;
 
 /**
  * Checksum utils
  *
- * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
 class Checksum
@@ -32,18 +31,5 @@ class Checksum
     static public function fromFile($filename)
     {
         return md5_file($filename);
-    }
-
-    /**
-     * Indicates whether the specified checksum matches the given content
-     *
-     * @param  string $checksum
-     * @param  string $content
-     *
-     * @return boolean
-     */
-    static public function matchesContent($checksum, $content)
-    {
-        return $checksum === static::fromContent($content);
     }
 }

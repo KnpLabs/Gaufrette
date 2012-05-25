@@ -66,7 +66,7 @@ class RackspaceCloudfiles extends Base
             throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
         }
 
-        return $this->getStringNumBytes($content);
+        return Util\Size::fromString($content);
     }
 
     /**
@@ -135,46 +135,5 @@ class RackspaceCloudfiles extends Base
             // creation if the object doesn't exist
             return false;
         }
-    }
-
-    /**
-     * Returns the number of bytes of the given string
-     *
-     * @param  string $string
-     *
-     * @return integer
-     */
-    protected function getStringNumBytes($string)
-    {
-        $d = 0;
-        $strlen_var = strlen($string);
-        for ($c = 0; $c < $strlen_var; ++$c) {
-            $ord_var_c = ord($string{$d});
-
-            switch (true) {
-                case (($ord_var_c >= 0x20) && ($ord_var_c <= 0x7F)):
-                    $d++;
-                    break;
-                case (($ord_var_c & 0xE0) == 0xC0):
-                    $d+=2;
-                    break;
-                case (($ord_var_c & 0xF0) == 0xE0):
-                    $d+=3;
-                    break;
-                case (($ord_var_c & 0xF8) == 0xF0):
-                    $d+=4;
-                    break;
-                case (($ord_var_c & 0xFC) == 0xF8):
-                    $d+=5;
-                    break;
-                case (($ord_var_c & 0xFE) == 0xFC):
-                    $d+=6;
-                    break;
-                default:
-                    $d++;
-            }
-        }
-
-        return $d;
     }
 }

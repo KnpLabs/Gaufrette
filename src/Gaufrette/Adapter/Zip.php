@@ -2,13 +2,14 @@
 namespace Gaufrette\Adapter;
 
 use ZipArchive;
-use Gaufrette\Checksum;
+use Gaufrette\Util;
+use Gaufrette\Exception;
 
 /**
  * ZIP Archive adapter
  *
- * @package Gaufrette
- * @author  Boris Guéry <guery.b@gmail.com>
+ * @author Boris Guéry <guery.b@gmail.com>
+ * @author Antoine Hérault <antoine.herault@gmail.com>
  */
 class Zip extends Base
 {
@@ -25,7 +26,11 @@ class Zip extends Base
     public function __construct($zipFile)
     {
         if (!extension_loaded('zip')) {
-            throw new \RuntimeException(sprintf('Unable to use %s without ZIP extension installed. See http://www.php.net/manual/en/zip.installation.php', __CLASS__));
+            throw new \RuntimeException(sprintf(
+                'Unable to use %s without ZIP extension installed. '.
+                'See http://www.php.net/manual/en/zip.installation.php',
+                __CLASS__
+            ));
         }
 
         $this->zipFile = $zipFile;
@@ -41,6 +46,8 @@ class Zip extends Base
      */
     public function read($key)
     {
+        $this->assertExists($key);
+
         if (false === ($content = $this->zipArchive->getFromName($key, 0))) {
             throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
         }
@@ -68,7 +75,7 @@ class Zip extends Base
 
         $this->save();
 
-        return mb_strlen($content);
+        return Util\Size::fromContent($content);
     }
 
     /**
@@ -108,6 +115,8 @@ class Zip extends Base
      */
     public function mtime($key)
     {
+        $this->assertExists($key);
+
         $stat = $this->getStat($key);
 
         return $stat['mtime'];
@@ -122,7 +131,9 @@ class Zip extends Base
      */
     public function checksum($key)
     {
-        return Checksum::fromContent($this->read($key));
+        $this->assertExists($key);
+
+        return Util\Checksum::fromContent($this->read($key));
     }
 
     /**
@@ -134,6 +145,8 @@ class Zip extends Base
      */
     public function delete($key)
     {
+        $this->assertExists($key);
+
         if (!$this->zipArchive->deleteName($key)) {
             throw new \RuntimeException(sprintf('Unable to delete \'%s\'.', $key));
         }
@@ -142,17 +155,22 @@ class Zip extends Base
     }
 
     /**
-     * Renames a file
-     *
-     * @param string $key
-     * @param string $new
-     *
-     * @throws RuntimeException on failure
+     * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        if (!$this->zipArchive->renameName($key, $new)) {
-            throw new \RuntimeException(sprintf('Unable to rename \'%s\' to \'%s\'.', $key, $new));
+        $this->assertExists($sourceKey);
+
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
+
+        if (!$this->zipArchive->renameName($sourceKey, $targetKey)) {
+            throw new \RuntimeException(sprintf(
+                'Could not rename the "%s" file to "%s".',
+                $sourceKey,
+                $targetKey
+            ));
         }
 
         $this->save();
@@ -188,36 +206,36 @@ class Zip extends Base
 
         if (true !== ($resultCode = $this->zipArchive->open($this->zipFile, ZipArchive::CREATE))) {
             switch($resultCode) {
-                case ZipArchive::ER_EXISTS:
-                    $errMsg = 'File already exists';
-                    break;
-                case ZipArchive::ER_INCONS:
-                    $errMsg = 'Zip archive inconsistent.';
-                    break;
-                case ZipArchive::ER_INVAL:
-                    $errMsg = 'Invalid argument.';
-                    break;
-                case ZipArchive::ER_MEMORY:
-                    $errMsg = 'Malloc failure.';
-                    break;
-                case ZipArchive::ER_NOENT:
-                    $errMsg = 'Invalid argument.';
-                    break;
-                case ZipArchive::ER_NOZIP:
-                    $errMsg = 'Not a zip archive.';
-                    break;
-                case ZipArchive::ER_OPEN:
-                    $errMsg = 'Can\'t open file.';
-                    break;
-                case ZipArchive::ER_READ:
-                    $errMsg = 'Read error.';
-                    break;
-                case ZipArchive::ER_SEEK;
-                    $errMsg = 'Seek error.';
-                    break;
-                default:
-                    $errMsg = 'Unknown error';
-                    break;
+            case ZipArchive::ER_EXISTS:
+                $errMsg = 'File already exists';
+                break;
+            case ZipArchive::ER_INCONS:
+                $errMsg = 'Zip archive inconsistent.';
+                break;
+            case ZipArchive::ER_INVAL:
+                $errMsg = 'Invalid argument.';
+                break;
+            case ZipArchive::ER_MEMORY:
+                $errMsg = 'Malloc failure.';
+                break;
+            case ZipArchive::ER_NOENT:
+                $errMsg = 'Invalid argument.';
+                break;
+            case ZipArchive::ER_NOZIP:
+                $errMsg = 'Not a zip archive.';
+                break;
+            case ZipArchive::ER_OPEN:
+                $errMsg = 'Can\'t open file.';
+                break;
+            case ZipArchive::ER_READ:
+                $errMsg = 'Read error.';
+                break;
+            case ZipArchive::ER_SEEK;
+                $errMsg = 'Seek error.';
+                break;
+            default:
+                $errMsg = 'Unknown error';
+                break;
             }
 
             throw new \RuntimeException(sprintf('%s', $errMsg));
@@ -239,6 +257,13 @@ class Zip extends Base
         }
 
         // Re-initialize to get updated version
-            $this->initZipArchive();
+        $this->initZipArchive();
+    }
+
+    private function assertExists($key)
+    {
+        if (false === $this->zipArchive->statName($key)) {
+            throw new Exception\FileNotFound($key);
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\File;
 use Gaufrette\Filesystem;
+use Gaufrette\Exception;
 
 /**
  * Ftp adapter
@@ -37,10 +38,13 @@ class Ftp extends Base
      * @param  string $create    Whether to create the directory if it does not
      *                           exist
      * @param  string $mode      Transfer-Mode (FTP_ASCII oder FTP_BINARY)
+     *
+     * @todo replace this arguments by an array of options
+     * @todo use FTP_BINARY by default
      */
     public function __construct($directory, $host, $username = null, $password = null, $port = 21, $passive = false, $create = false, $mode = FTP_ASCII)
     {
-        $this->directory = $directory;
+        $this->directory = (string) $directory;
         $this->host = $host;
         $this->port = $port;
         $this->username = $username;
@@ -55,6 +59,8 @@ class Ftp extends Base
      */
     public function read($key)
     {
+        $this->assertExists($key);
+
         $temp = fopen('php://temp', 'r+');
 
         if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), $this->mode)) {
@@ -94,16 +100,25 @@ class Ftp extends Base
     /**
      * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        $old = $this->computePath($key);
-        $path = $this->computePath($new);
-        $directory = dirname($new);
+        $this->assertExists($sourceKey);
 
-        $this->ensureDirectoryExists($directory, true);
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
 
-        if(!ftp_rename($this->getConnection(), $old, $path)) {
-            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
+        $sourcePath = $this->computePath($sourceKey);
+        $targetPath = $this->computePath($targetKey);
+
+        $this->ensureDirectoryExists(dirname($targetPath), true);
+
+        if(!ftp_rename($this->getConnection(), $sourcePath, $targetPath)) {
+            throw new \RuntimeException(sprintf(
+                'Could not rename the "%s" file to "%s".',
+                $sourceKey,
+                $targetKey
+            ));
         }
     }
 
@@ -112,16 +127,12 @@ class Ftp extends Base
      */
     public function exists($key)
     {
-        if (array_key_exists($key, $this->fileData)) {
-            return true;
-        } else {
-            $file = $this->computePath($key);
+        $file  = $this->computePath($key);
+        $items = ftp_nlist($this->getConnection(), dirname($file));
 
-            $items = ftp_nlist($this->getConnection(), dirname($file));
-            foreach ($items as $item) {
-                if (basename($file) === $item) {
-                    return true;
-                }
+        foreach ($items as $item) {
+            if ($file === $item) {
+                return true;
             }
         }
 
@@ -141,6 +152,8 @@ class Ftp extends Base
      */
     public function mtime($key)
     {
+        $this->assertExists($key);
+
         $mtime = ftp_mdtm($this->getConnection(), $this->computePath($key));
 
         // the server does not support this function
@@ -156,6 +169,8 @@ class Ftp extends Base
      */
     public function checksum($key)
     {
+        $this->assertExists($key);
+
         return md5($this->read($key));
     }
 
@@ -164,6 +179,8 @@ class Ftp extends Base
      */
     public function delete($key)
     {
+        $this->assertExists($key);
+
         if (!ftp_delete($this->getConnection(), $this->computePath($key))) {
             throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
         }
@@ -200,6 +217,10 @@ class Ftp extends Base
      */
     public function directoryExists($directory)
     {
+        if ('/' === $directory) {
+            return true;
+        }
+
         if (!ftp_chdir($this->getConnection(), $directory)) {
             return false;
         }
@@ -352,7 +373,7 @@ class Ftp extends Base
      */
     private function computePath($key)
     {
-        return $this->directory . '/' . $key;
+        return rtrim($this->directory, '/') . '/' . $key;
     }
 
     /**
@@ -408,8 +429,12 @@ class Ftp extends Base
             throw new \RuntimeException('Could not turn passive mode on.');
         }
 
+        if ('' === $this->directory) {
+            $this->directory = ftp_pwd($this->connection);
+        }
+
         // ensure the adapter's directory exists
-        if (!empty($this->directory)) {
+        if ('/' !== $this->directory) {
             try {
                 $this->ensureDirectoryExists($this->directory, $this->create);
             } catch (\RuntimeException $e) {
@@ -432,6 +457,20 @@ class Ftp extends Base
     {
         if ($this->isConnected()) {
             ftp_close($this->connection);
+        }
+    }
+
+    /**
+     * Asserts the specified file exists
+     *
+     * @param  string $key
+     *
+     * @throws Exception\FileNotFound if the file does not exist
+     */
+    private function assertExists($key)
+    {
+        if (!$this->exists($key)) {
+            throw new Exception\FileNotFound($key);
         }
     }
 }

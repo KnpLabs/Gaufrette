@@ -2,7 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Checksum;
+use Gaufrette\Util;
+use Gaufrette\Exception;
 
 /**
  * In memory adapter
@@ -64,7 +65,7 @@ class InMemory extends Base
         }
 
         if (null === $checksum) {
-            $checksum = Checksum::fromContent($content);
+            $checksum = Util\Checksum::fromContent($content);
         }
 
         $this->files[$key] = array(
@@ -79,17 +80,25 @@ class InMemory extends Base
      */
     public function read($key)
     {
+        $this->assertExists($key);
+
         return $this->files[$key]['content'];
     }
 
     /**
      * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        $this->files[$new] = $this->files[$key];
-        unset($this->files[$key]);
-        $this->files[$new]['mtime'] = time();
+        $this->assertExists($sourceKey);
+
+        if ($this->exists($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
+
+        $this->files[$targetKey] = $this->files[$sourceKey];
+        unset($this->files[$sourceKey]);
+        $this->files[$targetKey]['mtime'] = time();
     }
 
     /**
@@ -99,7 +108,9 @@ class InMemory extends Base
     {
         $this->files[$key]['content']  = $content;
         $this->files[$key]['mtime']    = time();
-        $this->files[$key]['checksum'] = Checksum::fromContent($content);
+        $this->files[$key]['checksum'] = Util\Checksum::fromContent($content);
+
+        return Util\Size::fromContent($content);
     }
 
     /**
@@ -123,6 +134,8 @@ class InMemory extends Base
      */
     public function mtime($key)
     {
+        $this->assertExists($key);
+
         return $this->files[$key]['mtime'];
     }
 
@@ -131,6 +144,8 @@ class InMemory extends Base
      */
     public function checksum($key)
     {
+        $this->assertExists($key);
+
         return $this->files[$key]['checksum'];
     }
 
@@ -139,9 +154,17 @@ class InMemory extends Base
      */
     public function delete($key)
     {
+        $this->assertExists($key);
+
         unset($this->files[$key]);
 
         return true;
     }
 
+    private function assertExists($key)
+    {
+        if (!$this->exists($key)) {
+            throw new Exception\FileNotFound($key);
+        }
+    }
 }

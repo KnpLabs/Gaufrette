@@ -1,1 +1,4 @@
 vendor/
+phpunit.xml
+tests/adapters/*
+!tests/adapters/*.dist

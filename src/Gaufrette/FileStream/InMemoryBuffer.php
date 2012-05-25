@@ -5,6 +5,7 @@ namespace Gaufrette\FileStream;
 use Gaufrette\FileStream;
 use Gaufrette\Adapter;
 use Gaufrette\StreamMode;
+use Gaufrette\Util;
 
 class InMemoryBuffer implements FileStream
 {
@@ -49,7 +50,7 @@ class InMemoryBuffer implements FileStream
             $this->content = $this->adapter->read($this->key);
         }
 
-        $this->numBytes = strlen($this->content);
+        $this->numBytes = Util\Size::fromContent($this->content);
         $this->position = $mode->impliesPositioningCursorAtTheEnd() ? $this->numBytes : 0;
 
         $this->synchronized = true;
@@ -69,7 +70,7 @@ class InMemoryBuffer implements FileStream
 
         $chunk = substr($this->content, $this->position, $count);
 
-        $this->position+= strlen($chunk);
+        $this->position+= Util\Size::fromContent($chunk);
 
         return $chunk;
     }
@@ -84,7 +85,7 @@ class InMemoryBuffer implements FileStream
             return 0;
         }
 
-        $numWrittenBytes = strlen($data);
+        $numWrittenBytes = Util\Size::fromContent($data);
         $newPosition     = $this->position + $numWrittenBytes;
         $newNumBytes     = $newPosition > $this->numBytes ? $newPosition : $this->numBytes;
 

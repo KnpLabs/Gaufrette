@@ -2,18 +2,37 @@
 
 namespace Gaufrette\Adapter;
 
-class SafeLocalTest extends \PHPUnit_Framework_TestCase
+class SafeLocalTest extends FunctionalTestCase
 {
-    protected $adapter;
-
     public function setUp()
     {
-        $this->adapter = new SafeLocal(__DIR__);
+        if (!file_exists($this->getDirectory())) {
+            mkdir($this->getDirectory());
+        }
+
+        $this->adapter = new SafeLocal($this->getDirectory());
     }
 
     public function tearDown()
     {
         $this->adapter = null;
+
+        if (file_exists($this->getDirectory())) {
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator(
+                    $this->getDirectory(),
+                    \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
+                )
+            );
+
+            foreach ($iterator as $item) {
+                if ($item->isDir()) {
+                    rmdir(strval($item));
+                } else {
+                    unlink(strval($item));
+                }
+            }
+        }
     }
 
     /**
@@ -37,20 +56,25 @@ class SafeLocalTest extends \PHPUnit_Framework_TestCase
         return array(
             array(
                 '../../..',
-                __DIR__ . '/Li4vLi4vLi4='
+                $this->getDirectory() . '/Li4vLi4vLi4='
             ),
             array(
                 'foo/bar',
-                __DIR__ . '/Zm9vL2Jhcg=='
+                $this->getDirectory() . '/Zm9vL2Jhcg=='
             ),
             array(
                 'foo/foo/../bar',
-                __DIR__ . '/Zm9vL2Zvby8uLi9iYXI='
+                $this->getDirectory() . '/Zm9vL2Zvby8uLi9iYXI='
             ),
             array(
                 'foo_bar',
-                __DIR__ . '/Zm9vX2Jhcg=='
+                $this->getDirectory() . '/Zm9vX2Jhcg=='
             )
         );
+    }
+
+    private function getDirectory()
+    {
+        return sprintf('%s/filesystem', __DIR__);
     }
 }

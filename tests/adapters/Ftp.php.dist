@@ -1,0 +1,9 @@
+<?php
+
+$adapter = new Gaufrette\Adapter\Ftp(/* ... */);
+
+foreach ($adapter->keys() as $key) {
+    $adapter->delete($key);
+}
+
+return $adapter;
