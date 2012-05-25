@@ -6,8 +6,10 @@ use Symfony\Component\ClassLoader\UniversalClassLoader;
 
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
-    'Gaufrette' => array(__DIR__.'/../src', __DIR__),
-    'Ssh'       => __DIR__.'/../vendor/php-ssh/src',
+    'Gaufrette'       => array(__DIR__.'/../src', __DIR__),
+    'Ssh'             => __DIR__.'/../vendor/php-ssh/src',
+    'Doctrine\Common' => __DIR__.'/../vendor/doctrine-common/lib',
+    'Doctrine\DBAL'   => __DIR__.'/../vendor/doctrine-dbal/lib',
 ));
 
 $loader->register();

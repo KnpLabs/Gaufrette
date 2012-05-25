@@ -1,0 +1,22 @@
+<?php
+
+$this->conn = DriverManager::getConnection(array(
+    'driver' => 'pdo_sqlite',
+    'memory' => true,
+));
+
+$sm = $this->conn->getSchemaManager();
+$this->schema = $sm->createSchema();
+
+$table = $this->schema->createTable('gaufrette');
+$table->addColumn('filename', 'string', array('unique' => true));
+$table->addColumn('content', 'blob');
+$table->addColumn('mtime', 'integer');
+$table->addColumn('checksum', 'string', array('length' => 32));
+
+$queries = $this->schema->toSql($this->conn->getDatabasePlatform());
+foreach ($queries as $query) {
+    $this->conn->exec($query);
+}
+
+$this->adapter = new DoctrineDbal($this->conn);
