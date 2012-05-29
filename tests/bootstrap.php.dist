@@ -11,6 +11,9 @@ $loader->registerNamespaces(array(
     'Doctrine\Common' => __DIR__.'/../vendor/doctrine-common/lib',
     'Doctrine\DBAL'   => __DIR__.'/../vendor/doctrine-dbal/lib',
 ));
+$loader->registerPrefixes(array(
+    'Dropbox_'        => __DIR__.'/../vendor/dropbox-php/src',
+));
 
 $loader->register();
 

@@ -2,27 +2,27 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Util;
+use Gaufrette\Exception;
+
 /**
  * Dropbox adapter
  *
- * @package Gaufrette
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
+ * @author Antoine Hérault <antoine.herault@gmail.com>
  */
 class Dropbox extends Base
 {
-    /**
-     * @var \Dropbox_API
-     */
-    protected $dropbox;
+    protected $client;
 
     /**
      * Constructor
      *
-     * @param \Dropbox_API $dropbox
+     * @param \Dropbox_API $client The Dropbox API client
      */
-    public function __construct(\Dropbox_API $dropbox)
+    public function __construct(\Dropbox_API $client)
     {
-        $this->dropbox = $dropbox;
+        $this->client = $client;
     }
 
     /**
@@ -30,7 +30,11 @@ class Dropbox extends Base
      */
     public function read($key)
     {
-        return $this->dropbox->getFile($key);
+        try {
+            return $this->client->getFile($key);
+        } catch (\Dropbox_Exception_NotFound $e) {
+            throw new Exception\FileNotFound($key, 0, $e);
+        }
     }
 
     /**
@@ -42,14 +46,16 @@ class Dropbox extends Base
         fwrite($resource, $content);
         fseek($resource, 0);
 
-        if (!$this->dropbox->putFile($key, $resource)) {
+        try {
+            $this->client->putFile($key, $resource);
+        } catch (\Exception $e) {
             fclose($resource);
-            throw new \RuntimeException(sprintf('Unable to write file %s', $key));
+            throw $e;
         }
 
         fclose($resource);
 
-        return strlen($content);
+        return Util\Size::fromContent($content);
     }
 
     /**
@@ -57,15 +63,31 @@ class Dropbox extends Base
      */
     public function delete($key)
     {
-        $this->dropbox->delete($key);
+        try {
+            $this->client->delete($key);
+        } catch (\Dropbox_Exception_NotFound $e) {
+            throw new Exception\FileNotFound($key, 0, $e);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        $this->dropbox->move($key, $new);
+        try {
+            $this->client->move($sourceKey, $targetKey);
+        } catch (\Dropbox_Exception_NotFound $e) {
+            throw new Exception\FileNotFound($sourceKey, 0, $e);
+        } catch (\Dropbox_Exception_Forbidden $e) {
+            // TODO find a better way to be sure it's because the target file
+            //      exists
+            if ($this->exists($targetKey)) {
+                throw new Exception\UnexpectedFile($targetKey);
+            }
+
+            throw $e;
+        }
     }
 
     /**
@@ -73,7 +95,7 @@ class Dropbox extends Base
      */
     public function checksum($key)
     {
-        return md5($this->dropbox->getFile($key));
+        return Util\Checksum::fromContent($this->read($key));
     }
 
     /**
@@ -81,37 +103,54 @@ class Dropbox extends Base
      */
     public function mtime($key)
     {
-        $info = $this->dropbox->getMetaData($key);
-        return strtotime($info['modified']);
+        $metadata = $this->getMetadata($key);
+
+        return strtotime($metadata['modified']);
     }
 
     /**
-     * Returns an array of all keys matching the specified pattern
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public function keys()
     {
-        $metadata = $this->dropbox->getMetaData('/', true);
+        $metadata = $this->client->getMetaData('/', true);
         $files    = isset($metadata['contents']) ? $metadata['contents'] : array();
 
-        return array_map(function($value) {
-            return ltrim($value['path'], '/');
-        }, $files);
+        return array_map(
+            function($value) {
+                return ltrim($value['path'], '/');
+            },
+            $files
+        );
     }
 
     /**
-     * Indicates whether the file exists
-     *
-     * @param  string $key
-     *
-     * @return boolean
+     * {@inheritDoc}
      */
     public function exists($key)
     {
-        $results = $this->dropbox->search($key);
-        return !empty($key);
+        try {
+            $this->getMetadata($key);
+
+            return true;
+        } catch (Exception\FileNotFound $e) {
+            return false;
+        }
     }
 
+    private function getMetadata($key)
+    {
+        try {
+            $metadata = $this->client->getMetaData($key, false);
+        } catch (\Dropbox_Exception_NotFound $e) {
+            throw new Exception\FileNotFound($key, 0, $e);
+        }
 
+        // TODO find a way to exclude deleted files
+        if (isset($metadata['is_deleted']) && $metadata['is_deleted']) {
+            throw new Exception\FileNotFound($key);
+        }
+
+        return $metadata;
+    }
 }
