@@ -35,6 +35,10 @@
                     "type": "zip"
                 }
             }
+        },
+        {
+            "type": "pear",
+            "url": "pear.dropbox-php.com"
         }
     ],
     "require": {
@@ -43,7 +47,9 @@
     "require-dev": {
         "pear-aws/sdk": "*",
         "rackspace/php-cloudfiles": "*",
-        "doctrine/dbal": ">=2.3"
+        "doctrine/dbal": ">=2.3",
+        "pear-dropbox-php/Dropbox": "*",
+        "rackspace/php-cloudfiles": "*"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "*",
