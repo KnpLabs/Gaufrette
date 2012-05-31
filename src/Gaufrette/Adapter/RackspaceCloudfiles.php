@@ -74,7 +74,7 @@ class RackspaceCloudfiles extends Base
      */
     public function exists($key)
     {
-        return false === $this->tryGetObject($key);
+        return false !== $this->tryGetObject($key);
     }
 
     /**
