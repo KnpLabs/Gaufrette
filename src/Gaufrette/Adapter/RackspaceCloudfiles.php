@@ -66,7 +66,7 @@ class RackspaceCloudfiles extends Base
             throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
         }
 
-        return Util\Size::fromString($content);
+        return Util\Size::fromContent($content);
     }
 
     /**
@@ -74,7 +74,7 @@ class RackspaceCloudfiles extends Base
      */
     public function exists($key)
     {
-        return false === $this->tryGetObject($key);
+        return false !== $this->tryGetObject($key);
     }
 
     /**
