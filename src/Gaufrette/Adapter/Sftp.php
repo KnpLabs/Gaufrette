@@ -55,10 +55,12 @@ class Sftp extends Base
             throw new Exception\UnexpectedFile($targetKey);
         }
 
-        try {
-            $this->write($targetKey, $this->read($sourceKey));
-            $this->delete($sourceKey);
-        } catch (\RuntimeException $e) {
+        $sourcePath = $this->computePath($sourceKey);
+        $targetPath = $this->computePath($targetKey);
+
+        $this->ensureDirectoryExists(dirname($targetPath), true);
+
+        if(!$this->sftp->rename($sourcePath, $targetPath)) {
             throw new \RuntimeException(sprintf(
                 'Could not rename the "%s" file to "%s".',
                 $sourceKey,
