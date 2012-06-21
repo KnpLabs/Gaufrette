@@ -111,12 +111,13 @@ class AmazonS3 extends Base
     {
         $this->ensureBucketExists();
 
-        $opt = array('body' => $content);
+        $opt = $metadata ?: array();
+        $opt['body'] = $content;
 
         $response = $this->service->create_object(
             $this->bucket,
             $this->computePath($key),
-            array('body' => $content)
+            $opt
         );
 
         if (!$response->isOK()) {
