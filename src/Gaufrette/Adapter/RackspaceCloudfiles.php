@@ -3,6 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use CF_Container;
+use Gaufrette\Util;
 
 /**
  * Rackspace cloudfiles adapter
