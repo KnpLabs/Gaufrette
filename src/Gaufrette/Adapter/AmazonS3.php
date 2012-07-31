@@ -110,13 +110,16 @@ class AmazonS3 extends Base
     public function write($key, $content, array $metadata = null)
     {
         $this->ensureBucketExists();
-
-        $opt = array('body' => $content);
-
+    
+        $opt = array(
+            'body' => $content,
+            'acl'  => \AmazonS3::ACL_PUBLIC
+        );
+    
         $response = $this->service->create_object(
             $this->bucket,
             $this->computePath($key),
-            array('body' => $content)
+            $opt
         );
 
         if (!$response->isOK()) {
