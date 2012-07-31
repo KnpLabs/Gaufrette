@@ -332,7 +332,7 @@ class Ftp extends Base
 
         $keys = array();
         foreach ($items['dirs'] as $dir) {
-            $keys = $this->fetchKeys($dir);
+            $keys = array_merge($keys, $this->fetchKeys($dir));
         }
 
         return array_merge($items['keys'], $keys);
