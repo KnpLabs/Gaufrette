@@ -96,12 +96,10 @@ class AmazonS3 extends Base
         } elseif (!$response->isOK()) {
             throw new \RuntimeException(sprintf(
                 'Could not rename the "%s" file into "%s".',
-                $key,
-                $new
+                $sourceKey,
+                $targetKey
             ));
         }
-
-        $this->delete($key);
     }
 
     /**
@@ -227,7 +225,7 @@ class AmazonS3 extends Base
      * and the create parameter is set to true, it will try to create the
      * bucket
      *
-     * @throws RuntimeException if the bucket does not exists or could not be
+     * @throws \RuntimeException if the bucket does not exists or could not be
      *                          created
      */
     private function ensureBucketExists()

@@ -48,8 +48,7 @@
         "pear-aws/sdk": "*",
         "rackspace/php-cloudfiles": "*",
         "doctrine/dbal": ">=2.3",
-        "pear-dropbox-php/Dropbox": "*",
-        "rackspace/php-cloudfiles": "*"
+        "pear-dropbox-php/Dropbox": "*"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "*",
