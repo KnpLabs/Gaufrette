@@ -134,14 +134,14 @@ class Local extends Base
     public function listDirectory($directory = '')
     {
         $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
-        $fileData = $dirs = array();
+        $files = $dirs = array();
 
         if (is_dir($this->directory.$directory)) {
             $iterator = new \DirectoryIterator($this->directory.$directory);
 
             foreach ($iterator as $fileinfo) {
                 if ($fileinfo->isFile()) {
-                    $fileData[] = $fileinfo->getFilename();
+                    $files[] = $fileinfo->getFilename();
                 } elseif ($fileinfo->isDir() && !$fileinfo->isDot()) {
                     $dirs[] = $fileinfo->getFilename();
                 }
@@ -149,7 +149,7 @@ class Local extends Base
         }
 
         return array(
-           'keys'   => $fileData,
+           'keys'   => $files,
            'dirs'   => $dirs
         );
     }
