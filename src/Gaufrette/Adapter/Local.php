@@ -125,6 +125,43 @@ class Local extends Base
     }
 
     /**
+     * Lists files from the specified directory.
+     *
+     * @param  string $directory The path of the directory to list from
+     *
+     * @return array An array of keys and dirs
+     */
+    public function listDirectory($directory = '')
+    {
+        $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
+        $fileData = $dirs = array();
+
+        if (is_dir($this->directory.$directory)) {
+            $iterator = new \DirectoryIterator($this->directory.$directory);
+
+            foreach ($iterator as $fileinfo) {
+                $item = array(
+                    'name'  => $fileinfo->getFilename(),
+                    'path'  => $fileinfo->getPathname(),
+                    'time'  => $fileinfo->getMTime(),
+                    'size'  => $fileinfo->getSize(),
+                );
+
+                if ($fileinfo->isFile()) {
+                    $fileData[$item['name']] = $item;
+                } elseif ($fileinfo->isDir() && !$fileinfo->isDot()) {
+                    $dirs[] = $item;
+                }
+            }
+        }
+
+        return array(
+           'keys'   => array_keys($fileData),
+           'dirs'   => $dirs
+        );
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function mtime($key)
