@@ -68,4 +68,22 @@ class LocalTest extends FunctionalTestCase
         $this->assertEquals('foobar', $adapter->computeKey($directory . '/foobar'));
         $this->assertEquals('foo/bar', $adapter->computeKey($directory . '/foo/bar'));
     }
+
+    public function testListDirectory()
+    {
+        $adapter = new Local($this->directory);
+
+        $dirs = $adapter->listDirectory();
+
+        $this->assertEmpty($dirs['dirs']);
+        $this->assertEmpty($dirs['keys']);
+
+        $this->adapter->write('foo', 'Some content');
+
+        $dirs = $adapter->listDirectory();
+
+        $this->assertEmpty($dirs['dirs']);
+        $this->assertCount(1, $dirs['keys']);
+        $this->assertEquals('foo', $dirs['keys'][0]);
+    }
 }

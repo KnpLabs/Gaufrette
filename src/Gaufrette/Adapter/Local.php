@@ -140,23 +140,16 @@ class Local extends Base
             $iterator = new \DirectoryIterator($this->directory.$directory);
 
             foreach ($iterator as $fileinfo) {
-                $item = array(
-                    'name'  => $fileinfo->getFilename(),
-                    'path'  => $fileinfo->getPathname(),
-                    'time'  => $fileinfo->getMTime(),
-                    'size'  => $fileinfo->getSize(),
-                );
-
                 if ($fileinfo->isFile()) {
-                    $fileData[$item['name']] = $item;
+                    $fileData[] = $fileinfo->getFilename();
                 } elseif ($fileinfo->isDir() && !$fileinfo->isDot()) {
-                    $dirs[] = $item;
+                    $dirs[] = $fileinfo->getFilename();
                 }
             }
         }
 
         return array(
-           'keys'   => array_keys($fileData),
+           'keys'   => $fileData,
            'dirs'   => $dirs
         );
     }
