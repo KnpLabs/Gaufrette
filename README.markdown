@@ -18,7 +18,7 @@ the need to know were all those medias will be stored and how.
 
 Another advantage of this is the possibility to update the files location
 without any impact on the code apart from the definition of your filesystem.
-In exemple, if your project grows up very fast and if your server reaches its
+In example, if your project grows up very fast and if your server reaches its
 limits, you can easily move your medias in an Amazon S3 server or any other
 solution.
 
