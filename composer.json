@@ -1,5 +1,5 @@
 {
-    "name":         "novatex/gaufrette",
+    "name":         "knplabs/gaufrette",
     "type":         "library",
     "description":  "PHP5 library that provides a filesystem abstraction layer",
     "keywords":     ["file", "filesystem", "media", "abstraction"],
