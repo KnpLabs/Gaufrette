@@ -31,7 +31,7 @@ class Local extends Base
         $this->directory = $this->normalizePath($directory);
 
         if (is_link($this->directory)) {
-            $this->directory = readlink($this->directory);
+            $this->directory = realpath($this->directory);
         }
 
         $this->ensureDirectoryExists($this->directory, $create);
