@@ -249,6 +249,27 @@ class Local extends Base
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
         }
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function createFile($key, Filesystem $filesystem)
+    {
+        $this->assertExists($key);
+
+        $file = parent::createFile($key, $filesystem);
+
+        $filename = $this->computePath($key);
+
+        $file->setName(basename($filename));
+        $file->setSize(filesize($filename));
+
+        $created = new \DateTime();
+        $created->setTimestamp($this->mtime($key));
+        $file->setCreated($created);
+
+        return $file;
+    }
 
     /**
      * {@inheritDoc}
