@@ -18,11 +18,12 @@ class AmazonS3 extends Base
     protected $create;
     protected $directory;
 
-    public function __construct(\AmazonS3 $service, $bucket, $create = false)
+    public function __construct(\AmazonS3 $service, $bucket, $create = false, $directory = null)
     {
         $this->service = $service;
         $this->bucket = $bucket;
         $this->create = $create;
+        $this->directory = $directory;
     }
 
     /**
