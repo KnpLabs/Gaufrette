@@ -161,7 +161,7 @@ class InMemory extends Base
         return true;
     }
 
-    private function assertExists($key)
+    protected function assertExists($key)
     {
         if (!$this->exists($key)) {
             throw new Exception\FileNotFound($key);

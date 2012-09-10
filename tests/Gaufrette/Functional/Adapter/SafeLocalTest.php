@@ -1,6 +1,8 @@
 <?php
 
-namespace Gaufrette\Adapter;
+namespace Gaufrette\Functional\Adapter;
+
+use Gaufrette\Adapter\SafeLocal;
 
 class SafeLocalTest extends FunctionalTestCase
 {

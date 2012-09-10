@@ -40,7 +40,7 @@ class Apc extends Base
     {
         $this->assertExists($key);
 
-        $content = apc_fetch($this->computePath($key));
+        $content = $this->apcFetch($this->computePath($key));
 
         if (false === $content) {
             throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
@@ -54,7 +54,7 @@ class Apc extends Base
      */
     public function write($key, $content, array $metadata = null)
     {
-        $result = apc_store($this->computePath($key), $content, $this->ttl);
+        $result = $this->apcStore($this->computePath($key), $content, $this->ttl);
 
         if (false === $result) {
             throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
@@ -68,7 +68,7 @@ class Apc extends Base
      */
     public function exists($key)
     {
-        return apc_exists($this->computePath($key));
+        return $this->apcExists($this->computePath($key));
     }
 
     /**
@@ -76,8 +76,7 @@ class Apc extends Base
      */
     public function keys()
     {
-        $pattern = sprintf('/^%s/', preg_quote($this->prefix));
-        $cachedKeys = new \APCIterator('user', $pattern, APC_ITER_NONE);
+        $cachedKeys = $this->getCachedKeysIterator();
 
         if (null === $cachedKeys) {
             throw new \RuntimeException('Could not get the keys.');
@@ -85,6 +84,7 @@ class Apc extends Base
 
         $keys = array();
         foreach ($cachedKeys as $key => $value) {
+            $pattern = sprintf('/^%s/', preg_quote($this->prefix));
             $keys[] = preg_replace($pattern, '', $key);
         }
         sort($keys);
@@ -99,8 +99,7 @@ class Apc extends Base
     {
         $this->assertExists($key);
 
-        $pattern = sprintf('/^%s/', preg_quote($this->prefix . $key));
-        $cachedKeys = iterator_to_array(new \APCIterator('user', $pattern, APC_ITER_MTIME));
+        $cachedKeys = iterator_to_array($this->getCachedKeysIterator($key, APC_ITER_MTIME));
 
         return $cachedKeys[$this->computePath($key)]['mtime'];
     }
@@ -164,10 +163,38 @@ class Apc extends Base
         return $this->prefix . $key;
     }
 
-    private function assertExists($key)
+    protected function assertExists($key)
     {
         if (!$this->exists($key)) {
             throw new Exception\FileNotFound($key);
         }
+    }
+
+    protected function apcFetch($path)
+    {
+        return apc_fetch($path);
+    }
+
+    protected function apcStore($path, $content, $ttl)
+    {
+        return apc_store($path, $content, $ttl);
+    }
+
+    protected function apcExists($path)
+    {
+        return apc_exists($path);
+    }
+
+    /**
+     * @param string $key - by default ''
+     * @param integer $format - by default APC_ITER_NONE
+     * @return \APCIterator
+     *
+     */
+    protected function getCachedKeysIterator($key = '', $format = APC_ITER_NONE)
+    {
+        $pattern = sprintf('/^%s/', preg_quote($this->prefix.$key));
+
+        return new \APCIterator('user', $pattern, $format);
     }
 }
