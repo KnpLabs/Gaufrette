@@ -4,47 +4,113 @@ namespace Gaufrette;
 
 class FilesystemMapTest extends \PHPUnit_Framework_TestCase
 {
-    public function testGetSetHasRemoveAllAndClear()
+    /**
+     * @test
+     */
+    public function shouldReturnEmptyArrayWhenFilesystemsWasNotSet()
     {
         $map = new FilesystemMap();
         $this->assertEquals(array(), $map->all(), '->all() returns an empty array when the map is empty');
-        $this->assertFalse($map->has('foo'), '->has() returns FALSE when the specified filesystem does NOT exist');
-        $map->set('foo', $foo = $this->getFilesystemMock());
-        $this->assertTrue($map->has('foo'), '->has() returns TRUE when the specified filesystem exists');
-        $this->assertEquals($foo, $map->get('foo'), '->get() returns the specified filesystem');
-        $this->assertEquals(array('foo' => $foo), $map->all(), '->all() returns a single valued array when the map contains only one entry');
-        $map->remove('foo');
-        $this->assertFalse($map->has('foo'), '->remove() removes the filesystem from the map');
-        $map->set('a', $a = $this->getFilesystemMock());
-        $map->set('b', $b = $this->getFilesystemMock());
-        $this->assertEquals(array('a' => $a, 'b' => $b), $map->all(), '->all() returns an array containing all the defined filesystems');
-        $map->clear();
-        $this->assertEquals(array(), $map->all(), '->clear() removes all the filesystems from the map');
     }
 
     /**
+     * @test
+     */
+    public function shouldCheckIfFilesystemIsSet()
+    {
+        $map = new FilesystemMap();
+        $this->assertFalse($map->has('foo'), '->has() returns FALSE when the specified filesystem does NOT exist');
+
+        $map->set('foo', $this->getFilesystemMock());
+        $this->assertTrue($map->has('foo'), '->has() returns TRUE when the specified filesystem exists');
+    }
+
+    /**
+     * @test
+     */
+    public function shouldGetFilesystemWhichWasSet()
+    {
+        $filesystem = $this->getFilesystemMock();
+
+        $map = new FilesystemMap();
+        $map->set('foo', $filesystem);
+
+        $this->assertSame($filesystem, $map->get('foo'), '->get() returns the specified filesystem');
+    }
+
+    /**
+     * @test
+     */
+    public function shouldGetAllFilesystems()
+    {
+        $fooFilesystem = $this->getFilesystemMock();
+        $barFilesystem = $this->getFilesystemMock();
+
+        $map = new FilesystemMap();
+        $map->set('foo', $fooFilesystem);
+        $map->set('bar', $barFilesystem);
+
+        $this->assertSame(array('foo' => $fooFilesystem, 'bar' => $barFilesystem), $map->all());
+    }
+
+    /**
+     * @test
+     */
+    public function shouldRemoveFilesystem()
+    {
+        $fooFilesystem = $this->getFilesystemMock();
+        $barFilesystem = $this->getFilesystemMock();
+
+        $map = new FilesystemMap();
+        $map->set('foo', $fooFilesystem);
+        $map->set('bar', $barFilesystem);
+        $map->remove('bar');
+
+        $this->assertSame(array('foo' => $fooFilesystem), $map->all());
+    }
+
+    /**
+     * @test
+     */
+    public function shouldClearFilesystems()
+    {
+        $fooFilesystem = $this->getFilesystemMock();
+        $barFilesystem = $this->getFilesystemMock();
+
+        $map = new FilesystemMap();
+        $map->set('foo', $fooFilesystem);
+        $map->set('bar', $barFilesystem);
+        $map->clear();
+
+        $this->assertEquals(array(), $map->all());
+    }
+
+    /**
+     * @test
      * @expectedException InvalidArgumentException
      */
-    public function testGetANonExistingFilesystem()
+    public function shouldFailWhenGetANonExistingFilesystem()
     {
         $map = new FilesystemMap();
         $map->get('foo');
     }
 
     /**
+     * @test
      * @expectedException InvalidArgumentException
      */
-    public function testRemoveANonExistingFilesystem()
+    public function shouldFailWhenRemoveANonExistingFilesystem()
     {
         $map = new FilesystemMap();
         $map->remove('foo');
     }
 
     /**
+     * @test
      * @expectedException InvalidArgumentException
      * @dataProvider getInvalidDomains
      */
-    public function testSetUsingAnInvalidDomain($name)
+    public function shouldNotAllowToSetAnInvalidDomain($name)
     {
         $map = new FilesystemMap();
         $map->set($name, $this->getFilesystemMock());

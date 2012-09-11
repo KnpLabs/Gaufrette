@@ -5,9 +5,10 @@ namespace Gaufrette;
 class StreamModeTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @test
      * @dataProvider getDataToTestAllowsRead
      */
-    public function testAllowsRead($mode, $expected)
+    public function shouldAllowsToRead($mode, $expected)
     {
         $streamMode = new StreamMode($mode);
 
@@ -19,9 +20,10 @@ class StreamModeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
      * @dataProvider getDataToTestAllowsWrite
      */
-    public function testAllowsWrite($mode, $expected)
+    public function shouldAllowsToWrite($mode, $expected)
     {
         $streamMode = new StreamMode($mode);
 
@@ -33,9 +35,10 @@ class StreamModeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
      * @dataProvider getDataToTestAllowsNewFileOpening
      */
-    public function testAllowsNewFileOpening($mode, $expected)
+    public function shouldAllowsNewFileOpening($mode, $expected)
     {
         $streamMode = new StreamMode($mode);
 
@@ -47,9 +50,10 @@ class StreamModeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
      * @dataProvider getDataToTestAllowsExistingFileOpening
      */
-    public function testAllowsExistingFileOpening($mode, $expected)
+    public function shouldAllowsExistingFileOpening($mode, $expected)
     {
         $streamMode = new StreamMode($mode);
 
@@ -61,9 +65,10 @@ class StreamModeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
      * @dataProvider getDataToTestImpliesExistingContentDeletion
      */
-    public function testImpliesExistingContentDeletion($mode, $expected)
+    public function shouldImpliesExistingContentDeletion($mode, $expected)
     {
         $streamMode = new StreamMode($mode);
 
@@ -75,9 +80,10 @@ class StreamModeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
      * @dataProvider getDataToTestImpliesPositioningCursorAtTheBeginning
      */
-    public function testImpliesPositioningCursorAtTheBeginning($mode, $expected)
+    public function shouldImpliesPositioningCursorAtTheBeginning($mode, $expected)
     {
         $streamMode = new StreamMode($mode);
 
@@ -89,9 +95,10 @@ class StreamModeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
      * @dataProvider getDataToTestImpliesPositioningCursorAtTheEnd
      */
-    public function testImpliesPositioningCursorAtTheEnd($mode, $expected)
+    public function shouldImpliesPositioningCursorAtTheEnd($mode, $expected)
     {
         $streamMode = new StreamMode($mode);
 
@@ -103,9 +110,10 @@ class StreamModeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
      * @dataProvider getDataToTestIsBinary
      */
-    public function testIsBinary($mode, $expected)
+    public function shouldBeBinary($mode, $expected)
     {
         $streamMode = new StreamMode($mode);
 
@@ -117,9 +125,10 @@ class StreamModeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
      * @dataProvider getDataToTestIsText
      */
-    public function testIsText($mode, $expected)
+    public function shouldBeText($mode, $expected)
     {
         $streamMode = new StreamMode($mode);
 

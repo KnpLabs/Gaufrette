@@ -30,7 +30,11 @@ class ApcTest extends FunctionalTestCase
         $this->adapter = null;
     }
 
-    public function testSupportsMetadata()
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldNotSupportMetadata()
     {
         $this->assertFalse($this->adapter->supportsMetadata());
     }
