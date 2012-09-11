@@ -5,13 +5,37 @@ namespace Gaufrette;
 class GlobTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @test
      * @dataProvider getTestGetRegexData
      */
-    public function testGetRegex($pattern, $expected)
+    public function shouldGetExpectedRegex($pattern, $expected)
     {
         $glob = new Glob($pattern);
 
         $this->assertEquals($expected, $glob->getRegex());
+    }
+
+
+    /**
+     * @test
+     * @dataProvider getTestMatchesData
+     */
+    public function shouldFindMatchingFilename($pattern, $filename, $expected)
+    {
+        $glob = new Glob($pattern);
+
+        $this->assertEquals($expected, $glob->matches($filename), $pattern . ' -> ' . $glob->getRegex());
+    }
+
+    /**
+     * @test
+     * @dataProvider getTestFilterData
+     */
+    public function shouldFilterData($pattern, $input, $expected)
+    {
+        $glob = new Glob($pattern);
+
+        $this->assertEquals(array_values($expected), array_values($glob->filter($input)));
     }
 
     public function getTestGetRegexData()
@@ -26,16 +50,6 @@ class GlobTest extends \PHPUnit_Framework_TestCase
                 '#^.*\.(php|twig)$#'
             )
         );
-    }
-
-    /**
-     * @dataProvider getTestMatchesData
-     */
-    public function testMatches($pattern, $filename, $expected)
-    {
-        $glob = new Glob($pattern);
-
-        $this->assertEquals($expected, $glob->matches($filename), $pattern . ' -> ' . $glob->getRegex());
     }
 
     public function getTestMatchesData()
@@ -82,16 +96,6 @@ class GlobTest extends \PHPUnit_Framework_TestCase
             array('subdir/img*/th_?*', 'subdir/imgs/th_ab', true),
             array('subdir/img*/th_?*', 'subdir/img/th_', false)
         );
-    }
-
-    /**
-     * @dataProvider getTestFilterData
-     */
-    public function testFilter($pattern, $input, $expected)
-    {
-        $glob = new Glob($pattern);
-
-        $this->assertEquals(array_values($expected), array_values($glob->filter($input)));
     }
 
     public function getTestFilterData()

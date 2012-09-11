@@ -4,7 +4,10 @@ namespace Gaufrette;
 
 class FileTest extends \PHPUnit_Framework_TestCase
 {
-    public function testGetContentReadsTheContentFromTheFilesystem()
+    /**
+     * @test
+     */
+    public function shouldReadsTheFileContentFromFilesystem()
     {
         $fs = $this->getFilesystemMock();
         $fs->expects($this->once())
@@ -19,8 +22,13 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $file->getContent('myFile');
     }
 
-    public function testGetContentThrowsAnExceptionIfTheFileDoesNotExistsInTheFilesystem()
+    /**
+     * @test
+     */
+    public function shouldFailWhenTryReadFileWhichDoesNotExist()
     {
+        $this->setExpectedException('LogicException');
+
         $fs = $this->getFilesystemMock();
         $fs->expects($this->once())
             ->method('has')
@@ -28,13 +36,13 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(false));
 
         $file = new File('myFile', $fs);
-
-        $this->setExpectedException('LogicException');
-
         $file->getContent();
     }
 
-    public function testSetContentWritesTheContenIntoTheFilesystem()
+    /**
+     * @test
+     */
+    public function shouldWriteFileContentToFilesystem()
     {
         $fs = $this->getFilesystemMock();
         $fs->expects($this->once())

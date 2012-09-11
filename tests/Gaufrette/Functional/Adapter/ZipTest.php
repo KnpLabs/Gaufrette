@@ -1,6 +1,8 @@
 <?php
 
-namespace Gaufrette\Adapter;
+namespace Gaufrette\Functional\Adapter;
+
+use Gaufrette\Adapter\Zip;
 
 class ZipTest extends FunctionalTestCase
 {

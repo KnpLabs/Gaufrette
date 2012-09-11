@@ -75,10 +75,12 @@ class AclAwareAmazonS3 extends Base
      */
     public function rename($key, $new)
     {
-        $this->delegate->rename($key, $new);
+        $rs = $this->delegate->rename($key, $new);
 
         try {
             $this->updateAcl($key);
+
+            return $rs;
         } catch (\Exception $ex) {
             $this->delete($key);
 
@@ -141,7 +143,7 @@ class AclAwareAmazonS3 extends Base
      */
     public function delete($key)
     {
-        $this->delegate->delete($key);
+        return $this->delegate->delete($key);
     }
 
     protected function getAcl()

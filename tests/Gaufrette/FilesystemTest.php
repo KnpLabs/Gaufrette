@@ -6,7 +6,10 @@ use Gaufrette\Adapter\InMemory;
 
 class FilesystemTest extends \PHPUnit_Framework_TestCase
 {
-    public function testGetReturnsAFileInstanceConfiguredForTheKeyAndFilesystem()
+    /**
+     * @test
+     */
+    public function shouldGetAFileInstanceConfiguredForTheKeyAndFilesystem()
     {
         $adapter = new InMemory(array(
             'myFile' => array()
@@ -21,38 +24,42 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($fs, $file->getFilesystem());
     }
 
-    public function testGetThrowsAnExceptionIfTheFileDoesNotExistAndTheCreateParameterIsSetToFalse()
+    /**
+     * @test
+     */
+    public function shouldFailWhenTryGetTheFileWhichDoesNotExist()
     {
+        $this->setExpectedException('InvalidArgumentException');
         $adapter = new InMemory();
 
         $fs = new Filesystem($adapter);
-
-        $this->setExpectedException('InvalidArgumentException');
-
         $fs->get('myFile');
     }
 
-    public function testReadThrowsAnExceptionIfTheKeyDoesNotMatchAnyFile()
+    /**
+     * @test
+     */
+    public function shouldFailWhenTryReadTheFileWhichDoesNotExist()
     {
+        $this->setExpectedException('InvalidArgumentException');
         $adapter = new InMemory();
 
         $fs = new Filesystem($adapter);
-
-        $this->setExpectedException('InvalidArgumentException');
-
         $fs->read('myFile');
     }
 
-    public function testWriteThrowsAnExceptionIfTheFileAlreadyExistsAndIsNotAllowedToOverwrite()
+    /**
+     * @test
+     */
+    public function shouldFailWhenTryWriteFileWhichExistsAndCannotBeOverwrite()
     {
+        $this->setExpectedException('InvalidArgumentException');
+
         $adapter = new InMemory(array(
             'myFile' => array()
         ));
 
         $fs = new Filesystem($adapter);
-
-        $this->setExpectedException('InvalidArgumentException');
-
         $fs->write('myFile', 'some text');
     }
 }

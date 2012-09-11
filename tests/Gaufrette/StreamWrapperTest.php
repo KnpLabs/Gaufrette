@@ -14,9 +14,10 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
      * @dataProvider getDataToTestStreamOpenFileKey
      */
-    public function testStreamOpenFileKey($domain, $uri, $key)
+    public function shouldStreamOpenFileKey($domain, $uri, $key)
     {
         $stream = $this->getFileStreamMock();
         $stream
