@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette\Adapter;
+namespace Gaufrette\Functional\Adapter;
 
 class AmazonS3Test extends FunctionalTestCase
 {

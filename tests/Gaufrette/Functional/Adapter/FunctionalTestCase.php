@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette\Adapter;
+namespace Gaufrette\Functional\Adapter;
 
 abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -24,7 +24,7 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
         $basename = $this->getAdapterName();
         $filename = sprintf(
             '%s/adapters/%s.php',
-            dirname(dirname(__DIR__)),
+            dirname(__DIR__),
             $basename
         );
 
@@ -50,14 +50,22 @@ EOF
         $this->adapter = null;
     }
 
-    public function testWriteAndRead()
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldWriteAndRead()
     {
         $this->assertEquals(12, $this->adapter->write('foo', 'Some content'));
 
         $this->assertEquals('Some content', $this->adapter->read('foo'));
     }
 
-    public function testExists()
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldCheckIfFileExists()
     {
         $this->assertFalse($this->adapter->exists('foo'));
 
@@ -66,64 +74,100 @@ EOF
         $this->assertTrue($this->adapter->exists('foo'));
     }
 
-    public function testReadNonExistingFile()
+    /**
+     * @test
+     * @group functional
+     * @expectedException Gaufrette\Exception\FileNotFound
+     */
+    public function shouldFailWhenReadNonExistingFile()
     {
-        $this->setExpectedException('Gaufrette\Exception\FileNotFound');
-
         $this->adapter->read('foo');
     }
 
-    public function testChecksum()
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldCalculateValidChecksum()
     {
         $this->adapter->write('foo', 'Some content');
 
         $this->assertEquals(md5('Some content'), $this->adapter->checksum('foo'));
     }
 
-    public function testChecksumNonExistingFile()
+    /**
+     * @test
+     * @group functional
+     * @expectedException Gaufrette\Exception\FileNotFound
+     */
+    public function shouldFailWhenChecksumNonExistingFile()
     {
-        $this->setExpectedException('Gaufrette\Exception\FileNotFound');
-
         $this->adapter->checksum('foo');
     }
 
-    public function testMtime()
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldGetMtime()
     {
         $this->adapter->write('foo', 'Some content');
 
         $this->assertEquals(time(), $this->adapter->mtime('foo'), null, 1);
     }
 
-    public function testMtimeNonExistingFile()
+    /**
+     * @test
+     * @group functional
+     * @expectedException Gaufrette\Exception\FileNotFound
+     */
+    public function shouldFailWhenGetMtimeNonExistingFile()
     {
-        $this->setExpectedException('Gaufrette\Exception\FileNotFound');
-
         $this->adapter->mtime('foo');
     }
 
-    public function testRename()
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldRenameFile()
     {
         $this->adapter->write('foo', 'Some content');
+        $this->adapter->rename('foo', 'boo');
+
+        $this->assertFalse($this->adapter->exists('foo'));
+        $this->assertEquals('Some content', $this->adapter->read('boo'));
+        $this->adapter->delete('boo');
     }
 
-    public function testRenameNonExistingFile()
+    /**
+     * @test
+     * @group functional
+     * @expectedException Gaufrette\Exception\FileNotFound
+     */
+    public function shouldFailWhenRenameNonExistingFile()
     {
-        $this->setExpectedException('Gaufrette\Exception\FileNotFound');
-
         $this->adapter->rename('foo', 'bar');
     }
 
-    public function testRenameToAlreadyExistingFile()
+    /**
+     * @test
+     * @group functional
+     * @expectedException Gaufrette\Exception\UnexpectedFile
+     */
+    public function shouldRenameToAlreadyExistingFile()
     {
-        $this->setExpectedException('Gaufrette\Exception\UnexpectedFile');
-
         $this->adapter->write('foo', 'Some content');
         $this->adapter->write('bar', 'Some content');
 
         $this->adapter->rename('foo', 'bar');
     }
 
-    public function testDelete()
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldDeleteFile()
     {
         $this->adapter->write('foo', 'Some content');
 
@@ -134,14 +178,21 @@ EOF
         $this->assertFalse($this->adapter->exists('foo'));
     }
 
-    public function testDeleteNonExistingFile()
+    /**
+     * @test
+     * @group functional
+     * @expectedException Gaufrette\Exception\FileNotFound
+     */
+    public function shouldFailDeleteNonExistingFile()
     {
-        $this->setExpectedException('Gaufrette\Exception\FileNotFound');
-
         $this->adapter->delete('foo');
     }
 
-    public function testKeys()
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldFetchKeys()
     {
         $this->assertEquals(array(), $this->adapter->keys());
 

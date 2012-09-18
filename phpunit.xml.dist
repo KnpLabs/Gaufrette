@@ -30,8 +30,13 @@
     </php>
 
     <testsuites>
-        <testsuite name="SimplePHPEasyPlus Test Suite">
+        <testsuite name="Gaufrette Test Suite">
             <directory>./tests</directory>
         </testsuite>
     </testsuites>
+    <filter>
+        <whitelist>
+            <directory>./src</directory>
+        </whitelist>
+    </filter>
 </phpunit>
