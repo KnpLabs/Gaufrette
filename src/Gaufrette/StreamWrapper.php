@@ -85,6 +85,11 @@ class StreamWrapper
         return static::$filesystems[$domain];
     }
 
+    static protected function createFilesystemMap()
+    {
+        return new FilesystemMap();
+    }
+
     public function stream_open($path, $mode)
     {
         $this->stream = $this->createStream($path);
@@ -92,44 +97,112 @@ class StreamWrapper
         return $this->stream->open($this->createStreamMode($mode));
     }
 
-    public function stream_read($count)
+    /**
+     * @param int $bytes
+     * @return mixed
+     */
+    public function stream_read($bytes)
     {
-        return $this->stream->read($count);
+        if ($this->stream) {
+            return $this->stream->read($bytes);
+        }
+
+        return false;
     }
 
+    /**
+     * @param string $data
+     * @return int
+     */
     public function stream_write($data)
     {
-        return $this->stream->write($data);
+        if ($this->stream) {
+            return $this->stream->write($data);
+        }
+
+        return 0;
     }
 
     public function stream_close()
     {
-        $this->stream->close();
+        if ($this->stream) {
+            $this->stream->close();
+        }
     }
 
+    /**
+     * @return boolean
+     */
     public function stream_flush()
     {
-        return $this->stream->flush();
+        if ($this->stream) {
+            return $this->stream->flush();
+        }
+
+        return false;
     }
 
+    /**
+     * @param int $offset
+     * @param int $whence - one of values [SEEK_SET, SEEK_CUR, SEEK_END]
+     * @return boolean
+     */
     public function stream_seek($offset, $whence = SEEK_SET)
     {
-        return $this->stream->seek($offset, $whence);
+        if ($this->stream) {
+            return $this->stream->seek($offset, $whence);
+        }
+
+        return false;
     }
 
+    /**
+     * @return mixed
+     */
     public function stream_tell()
     {
-        return $this->stream->tell();
+        if ($this->stream) {
+            return $this->stream->tell();
+        }
+
+        return false;
     }
 
+    /**
+     * @return boolean
+     */
     public function stream_eof()
     {
-        return $this->stream->eof();
+        if ($this->stream) {
+            return $this->stream->eof();
+        }
+
+        return true;
     }
 
+    /**
+     * @return mixed
+     */
     public function stream_stat()
     {
-        return null;
+        if ($this->stream) {
+            return $this->stream->stat();
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $path
+     * @param int $flags
+     * @return mixed
+     * @todo handle $flags parameter
+     */
+    public function url_stat($path, $flags)
+    {
+        $stream = $this->createStream($path);
+
+        return $stream->stat();
     }
 
     protected function createStream($path)
@@ -169,10 +242,5 @@ class StreamWrapper
     protected function createStreamMode($mode)
     {
         return new StreamMode($mode);
-    }
-
-    static protected function createFilesystemMap()
-    {
-        return new FilesystemMap();
     }
 }
