@@ -156,4 +156,20 @@ class InMemoryBuffer implements FileStream
     {
         return $this->position >= $this->numBytes;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function stat()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function cast($castAst)
+    {
+        return false;
+    }
 }

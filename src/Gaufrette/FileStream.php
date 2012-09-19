@@ -85,4 +85,18 @@ interface FileStream
      * @return Boolean
      */
     function eof();
+
+    /**
+     * Gathers statistics of the stream
+     *
+     * @return array
+     */
+    function stat();
+
+    /**
+     * Retrieve the underlaying resource
+     *
+     * @param integer $castAs
+     */
+    function cast($castAs);
 }
