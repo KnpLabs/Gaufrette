@@ -31,10 +31,10 @@ class Local implements FileStream
      */
     public function open(StreamMode $mode)
     {
-        $fileHandle = fopen($this->path, $mode->getMode());
+        $fileHandle = @fopen($this->path, $mode->getMode());
 
         if (false === $fileHandle) {
-            return false;
+            throw new \RuntimeException(sprintf('File "%s" cannot be opened', $this->path));
         }
 
         $this->mode = $mode;
@@ -48,6 +48,10 @@ class Local implements FileStream
      */
     public function read($count)
     {
+        if (! $this->fileHandle) {
+            return false;
+        }
+
         if (false === $this->mode->allowsRead()) {
             throw new \LogicException('The stream does not allow read.');
         }
@@ -60,6 +64,10 @@ class Local implements FileStream
      */
     public function write($data)
     {
+        if (! $this->fileHandle) {
+            return false;
+        }
+
         if (false === $this->mode->allowsWrite()) {
             throw new \LogicException('The stream does not allow write.');
         }
@@ -72,6 +80,10 @@ class Local implements FileStream
      */
     public function close()
     {
+        if (! $this->fileHandle) {
+            return false;
+        }
+
         $closed = fclose($this->fileHandle);
 
         if ($closed) {
@@ -87,7 +99,11 @@ class Local implements FileStream
      */
     public function flush()
     {
-        return fflush($this->fileHandle);
+        if ($this->fileHandle) {
+            return fflush($this->fileHandle);
+        }
+
+        return false;
     }
 
     /**
@@ -95,7 +111,11 @@ class Local implements FileStream
      */
     public function seek($offset, $whence = SEEK_SET)
     {
-        return fseek($this->fileHandle, $offset, $whence);
+        if ($this->fileHandle) {
+            return 0 === fseek($this->fileHandle, $offset, $whence);
+        }
+
+        return false;
     }
 
     /**
@@ -103,7 +123,11 @@ class Local implements FileStream
      */
     public function tell()
     {
-        return ftell($this->fileHandle);
+        if ($this->fileHandle) {
+            return ftell($this->fileHandle);
+        }
+
+        return false;
     }
 
     /**
@@ -111,14 +135,34 @@ class Local implements FileStream
      */
     public function eof()
     {
-        return feof($this->fileHandle);
+        if ($this->fileHandle) {
+            return feof($this->fileHandle);
+        }
+
+        return true;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public function stat()
     {
-        return stat($this->path);
+        if ($this->fileHandle) {
+            return fstat($this->fileHandle);
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function cast($castAs)
+    {
+        if ($this->fileHandle) {
+            return $this->fileHandle;
+        }
+
+        return false;
     }
 }
