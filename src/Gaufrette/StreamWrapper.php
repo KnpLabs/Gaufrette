@@ -129,7 +129,14 @@ class StreamWrapper
 
     public function stream_stat()
     {
-        return null;
+        return $this->stream->stat();
+    }
+    
+    public function url_stat($path, $flags)
+    {
+      $this->stream = $this->createStream($path);
+      
+      return $this->stream_stat();
     }
 
     protected function createStream($path)
