@@ -201,6 +201,7 @@ class StreamWrapper
     public function url_stat($path, $flags)
     {
         $stream = $this->createStream($path);
+        $stream->open($this->createStreamMode('r+'));
 
         return $stream->stat();
     }
