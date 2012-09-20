@@ -206,6 +206,18 @@ class StreamWrapper
         return $stream->stat();
     }
 
+    /**
+     * @return mixed
+     */
+    public function stream_cast($castAs)
+    {
+        if ($this->stream) {
+            return $this->stream->cast($castAs);
+        }
+
+        return false;
+    }
+
     protected function createStream($path)
     {
         $parts = array_merge(
