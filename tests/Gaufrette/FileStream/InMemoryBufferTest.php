@@ -120,4 +120,46 @@ class InMemoryBufferTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($stream->unlink());
         $this->assertTrue($adapter->exists('test.txt'));
     }
+
+    /**
+     * @test
+     * @covers Gaufrette\FileStream\InMemoryBuffer
+     */
+    public function shouldNotBeAbleToCastToResource()
+    {
+        $adapter = new Adapter\InMemory();
+        $stream = new InMemoryBuffer($adapter, 'THE_KEY');
+
+        $this->assertFalse($stream->cast(STREAM_CAST_FOR_SELECT));
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\FileStream\InMemoryBuffer
+     */
+    public function shouldDoNotFlushSuccessfullyWhenWriteThrowsErrors()
+    {
+        $adapter = $this->getMock('Gaufrette\Adapter');
+        $adapter->expects($this->any())
+            ->method('write')
+            ->will($this->throwException(new \Exception));
+        $stream = new InMemoryBuffer($adapter, 'test.txt');
+
+        $this->assertFalse($stream->flush());
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\FileStream\InMemoryBuffer
+     */
+    public function shouldSetAndGetPositions()
+    {
+        $adapter = new Adapter\InMemory(array('key' => 'content'));
+        $stream = new InMemoryBuffer($adapter, 'key');
+
+        $stream->seek(2, SEEK_SET);
+        $this->assertEquals(2, $stream->tell());
+        $stream->seek(1, SEEK_CUR);
+        $this->assertEquals(3, $stream->tell());
+    }
 }
