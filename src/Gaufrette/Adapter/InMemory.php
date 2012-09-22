@@ -157,6 +157,7 @@ class InMemory extends Base
         $this->assertExists($key);
 
         unset($this->files[$key]);
+        clearstatcache();
 
         return true;
     }

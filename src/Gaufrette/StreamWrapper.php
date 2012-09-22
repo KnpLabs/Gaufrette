@@ -201,9 +201,31 @@ class StreamWrapper
     public function url_stat($path, $flags)
     {
         $stream = $this->createStream($path);
-        $stream->open($this->createStreamMode('r+'));
+
+        try {
+            $stream->open($this->createStreamMode('r+'));
+        } catch (\RuntimeException $e) {
+            return false;
+        }
 
         return $stream->stat();
+    }
+
+    /**
+     * @param string $path
+     * @return mixed
+     */
+    public function unlink($path)
+    {
+        $stream = $this->createStream($path);
+
+        try {
+            $stream->open($this->createStreamMode('w+'));
+        } catch (\RuntimeException $e) {
+            return false;
+        }
+
+        return $stream->unlink();
     }
 
     /**

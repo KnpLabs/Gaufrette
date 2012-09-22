@@ -97,6 +97,14 @@ interface FileStream
      * Retrieve the underlaying resource
      *
      * @param integer $castAs
+     * @return mixed using resource or false
      */
     function cast($castAs);
+
+    /**
+     * Delete a file
+     *
+     * @return Boolean TRUE on success FALSE otherwise
+     */
+    function unlink();
 }

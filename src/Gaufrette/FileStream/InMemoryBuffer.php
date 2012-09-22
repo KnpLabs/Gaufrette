@@ -162,6 +162,28 @@ class InMemoryBuffer implements FileStream
      */
     public function stat()
     {
+        if ($this->adapter->exists($this->key)) {
+            $time = $this->adapter->mtime($this->key);
+
+            $stats = array(
+                'dev'   => 1,
+                'ino'   => 0,
+                'mode'  => 33204,
+                'nlink' => 1,
+                'uid'   => 0,
+                'gid'   => 0,
+                'rdev'  => 0,
+                'size'  => Util\Size::fromContent($this->adapter->read($this->key)),
+                'atime' => $time,
+                'mtime' => $time,
+                'ctime' => $time,
+                'blksize' => -1,
+                'blocks'  => -1,
+            );
+
+            return array_merge(array_values($stats), $stats);
+        }
+
         return false;
     }
 
@@ -170,6 +192,18 @@ class InMemoryBuffer implements FileStream
      */
     public function cast($castAst)
     {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unlink()
+    {
+        if ($this->mode && $this->mode->impliesExistingContentDeletion()) {
+            return $this->adapter->delete($this->key);
+        }
+
         return false;
     }
 }
