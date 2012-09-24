@@ -46,7 +46,7 @@ class BaseTest extends \PHPUnit_Framework_TestCase
      * @test
      * @covers Gaufrette\Adapter\Base
      */
-    public function shouldNotListDirecotry()
+    public function shouldNotListDirectory()
     {
         $adapter = $this->getMockForAbstractClass('Gaufrette\Adapter\Base');
         $this->assertFalse($adapter->listDirectory());
