@@ -121,7 +121,7 @@ class Apc extends Base
     {
         $this->assertExists($key);
 
-        $result = apc_delete($this->computePath($key));
+        $result = $this->apcDelete($this->computePath($key));
 
         if (false === $result) {
             throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
@@ -183,6 +183,11 @@ class Apc extends Base
     protected function apcExists($path)
     {
         return apc_exists($path);
+    }
+
+    protected function apcDelete($path)
+    {
+        return apc_delete($path);
     }
 
     /**
