@@ -301,6 +301,50 @@ class LocalTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($stream->cast(STREAM_CAST_FOR_SELECT));
     }
 
+    /**
+     * @test
+     * @covers Gaufrette\FileStream\Local
+     */
+    public function shouldBeAbleToUnlinkFile()
+    {
+        file_put_contents($this->filePath, 'Some contents');
+
+        $stream  = new Local($this->filePath);
+        $stream->open(new StreamMode('w+'));
+
+        $this->assertTrue($stream->unlink());
+        $this->assertFalse(is_file($this->filePath));
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\FileStream\Local
+     */
+    public function shouldNotUnlinkFileWhenNotOpened()
+    {
+        file_put_contents($this->filePath, 'Some contents');
+
+        $stream  = new Local($this->filePath);
+
+        $this->assertFalse($stream->unlink($this->filePath));
+        $this->assertTrue(is_file($this->filePath));
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\FileStream\Local
+     */
+    public function shouldNotUnlinkWhenDoNotImpliesContentDeletion()
+    {
+        file_put_contents($this->filePath, 'Some contents');
+
+        $stream  = new Local($this->filePath);
+        $stream->open(new StreamMode('r'));
+
+        $this->assertFalse($stream->unlink($this->filePath));
+        $this->assertTrue(is_file($this->filePath));
+    }
+
     public function getNotReadableModes()
     {
         return array(

@@ -6,6 +6,7 @@ namespace Gaufrette;
  * Stream wrapper class for the Gaufrette filesystems
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
+ * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
 class StreamWrapper
 {
@@ -44,9 +45,9 @@ class StreamWrapper
      */
     static public function register($scheme = 'gaufrette')
     {
-        @stream_wrapper_unregister($scheme);
+        static::streamWrapperUnregister($scheme);
 
-        if ( ! stream_wrapper_register($scheme, __CLASS__)) {
+        if (! static::streamWrapperRegister($scheme, __CLASS__)) {
             throw new \RuntimeException(sprintf(
                 'Could not register stream wrapper class %s for scheme %s.',
                 __CLASS__,
@@ -56,38 +57,28 @@ class StreamWrapper
     }
 
     /**
-     * Binds the given filesystem to the specified domain
-     *
-     * @param  string     $domain
-     * @param  Filesystem $filesystem
+     * @return FilesystemMap
      */
-    static public function bindFilesystem($domain, Filesystem $filesystem)
-    {
-        static::$filesystems[$domain] = $filesystem;
-    }
-
-    /**
-     * Returns the filesystem bound to the specified domain
-     *
-     * @param  string $domain
-     *
-     * @return Filesystem
-     */
-    static public function getFilesystem($domain)
-    {
-        if (empty(static::$filesystems[$domain])) {
-            throw new \InvalidArgumentException(sprintf(
-                'There is no filesystem bound to the specified domain (%s).',
-                $domain
-            ));
-        }
-
-        return static::$filesystems[$domain];
-    }
-
     static protected function createFilesystemMap()
     {
         return new FilesystemMap();
+    }
+
+    /**
+     * @param string $scheme - protocol scheme
+     */
+    static protected function streamWrapperUnregister($scheme)
+    {
+        return @stream_wrapper_unregister($scheme);
+    }
+
+    /**
+     * @param string $scheme - protocol scheme
+     * @param string $className
+     */
+    static protected function streamWrapperRegister($scheme, $className)
+    {
+        return stream_wrapper_register($scheme, $className);
     }
 
     public function stream_open($path, $mode)
@@ -201,9 +192,31 @@ class StreamWrapper
     public function url_stat($path, $flags)
     {
         $stream = $this->createStream($path);
-        $stream->open($this->createStreamMode('r+'));
+
+        try {
+            $stream->open($this->createStreamMode('r+'));
+        } catch (\RuntimeException $e) {
+            return false;
+        }
 
         return $stream->stat();
+    }
+
+    /**
+     * @param string $path
+     * @return mixed
+     */
+    public function unlink($path)
+    {
+        $stream = $this->createStream($path);
+
+        try {
+            $stream->open($this->createStreamMode('w+'));
+        } catch (\RuntimeException $e) {
+            return false;
+        }
+
+        return $stream->unlink();
     }
 
     /**

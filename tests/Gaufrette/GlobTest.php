@@ -6,23 +6,23 @@ class GlobTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @dataProvider getTestGetRegexData
+     * @covers Gaufrette\Glob
      */
-    public function shouldGetExpectedRegex($pattern, $expected)
+    public function shouldGetPatternSetInConstructor()
     {
-        $glob = new Glob($pattern);
+        $glob = new Glob('pattern');
 
-        $this->assertEquals($expected, $glob->getRegex());
+        $this->assertEquals('pattern', $glob->getPattern());
     }
-
 
     /**
      * @test
      * @dataProvider getTestMatchesData
+     * @covers Gaufrette\Glob
      */
     public function shouldFindMatchingFilename($pattern, $filename, $expected)
     {
-        $glob = new Glob($pattern);
+        $glob = new Glob($pattern, false, false);
 
         $this->assertEquals($expected, $glob->matches($filename), $pattern . ' -> ' . $glob->getRegex());
     }
@@ -30,26 +30,42 @@ class GlobTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider getTestFilterData
+     * @covers Gaufrette\Glob
      */
-    public function shouldFilterData($pattern, $input, $expected)
+    public function shouldFilterData($pattern, $input, $expected, $strictLeadingDot = true, $strictWildcartSlash = true)
     {
-        $glob = new Glob($pattern);
+        $glob = new Glob($pattern, $strictLeadingDot, $strictWildcartSlash);
 
         $this->assertEquals(array_values($expected), array_values($glob->filter($input)));
     }
 
-    public function getTestGetRegexData()
+    /**
+     * @test
+     * @covers Gaufrette\Glob
+     */
+    public function shouldStrictLeadingDot()
     {
-        return array(
-            array(
-                '*.php',
-                '#^.*\.php$#'
-            ),
-            array(
-                '*.{php,twig}',
-                '#^.*\.(php|twig)$#'
-            )
-        );
+        $glob = new Glob('*pattern');
+
+        $this->assertNotRegExp($glob->getRegex(), '.pattern');
+        $this->assertRegExp($glob->getRegex(), 'pattern');
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\Glob
+     */
+    public function shouldStrictWildcartSlash()
+    {
+        $glob = new Glob('pattern*');
+
+        $this->assertRegExp($glob->getRegex(), 'patternaaa');
+        $this->assertNotRegExp($glob->getRegex(), 'pattern/aaa');
+
+        $glob = new Glob('pattern*', true, false);
+
+        $this->assertRegExp($glob->getRegex(), 'patternaaa');
+        $this->assertRegExp($glob->getRegex(), 'pattern/aaa');
     }
 
     public function getTestMatchesData()
@@ -112,7 +128,21 @@ class GlobTest extends \PHPUnit_Framework_TestCase
                 array(
                     'index.php',
                     'app/bootstrap.php'
-                )
+                ),
+                true,
+                false
+            ),
+            array(
+                '*.php',
+                array(
+                    '.htaccess',
+                    'index.php',
+                    'app/bootstrap.php',
+                    'app/config/config.yml'
+                ),
+                array(
+                    'index.php',
+                ),
             ),
             array(
                 'web/images/*.{png,jpg}',
@@ -125,7 +155,9 @@ class GlobTest extends \PHPUnit_Framework_TestCase
                 array(
                     'web/images/frog.png',
                     'web/images/foo/bar.jpg'
-                )
+                ),
+                true,
+                false
             ),
             array(
                 '*.txt',

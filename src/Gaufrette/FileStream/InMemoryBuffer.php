@@ -64,12 +64,7 @@ class InMemoryBuffer implements FileStream
             throw new \LogicException('The stream does not allow read.');
         }
 
-        if (0 === $count) {
-            return '';
-        }
-
         $chunk = substr($this->content, $this->position, $count);
-
         $this->position+= Util\Size::fromContent($chunk);
 
         return $chunk;
@@ -81,17 +76,17 @@ class InMemoryBuffer implements FileStream
             throw new \LogicException('The stream does not allow write.');
         }
 
-        if ('' === $data) {
-            return 0;
-        }
-
         $numWrittenBytes = Util\Size::fromContent($data);
+
         $newPosition     = $this->position + $numWrittenBytes;
         $newNumBytes     = $newPosition > $this->numBytes ? $newPosition : $this->numBytes;
 
         if ($this->eof()) {
-            $this->numBytes+= $numWrittenBytes;
-            $this->content.= $data;
+            $this->numBytes += $numWrittenBytes;
+            if ($this->hasNewContentAtFurtherPosition()) {
+                $data = str_pad($data, $this->position + strlen($data), " ", STR_PAD_LEFT);
+            }
+            $this->content .= $data;
         } else {
             $before = substr($this->content, 0, $this->position);
             $after  = $newNumBytes > $newPosition ? substr($this->content, $newPosition) : '';
@@ -119,17 +114,16 @@ class InMemoryBuffer implements FileStream
                 $this->position = $offset;
                 break;
             case SEEK_CUR:
-                $this->position+= $offset;
+                $this->position += $offset;
                 break;
             case SEEK_END:
                 $this->position = $this->numBytes + $offset;
                 break;
             default:
-                throw new \InvalidArgumentException(sprintf(
-                    'The $whence "%s" is not supported.',
-                    $whence
-                ));
+                return false;
         }
+
+        return true;
     }
 
     public function tell()
@@ -162,6 +156,28 @@ class InMemoryBuffer implements FileStream
      */
     public function stat()
     {
+        if ($this->adapter->exists($this->key)) {
+            $time = $this->adapter->mtime($this->key);
+
+            $stats = array(
+                'dev'   => 1,
+                'ino'   => 0,
+                'mode'  => 33204,
+                'nlink' => 1,
+                'uid'   => 0,
+                'gid'   => 0,
+                'rdev'  => 0,
+                'size'  => Util\Size::fromContent($this->adapter->read($this->key)),
+                'atime' => $time,
+                'mtime' => $time,
+                'ctime' => $time,
+                'blksize' => -1,
+                'blocks'  => -1,
+            );
+
+            return array_merge(array_values($stats), $stats);
+        }
+
         return false;
     }
 
@@ -171,5 +187,25 @@ class InMemoryBuffer implements FileStream
     public function cast($castAst)
     {
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unlink()
+    {
+        if ($this->mode && $this->mode->impliesExistingContentDeletion()) {
+            return $this->adapter->delete($this->key);
+        }
+
+        return false;
+    }
+
+    /**
+     * @return Boolean
+     */
+    protected function hasNewContentAtFurtherPosition()
+    {
+        return $this->position > 0 && !$this->content;
     }
 }
