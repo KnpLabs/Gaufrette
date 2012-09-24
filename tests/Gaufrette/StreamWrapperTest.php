@@ -557,6 +557,21 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($wrapper->url_stat('gaufrette://foo/test', STREAM_URL_STAT_LINK));
     }
 
+    /**
+     * @test
+     * @covers Gaufrette\StreamWrapper
+     * @expectedException \RuntimeException
+     */
+    public function shouldFailWhenCannotRegisterStream()
+    {
+        $wrapperClass = $this->getMockClass('Gaufrette\StreamWrapper', array('streamWrapperRegister'));
+        $wrapperClass::staticExpects($this->any())
+            ->method('streamWrapperRegister')
+            ->will($this->returnValue(false));
+
+        $wrapperClass::register();
+    }
+
     public function getDataToTestStreamOpenFileKey()
     {
         return array(
