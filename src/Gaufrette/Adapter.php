@@ -115,4 +115,14 @@ interface Adapter
      * @return FileStream
      */
     function createFileStream($key, Filesystem $filesystem);
+
+    /**
+     * Lists files from the specified directory. If a pattern is
+     * specified, it only returns files matching it.
+     *
+     * @param  string $directory The path of the directory to list from
+     *
+     * @return array An array of keys and dirs
+     */
+    function listDirectory($directory = '');
 }

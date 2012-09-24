@@ -11,6 +11,7 @@ class InMemoryBufferTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers Gaufrette\FileStream\InMemoryBuffer
+     * @covers Gaufrette\FileStream
      */
     public function shouldBeAbleToReadManyTimes()
     {
@@ -27,6 +28,7 @@ class InMemoryBufferTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers Gaufrette\FileStream\InMemoryBuffer
+     * @covers Gaufrette\FileStream
      */
     public function shouldWriteAndFlushContentInStream()
     {
@@ -52,6 +54,7 @@ class InMemoryBufferTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers Gaufrette\FileStream\InMemoryBuffer
+     * @covers Gaufrette\FileStream
      */
     public function shouldStatFileInStream()
     {
@@ -83,6 +86,7 @@ class InMemoryBufferTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers Gaufrette\FileStream\InMemoryBuffer
+     * @covers Gaufrette\FileStream
      */
     public function shouldBeAbleToUnlinkFile()
     {
@@ -97,6 +101,7 @@ class InMemoryBufferTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers Gaufrette\FileStream\InMemoryBuffer
+     * @covers Gaufrette\FileStream
      */
     public function shouldNotUnlinkFileWhenNotOpened()
     {
@@ -110,6 +115,7 @@ class InMemoryBufferTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers Gaufrette\FileStream\InMemoryBuffer
+     * @covers Gaufrette\FileStream
      */
     public function shouldNotUnlinkWhenDoNotImpliesContentDeletion()
     {
@@ -124,6 +130,7 @@ class InMemoryBufferTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers Gaufrette\FileStream\InMemoryBuffer
+     * @covers Gaufrette\FileStream
      */
     public function shouldNotBeAbleToCastToResource()
     {
@@ -136,6 +143,7 @@ class InMemoryBufferTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers Gaufrette\FileStream\InMemoryBuffer
+     * @covers Gaufrette\FileStream
      */
     public function shouldDoNotFlushSuccessfullyWhenWriteThrowsErrors()
     {
@@ -151,6 +159,7 @@ class InMemoryBufferTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @covers Gaufrette\FileStream\InMemoryBuffer
+     * @covers Gaufrette\FileStream
      */
     public function shouldSetAndGetPositions()
     {

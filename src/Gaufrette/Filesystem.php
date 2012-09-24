@@ -140,11 +140,7 @@ class Filesystem
      */
     public function listDirectory($directory = '')
     {
-        $listing = null;
-
-        if (method_exists($this->adapter, 'listDirectory')) {
-            $listing = $this->adapter->listDirectory($directory);
-        }
+        $listing = $this->adapter->listDirectory($directory);
 
         // Cache adapter returns null if source-Adapter does not provide the listDirectory method
         if (!$listing) {
