@@ -32,4 +32,12 @@ abstract class Base implements Adapter
     {
         return false;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function listDirectory($directory = '')
+    {
+        return false;
+    }
 }

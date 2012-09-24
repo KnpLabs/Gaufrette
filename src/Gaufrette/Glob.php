@@ -17,6 +17,8 @@ class Glob
     public function __construct($pattern, $strictLeadingDot = true, $strictWildcartSlash = true)
     {
         $this->pattern = $pattern;
+        $this->strictLeadingDot = $strictLeadingDot;
+        $this->strictWildcartSlash = $strictWildcartSlash;
     }
 
     /**
@@ -78,7 +80,6 @@ class Glob
 
         for ($i = 0; $i < $patternSize; $i++) {
             $car = $this->pattern[$i];
-
             if ($firstByte) {
                 if ($this->strictLeadingDot && '.' !== $car) {
                     $regex.= '(?=[^\.])';

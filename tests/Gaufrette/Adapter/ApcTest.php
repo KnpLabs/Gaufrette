@@ -202,4 +202,143 @@ class ApcTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('b53227da4280f0e18270f21dd77c91d0', $adapter->checksum('foo'));
     }
+
+    /**
+     * @test
+     * @covers Gaufrette\Adapter\Apc
+     */
+    public function shouldDeleteCache()
+    {
+        $adapter = $this->getMockBuilder('Gaufrette\Adapter\Apc')
+            ->disableOriginalConstructor()
+            ->setMethods(array('exists', 'apcDelete'))
+            ->getMock();
+        $adapter->expects($this->once())
+            ->method('exists')
+            ->with($this->equalTo('foo'))
+            ->will($this->returnValue(true));
+        $adapter->expects($this->once())
+            ->method('apcDelete')
+            ->with($this->equalTo('foo'))
+            ->will($this->returnValue(true));
+
+        $adapter->delete('foo');
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\Adapter\Apc
+     * @expectedException Gaufrette\Exception\FileNotFound
+     */
+    public function shouldFailWhenDeletingFileDoesNotExist()
+    {
+        $adapter = $this->getMockBuilder('Gaufrette\Adapter\Apc')
+            ->disableOriginalConstructor()
+            ->setMethods(array('exists', 'apcDelete'))
+            ->getMock();
+        $adapter->expects($this->once())
+            ->method('exists')
+            ->with($this->equalTo('foo'))
+            ->will($this->returnValue(false));
+        $adapter->expects($this->never())
+            ->method('apcDelete');
+
+        $adapter->delete('foo');
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\Adapter\Apc
+     * @expectedException \RuntimeException
+     */
+    public function shouldFailWhenCannotDeleteCache()
+    {
+        $adapter = $this->getMockBuilder('Gaufrette\Adapter\Apc')
+            ->disableOriginalConstructor()
+            ->setMethods(array('exists', 'apcDelete'))
+            ->getMock();
+        $adapter->expects($this->once())
+            ->method('exists')
+            ->with($this->equalTo('foo'))
+            ->will($this->returnValue(true));
+        $adapter->expects($this->once())
+            ->method('apcDelete')
+            ->with($this->equalTo('foo'))
+            ->will($this->returnValue(false));
+
+        $adapter->delete('foo');
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\Adapter\Apc
+     * @expectedException Gaufrette\Exception\UnexpectedFile
+     */
+    public function shouldFailWhenRenamingAndTargetFileExists()
+    {
+        $adapter = $this->getMockBuilder('Gaufrette\Adapter\Apc')
+            ->disableOriginalConstructor()
+            ->setMethods(array('assertExists', 'exists'))
+            ->getMock();
+        $adapter->expects($this->any())
+            ->method('assertExists');
+        $adapter->expects($this->any())
+            ->method('exists')
+            ->with($this->equalTo('foo'))
+            ->will($this->returnValue(true));
+
+        $adapter->rename('bar', 'foo');
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\Adapter\Apc
+     */
+    public function shouldRenameFiles()
+    {
+        $adapter = $this->getMockBuilder('Gaufrette\Adapter\Apc')
+            ->disableOriginalConstructor()
+            ->setMethods(array('write', 'assertExists', 'exists', 'read', 'delete'))
+            ->getMock();
+        $adapter->expects($this->any())
+            ->method('assertExists');
+        $adapter->expects($this->any())
+            ->method('write')
+            ->with($this->equalTo('foo'), $this->equalTo('bar content'));
+        $adapter->expects($this->any())
+            ->method('read')
+            ->with($this->equalTo('bar'))
+            ->will($this->returnValue('bar content'));
+        $adapter->expects($this->any())
+            ->method('exists')
+            ->with($this->equalTo('foo'))
+            ->will($this->returnValue(false));
+        $adapter->expects($this->any())
+            ->method('delete')
+            ->with($this->equalTo('bar'));
+
+        $adapter->rename('bar', 'foo');
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\Adapter\Apc
+     * @expectedException \RuntimeException
+     */
+    public function shouldFailWhenCannotWriteRenamingFile()
+    {
+        $adapter = $this->getMockBuilder('Gaufrette\Adapter\Apc')
+            ->disableOriginalConstructor()
+            ->setMethods(array('write', 'assertExists', 'exists', 'read', 'delete'))
+            ->getMock();
+        $adapter->expects($this->any())
+            ->method('assertExists');
+        $adapter->expects($this->any())
+            ->method('write')
+            ->will($this->throwException(new \Exception));
+        $adapter->expects($this->never())
+            ->method('delete');
+
+        $adapter->rename('bar', 'foo');
+    }
 }

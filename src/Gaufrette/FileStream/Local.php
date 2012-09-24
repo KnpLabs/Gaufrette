@@ -165,4 +165,16 @@ class Local implements FileStream
 
         return false;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unlink()
+    {
+        if ($this->mode && $this->mode->impliesExistingContentDeletion()) {
+            return @unlink($this->path);
+        }
+
+        return false;
+    }
 }

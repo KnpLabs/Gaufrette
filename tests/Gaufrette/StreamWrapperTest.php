@@ -389,10 +389,106 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
      * @test
      * @covers Gaufrette\StreamWrapper
      */
+    public function shouldUnlinkFileInStream()
+    {
+        $stream = $this->getFileStreamMock();
+        $stream
+            ->expects($this->once())
+            ->method('open')
+        ;
+        $stream
+            ->expects($this->once())
+            ->method('unlink')
+            ->will($this->returnValue(true))
+        ;
+        $filesystem = $this->getFilesystemMock();
+        $filesystem
+            ->expects($this->once())
+            ->method('createFileStream')
+            ->will($this->returnValue($stream))
+        ;
+
+        $this->filesystemMap->set('foo', $filesystem);
+
+        $wrapper = new StreamWrapper();
+        $this->assertTrue($wrapper->unlink('gaufrette://foo/test'));
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\StreamWrapper
+     */
+    public function shouldNotUnlinkTheFileWhenCannotOpenStream()
+    {
+        $stream = $this->getFileStreamMock();
+        $stream
+            ->expects($this->once())
+            ->method('open')
+            ->will($this->throwException(new \RuntimeException))
+        ;
+        $filesystem = $this->getFilesystemMock();
+        $filesystem
+            ->expects($this->once())
+            ->method('createFileStream')
+            ->will($this->returnValue($stream))
+        ;
+
+        $this->filesystemMap->set('foo', $filesystem);
+
+        $wrapper = new StreamWrapper();
+        $this->assertFalse($wrapper->unlink('gaufrette://foo/test'));
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\StreamWrapper
+     */
     public function shouldNotFailWhenGetStatFromStreamWhichWasNotOpen()
     {
         $wrapper = new StreamWrapper();
         $this->assertFalse($wrapper->stream_stat());
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\StreamWrapper
+     */
+    public function shouldBeCastedUsingStreamCast()
+    {
+
+        $stream = $this->getFileStreamMock();
+        $stream
+            ->expects($this->once())
+            ->method('open')
+        ;
+        $stream
+            ->expects($this->once())
+            ->method('cast')
+            ->with($this->equalTo(STREAM_CAST_FOR_SELECT))
+            ->will($this->returnValue('resource'))
+        ;
+        $filesystem = $this->getFilesystemMock();
+        $filesystem
+            ->expects($this->once())
+            ->method('createFileStream')
+            ->will($this->returnValue($stream))
+        ;
+
+        $this->filesystemMap->set('foo', $filesystem);
+
+        $wrapper = new StreamWrapper();
+        $wrapper->stream_open('gaufrette://foo/test', 'r');
+        $this->assertSame('resource', $wrapper->stream_cast(STREAM_CAST_FOR_SELECT));
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\StreamWrapper
+     */
+    public function shouldNotFailWhenTryCastStreamWhichWasNotOpen()
+    {
+        $wrapper = new StreamWrapper();
+        $this->assertFalse($wrapper->stream_cast(STREAM_CAST_FOR_SELECT));
     }
 
     /**
@@ -434,6 +530,46 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 
         $wrapper = new StreamWrapper();
         $this->assertSame($statInfo, $wrapper->url_stat('gaufrette://foo/test', STREAM_URL_STAT_LINK));
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\StreamWrapper
+     */
+    public function shouldWorkWhenFileCannotBeOpened()
+    {
+        $stream = $this->getFileStreamMock();
+        $stream
+            ->expects($this->once())
+            ->method('open')
+            ->will($this->throwException(new \RuntimeException))
+        ;
+        $filesystem = $this->getFilesystemMock();
+        $filesystem
+            ->expects($this->once())
+            ->method('createFileStream')
+            ->will($this->returnValue($stream))
+        ;
+
+        $this->filesystemMap->set('foo', $filesystem);
+
+        $wrapper = new StreamWrapper();
+        $this->assertFalse($wrapper->url_stat('gaufrette://foo/test', STREAM_URL_STAT_LINK));
+    }
+
+    /**
+     * @test
+     * @covers Gaufrette\StreamWrapper
+     * @expectedException \RuntimeException
+     */
+    public function shouldFailWhenCannotRegisterStream()
+    {
+        $wrapperClass = $this->getMockClass('Gaufrette\StreamWrapper', array('streamWrapperRegister'));
+        $wrapperClass::staticExpects($this->any())
+            ->method('streamWrapperRegister')
+            ->will($this->returnValue(false));
+
+        $wrapperClass::register();
     }
 
     public function getDataToTestStreamOpenFileKey()
