@@ -361,4 +361,22 @@ class LocalTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Gaufrette\FileStream\Local', $localAdapter->createFileStream('aaa', $filesystem));
     }
+
+    public function testListDirectory()
+    {
+        $adapter = new Local($this->directory);
+
+        $dirs = $adapter->listDirectory();
+
+        $this->assertEmpty($dirs['dirs']);
+        $this->assertEmpty($dirs['keys']);
+
+        $this->adapter->write('foo', 'Some content');
+
+        $dirs = $adapter->listDirectory();
+
+        $this->assertEmpty($dirs['dirs']);
+        $this->assertCount(1, $dirs['keys']);
+        $this->assertEquals('foo', $dirs['keys'][0]);
+    }
 }
