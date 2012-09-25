@@ -65,6 +65,18 @@ EOF
      * @test
      * @group functional
      */
+    public function shouldUpdateFileContent()
+    {
+        $this->adapter->write('foo', 'Some content');
+        $this->adapter->write('foo', 'Some content updated');
+
+        $this->assertEquals('Some content updated', $this->adapter->read('foo'));
+    }
+
+    /**
+     * @test
+     * @group functional
+     */
     public function shouldCheckIfFileExists()
     {
         $this->assertFalse($this->adapter->exists('foo'));
