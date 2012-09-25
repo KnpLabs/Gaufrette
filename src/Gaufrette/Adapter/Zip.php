@@ -69,7 +69,6 @@ class Zip extends Base
     public function write($key, $content, array $metadata = null)
     {
         if (!$this->zipArchive->addFromString($key, $content)) {
-            // This should never happen though...
             throw new \RuntimeException(sprintf('Unable to write content to :\'%s\' file.', $key));
         }
 
