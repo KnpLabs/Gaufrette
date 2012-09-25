@@ -108,4 +108,35 @@ class LocalTest extends FunctionalTestCase
         @unlink($linkname);
         @rmdir($dirname);
     }
+
+    /**
+     * @test
+     * @covers Gaufrette\Adapter\Local
+     */
+    public function shouldListingOnlyGivenDirectory()
+    {
+        $dirname = sprintf(
+            '%s/localDir',
+            $this->directory
+        );
+        @mkdir($dirname);
+
+        $adapter = new Local($this->directory);
+        $adapter->write('/localDir/test.txt', 'some content');
+
+        $dirs = $adapter->listDirectory('/localDir');
+
+        $this->assertEmpty($dirs['dirs']);
+        $this->assertCount(1, $dirs['keys']);
+        $this->assertEquals('test.txt', $dirs['keys'][0]);
+
+        $dirs = $adapter->listDirectory();
+
+        $this->assertCount(1, $dirs['dirs']);
+        $this->assertEquals('localDir', $dirs['dirs'][0]);
+        $this->assertEmpty($dirs['keys']);
+
+        @unlink($dirname.DIRECTORY_SEPARATOR.'test.txt');
+        @rmdir($dirname);
+    }
 }
