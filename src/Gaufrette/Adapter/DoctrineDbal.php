@@ -68,8 +68,8 @@ class DoctrineDbal extends Base
 
         $count = $this->connection->update(
             $this->table,
-            array($this->getQuotedColumn('key') => $sourceKey),
-            array($this->getQuotedColumn('key') => $targetKey)
+            array($this->getQuotedColumn('key') => $targetKey),
+            array($this->getQuotedColumn('key') => $sourceKey)
         );
 
         if (0 === $count) {
