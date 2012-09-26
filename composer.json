@@ -3,6 +3,7 @@
     "type":         "library",
     "description":  "PHP5 library that provides a filesystem abstraction layer",
     "keywords":     ["file", "filesystem", "media", "abstraction"],
+    "minimum-stability": "dev",
     "homepage":     "http://knplabs.com",
     "license":      "MIT",
     "authors": [
