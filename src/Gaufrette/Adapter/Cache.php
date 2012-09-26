@@ -37,9 +37,9 @@ class Cache extends Base
     /**
      * Constructor
      *
-     * @param  Adapter $source  		The source adapter that must be cached
-     * @param  Adapter $cache   		The adapter used to cache the source
-     * @param  integer $ttl     		Time to live of a cached file
+     * @param  Adapter $source The source adapter that must be cached
+     * @param  Adapter $cache  The adapter used to cache the source
+     * @param  integer $ttl    Time to live of a cached file
      * @param  Adapter $serializeCache  The adapter used to cache serializations
      */
     public function __construct(Adapter $source, Adapter $cache, $ttl = 0, Adapter $serializeCache = null)
@@ -102,7 +102,8 @@ class Cache extends Base
     public function write($key, $content, array $metadata = null)
     {
         $this->source->write($key, $content);
-        $this->cache->write($key, $content);
+
+        return $this->cache->write($key, $content);
     }
 
     /**
@@ -227,7 +228,7 @@ class Cache extends Base
 
         if ($this->serializeCache->exists($cacheFile)) {
             try {
-                $needsRebuild = time() - $this->ttl > $this->serializeCache->mtime($cacheFile);
+                $needsRebuild = time() - $this->ttl >= $this->serializeCache->mtime($cacheFile);
             } catch (\RuntimeException $e) { }
         }
 

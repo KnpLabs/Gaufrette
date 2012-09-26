@@ -69,7 +69,6 @@ class Zip extends Base
     public function write($key, $content, array $metadata = null)
     {
         if (!$this->zipArchive->addFromString($key, $content)) {
-            // This should never happen though...
             throw new \RuntimeException(sprintf('Unable to write content to :\'%s\' file.', $key));
         }
 
@@ -202,12 +201,12 @@ class Zip extends Base
 
     protected function initZipArchive()
     {
-        $this->zipArchive = new ZipArchive();
+        $this->zipArchive = $this->createZipArchiveObject();
 
         if (true !== ($resultCode = $this->zipArchive->open($this->zipFile, ZipArchive::CREATE))) {
             switch($resultCode) {
             case ZipArchive::ER_EXISTS:
-                $errMsg = 'File already exists';
+                $errMsg = 'File already exists.';
                 break;
             case ZipArchive::ER_INCONS:
                 $errMsg = 'Zip archive inconsistent.';
@@ -234,7 +233,7 @@ class Zip extends Base
                 $errMsg = 'Seek error.';
                 break;
             default:
-                $errMsg = 'Unknown error';
+                $errMsg = 'Unknown error.';
                 break;
             }
 
@@ -242,6 +241,14 @@ class Zip extends Base
         }
 
         return $this;
+    }
+
+    /**
+     * @return \ZipArchive
+     */
+    protected function createZipArchiveObject()
+    {
+        return new ZipArchive();
     }
 
     /**
@@ -262,7 +269,7 @@ class Zip extends Base
 
     private function assertExists($key)
     {
-        if (false === $this->zipArchive->statName($key)) {
+        if (!$this->exists($key)) {
             throw new Exception\FileNotFound($key);
         }
     }

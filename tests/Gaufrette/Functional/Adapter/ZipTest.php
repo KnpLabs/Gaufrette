@@ -29,19 +29,29 @@ class ZipTest extends FunctionalTestCase
     }
 
     /**
-     * @expectedException RuntimeException
+     * @test
+     * @expectedException \RuntimeException
+     * @group functional
      */
-    public function testInvalidZipArchiveThrowRuntimeException()
+    public function shouldNotAcceptInvalidZipArchive()
     {
         new Zip(__FILE__);
     }
 
-    public function testNotSupportingMetadata()
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldNotSupportMetadata()
     {
         $this->assertFalse($this->adapter->supportsMetadata());
     }
 
-    public function testCreateNewZipArchive()
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldCreateNewZipArchive()
     {
         $tmp = tempnam(sys_get_temp_dir(), uniqid());
         $za = new Zip($tmp);
