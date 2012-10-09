@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Adapter;
 use Gaufrette\File;
 use Gaufrette\Filesystem;
 use Gaufrette\Exception;
@@ -12,7 +13,8 @@ use Gaufrette\Exception;
  * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
-class Ftp extends Base
+class Ftp implements Adapter,
+                     FileFactory
 {
     protected $connection = null;
     protected $directory;
@@ -28,30 +30,20 @@ class Ftp extends Base
     /**
      * Constructor
      *
-     * @param  string $directory The directory to use in the ftp server
-     * @param  string $host      The host of the ftp server
-     * @param  string $username  The username
-     * @param  string $password  The password
-     * @param  string $port      The ftp port (default 21)
-     * @param  string $passive   Whether to switch the ftp connection in passive
-     *                           mode (default FALSE)
-     * @param  string $create    Whether to create the directory if it does not
-     *                           exist
-     * @param  string $mode      Transfer-Mode (FTP_ASCII oder FTP_BINARY)
-     *
-     * @todo replace this arguments by an array of options
-     * @todo use FTP_BINARY by default
+     * @param string $directory The directory to use in the ftp server
+     * @param string $host      The host of the ftp server
+     * @param string $options   The options like port, username, password, passive, create, mode
      */
-    public function __construct($directory, $host, $username = null, $password = null, $port = 21, $passive = false, $create = false, $mode = FTP_ASCII)
+    public function __construct($directory, $host, $options = array()) 
     {
         $this->directory = (string) $directory;
-        $this->host = $host;
-        $this->port = $port;
-        $this->username = $username;
-        $this->password = $password;
-        $this->passive = $passive;
-        $this->create = $create;
-        $this->mode = $mode;
+        $this->host      = $host;
+        $this->port      = isset($options['port']) ? $options['port'] : 21;
+        $this->username  = isset($options['username']) ? $options['username'] : null;
+        $this->password  = isset($options['password']) ? $options['password'] : null;
+        $this->passive   = isset($options['passive']) ? $options['passive'] : false;
+        $this->create    = isset($options['create']) ? $options['create'] : false;
+        $this->mode      = isset($options['mode']) ? $options['mode'] : FTP_BINARY;
     }
 
     /**
@@ -59,12 +51,10 @@ class Ftp extends Base
      */
     public function read($key)
     {
-        $this->assertExists($key);
-
         $temp = fopen('php://temp', 'r+');
 
         if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), $this->mode)) {
-            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
+            return false;
         }
 
         rewind($temp);
@@ -77,7 +67,7 @@ class Ftp extends Base
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content, array $metadata = null)
+    public function write($key, $content)
     {
         $path = $this->computePath($key);
         $directory = dirname($path);
@@ -89,7 +79,9 @@ class Ftp extends Base
         rewind($temp);
 
         if (!ftp_fput($this->getConnection(), $path, $temp, $this->mode)) {
-            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
+            fclose($temp);
+
+            return false;
         }
 
         fclose($temp);
@@ -102,24 +94,12 @@ class Ftp extends Base
      */
     public function rename($sourceKey, $targetKey)
     {
-        $this->assertExists($sourceKey);
-
-        if ($this->exists($targetKey)) {
-            throw new Exception\UnexpectedFile($targetKey);
-        }
-
         $sourcePath = $this->computePath($sourceKey);
         $targetPath = $this->computePath($targetKey);
 
         $this->ensureDirectoryExists(dirname($targetPath), true);
 
-        if(!ftp_rename($this->getConnection(), $sourcePath, $targetPath)) {
-            throw new \RuntimeException(sprintf(
-                'Could not rename the "%s" file to "%s".',
-                $sourceKey,
-                $targetKey
-            ));
-        }
+        return ftp_rename($this->getConnection(), $sourcePath, $targetPath);
     }
 
     /**
@@ -130,13 +110,7 @@ class Ftp extends Base
         $file  = $this->computePath($key);
         $items = ftp_nlist($this->getConnection(), dirname($file));
 
-        foreach ($items as $item) {
-            if ($file === $item) {
-                return true;
-            }
-        }
-
-        return false;
+        return $items && in_array($file, $items);
     }
 
     /**
@@ -152,13 +126,11 @@ class Ftp extends Base
      */
     public function mtime($key)
     {
-        $this->assertExists($key);
-
         $mtime = ftp_mdtm($this->getConnection(), $this->computePath($key));
 
         // the server does not support this function
         if (-1 === $mtime) {
-            throw new \RuntimeException(sprintf('Could not get the last modified time of the \'%s\' file.', $key));
+            throw new \RuntimeException('Server does not support ftp_mdtm function.');
         }
 
         return $mtime;
@@ -167,97 +139,24 @@ class Ftp extends Base
     /**
      * {@inheritDoc}
      */
-    public function checksum($key)
+    public function delete($key)
     {
-        $this->assertExists($key);
-
-        return md5($this->read($key));
+        return ftp_delete($this->getConnection(), $this->computePath($key));
     }
 
     /**
      * {@inheritDoc}
      */
-    public function delete($key)
+    public function isDirectory($key)
     {
-        $this->assertExists($key);
-
-        if (!ftp_delete($this->getConnection(), $this->computePath($key))) {
-            throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
-        }
-    }
-
-    /**
-     * Ensures the specified directory exists. If it does not, and the create
-     * parameter is set to TRUE, it tries to create it
-     *
-     * @param  string  $directory
-     * @param  boolean $create Whether to create the directory if it does not
-     *                         exist
-     *
-     * @throws RuntimeException if the directory does not exist and could not
-     *                          be created
-     */
-    public function ensureDirectoryExists($directory, $create = false)
-    {
-        if (!$this->directoryExists($directory)) {
-            if (!$create) {
-                throw new \RuntimeException(sprintf('The directory \'%s\' does not exist.', $directory));
-            }
-
-            $this->createDirectory($directory);
-        }
-    }
-
-    /**
-     * Indicates whether the specified directory exists
-     *
-     * @param  string $directory
-     *
-     * @return boolean TRUE if the directory exists, FALSE otherwise
-     */
-    public function directoryExists($directory)
-    {
-        if ('/' === $directory) {
-            return true;
-        }
-
-        if (!ftp_chdir($this->getConnection(), $directory)) {
-            return false;
-        }
-
-        // change directory again to return in the base directory
-        ftp_chdir($this->getConnection(), $this->directory);
-
-        return true;
-    }
-
-    /**
-     * Creates the specified directory and its parent directories
-     *
-     * @param  string $directory Directory to create
-     *
-     * @throws RuntimeException if the directory could not be created
-     */
-    public function createDirectory($directory)
-    {
-        // create parent directory if needed
-        $parent = dirname($directory);
-        if (!$this->directoryExists($parent)) {
-            $this->createDirectory($parent);
-        }
-
-        // create the specified directory
-        $created = ftp_mkdir($this->getConnection(), $directory);
-        if (false === $created) {
-            throw new \RuntimeException(sprintf('Could not create the \'%s\' directory.', $directory));
-        }
+        return $this->isDir($this->computePath($key));
     }
 
     /**
      * Lists files from the specified directory. If a pattern is
      * specified, it only returns files matching it.
      *
-     * @param  string $directory The path of the directory to list from
+     * @param string $directory The path of the directory to list from
      *
      * @return array An array of keys and dirs
      */
@@ -280,7 +179,7 @@ class Ftp extends Base
 
             if ('-' === substr($itemData['perms'], 0, 1)) {
                 $fileData[$item['path']] = $item;
-            } elseif('d' === substr($itemData['perms'], 0, 1)) {
+            } elseif ('d' === substr($itemData['perms'], 0, 1)) {
                 $dirs[] = $item['path'];
             }
         }
@@ -298,10 +197,6 @@ class Ftp extends Base
      */
     public function createFile($key, Filesystem $filesystem)
     {
-        if (!$this->exists($key)) {
-            throw new \RuntimeException(sprintf('The \'%s\' file does not exist.', $key));
-        }
-
         $file = new File($key, $filesystem);
 
         if (!array_key_exists($key, $this->fileData)) {
@@ -322,6 +217,70 @@ class Ftp extends Base
     }
 
     /**
+     * Ensures the specified directory exists. If it does not, and the create
+     * parameter is set to TRUE, it tries to create it
+     *
+     * @param string  $directory
+     * @param boolean $create    Whether to create the directory if it does not
+     *                         exist
+     *
+     * @throws RuntimeException if the directory does not exist and could not
+     *                          be created
+     */
+    protected function ensureDirectoryExists($directory, $create = false)
+    {
+        if (!$this->isDir($directory)) {
+            if (!$create) {
+                throw new \RuntimeException(sprintf('The directory \'%s\' does not exist.', $directory));
+            }
+
+            $this->createDirectory($directory);
+        }
+    }
+
+    /**
+     * Creates the specified directory and its parent directories
+     *
+     * @param string $directory Directory to create
+     *
+     * @throws RuntimeException if the directory could not be created
+     */
+    protected function createDirectory($directory)
+    {
+        // create parent directory if needed
+        $parent = dirname($directory);
+        if (!$this->isDir($parent)) {
+            $this->createDirectory($parent);
+        }
+
+        // create the specified directory
+        $created = ftp_mkdir($this->getConnection(), $directory);
+        if (false === $created) {
+            throw new \RuntimeException(sprintf('Could not create the \'%s\' directory.', $directory));
+        }
+    }
+
+    /**
+     * @param string $directory - full directory path
+     * @return boolean
+     */
+    private function isDir($directory)
+    {
+        if ('/' === $directory) {
+            return true;
+        }
+
+        if (!@ftp_chdir($this->getConnection(), $directory)) {
+            return false;
+        }
+
+        // change directory again to return in the base directory
+        ftp_chdir($this->getConnection(), $this->directory);
+
+        return true;
+    }
+
+    /**
      * Fetch all Keys recursive
      *
      * @param string $directory
@@ -330,7 +289,7 @@ class Ftp extends Base
     {
         $items = $this->listDirectory($directory);
 
-        $keys = array();
+        $keys = $items['dirs'];
         foreach ($items['dirs'] as $dir) {
             $keys = array_merge($keys, $this->fetchKeys($dir));
         }
@@ -341,7 +300,7 @@ class Ftp extends Base
     /**
      * Parses the given raw list
      *
-     * @param  array $rawlist
+     * @param array $rawlist
      *
      * @return array
      */
@@ -369,7 +328,7 @@ class Ftp extends Base
     /**
      * Computes the path for the given key
      *
-     * @param  string $key
+     * @param string $key
      */
     private function computePath($key)
     {
@@ -429,10 +388,6 @@ class Ftp extends Base
             throw new \RuntimeException('Could not turn passive mode on.');
         }
 
-        if ('' === $this->directory) {
-            $this->directory = ftp_pwd($this->connection);
-        }
-
         // ensure the adapter's directory exists
         if ('/' !== $this->directory) {
             try {
@@ -463,7 +418,7 @@ class Ftp extends Base
     /**
      * Asserts the specified file exists
      *
-     * @param  string $key
+     * @param string $key
      *
      * @throws Exception\FileNotFound if the file does not exist
      */

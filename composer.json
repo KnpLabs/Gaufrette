@@ -18,10 +18,6 @@
     ],
     "repositories": [
         {
-            "type": "pear",
-            "url":  "pear.amazonwebservices.com"
-        },
-        {
             "type": "package",
             "package": {
                 "name": "rackspace/php-cloudfiles",
@@ -38,29 +34,58 @@
             }
         },
         {
-            "type": "pear",
-            "url": "pear.dropbox-php.com"
+            "type": "package",
+            "package": {
+                "name": "herzult/php-ssh",
+                "version": "master",
+                "source": {
+                    "url":  "git://github.com/Herzult/php-ssh.git",
+                    "type": "git",
+                    "reference": "master"
+                },
+                "dist": {
+                    "url": "https://github.com/Herzult/php-ssh/zipball/master",
+                    "type": "zip"
+                },
+                "autoload": {
+                    "psr-0": {
+                        "Ssh": "src/"
+                    }
+                }
+            }
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.2"
     },
     "require-dev": {
-        "pear-aws/sdk": "*",
+        "amazonwebservices/aws-sdk-for-php": "1.5.*",
+        "phpspec/phpspec2": "1.0.*",
         "rackspace/php-cloudfiles": "*",
         "doctrine/dbal": ">=2.3",
-        "pear-dropbox-php/Dropbox": "*"
+        "dropbox-php/dropbox-php": "*",
+        "herzult/php-ssh": "*"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "*",
-        "pear-aws/sdk":                 ">=1.4.5",
-        "rackspace/php-cloudfiles":     "*",
-        "doctrine/dbal":                ">=2.3",
-        "ext-curl":                     "*",
-        "ext-mbstring":                 "*",
-        "ext-mongo":                    "*"
+        "dropbox-php/dropbox-php": "to use the Dropbox adapter",
+        "amazonwebservices/aws-sdk-for-php": "to use the Amazon S3 adapter",
+        "doctrine/dbal": "to use the Doctrine DBAL adapter",
+        "ext-zip": "to use the Zip adapter",
+        "ext-apc": "to use the APC adapter",
+        "ext-curl": "*",
+        "ext-mbstring": "*",
+        "ext-mongo": "*"
     },
     "autoload": {
         "psr-0": { "Gaufrette": "src/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2.x-dev"
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
     }
 }

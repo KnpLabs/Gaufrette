@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Exception;
 
@@ -12,8 +13,10 @@ use Doctrine\DBAL\Connection;
  *
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  * @author Antoine Hérault <antoine.herault@gmail.com>
+ * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class DoctrineDbal extends Base
+class DoctrineDbal implements Adapter,
+                              ChecksumCalculator
 {
     protected $connection;
     protected $table;
@@ -27,9 +30,9 @@ class DoctrineDbal extends Base
     /**
      * Constructor
      *
-     * @param  Connection $connection The DBAL connection
-     * @param  string     $table      The files table
-     * @param  array      $columns    The column names
+     * @param Connection $connection The DBAL connection
+     * @param string     $table      The files table
+     * @param array      $columns    The column names
      */
     public function __construct(Connection $connection, $table, array $columns = array())
     {
@@ -50,11 +53,7 @@ class DoctrineDbal extends Base
             $this->getQuotedTable()
         ));
 
-        while (false !== $key = $stmt->fetch(\PDO::FETCH_COLUMN)) {
-            $keys[] = $key;
-        }
-
-        return $keys;
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
 
     /**
@@ -62,19 +61,11 @@ class DoctrineDbal extends Base
      */
     public function rename($sourceKey, $targetKey)
     {
-        if ($this->exists($targetKey)) {
-            throw new Exception\UnexpectedFile($targetKey);
-        }
-
-        $count = $this->connection->update(
+        return (boolean) $this->connection->update(
             $this->table,
             array($this->getQuotedColumn('key') => $targetKey),
             array($this->getQuotedColumn('key') => $sourceKey)
         );
-
-        if (0 === $count) {
-            throw new Exception\FileNotFound($sourceKey);
-        }
     }
 
     /**
@@ -98,7 +89,7 @@ class DoctrineDbal extends Base
      */
     public function exists($key)
     {
-        $count = $this->connection->fetchColumn(
+        return (boolean) $this->connection->fetchColumn(
             sprintf(
                 'SELECT COUNT(%s) FROM %s WHERE %s = :key',
                 $this->getQuotedColumn('key'),
@@ -107,16 +98,10 @@ class DoctrineDbal extends Base
             ),
             array('key' => $key)
         );
-
-        return 0 !== (int) $count;
     }
 
     /**
-     * Reads the content of the file
-     *
-     * @param  string $key
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function read($key)
     {
@@ -128,28 +113,16 @@ class DoctrineDbal extends Base
      */
     public function delete($key)
     {
-        $count = $this->connection->delete(
+        return (boolean) $this->connection->delete(
             $this->table,
             array($this->getQuotedColumn('key') => $key)
         );
-
-        if (0 === $count) {
-            throw new Exception\FileNotFound($key);
-        }
     }
 
     /**
-     * Writes the given content into the file
-     *
-     * @param  string $key
-     * @param  string $content
-     * @param  array $metadata or null if none (optional)
-     *
-     * @return integer The number of bytes that were written into the file
-     *
-     * @throws RuntimeException on failure
+     * {@inheritDoc}
      */
-    public function write($key, $content, array $metadata = null)
+    public function write($key, $content)
     {
         $values = array(
             $this->getQuotedColumn('content')  => $content,
@@ -171,6 +144,14 @@ class DoctrineDbal extends Base
         return Util\Size::fromContent($content);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function isDirectory($key)
+    {
+        return false;
+    }
+
     private function getColumnValue($key, $column)
     {
         $value = $this->connection->fetchColumn(
@@ -182,10 +163,6 @@ class DoctrineDbal extends Base
             ),
             array('key' => $key)
         );
-
-        if (false === $value) {
-            throw new Exception\FileNotFound($key);
-        }
 
         return $value;
     }

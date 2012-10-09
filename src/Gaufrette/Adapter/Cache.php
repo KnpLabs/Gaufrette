@@ -12,7 +12,8 @@ use Gaufrette\Adapter\InMemory as InMemoryAdapter;
  * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
-class Cache extends Base
+class Cache implements Adapter,
+                       MetadataSupporter
 {
     /**
      * @var Adapter
@@ -37,10 +38,10 @@ class Cache extends Base
     /**
      * Constructor
      *
-     * @param  Adapter $source The source adapter that must be cached
-     * @param  Adapter $cache  The adapter used to cache the source
-     * @param  integer $ttl    Time to live of a cached file
-     * @param  Adapter $serializeCache  The adapter used to cache serializations
+     * @param Adapter $source         The source adapter that must be cached
+     * @param Adapter $cache          The adapter used to cache the source
+     * @param integer $ttl            Time to live of a cached file
+     * @param Adapter $serializeCache The adapter used to cache serializations
      */
     public function __construct(Adapter $source, Adapter $cache, $ttl = 0, Adapter $serializeCache = null)
     {
@@ -59,16 +60,18 @@ class Cache extends Base
      *
      * @return integer $ttl
      */
-    public function getTtl() {
+    public function getTtl()
+    {
         return $this->ttl;
     }
 
     /**
      * Defines the time to live of the cache
      *
-     * @param  integer $ttl
+     * @param integer $ttl
      */
-    public function setTtl($ttl) {
+    public function setTtl($ttl)
+    {
         $this->ttl = $ttl;
     }
 
@@ -88,16 +91,17 @@ class Cache extends Base
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function rename($key, $new)
     {
         $this->source->rename($key, $new);
-        $this->cache->rename($key, $new);
+
+        return $this->cache->rename($key, $new);
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function write($key, $content, array $metadata = null)
     {
@@ -125,19 +129,12 @@ class Cache extends Base
     /**
      * {@inheritDoc}
      */
-    public function checksum($key)
-    {
-        return $this->source->checksum($key);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function keys()
     {
         $cacheFile = 'keys.cache';
         if ($this->needsRebuild($cacheFile)) {
             $keys = $this->source->keys();
+            sort($keys);
             $this->serializeCache->write($cacheFile, serialize($keys));
         } else {
             $keys = unserialize($this->serializeCache->read($cacheFile));
@@ -147,55 +144,53 @@ class Cache extends Base
     }
 
     /**
-     * Creates a new File instance and returns it
-     *
-     * @param  string $key
-     * @return File
-     */
-    public function get($key, $filesystem)
-    {
-        if (is_callable(array($this->source, 'get'))) {
-            // If possible, delegate getting the file object to the source adapter.
-            return $this->source->get($key, $filesystem);
-        }
-
-        return new File($key, $filesystem);
-    }
-
-    /**
-     * @return array
-     */
-    public function listDirectory($directory = '')
-    {
-        $listing = null;
-
-        if (method_exists($this->source, 'listDirectory')) {
-            $cacheFile = 'dir-' . md5($directory) . '.cache';
-
-            if ($this->needsRebuild($cacheFile)) {
-                $listing = $this->source->listDirectory($directory);
-                $this->serializeCache->write($cacheFile, serialize($listing));
-            } else {
-                $listing = unserialize($this->serializeCache->read($cacheFile));
-            }
-        }
-
-        return $listing;
-    }
-
-    /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function delete($key)
     {
-        $this->source->delete($key);
-        $this->cache->delete($key);
+        $sourceDeleted = $this->source->delete($key);
+
+        return $this->cache->delete($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isDirectory($key)
+    {
+        return $this->source->isDirectory($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setMetadata($key, $metadata)
+    {
+        if ($this->source instanceof MetadataSupporter) {
+            $this->source->setMetadata($key, $metadata);
+        }
+
+        if ($this->cache instanceof MetadataSupporter) {
+            $this->cache->setMetadata($key, $metadata);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getMetadata($key)
+    {
+        if ($this->source instanceof MetadataSupporter) {
+            return $this->source->getMetadata($key);
+        }
+
+        return false;
     }
 
     /**
      * Indicates whether the cache for the specified key needs to be reloaded
      *
-     * @param  string $key
+     * @param string $key
      */
     public function needsReload($key)
     {
@@ -220,7 +215,7 @@ class Cache extends Base
     /**
      * Indicates whether the serialized cache file needs to be rebuild
      *
-     * @param  string $cacheFile
+     * @param string $cacheFile
      */
     public function needsRebuild($cacheFile)
     {

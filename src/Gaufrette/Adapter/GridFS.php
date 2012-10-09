@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Adapter;
 use Gaufrette\Exception;
 
 /**
@@ -9,9 +10,13 @@ use Gaufrette\Exception;
  *
  * @author Tomi Saarinen <tomi.saarinen@rohea.com>
  * @author Antoine Hérault <antoine.herault@gmail.com>
+ * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class GridFS extends Base
+class GridFS implements Adapter,
+                        ChecksumCalculator,
+                        MetadataSupporter
 {
+    private $metadata = array();
     protected $gridFS = null;
 
     /**
@@ -29,19 +34,22 @@ class GridFS extends Base
      */
     public function read($key)
     {
-        return $this->findOrError($key)->getBytes();
+        $file = $this->find($key);
+
+        return ($file) ? $file->getBytes() : false;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content, array $metadata = null)
+    public function write($key, $content)
     {
         if ($this->exists($key)) {
             $this->delete($key);
         }
 
-        $id   = $this->gridFS->storeBytes($content, array('filename' => $key, 'date' => new \MongoDate()));
+        $metadata = array_replace_recursive(array('date' => new \MongoDate()), $this->getMetadata($key), array('filename' => $key));
+        $id   = $this->gridFS->storeBytes($content, $metadata);
         $file = $this->gridFS->findOne(array('_id' => $id));
 
         return $file->getSize();
@@ -50,28 +58,32 @@ class GridFS extends Base
     /**
      * {@inheritDoc}
      */
-    public function rename($sourceKey, $targetKey)
+    public function isDirectory($key)
     {
-        $file = $this->findOrError($sourceKey);
-
-        if ($this->exists($targetKey)) {
-            throw new Exception\UnexpectedFile($targetKey);
-        }
-
-        $this->write($targetKey, $file->getBytes());
-        $this->delete($sourceKey);
+        return false;
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
+     */
+    public function rename($sourceKey, $targetKey)
+    {
+        $bytes = $this->write($targetKey, $this->read($sourceKey));
+        $this->delete($sourceKey);
+
+        return (boolean) $bytes;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function exists($key)
     {
-        return null !== $this->gridFS->findOne($key);
+        return (boolean) $this->find($key);
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function keys()
     {
@@ -86,11 +98,13 @@ class GridFS extends Base
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function mtime($key)
     {
-        return $this->findOrError($key, array('date'))->file['date']->sec;
+        $file = $this->find($key, array('date'));
+
+        return ($file) ? $file->file['date']->sec : false;
     }
 
     /**
@@ -98,7 +112,9 @@ class GridFS extends Base
      */
     public function checksum($key)
     {
-        return $this->findOrError($key, array('md5'))->file['md5'];
+        $file = $this->find($key, array('md5'));
+
+        return ($file) ? $file->file['md5'] : false;
     }
 
     /**
@@ -106,25 +122,25 @@ class GridFS extends Base
      */
     public function delete($key)
     {
-        $file = $this->findOrError($key, array('_id'));
+        $file = $this->find($key, array('_id'));
 
-        if (!$this->gridFS->delete($file->file['_id'])) {
-            throw new \RuntimeException(sprintf(
-                'Cannot delete file "%s" from the Mongo GridFS.',
-                $key
-            ));
-        }
+        return $file && $this->gridFS->delete($file->file['_id']);
     }
 
-    private function findOrError($key, array $fields = array())
+    /**
+     * {@inheritDoc}
+     */
+    public function setMetadata($key, $metadata)
     {
-        $file = $this->find($key, $fields);
+        $this->metadata[$key] = $metadata;
+    }
 
-        if (null === $file) {
-            throw new Exception\FileNotFound($key);
-        }
-
-        return $file;
+    /**
+     * {@inheritDoc}
+     */
+    public function getMetadata($key)
+    {
+        return isset($this->metadata[$key]) ? $this->metadata[$key] : array();
     }
 
     private function find($key, array $fields = array())

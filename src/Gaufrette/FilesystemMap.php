@@ -25,15 +25,15 @@ class FilesystemMap
     /**
      * Register the given filesystem for the specified domain
      *
-     * @param  string     $domain
-     * @param  Filesystem $filesystem
+     * @param string     $domain
+     * @param Filesystem $filesystem
      *
      * @throws InvalidArgumentException when the specified domain contains
      *                                  forbidden characters
      */
     public function set($domain, Filesystem $filesystem)
     {
-        if ( ! preg_match('/^[-_a-zA-Z0-9]+$/', $domain)) {
+        if (! preg_match('/^[-_a-zA-Z0-9]+$/', $domain)) {
             throw new \InvalidArgumentException(sprintf(
                 'The specified domain "%s" is not a valid domain.',
                 $domain
@@ -47,7 +47,7 @@ class FilesystemMap
      * Indicates whether there is a filesystem registered for the specified
      * domain
      *
-     * @param  string $domain
+     * @param string $domain
      *
      * @return Boolean
      */
@@ -59,7 +59,7 @@ class FilesystemMap
     /**
      * Returns the filesystem registered for the specified domain
      *
-     * @param  string $domain
+     * @param string $domain
      *
      * @return Filesystem
      *
@@ -68,7 +68,7 @@ class FilesystemMap
      */
     public function get($domain)
     {
-        if ( ! $this->has($domain)) {
+        if (! $this->has($domain)) {
             throw new \InvalidArgumentException(sprintf(
                 'There is no filesystem defined for the "%s" domain.',
                 $domain
@@ -81,13 +81,13 @@ class FilesystemMap
     /**
      * Removes the filesystem registered for the specified domain
      *
-     * @param  string $domain
+     * @param string $domain
      *
      * @return void
      */
     public function remove($domain)
     {
-        if ( ! $this->has($domain)) {
+        if (! $this->has($domain)) {
             throw new \InvalidArgumentException(sprintf(
                 'Cannot remove the "%s" filesystem as it is not defined.',
                 $domain

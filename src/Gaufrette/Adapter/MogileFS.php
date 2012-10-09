@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Exception;
 
@@ -14,7 +15,7 @@ use Gaufrette\Exception;
  * Bases partly on Wikimedia MogileFS client code by Jens Frank and Domas Mituzas, 2007.
  * See more: http://svn.wikimedia.org/viewvc/mediawiki/trunk/extensions/MogileClient/
  */
-class MogileFS extends Base
+class MogileFS implements Adapter
 {
     const ERR_OTHER       = 0;
     const ERR_UNKNOWN_KEY = 1;
@@ -50,11 +51,7 @@ class MogileFS extends Base
         try {
             $paths = $this->getPaths($key);
         } catch (\RuntimeException $e) {
-            if (static::ERR_UNKNOWN_KEY === $e->getCode()) {
-                throw new Exception\FileNotFound($key, 0, $e);
-            } else {
-                throw $e;
-            }
+            return false;
         }
 
         $data = '';
@@ -104,7 +101,7 @@ class MogileFS extends Base
         }
 
         if (!is_array($closeres)) {
-            throw new \RuntimeException(sprintf('Could not write the \'%s\' file in \'%s\'.',$key, $metadata['mogile_class']));
+            return false;
         }
 
         return Util\Size::fromContent($content);
@@ -117,13 +114,11 @@ class MogileFS extends Base
     {
         try {
             $this->doRequest('DELETE', array('key' => $key));
-        } catch(\RuntimeException $e) {
-            if (static::ERR_UNKNOWN_KEY === $e->getCode()) {
-                throw new Exception\FileNotFound($key, 0, $e);
-            }
-
-            throw $e;
+        } catch (\RuntimeException $e) {
+            return false;
         }
+
+        return true;
     }
 
     /**
@@ -132,20 +127,15 @@ class MogileFS extends Base
     public function rename($sourceKey, $targetKey)
     {
         try {
-            $result = $this->doRequest('RENAME', array(
+            $this->doRequest('RENAME', array(
                 'from_key'  => $sourceKey,
                 'to_key'    => $targetKey
             ));
         } catch (\RuntimeException $e) {
-            switch ($e->getCode()) {
-                case static::ERR_UNKNOWN_KEY:
-                    throw new Exception\FileNotFound($sourceKey, 0, $e);
-                case static::ERR_KEY_EXISTS:
-                    throw new Exception\UnexpectedFile($targetKey, 0, $e);
-                default:
-                    throw $e;
-            }
+            return false;
         }
+
+        return true;
     }
 
     /**
@@ -156,11 +146,7 @@ class MogileFS extends Base
         try {
             $this->getPaths($key);
         } catch (\RuntimeException $e) {
-            if (static::ERR_UNKNOWN_KEY === $e->getCode()) {
-                return false;
-            }
-
-            throw $e;
+            return false;
         }
 
         return true;
@@ -174,11 +160,7 @@ class MogileFS extends Base
         try {
             $result = $this->doRequest('LIST_KEYS');
         } catch (\RuntimeException $e) {
-            if (static::ERR_NONE_MATCH === $e->getCode()) {
-                return array();
-            }
-
-            throw $e;
+            return array();
         }
 
         unset($result['key_count'], $result['next_after']);
@@ -191,52 +173,15 @@ class MogileFS extends Base
      */
     public function mtime($key)
     {
-        throw new \BadMethodCallException("Method not implemented yet.");
+        return;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function checksum($key)
-    {
-        return Util\Checksum::fromContent($this->read($key));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function supportsMetadata()
+    public function isDirectory($key)
     {
         return false;
-    }
-
-    /**
-     * Tries to connect MogileFS tracker
-     *
-     * @return Socket
-     */
-    private function connect()
-    {
-        if ($this->socket) {
-            return $this->socket;
-        }
-
-        shuffle($this->hosts);
-
-        foreach ($this->hosts as $host) {
-            list($ip, $port) = explode(':', $host);
-            $this->socket = @fsockopen($ip, $port, $err_no, $err_str, 1);
-
-            if ($this->socket) {
-                break;
-            }
-        }
-
-        if (!$this->socket) {
-            throw new \RuntimeException('Unable to connect to the tracker.');
-        }
-
-        return $this->socket;
     }
 
     /**
@@ -266,6 +211,35 @@ class MogileFS extends Base
         }
 
         return $domains;
+    }
+
+    /**
+     * Tries to connect MogileFS tracker
+     *
+     * @return Socket
+     */
+    private function connect()
+    {
+        if ($this->socket) {
+            return $this->socket;
+        }
+
+        shuffle($this->hosts);
+
+        foreach ($this->hosts as $host) {
+            list($ip, $port) = explode(':', $host);
+            $this->socket = @fsockopen($ip, $port, $err_no, $err_str, 1);
+
+            if ($this->socket) {
+                break;
+            }
+        }
+
+        if (!$this->socket) {
+            throw new \RuntimeException('Unable to connect to the tracker.');
+        }
+
+        return $this->socket;
     }
 
     /**

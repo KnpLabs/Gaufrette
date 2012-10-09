@@ -13,11 +13,11 @@ class Path
     /**
      * Normalizes the given path
      *
-     * @param  string $path
+     * @param string $path
      *
      * @return string
      */
-    static public function normalize($path)
+    public static function normalize($path)
     {
         $path   = str_replace('\\', '/', $path);
         $prefix = static::getAbsolutePrefix($path);
@@ -33,7 +33,7 @@ class Path
                     if (0 !== count($tokens)) {
                         array_pop($tokens);
                         continue;
-                    } else if (!empty($prefix)) {
+                    } elseif (!empty($prefix)) {
                         continue;
                     }
                 default:
@@ -47,11 +47,11 @@ class Path
     /**
      * Indicates whether the given path is absolute or not
      *
-     * @param  string $path A normalized path
+     * @param string $path A normalized path
      *
      * @return boolean
      */
-    static public function isAbsolute($path)
+    public static function isAbsolute($path)
     {
         return '' !== static::getAbsolutePrefix($path);
     }
@@ -59,11 +59,11 @@ class Path
     /**
      * Returns the absolute prefix of the given path
      *
-     * @param  string $path A normalized path
+     * @param string $path A normalized path
      *
      * @return string
      */
-    static public function getAbsolutePrefix($path)
+    public static function getAbsolutePrefix($path)
     {
         preg_match('|^(?P<prefix>([a-zA-Z]:)?/)|', $path, $matches);
 

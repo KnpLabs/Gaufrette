@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Adapter;
 use Gaufrette\Exception;
 
 /**
@@ -9,30 +10,32 @@ use Gaufrette\Exception;
  *
  * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
+ * @author  Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class AmazonS3 extends Base
+class AmazonS3 implements Adapter,
+                          MetadataSupporter
 {
     protected $service;
     protected $bucket;
     protected $ensureBucket = false;
-    protected $create;
-    protected $directory;
+    protected $metadata;
+    protected $options;
 
-    public function __construct(\AmazonS3 $service, $bucket, $create = false)
+    public function __construct(\AmazonS3 $service, $bucket, $options = array())
     {
         $this->service = $service;
-        $this->bucket = $bucket;
-        $this->create = $create;
+        $this->bucket  = $bucket;
+        $this->options = array_replace_recursive(array('create' => false), $options);
     }
 
     /**
      * Set the base directory the user will have access to
      *
-     * @param  string $directory
+     * @param string $directory
      */
     public function setDirectory($directory)
     {
-        $this->directory = $directory;
+        $this->options['directory'] = $directory;
     }
 
     /**
@@ -42,7 +45,27 @@ class AmazonS3 extends Base
      */
     public function getDirectory()
     {
-        return $this->directory;
+        return isset($this->options['directory']) ? $this->options['directory'] : null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setMetadata($key, $metadata)
+    {
+        $path = $this->computePath($key);
+
+        $this->metadata[$path] = $metadata;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getMetadata($key)
+    {
+        $path = $this->computePath($key);
+
+        return isset($this->metadata[$path]) ? $this->metadata[$path] : array();
     }
 
     /**
@@ -54,16 +77,12 @@ class AmazonS3 extends Base
 
         $response = $this->service->get_object(
             $this->bucket,
-            $this->computePath($key)
+            $this->computePath($key),
+            $this->getMetadata($key)
         );
 
-        if (404 === $response->status) {
-            throw new Exception\FileNotFound($key);
-        } elseif (!$response->isOK()) {
-            throw new \RuntimeException(sprintf(
-                'Could not read the "%s" file.',
-                $key
-            ));
+        if (!$response->isOK()) {
+            return false;
         }
 
         return $response->body;
@@ -76,10 +95,6 @@ class AmazonS3 extends Base
     {
         $this->ensureBucketExists();
 
-        if ($this->exists($targetKey)) {
-            throw new Exception\UnexpectedFile($targetKey);
-        }
-
         $response = $this->service->copy_object(
             array( // source
                 'bucket'   => $this->bucket,
@@ -88,32 +103,26 @@ class AmazonS3 extends Base
             array( // target
                 'bucket'   => $this->bucket,
                 'filename' => $this->computePath($targetKey)
-            )
+            ),
+            $this->getMetadata($sourceKey)
         );
 
-        if (404 === $response->status) {
-            throw new Exception\FileNotFound($sourceKey);
-        } elseif (!$response->isOK()) {
-            throw new \RuntimeException(sprintf(
-                'Could not rename the "%s" file into "%s".',
-                $sourceKey,
-                $targetKey
-            ));
-        }
+        return $response->isOK();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content, array $metadata = null)
+    public function write($key, $content)
     {
         $this->ensureBucketExists();
-    
-        $opt = array(
-            'body' => $content,
-            'acl'  => \AmazonS3::ACL_PUBLIC
+
+        $opt = array_replace_recursive(
+            array('acl'  => \AmazonS3::ACL_PUBLIC),
+            $this->getMetadata($key),
+            array('content' => $content)
         );
-    
+
         $response = $this->service->create_object(
             $this->bucket,
             $this->computePath($key),
@@ -121,8 +130,8 @@ class AmazonS3 extends Base
         );
 
         if (!$response->isOK()) {
-            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
-        }
+            return false;
+        };
 
         return intval($response->header["x-aws-requestheaders"]["Content-Length"]);
     }
@@ -145,19 +154,15 @@ class AmazonS3 extends Base
      */
     public function mtime($key)
     {
-        $response = $this->getObjectMetadata($key);
+        $this->ensureBucketExists();
 
-        return strtotime($response['Headers']['last-modified']);
-    }
+        $response = $this->service->get_object_metadata(
+            $this->bucket,
+            $this->computePath($key),
+            $this->getMetadata($key)
+        );
 
-    /**
-     * {@inheritDoc}
-     */
-    public function checksum($key)
-    {
-        $response = $this->getObjectMetadata($key);
-
-        return trim($response['ETag'], '"');
+        return isset($response['Headers']['last-modified']) ? strtotime($response['Headers']['last-modified']) : false;
     }
 
     /**
@@ -167,17 +172,10 @@ class AmazonS3 extends Base
     {
         $this->ensureBucketExists();
 
-        $response = $this->service->list_objects($this->bucket);
-        if (!$response->isOK()) {
-            throw new \RuntimeException('Could not get the keys.');
-        }
+        $list = $this->service->get_object_list($this->bucket);
+        sort($list);
 
-        $keys = array();
-        foreach ($response->body->Contents as $object) {
-            $keys[] = $object->Key->to_string();
-        }
-
-        return $keys;
+        return $list;
     }
 
     /**
@@ -187,37 +185,21 @@ class AmazonS3 extends Base
     {
         $this->ensureBucketExists();
 
-        if (!$this->exists($key)) {
-            throw new Exception\FileNotFound($key);
-        }
-
         $response = $this->service->delete_object(
             $this->bucket,
-            $this->computePath($key)
+            $this->computePath($key),
+            $this->getMetadata($key)
         );
 
-        if (!$response->isOK()) {
-            throw new \RuntimeException(sprintf(
-                'Could not delete the "%s" file.',
-                $key
-            ));
-        }
+        return $response->isOK();
     }
 
-    private function getObjectMetadata($key)
+    /**
+     * {@inheritDoc}
+     */
+    public function isDirectory($key)
     {
-        $this->ensureBucketExists();
-
-        $response = $this->service->get_object_metadata(
-            $this->bucket,
-            $this->computePath($key)
-        );
-
-        if (false === $response) {
-            throw new Exception\FileNotFound($key);
-        }
-
-        return $response;
+        return false;
     }
 
     /**
@@ -235,20 +217,21 @@ class AmazonS3 extends Base
         }
 
         if ($this->service->if_bucket_exists($this->bucket)) {
+            $this->ensureBucket = true;
+
             return;
         }
 
-        if (!$this->create) {
+        if (isset($this->options['create']) && !$this->options['create']) {
             throw new \RuntimeException(sprintf(
                 'The configured bucket "%s" does not exist.',
                 $this->bucket
             ));
         }
 
-        // @todo make this region configurable
         $response = $this->service->create_bucket(
             $this->bucket,
-            \AmazonS3::REGION_US_E1
+            isset($this->options['region']) ? $this->options['region'] : \AmazonS3::REGION_US_E1
         );
 
         if (!$response->isOK()) {
@@ -264,40 +247,17 @@ class AmazonS3 extends Base
     /**
      * Computes the path for the specified key taking the bucket in account
      *
-     * @param  string $key The key for which to compute the path
+     * @param string $key The key for which to compute the path
      *
      * @return string
      */
     private function computePath($key)
     {
-        if (null === $this->directory || '' === $this->directory) {
+        $directory = $this->getDirectory();
+        if (null === $directory || '' === $directory) {
             return $key;
         }
 
         return sprintf('%s/%s', $this->directory, $key);
-    }
-
-    /**
-     * Computes the key for the specified path
-     *
-     * @param  string $path for which to compute the key
-     */
-    private function computeKey($path)
-    {
-        if (null === $this->directory || '' === $this->directory) {
-            return $path;
-        }
-
-        $prefix = sprintf('%s/', $this->directory);
-
-        if (0 !== strpos($path, $prefix)) {
-            throw new \InvalidArgumentException(sprintf(
-                'The specified path "%s" is out of the directory "%s".',
-                $path,
-                $this->directory
-            ));
-        }
-
-        return substr($path, strlen($prefix));
     }
 }

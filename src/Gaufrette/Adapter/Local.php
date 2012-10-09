@@ -3,24 +3,29 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Util;
-use Gaufrette\Filesystem;
-use Gaufrette\FileStream;
+use Gaufrette\Adapter;
+use Gaufrette\Stream;
+use Gaufrette\Adapter\StreamFactory;
 use Gaufrette\Exception;
 
 /**
  * Adapter for the local filesystem
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
+ * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class Local extends Base
+class Local implements Adapter,
+                       StreamFactory,
+                       ChecksumCalculator
 {
     protected $directory;
+    private $create;
 
     /**
      * Constructor
      *
-     * @param  string  $directory Directory where the filesystem is located
-     * @param  boolean $create    Whether to create the directory if it does not
+     * @param string  $directory Directory where the filesystem is located
+     * @param boolean $create    Whether to create the directory if it does not
      *                            exist (default FALSE)
      *
      * @throws RuntimeException if the specified directory does not exist and
@@ -28,13 +33,13 @@ class Local extends Base
      */
     public function __construct($directory, $create = false)
     {
-        $this->directory = $this->normalizePath($directory);
+        $this->directory = Util\Path::normalize($directory);
 
-        if ($this->isLink($this->directory)) {
+        if (is_link($this->directory)) {
             $this->directory = realpath($this->directory);
         }
 
-        $this->ensureDirectoryExists($this->directory, $create);
+        $this->create = $create;
     }
 
     /**
@@ -42,33 +47,15 @@ class Local extends Base
      */
     public function read($key)
     {
-        $this->assertExists($key);
-
-        $content = $this->getFileContents($this->computePath($key));
-
-        if (false === $content) {
-            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
-        }
-
-        return $content;
+        return file_get_contents($this->computePath($key));
     }
 
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content, array $metadata = null)
+    public function write($key, $content)
     {
-        $path = $this->computePath($key);
-
-        $this->ensureDirectoryExists(dirname($path), true);
-
-        $numBytes = $this->setFileContents($path, $content);
-
-        if (false === $numBytes) {
-            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
-        }
-
-        return $numBytes;
+        return file_put_contents($this->computePath($key), $content);
     }
 
     /**
@@ -76,19 +63,7 @@ class Local extends Base
      */
     public function rename($sourceKey, $targetKey)
     {
-        $this->assertExists($sourceKey);
-
-        if ($this->exists($targetKey)) {
-            throw new Exception\UnexpectedFile($targetKey);
-        }
-
-        if (!$this->renameFile($this->computePath($sourceKey), $this->computePath($targetKey))) {
-            throw new \RuntimeException(sprintf(
-                'Could not rename the "%s" file to "%s".',
-                $sourceKey,
-                $targetKey
-            ));
-        }
+        return rename($this->computePath($sourceKey), $this->computePath($targetKey));
     }
 
     /**
@@ -96,7 +71,7 @@ class Local extends Base
      */
     public function exists($key)
     {
-        return is_file($this->computePath($key));
+        return file_exists($this->computePath($key));
     }
 
     /**
@@ -104,17 +79,23 @@ class Local extends Base
      */
     public function keys()
     {
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator(
-                $this->directory,
-                \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
-            )
-        );
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
+        try {
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator(
+                    $this->directory,
+                    \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
+                )
+            );
+        } catch (\Exception $e) {
+            $iterator = new \ArrayIterator(array());
+        }
 
         $files = iterator_to_array($iterator);
         $self = $this;
 
-        return array_values(
+        $files = array_values(
             array_map(
                 function($file) use ($self) {
                     return $self->computeKey(strval($file));
@@ -122,36 +103,19 @@ class Local extends Base
                 $files
             )
         );
-    }
 
-    /**
-     * Lists files from the specified directory.
-     *
-     * @param  string $directory The path of the directory to list from
-     *
-     * @return array An array of keys and dirs
-     */
-    public function listDirectory($directory = '')
-    {
-        $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
-        $files = $dirs = array();
-
-        if (is_dir($this->directory.$directory)) {
-            $iterator = new \DirectoryIterator($this->directory.$directory);
-
-            foreach ($iterator as $fileinfo) {
-                if ($fileinfo->isFile()) {
-                    $files[] = $fileinfo->getFilename();
-                } elseif ($fileinfo->isDir() && !$fileinfo->isDot()) {
-                    $dirs[] = $fileinfo->getFilename();
-                }
+        $dirs = array();
+        foreach ($files as $file)
+        {
+            if ('.' !== dirname($file)) {
+                $dirs[] = dirname($file);
             }
         }
 
-        return array(
-           'keys'   => $files,
-           'dirs'   => $dirs
-        );
+        $keys = array_merge($files, $dirs);
+        sort($keys);
+
+        return $keys;
     }
 
     /**
@@ -159,19 +123,7 @@ class Local extends Base
      */
     public function mtime($key)
     {
-        $this->assertExists($key);
-
         return filemtime($this->computePath($key));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function checksum($key)
-    {
-        $this->assertExists($key);
-
-        return Util\Checksum::fromFile($this->computePath($key));
     }
 
     /**
@@ -179,50 +131,35 @@ class Local extends Base
      */
     public function delete($key)
     {
-        $this->assertExists($key);
-
-        if (!$this->deleteFile($this->computePath($key))) {
-            throw new \RuntimeException(sprintf('Could not remove the \'%s\' file.', $key));
-        }
+        return unlink($this->computePath($key));
     }
 
     /**
-     * Computes the path from the specified key
-     *
-     * @param  string $key The key which for to compute the path
-     *
-     * @return string A path
-     *
-     * @throws OutOfBoundsException If the computed path is out of the
-     *                              directory
+     * @param  string  $directory
+     * @return boolean
      */
-    public function computePath($key)
+    public function isDirectory($key)
     {
-        $path = $this->normalizePath($this->directory . '/' . $key);
-
-        if (0 !== strpos($path, $this->directory)) {
-            throw new \OutOfBoundsException(sprintf('The file \'%s\' is out of the filesystem.', $key));
-        }
-
-        return $path;
+        return is_dir($this->computePath($key));
     }
 
     /**
-     * Normalizes the given path
-     *
-     * @param  string $path
-     *
-     * @return string
+     * {@inheritDoc}
      */
-    public function normalizePath($path)
+    public function createStream($key)
     {
-        return Util\Path::normalize($path);
+        return new Stream\Local($this->computePath($key));
+    }
+
+    public function checksum($key)
+    {
+        return Util\Checksum::fromFile($this->computePath($key));
     }
 
     /**
      * Computes the key from the specified path
      *
-     * @param  string $path
+     * @param string $path
      *
      * return string
      */
@@ -230,28 +167,60 @@ class Local extends Base
     {
         $path = $this->normalizePath($path);
 
+        return ltrim(substr($path, strlen($this->directory)), '/');
+    }
+
+    /**
+     * Computes the path from the specified key
+     *
+     * @param string $key The key which for to compute the path
+     *
+     * @return string A path
+     *
+     * @throws OutOfBoundsException If the computed path is out of the
+     *                              directory
+     * @throws RuntimeException     If directory does not exists and cannot be created
+     */
+    protected function computePath($key)
+    {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
+        return $this->normalizePath($this->directory . '/' . $key);
+    }
+
+    /**
+     * Normalizes the given path
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    protected function normalizePath($path)
+    {
+        $path = Util\Path::normalize($path);
+
         if (0 !== strpos($path, $this->directory)) {
-            throw new \OutOfBoundsException(sprintf('The path \'%s\' is out of the filesystem.', $path));
+            throw new \OutOfBoundsException(sprintf('The path "%s" is out of the filesystem.', $path));
         }
 
-        return ltrim(substr($path, strlen($this->directory)), '/');
+        return $path;
     }
 
     /**
      * Ensures the specified directory exists, creates it if it does not
      *
-     * @param  string  $directory Path of the directory to test
-     * @param  boolean $create    Whether to create the directory if it does
+     * @param string  $directory Path of the directory to test
+     * @param boolean $create    Whether to create the directory if it does
      *                            not exist
      *
      * @throws RuntimeException if the directory does not exists and could not
      *                          be created
      */
-    public function ensureDirectoryExists($directory, $create = false)
+    protected function ensureDirectoryExists($directory, $create = false)
     {
-        if (!$this->isDirectory($directory)) {
+        if (!is_dir($directory)) {
             if (!$create) {
-                throw new \RuntimeException(sprintf('The directory \'%s\' does not exist.', $directory));
+                throw new \RuntimeException(sprintf('The directory "%s" does not exist.', $directory));
             }
 
             $this->createDirectory($directory);
@@ -261,108 +230,19 @@ class Local extends Base
     /**
      * Creates the specified directory and its parents
      *
-     * @param  string $directory Path of the directory to create
+     * @param string $directory Path of the directory to create
      *
      * @throws InvalidArgumentException if the directory already exists
      * @throws RuntimeException         if the directory could not be created
      */
-    public function createDirectory($directory)
+    protected function createDirectory($directory)
     {
-        if ($this->isDirectory($directory)) {
-            throw new \InvalidArgumentException(sprintf('The directory \'%s\' already exists.', $directory));
-        }
-
         $umask = umask(0);
-        $created = $this->mkdir($directory, 0777, true);
+        $created = mkdir($directory, 0777, true);
         umask($umask);
 
         if (!$created) {
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function createFileStream($key, Filesystem $filesystem)
-    {
-        return new FileStream\Local($this->computePath($key));
-    }
-
-    /**
-     * @param string $key
-     * @return string
-     */
-    protected function getFileContents($path)
-    {
-        return file_get_contents($path);
-    }
-
-    /**
-     * @param string $key
-     * @param string $content
-     * @return int
-     */
-    protected function setFileContents($path, $content)
-    {
-        return file_put_contents($path, $content);
-    }
-
-    /**
-     * @param string $directory
-     * @return boolean
-     */
-    protected function isLink($directory)
-    {
-        return is_link($directory);
-    }
-
-    /**
-     * @param string $directory
-     * @return boolean
-     */
-    protected function isDirectory($directory)
-    {
-        return is_dir($directory);
-    }
-
-    /**
-     * @param string $from
-     * @param string $to
-     * @return boolean
-     */
-    protected function renameFile($from, $to)
-    {
-        return rename($from, $to);
-    }
-
-    /**
-     * @param string $filePath
-     * @return boolean
-     */
-    protected function deleteFile($filePath)
-    {
-        return unlink($filePath);
-    }
-
-    /**
-     * @param string $path
-     * @param int $mode
-     * @param boolean $recursive
-     * @return boolean
-     */
-    protected function mkdir($path, $mode, $recursive)
-    {
-        return mkdir($path, $mode, $recursive);
-    }
-
-    /**
-     * @param string $key
-     */
-    protected function assertExists($key)
-    {
-        if (!$this->exists($key)) {
-            throw new Exception\FileNotFound($key);
         }
     }
 }

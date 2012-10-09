@@ -2,6 +2,7 @@
 namespace Gaufrette\Adapter;
 
 use ZipArchive;
+use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Exception;
 
@@ -11,7 +12,7 @@ use Gaufrette\Exception;
  * @author Boris Guéry <guery.b@gmail.com>
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Zip extends Base
+class Zip implements Adapter
 {
     /**
      * @var string The zip archive full path
@@ -40,36 +41,26 @@ class Zip extends Base
     /**
      * Reads the content of the file
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return string
      */
     public function read($key)
     {
-        $this->assertExists($key);
-
         if (false === ($content = $this->zipArchive->getFromName($key, 0))) {
-            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
+            return false;
         }
 
         return $content;
     }
 
     /**
-     * Writes the given content into the file
-     *
-     * @param  string $key
-     * @param  string $content
-     * @param  array $metadata or null if none (optional)
-     *
-     * @return integer The number of bytes that were written into the file
-     *
-     * @throws RuntimeException on failure
+     * {@inheritDoc}
      */
-    public function write($key, $content, array $metadata = null)
+    public function write($key, $content)
     {
         if (!$this->zipArchive->addFromString($key, $content)) {
-            throw new \RuntimeException(sprintf('Unable to write content to :\'%s\' file.', $key));
+            return false;
         }
 
         $this->save();
@@ -78,21 +69,15 @@ class Zip extends Base
     }
 
     /**
-     * Indicates whether the file exists
-     *
-     * @param  string $key
-     *
-     * @return boolean
+     * {@inheritDoc}
      */
     public function exists($key)
     {
-        return (bool) ($this->getStat($key, false));
+        return (bool) $this->getStat($key);
     }
 
     /**
-     * Returns an array of all keys matching the specified pattern
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public function keys()
     {
@@ -106,51 +91,37 @@ class Zip extends Base
     }
 
     /**
-     * Returns the last modified time
+     * @todo implement
      *
-     * @param  string $key
-     *
-     * @return integer An UNIX like timestamp
+     * {@inheritDoc}
+     */
+    public function isDirectory($key)
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function mtime($key)
     {
-        $this->assertExists($key);
-
         $stat = $this->getStat($key);
 
-        return $stat['mtime'];
+        return isset($stat['mtime']) ? $stat['mtime'] : false;
     }
 
     /**
-     * Returns the checksum of the file
-     *
-     * @param  string $key
-     *
-     * @return string
-     */
-    public function checksum($key)
-    {
-        $this->assertExists($key);
-
-        return Util\Checksum::fromContent($this->read($key));
-    }
-
-    /**
-     * Deletes the file
-     *
-     * @param  string $key
-     *
-     * @throws RuntimeException on failure
+     * {@inheritDoc}
      */
     public function delete($key)
     {
-        $this->assertExists($key);
-
         if (!$this->zipArchive->deleteName($key)) {
-            throw new \RuntimeException(sprintf('Unable to delete \'%s\'.', $key));
+            return false;
         }
 
         $this->save();
+
+        return true;
     }
 
     /**
@@ -158,21 +129,13 @@ class Zip extends Base
      */
     public function rename($sourceKey, $targetKey)
     {
-        $this->assertExists($sourceKey);
-
-        if ($this->exists($targetKey)) {
-            throw new Exception\UnexpectedFile($targetKey);
-        }
-
         if (!$this->zipArchive->renameName($sourceKey, $targetKey)) {
-            throw new \RuntimeException(sprintf(
-                'Could not rename the "%s" file to "%s".',
-                $sourceKey,
-                $targetKey
-            ));
+            return false;
         }
 
         $this->save();
+
+        return true;
     }
 
     /**
@@ -180,14 +143,13 @@ class Zip extends Base
      *  (name, index, crc, mtime, compression size, compression method, filesize)
      *
      * @param $key
-     * @param bool $throwException
      * @return array|bool
-     * @throws \RuntimeException
      */
-    public function getStat($key, $throwException = true)
+    public function getStat($key)
     {
-        if (false === ($stat = $this->zipArchive->statName($key)) && true === $throwException) {
-            throw new \RuntimeException(sprintf('Unable to stat \'%s\'.', $key));
+        $stat = $this->zipArchive->statName($key);
+        if (false === $stat) {
+            return array();
         }
 
         return $stat;
@@ -195,8 +157,14 @@ class Zip extends Base
 
     public function __destruct()
     {
-        $this->zipArchive->close();
-        unset($this->zipArchive);
+        if ($this->zipArchive) {
+            try {
+                $this->zipArchive->close();
+            } catch (\Exception $e) {
+
+            }
+            unset($this->zipArchive);
+        }
     }
 
     protected function initZipArchive()
@@ -204,7 +172,7 @@ class Zip extends Base
         $this->zipArchive = $this->createZipArchiveObject();
 
         if (true !== ($resultCode = $this->zipArchive->open($this->zipFile, ZipArchive::CREATE))) {
-            switch($resultCode) {
+            switch ($resultCode) {
             case ZipArchive::ER_EXISTS:
                 $errMsg = 'File already exists.';
                 break;
@@ -265,12 +233,5 @@ class Zip extends Base
 
         // Re-initialize to get updated version
         $this->initZipArchive();
-    }
-
-    private function assertExists($key)
-    {
-        if (!$this->exists($key)) {
-            throw new Exception\FileNotFound($key);
-        }
     }
 }

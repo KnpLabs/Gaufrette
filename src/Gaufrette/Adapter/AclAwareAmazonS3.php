@@ -10,7 +10,8 @@ use Gaufrette\Adapter;
  * @package Gaufrette
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-class AclAwareAmazonS3 extends Base
+class AclAwareAmazonS3 implements Adapter,
+                                  MetadataSupporter
 {
     protected $delegate;
     protected $s3;
@@ -54,7 +55,7 @@ class AclAwareAmazonS3 extends Base
                 }
                 $user['id'] = constant($constant);
                 unset($user['group']);
-            } else if (!isset($user['id'])) {
+            } elseif (!isset($user['id'])) {
                 throw new \InvalidArgumentException(sprintf('Either "group", or "id" must be set for each user, but got %s.', json_encode($user)));
             }
 
@@ -78,22 +79,22 @@ class AclAwareAmazonS3 extends Base
         $rs = $this->delegate->rename($key, $new);
 
         try {
-            $this->updateAcl($key);
+            $this->updateAcl($new);
 
             return $rs;
         } catch (\Exception $ex) {
-            $this->delete($key);
+            $this->delete($new);
 
-            throw $ex;
+            return false;
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content, array $metadata = null)
+    public function write($key, $content)
     {
-        $rs = $this->delegate->write($key, $content, $metadata);
+        $rs = $this->delegate->write($key, $content);
 
         try {
             $this->updateAcl($key);
@@ -102,7 +103,7 @@ class AclAwareAmazonS3 extends Base
         } catch (\Exception $ex) {
             $this->delete($key);
 
-            throw $ex;
+            return false;
         }
     }
 
@@ -125,14 +126,6 @@ class AclAwareAmazonS3 extends Base
     /**
      * {@inheritDoc}
      */
-    public function checksum($key)
-    {
-        return $this->delegate->checksum($key);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function keys()
     {
         return $this->delegate->keys();
@@ -144,6 +137,38 @@ class AclAwareAmazonS3 extends Base
     public function delete($key)
     {
         return $this->delegate->delete($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setMetadata($key, $metadata)
+    {
+        if ($this->delegate instanceof MetadataSupporter) {
+            $this->delegate->setMetadata($key, $metadata);
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getMetadata($key)
+    {
+        if ($this->delegate instanceof MetadataSupporter) {
+            return $this->delegate->getMetadata($key);
+        }
+
+        return array();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isDirectory($key)
+    {
+        return $this->delegate->isDirectory($key);
     }
 
     protected function getAcl()
