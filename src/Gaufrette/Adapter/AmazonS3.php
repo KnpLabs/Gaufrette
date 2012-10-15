@@ -236,7 +236,7 @@ class AmazonS3 extends Base
 
         if ($this->service->if_bucket_exists($this->bucket)) {
             $this->ensureBucket = true;
-            
+
             return;
         }
 
