@@ -18,10 +18,6 @@
     ],
     "repositories": [
         {
-            "type": "pear",
-            "url":  "pear.amazonwebservices.com"
-        },
-        {
             "type": "package",
             "package": {
                 "name": "rackspace/php-cloudfiles",
@@ -36,31 +32,33 @@
                     "type": "zip"
                 }
             }
-        },
-        {
-            "type": "pear",
-            "url": "pear.dropbox-php.com"
         }
     ],
     "require": {
         "php": ">=5.3.0"
     },
     "require-dev": {
-        "pear-aws/sdk": "*",
+        "amazonwebservices/aws-sdk-for-php": "1.5.*",
         "rackspace/php-cloudfiles": "*",
         "doctrine/dbal": ">=2.3",
-        "pear-dropbox-php/Dropbox": "*"
+        "dropbox-php/dropbox-php": "*"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "*",
-        "pear-aws/sdk":                 ">=1.4.5",
-        "rackspace/php-cloudfiles":     "*",
-        "doctrine/dbal":                ">=2.3",
-        "ext-curl":                     "*",
-        "ext-mbstring":                 "*",
-        "ext-mongo":                    "*"
+        "dropbox-php/dropbox-php": "to use the Dropbox adapter",
+        "amazonwebservices/aws-sdk-for-php": "to use the Amazon S3 adapter",
+        "doctrine/dbal": "to use the Doctrine DBAL adapter",
+        "ext-zip": "to use the Zip adapter",
+        "ext-curl": "*",
+        "ext-mbstring": "*",
+        "ext-mongo": "*"
     },
     "autoload": {
         "psr-0": { "Gaufrette": "src/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2.x-dev"
+        }
     }
 }
