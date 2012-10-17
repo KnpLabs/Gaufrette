@@ -121,7 +121,7 @@ class AmazonS3 extends Base
         );
 
         if (!$response->isOK()) {
-            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
+            throw new \RuntimeException(sprintf('Could not write the \'%s\' file with error code \'%d\'.', $key, $response->status));
         }
 
         return intval($response->header["x-aws-requestheaders"]["Content-Length"]);
