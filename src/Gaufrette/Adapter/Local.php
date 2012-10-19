@@ -89,30 +89,17 @@ class Local implements Adapter,
                 )
             );
         } catch (\Exception $e) {
-            $iterator = new \ArrayIterator(array());
+            $iterator = new \EmptyIterator;
         }
-
         $files = iterator_to_array($iterator);
-        $self = $this;
 
-        $files = array_values(
-            array_map(
-                function($file) use ($self) {
-                    return $self->computeKey(strval($file));
-                },
-                $files
-            )
-        );
-
-        $dirs = array();
-        foreach ($files as $file)
-        {
-            if ('.' !== dirname($file)) {
-                $dirs[] = dirname($file);
+        $keys = array();
+        foreach ($files as $file) {
+            $keys[] = $key = $this->computeKey($file);
+            if ('.' !== dirname($key)) {
+                $keys[] = dirname($key);
             }
         }
-
-        $keys = array_merge($files, $dirs);
         sort($keys);
 
         return $keys;
@@ -179,7 +166,7 @@ class Local implements Adapter,
      *
      * @throws OutOfBoundsException If the computed path is out of the
      *                              directory
-     * @throws RuntimeException     If directory does not exists and cannot be created
+     * @throws RuntimeException If directory does not exists and cannot be created
      */
     protected function computePath($key)
     {

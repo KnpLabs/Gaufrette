@@ -119,7 +119,7 @@ class Cache extends ObjectBehavior
      */
     function it_should_delete_file_from_source_and_cache($source, $cache)
     {
-        $source->delete('filename')->shouldBeCalled();
+        $source->delete('filename')->shouldBeCalled()->willReturn(true);
         $cache->delete('filename')->shouldBeCalled()->willReturn(true);
 
         $this->delete('filename')->shouldReturn(true);

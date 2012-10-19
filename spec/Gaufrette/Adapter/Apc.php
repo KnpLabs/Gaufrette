@@ -11,7 +11,16 @@ class Apc extends ObjectBehavior
 {
     function let()
     {
+        global $extensionLoaded;
+        $extensionLoaded = true;
+
         $this->beConstructedWith('prefix-apc-test/');
+    }
+
+    function letgo()
+    {
+        global $extensionLoaded;
+        $extensionLoaded = null;
     }
 
     function it_should_be_initializable()

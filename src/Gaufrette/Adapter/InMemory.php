@@ -4,7 +4,6 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\Util;
-use Gaufrette\Exception;
 
 /**
  * In memory adapter
@@ -53,9 +52,9 @@ class InMemory implements Adapter
     /**
      * Defines a file
      *
-     * @param string  $key      The key
-     * @param string  $content  The content
-     * @param integer $mtime    The last modified time (automatically set to now if NULL)
+     * @param string  $key     The key
+     * @param string  $content The content
+     * @param integer $mtime   The last modified time (automatically set to now if NULL)
      */
     public function setFile($key, $content = null, $mtime = null)
     {

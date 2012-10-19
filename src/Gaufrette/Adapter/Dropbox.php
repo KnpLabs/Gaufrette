@@ -115,24 +115,16 @@ class Dropbox implements Adapter
     public function keys()
     {
         $metadata = $this->client->getMetaData('/', true);
-        $files    = isset($metadata['contents']) ? $metadata['contents'] : array();
+        $contents    = isset($metadata['contents']) ? $metadata['contents'] : array();
 
-        $files = array_map(
-            function($value) {
-                return ltrim($value['path'], '/');
-            },
-            $files
-        );
-
-        $dirs = array();
-        foreach ($files as $file)
-        {
+        $keys = array();
+        foreach ($contents as $value) {
+            $file = ltrim($value['path'], '/');
+            $keys[] = $file;
             if ('.' !== dirname($file)) {
-                $dirs[] = dirname($file);
+                $keys[] = dirname($file);
             }
         }
-
-        $keys = array_merge($files, $dirs);
         sort($keys);
 
         return $keys;

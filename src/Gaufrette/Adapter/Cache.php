@@ -111,7 +111,7 @@ class Cache implements Adapter,
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function exists($key)
     {
@@ -119,7 +119,7 @@ class Cache implements Adapter,
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritDoc}
      */
     public function mtime($key)
     {
@@ -148,9 +148,7 @@ class Cache implements Adapter,
      */
     public function delete($key)
     {
-        $sourceDeleted = $this->source->delete($key);
-
-        return $this->cache->delete($key);
+        return $this->source->delete($key) && $this->cache->delete($key);
     }
 
     /**

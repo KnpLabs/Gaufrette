@@ -24,18 +24,18 @@ class Zip implements Adapter
      */
     protected $zipArchive;
 
-    public function __construct($zipFile)
+    public function __construct($zipFile, ZipArchive $zipArchive = null)
     {
         if (!extension_loaded('zip')) {
             throw new \RuntimeException(sprintf(
-                'Unable to use %s without ZIP extension installed. '.
-                'See http://www.php.net/manual/en/zip.installation.php',
+                'Unable to use %s as the ZIP extension is not available.',
                 __CLASS__
             ));
         }
 
         $this->zipFile = $zipFile;
-        $this->initZipArchive();
+        $this->zipArchive = $zipArchive;
+        $this->reinitZipArchive();
     }
 
     /**
@@ -63,7 +63,9 @@ class Zip implements Adapter
             return false;
         }
 
-        $this->save();
+        if (!$this->save()) {
+            return false;
+        }
 
         return Util\Size::fromContent($content);
     }
@@ -119,9 +121,7 @@ class Zip implements Adapter
             return false;
         }
 
-        $this->save();
-
-        return true;
+        return $this->save();
     }
 
     /**
@@ -133,9 +133,7 @@ class Zip implements Adapter
             return false;
         }
 
-        $this->save();
-
-        return true;
+        return $this->save();
     }
 
     /**
@@ -167,9 +165,9 @@ class Zip implements Adapter
         }
     }
 
-    protected function initZipArchive()
+    protected function reinitZipArchive()
     {
-        $this->zipArchive = $this->createZipArchiveObject();
+        $this->zipArchive = new ZipArchive();
 
         if (true !== ($resultCode = $this->zipArchive->open($this->zipFile, ZipArchive::CREATE))) {
             switch ($resultCode) {
@@ -212,14 +210,6 @@ class Zip implements Adapter
     }
 
     /**
-     * @return \ZipArchive
-     */
-    protected function createZipArchiveObject()
-    {
-        return new ZipArchive();
-    }
-
-    /**
      * Saves archive modifications and updates current ZipArchive instance
      *
      * @throws \RuntimeException If file could not be saved
@@ -228,10 +218,12 @@ class Zip implements Adapter
     {
         // Close to save modification
         if (!$this->zipArchive->close()) {
-            throw new \RuntimeException(sprintf('Unable to save ZIP archive: %s', $this->zipFile));
+            return false;
         }
 
         // Re-initialize to get updated version
-        $this->initZipArchive();
+        $this->reinitZipArchive();
+
+        return true;
     }
 }

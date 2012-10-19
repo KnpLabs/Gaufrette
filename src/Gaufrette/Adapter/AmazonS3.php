@@ -3,7 +3,6 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-use Gaufrette\Exception;
 
 /**
  * Amazon S3 adapter
@@ -25,7 +24,10 @@ class AmazonS3 implements Adapter,
     {
         $this->service = $service;
         $this->bucket  = $bucket;
-        $this->options = array_replace_recursive(array('create' => false), $options);
+        $this->options = array_replace_recursive(
+            array('directory' => '', 'create' => false, 'region' => \AmazonS3::REGION_US_E1),
+            $options
+        );
     }
 
     /**
@@ -45,7 +47,7 @@ class AmazonS3 implements Adapter,
      */
     public function getDirectory()
     {
-        return isset($this->options['directory']) ? $this->options['directory'] : null;
+        return $this->options['directory'];
     }
 
     /**
@@ -56,6 +58,8 @@ class AmazonS3 implements Adapter,
         $path = $this->computePath($key);
 
         $this->metadata[$path] = $metadata;
+
+        return true;
     }
 
     /**
@@ -173,9 +177,17 @@ class AmazonS3 implements Adapter,
         $this->ensureBucketExists();
 
         $list = $this->service->get_object_list($this->bucket);
-        sort($list);
 
-        return $list;
+        $keys = array();
+        foreach ($list as $file) {
+            if ('.' !== dirname($file)) {
+                $keys[] = dirname($file);
+            }
+            $keys[] = $file;
+        }
+        sort($keys);
+
+        return $keys;
     }
 
     /**
@@ -199,6 +211,10 @@ class AmazonS3 implements Adapter,
      */
     public function isDirectory($key)
     {
+        if ($this->exists($key.'/')) {
+            return true;
+        }
+
         return false;
     }
 
@@ -222,7 +238,7 @@ class AmazonS3 implements Adapter,
             return;
         }
 
-        if (isset($this->options['create']) && !$this->options['create']) {
+        if (!$this->options['create']) {
             throw new \RuntimeException(sprintf(
                 'The configured bucket "%s" does not exist.',
                 $this->bucket
@@ -231,7 +247,7 @@ class AmazonS3 implements Adapter,
 
         $response = $this->service->create_bucket(
             $this->bucket,
-            isset($this->options['region']) ? $this->options['region'] : \AmazonS3::REGION_US_E1
+            $this->options['region']
         );
 
         if (!$response->isOK()) {

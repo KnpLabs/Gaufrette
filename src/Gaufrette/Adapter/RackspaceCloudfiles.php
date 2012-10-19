@@ -36,7 +36,6 @@ class RackspaceCloudfiles implements Adapter,
 
             return $object->read();
         } catch (\Exception $e) {
-            return false;
         }
 
         return false;

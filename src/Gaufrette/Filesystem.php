@@ -165,7 +165,7 @@ class Filesystem
     /**
      * Returns an array of all items (files and directories) matching the specified pattern
      *
-     * @param string $pattern
+     * @param  string $pattern
      * @return array
      */
     public function listKeys($pattern = '')

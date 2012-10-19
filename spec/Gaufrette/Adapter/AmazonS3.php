@@ -46,7 +46,7 @@ class AmazonS3 extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(new \CFResponse('header', 'some content', 200));
 
-        $this->setMetadata('filename', $options);
+        $this->setMetadata('filename', $options)->shouldReturn(true);
         $this->read('filename')->shouldReturn('some content');
     }
 
@@ -95,7 +95,7 @@ class AmazonS3 extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(new \CFResponse('header', 'some content', 200));
 
-       $this->setMetadata('filename1', array('acl' => \AmazonS3::ACL_OWNER_READ));
+       $this->setMetadata('filename1', array('acl' => \AmazonS3::ACL_OWNER_READ))->shouldReturn(true);
        $this->rename('filename1', 'filename2')->shouldReturn(true);
     }
 
@@ -147,7 +147,7 @@ class AmazonS3 extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(new \CFResponse(array('x-aws-requestheaders' => array('Content-Length' => 12)), 'some content', 200));
 
-        $this->setMetadata('filename', array('acl' => \AmazonS3::ACL_PRIVATE, 'content' => 'other content'));
+        $this->setMetadata('filename', array('acl' => \AmazonS3::ACL_PRIVATE, 'content' => 'other content'))->shouldReturn(true);
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
@@ -212,7 +212,7 @@ class AmazonS3 extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(array('Headers' => array('last-modified' => '2012-01-01 23:10:10')));
 
-       $this->setMetadata('filename', $metadata);
+       $this->setMetadata('filename', $metadata)->shouldReturn(true);
        $this->mtime('filename')->shouldReturn(strtotime('2012-01-01 23:10:10'));
     }
 
@@ -257,7 +257,7 @@ class AmazonS3 extends ObjectBehavior
             )
             ->willReturn(new \CFResponse(array(), 'some', 200));
 
-        $this->setMetadata('filename', $metadata);
+        $this->setMetadata('filename', $metadata)->shouldReturn(true);
         $this->delete('filename')->shouldReturn(true);
     }
 
@@ -293,25 +293,32 @@ class AmazonS3 extends ObjectBehavior
         $service
             ->get_object_list('bucketName')
             ->shouldBeCalled()
-            ->willReturn(array('filename2', 'filename', 'filename1'));
+            ->willReturn(array('filename2', 'aaa/filename', 'filename1'));
 
-        $this->keys()->shouldReturn(array('filename', 'filename1', 'filename2'));
+        $this->keys()->shouldReturn(array('aaa', 'aaa/filename', 'filename1', 'filename2'));
     }
 
     /**
      * @param \AmazonS3 $service
      */
-    function it_should_not_handle_dirs($service)
+    function it_should_handle_dirs($service)
     {
         $service
             ->if_bucket_exists('bucketName')
             ->willReturn(true);
         $service
             ->if_object_exists('bucketName', 'filename')
+            ->shouldNotBeCalled();
+        $service
+            ->if_object_exists('bucketName', 'filename/')
+            ->shouldBeCalled()
+            ->willReturn(false);
+        $service
+            ->if_object_exists('bucketName', 'dirname/')
             ->willReturn(true);
 
         $this->isDirectory('filename')->shouldReturn(false);
-        $this->isDirectory('other')->shouldReturn(false);
+        $this->isDirectory('dirname')->shouldReturn(true);
     }
 
     /**

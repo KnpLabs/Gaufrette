@@ -3,7 +3,6 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-use Gaufrette\Exception;
 
 class Sftp implements Adapter,
                       ChecksumCalculator
@@ -101,8 +100,7 @@ class Sftp implements Adapter,
         $files = array_map(array($this, 'computeKey'), $results['files']);
 
         $dirs = array();
-        foreach ($files as $file)
-        {
+        foreach ($files as $file) {
             if ('.' !== dirname($file)) {
                 $dirs[] = dirname($file);
             }

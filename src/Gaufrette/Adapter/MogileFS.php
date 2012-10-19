@@ -4,7 +4,6 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\Util;
-use Gaufrette\Exception;
 
 /**
  * Adapter for the MogileFS filesystem.
@@ -173,7 +172,7 @@ class MogileFS implements Adapter
      */
     public function mtime($key)
     {
-        return;
+        return false;
     }
 
     /**

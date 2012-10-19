@@ -4,7 +4,6 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\Util;
-use Gaufrette\Exception;
 
 /**
  * Apc adapter, a non-persistent adapter for when this sort of thing is appropriate
@@ -27,6 +26,10 @@ class Apc implements Adapter
      */
     public function __construct($prefix, $ttl = 0)
     {
+        if (!extension_loaded('apc')) {
+            throw new \RuntimeException('Unable to use Gaufrette\Adapter\Apc as the APC extension is not available.');
+        }
+
         $this->prefix = $prefix;
         $this->ttl = $ttl;
     }
@@ -106,10 +109,10 @@ class Apc implements Adapter
     public function rename($sourceKey, $targetKey)
     {
         // TODO: this probably allows for race conditions...
-        $writed  = $this->write($targetKey, $this->read($sourceKey));
+        $written  = $this->write($targetKey, $this->read($sourceKey));
         $deleted = $this->delete($sourceKey);
 
-        return $writed && $deleted;
+        return $written && $deleted;
     }
 
     /**

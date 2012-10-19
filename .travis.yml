@@ -8,4 +8,6 @@ before_script:
   - composer install --dev
   - ./bin/configure_adapters.sh
 
-script: php bin/phpspec run && phpunit
+script:
+  - php bin/phpspec run
+  - phpunit

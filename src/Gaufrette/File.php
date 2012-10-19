@@ -2,7 +2,7 @@
 
 namespace Gaufrette;
 
-use Gaudrette\Adapter\MetadataSupporter;
+use Gaufrette\Adapter\MetadataSupporter;
 
 /**
  * Points to a file in a filesystem
@@ -84,7 +84,7 @@ class File
     /**
      * Gets the metadata array if the adapter can support it
      *
-     * @return array          $metadata or false
+     * @return array $metadata or false
      */
     public function getMetadata()
     {
@@ -141,7 +141,7 @@ class File
     /**
      * Sets the metadata array to be stored in adapters that can support it
      *
-     * @param  array          $metadata
+     * @param array $metadata
      */
     public function setMetadata(array $metadata)
     {
@@ -193,8 +193,8 @@ class File
      * Deletes the file from the filesystem
      *
      * @throws Gaufrette\Exception\FileNotFound
-     * @throws \RuntimeException when cannot delete file
-     * @return boolean TRUE on success
+     * @throws \RuntimeException                when cannot delete file
+     * @return boolean                          TRUE on success
      */
     public function delete()
     {
@@ -216,6 +216,6 @@ class File
      */
     private function supportsMetadata()
     {
-        return $this->filesystem->getAdapter() instanceof Adapter\MetadataSupporter;
+        return $this->filesystem->getAdapter() instanceof MetadataSupporter;
     }
 }

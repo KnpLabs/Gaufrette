@@ -14,7 +14,7 @@ interface FileFactory
     /**
      * Creates a new File instance and returns it
      *
-     * @param string $key
+     * @param string     $key
      * @param Filesystem $filesystem
      *
      * @return File

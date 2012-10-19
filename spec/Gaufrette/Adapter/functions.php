@@ -128,6 +128,16 @@ function iterator_to_array($iterator)
 
     return $iteratorToArray;
 }
+function extension_loaded($name)
+{
+    global $extensionLoaded;
+
+    if (is_null($extensionLoaded)) {
+        return true;
+    }
+
+    return $extensionLoaded;   
+}
 
 function opendir($url)
 {

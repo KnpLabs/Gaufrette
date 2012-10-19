@@ -3,7 +3,6 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-use Gaufrette\Exception;
 
 /**
  * Adapter for the GridFS filesystem on MongoDB database

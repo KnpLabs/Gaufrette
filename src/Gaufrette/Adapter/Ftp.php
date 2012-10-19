@@ -34,7 +34,7 @@ class Ftp implements Adapter,
      * @param string $host      The host of the ftp server
      * @param string $options   The options like port, username, password, passive, create, mode
      */
-    public function __construct($directory, $host, $options = array()) 
+    public function __construct($directory, $host, $options = array())
     {
         $this->directory = (string) $directory;
         $this->host      = $host;
@@ -261,7 +261,7 @@ class Ftp implements Adapter,
     }
 
     /**
-     * @param string $directory - full directory path
+     * @param  string  $directory - full directory path
      * @return boolean
      */
     private function isDir($directory)

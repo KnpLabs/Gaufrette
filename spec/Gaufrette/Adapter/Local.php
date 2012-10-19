@@ -14,6 +14,12 @@ class Local extends ObjectBehavior
         $this->beConstructedWith('/home/somedir');
     }
 
+    function letgo()
+    {
+        global $iteratorToArray;
+        $iteratorToArray = array();
+    }
+
     function it_should_be_initializable()
     {
         $this->shouldHaveType('Gaufrette\Adapter\Local');

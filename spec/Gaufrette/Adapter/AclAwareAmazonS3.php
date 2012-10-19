@@ -208,10 +208,10 @@ class AclAwareAmazonS3 extends ObjectBehavior
     {
         $this->beConstructedWith($extendedAdapter, $service, 'bucketName');
 
-        $extendedAdapter->setMetadata('filename', array('some'))->shouldBeCalled();
+        $extendedAdapter->setMetadata('filename', array('some'))->shouldBeCalled()->willReturn(true);
         $extendedAdapter->getMetadata('filename')->shouldBeCalled()->willReturn(array('some2'));
 
-        $this->setMetadata('filename', array('some'));
+        $this->setMetadata('filename', array('some'))->shouldReturn(true);
         $this->getMetadata('filename')->shouldReturn(array('some2'));
     }
 

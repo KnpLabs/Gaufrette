@@ -16,4 +16,10 @@ class MogileFS extends ObjectBehavior
         $this->shouldHaveType('Gaufrette\Adapter\MogileFS');
         $this->shouldHaveType('Gaufrette\Adapter');
     }
+
+    function it_should_not_handle_mtime()
+    {
+        $this->mtime('filename')->shouldReturn(false);
+        $this->mtime('filename2')->shouldReturn(false);
+    }
 }

@@ -4,7 +4,6 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\Util;
-use Gaufrette\Exception;
 
 use Doctrine\DBAL\Connection;
 

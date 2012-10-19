@@ -89,7 +89,7 @@ class StreamWrapper
     }
 
     /**
-     * @param int $bytes
+     * @param  int   $bytes
      * @return mixed
      */
     public function stream_read($bytes)
@@ -241,7 +241,7 @@ class StreamWrapper
                 'query'     => null,
                 'fragment'  => null,
             ),
-            (parse_url($path)) ? parse_url($path) : array()
+            parse_url($path) ?: array()
         );
 
         $domain = $parts['host'];
