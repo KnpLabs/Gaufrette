@@ -38,48 +38,71 @@ class File extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
-    function it_should_get_metadata_when_supports_its($filesystem, $adapter)
+    function it_should_pass_metadata_when_write_content($filesystem, $adapter)
     {
         $metadata = array('id' => '123');
-        $adapter->getMetadata('filename')->shouldBeCalled()->willReturn($metadata);
+        $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
         $filesystem->getAdapter()->willReturn($adapter);
 
-        $this->getMetadata()->shouldReturn($metadata);
-    }
-
-    function it_should_not_get_metadata_by_default()
-    {
-        $this->getMetadata()->shouldReturn(false);
+        $this->setContent('some content', $metadata);
     }
 
     /**
      * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
-    function it_should_set_metadata_when_supports_its($filesystem, $adapter)
+    function it_should_pass_metadata_when_read_content($filesystem, $adapter)
     {
         $metadata = array('id' => '123');
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
         $filesystem->getAdapter()->willReturn($adapter);
 
-        $this->setMetadata($metadata)->shouldReturn(true);
-        $this->getMetadata()->shouldReturn($metadata);
-    }
-
-    function it_should_not_set_metadata_by_default()
-    {
-        $this->setMetadata(array('id' => '123'))->shouldReturn(false);
+        $this->getContent($metadata);
     }
 
     /**
      * @param \Gaufrette\Filesystem $filesystem
+     * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
-    function it_should_set_content($filesystem)
+    function it_should_pass_metadata_when_delete_content($filesystem, $adapter)
     {
+        $metadata = array('id' => '123');
+        $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
+        $filesystem->getAdapter()->willReturn($adapter);
+
+        $this->delete($metadata);
+    }
+
+    /**
+     * @param \Gaufrette\Filesystem $filesystem
+     * @param \Gaufrette\Adapter $adapter
+     */
+    function it_should_not_set_metadata_by_default($filesystem, $adapter)
+    {
+        $metadata = array('id' => '123');
+        $adapter->setMetadata('filename', $metadata)->shouldNotBeCalled();
+        $filesystem->getAdapter()->willReturn($adapter);
+
+        $this->setContent('some content', $metadata);
+    }
+
+    /**
+     * @param \Gaufrette\Filesystem $filesystem
+     * @param \spec\Gaufrette\MetadataAdapter $adapter
+     */
+    function it_should_set_content($filesystem, $adapter)
+    {
+        $adapter->setMetadata('filename', array())->shouldNotBeCalled();
+        $filesystem->getAdapter()->willReturn($adapter);
         $filesystem->write('filename', 'some content', true)->shouldBeCalled()->willReturn(21);
 
         $this->setContent('some content')->shouldReturn(21);
         $this->getContent('filename')->shouldReturn('some content');
+    }
+
+    function it_should_set_key_as_name_by_default()
+    {
+        $this->getName()->shouldReturn('filename');
     }
 
     function it_should_set_name()
@@ -88,18 +111,46 @@ class File extends ObjectBehavior
         $this->getName()->shouldReturn('name');
     }
 
-    function it_should_set_created_date()
+    /**
+     * @param \Gaufrette\Filesystem $filesystem
+     */
+    function it_should_set_size_for_new_file($filesystem)
     {
-        $dateTime = new \DateTime();
+        $filesystem->write('filename', 'some content', true)->shouldBeCalled()->willReturn(21);
 
-        $this->setCreated($dateTime);
-        $this->getCreated()->shouldBe($dateTime);
+        $this->setContent('some content');
+        $this->getSize()->shouldReturn(21);
     }
 
-    function it_should_set_size()
+    /**
+     * @param \Gaufrette\Filesystem $filesystem
+     */
+    function it_should_calculate_size_when_is_not_set($filesystem)
     {
-        $this->setSize(12);
+        $filesystem->read('filename')->shouldBeCalled()->willReturn('some content');
+
         $this->getSize()->shouldReturn(12);
+    }
+
+    /**
+     * @param \Gaufrette\Filesystem $filesystem
+     */
+    function it_should_set_size($filesystem)
+    {
+        $filesystem->read('filename')->shouldNotBeCalled();
+
+        $this->setSize(21);
+        $this->getSize()->shouldReturn(21);
+    }
+
+    /**
+     * @param \Gaufrette\Filesystem $filesystem
+     */
+    function it_should_get_zero_size_when_file_not_found($filesystem)
+    {
+        $filesystem->read('filename')->willThrow(new \Gaufrette\Exception\FileNotFound('filename'));
+
+        $this->getSize()->shouldReturn(0);
     }
 
     /**

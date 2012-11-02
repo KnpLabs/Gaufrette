@@ -206,11 +206,7 @@ class Ftp implements Adapter,
 
         $fileData = $this->fileData[$key];
 
-        $created = new \DateTime();
-        $created->setTimestamp($fileData['time']);
-
         $file->setName($fileData['name']);
-        $file->setCreated($created);
         $file->setSize($fileData['size']);
 
         return $file;
