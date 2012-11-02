@@ -1,4 +1,5 @@
 <?php
+
 namespace Gaufrette\Adapter;
 
 use ZipArchive;
@@ -24,7 +25,7 @@ class Zip implements Adapter
      */
     protected $zipArchive;
 
-    public function __construct($zipFile, ZipArchive $zipArchive = null)
+    public function __construct($zipFile)
     {
         if (!extension_loaded('zip')) {
             throw new \RuntimeException(sprintf(
@@ -34,7 +35,6 @@ class Zip implements Adapter
         }
 
         $this->zipFile = $zipFile;
-        $this->zipArchive = $zipArchive;
         $this->reinitZipArchive();
     }
 
