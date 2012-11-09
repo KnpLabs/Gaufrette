@@ -34,25 +34,8 @@
             }
         },
         {
-            "type": "package",
-            "package": {
-                "name": "herzult/php-ssh",
-                "version": "master",
-                "source": {
-                    "url":  "git://github.com/Herzult/php-ssh.git",
-                    "type": "git",
-                    "reference": "master"
-                },
-                "dist": {
-                    "url": "https://github.com/Herzult/php-ssh/zipball/master",
-                    "type": "zip"
-                },
-                "autoload": {
-                    "psr-0": {
-                        "Ssh": "src/"
-                    }
-                }
-            }
+            "type": "vcs",
+            "url": "https://github.com/Herzult/php-ssh"
         }
     ],
     "require": {

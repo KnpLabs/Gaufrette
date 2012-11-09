@@ -186,7 +186,8 @@ The tests use phpspec2 and PHPUnit.
 As some filesystem adapters use vendor libraries, you should install the vendors:
 
     $ cd gaufrette
-    $ bin/install_vendors.sh
+    $ php composer.phar install --dev
+    $ sh bin/configure_test_env.sh
 
 It will avoid skip a lot of tests.
 
