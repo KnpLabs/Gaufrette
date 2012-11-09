@@ -145,10 +145,8 @@ class AclAwareAmazonS3 implements Adapter,
     public function setMetadata($key, $metadata)
     {
         if ($this->delegate instanceof MetadataSupporter) {
-            return $this->delegate->setMetadata($key, $metadata);
+            $this->delegate->setMetadata($key, $metadata);
         }
-
-        return false;
     }
 
     /**

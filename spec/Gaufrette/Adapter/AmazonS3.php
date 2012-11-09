@@ -46,7 +46,7 @@ class AmazonS3 extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(new \CFResponse('header', 'some content', 200));
 
-        $this->setMetadata('filename', $options)->shouldReturn(true);
+        $this->setMetadata('filename', $options);
         $this->read('filename')->shouldReturn('some content');
     }
 
@@ -95,7 +95,7 @@ class AmazonS3 extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(new \CFResponse('header', 'some content', 200));
 
-       $this->setMetadata('filename1', array('acl' => \AmazonS3::ACL_OWNER_READ))->shouldReturn(true);
+       $this->setMetadata('filename1', array('acl' => \AmazonS3::ACL_OWNER_READ));
        $this->rename('filename1', 'filename2')->shouldReturn(true);
     }
 
@@ -147,7 +147,7 @@ class AmazonS3 extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(new \CFResponse(array('x-aws-requestheaders' => array('Content-Length' => 12)), 'some content', 200));
 
-        $this->setMetadata('filename', array('acl' => \AmazonS3::ACL_PRIVATE, 'content' => 'other content'))->shouldReturn(true);
+        $this->setMetadata('filename', array('acl' => \AmazonS3::ACL_PRIVATE, 'content' => 'other content'));
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
@@ -212,7 +212,7 @@ class AmazonS3 extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(array('Headers' => array('last-modified' => '2012-01-01 23:10:10')));
 
-       $this->setMetadata('filename', $metadata)->shouldReturn(true);
+       $this->setMetadata('filename', $metadata);
        $this->mtime('filename')->shouldReturn(strtotime('2012-01-01 23:10:10'));
     }
 
@@ -257,7 +257,7 @@ class AmazonS3 extends ObjectBehavior
             )
             ->willReturn(new \CFResponse(array(), 'some', 200));
 
-        $this->setMetadata('filename', $metadata)->shouldReturn(true);
+        $this->setMetadata('filename', $metadata);
         $this->delete('filename')->shouldReturn(true);
     }
 

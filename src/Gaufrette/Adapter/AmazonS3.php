@@ -58,8 +58,6 @@ class AmazonS3 implements Adapter,
         $path = $this->computePath($key);
 
         $this->metadata[$path] = $metadata;
-
-        return true;
     }
 
     /**

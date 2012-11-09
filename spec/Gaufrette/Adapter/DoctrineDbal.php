@@ -171,7 +171,7 @@ class DoctrineDbal extends ObjectBehavior
 
     /**
      * @param \Doctrine\DBAL\Connection $connection
-     * @param $stmt
+     * @param \Doctrine\DBAL\Statement $stmt
      */
     function it_should_get_keys($connection, $stmt)
     {
