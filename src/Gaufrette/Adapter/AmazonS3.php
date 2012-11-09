@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use \AmazonS3 as AmazonClient;
 use Gaufrette\Adapter;
 
 /**
@@ -20,12 +21,12 @@ class AmazonS3 implements Adapter,
     protected $metadata;
     protected $options;
 
-    public function __construct(\AmazonS3 $service, $bucket, $options = array())
+    public function __construct(AmazonClient $service, $bucket, $options = array())
     {
         $this->service = $service;
         $this->bucket  = $bucket;
         $this->options = array_replace_recursive(
-            array('directory' => '', 'create' => false, 'region' => \AmazonS3::REGION_US_E1),
+            array('directory' => '', 'create' => false, 'region' => AmazonClient::REGION_US_E1),
             $options
         );
     }
@@ -120,7 +121,7 @@ class AmazonS3 implements Adapter,
         $this->ensureBucketExists();
 
         $opt = array_replace_recursive(
-            array('acl'  => \AmazonS3::ACL_PUBLIC),
+            array('acl'  => AmazonClient::ACL_PUBLIC),
             $this->getMetadata($key),
             array('content' => $content)
         );

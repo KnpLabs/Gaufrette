@@ -3,6 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Ssh\Sftp as SftpClient;
 
 class Sftp implements Adapter,
                       ChecksumCalculator
@@ -20,7 +21,7 @@ class Sftp implements Adapter,
      * @param boolean   $create    Whether to create the remote directory if it
      *                             does not exist
      */
-    public function __construct(\Ssh\Sftp $sftp, $directory = null, $create = false)
+    public function __construct(SftpClient $sftp, $directory = null, $create = false)
     {
         $this->sftp      = $sftp;
         $this->directory = $directory;

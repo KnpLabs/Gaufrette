@@ -3,6 +3,8 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use \MongoGridFS as MongoGridFs;
+use \MongoDate;
 
 /**
  * Adapter for the GridFS filesystem on MongoDB database
@@ -23,7 +25,7 @@ class GridFS implements Adapter,
      *
      * @param \MongoGridFS $gridFS
      */
-    public function __construct(\MongoGridFS $gridFS)
+    public function __construct(MongoGridFs $gridFS)
     {
         $this->gridFS = $gridFS;
     }
@@ -47,7 +49,7 @@ class GridFS implements Adapter,
             $this->delete($key);
         }
 
-        $metadata = array_replace_recursive(array('date' => new \MongoDate()), $this->getMetadata($key), array('filename' => $key));
+        $metadata = array_replace_recursive(array('date' => new MongoDate()), $this->getMetadata($key), array('filename' => $key));
         $id   = $this->gridFS->storeBytes($content, $metadata);
         $file = $this->gridFS->findOne(array('_id' => $id));
 

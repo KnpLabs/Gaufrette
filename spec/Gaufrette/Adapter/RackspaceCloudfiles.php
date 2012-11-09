@@ -163,8 +163,8 @@ class RackspaceCloudfiles extends ObjectBehavior
 
     function it_should_not_support_mtime()
     {
-        $this->mtime('filename')->shouldBe(null);
-        $this->mtime('filename2')->shouldBe(null);
+        $this->mtime('filename')->shouldBe(false);
+        $this->mtime('filename2')->shouldBe(false);
     }
 
     /**

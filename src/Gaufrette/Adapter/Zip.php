@@ -75,7 +75,7 @@ class Zip implements Adapter
      */
     public function exists($key)
     {
-        return (bool) $this->getStat($key);
+        return (boolean) $this->getStat($key);
     }
 
     /**

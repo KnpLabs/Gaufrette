@@ -10,9 +10,8 @@ namespace Gaufrette\Adapter;
 interface MetadataSupporter
 {
     /**
-     * @param  string  $key
-     * @param  array   $metadata
-     * @return null
+     * @param string $key
+     * @param array  $metadata
      */
     public function setMetadata($key, $content);
 

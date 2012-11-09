@@ -5,6 +5,8 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Exception;
+use \Dropbox_API as DropboxApi;
+use \Dropbox_Exception_NotFound as DropboxNotFoundException;
 
 /**
  * Dropbox adapter
@@ -22,7 +24,7 @@ class Dropbox implements Adapter
      *
      * @param \Dropbox_API $client The Dropbox API client
      */
-    public function __construct(\Dropbox_API $client)
+    public function __construct(DropboxApi $client)
     {
         $this->client = $client;
     }
@@ -44,7 +46,7 @@ class Dropbox implements Adapter
      */
     public function isDirectory($key)
     {
-        $metadata = $this->getMetadata($key);
+        $metadata = $this->getDropboxMetadata($key);
 
         return (boolean) isset($metadata['is_dir']) ? $metadata['is_dir'] : false;
     }
@@ -104,7 +106,7 @@ class Dropbox implements Adapter
      */
     public function mtime($key)
     {
-        $metadata = $this->getMetadata($key);
+        $metadata = $this->getDropboxMetadata($key);
 
         return strtotime($metadata['modified']);
     }
@@ -115,10 +117,12 @@ class Dropbox implements Adapter
     public function keys()
     {
         $metadata = $this->client->getMetaData('/', true);
-        $contents    = isset($metadata['contents']) ? $metadata['contents'] : array();
+        if (! isset($metadata['contents'])) {
+            return array();
+        }
 
         $keys = array();
-        foreach ($contents as $value) {
+        foreach ($metadata['contents'] as $value) {
             $file = ltrim($value['path'], '/');
             $keys[] = $file;
             if ('.' !== dirname($file)) {
@@ -136,7 +140,7 @@ class Dropbox implements Adapter
     public function exists($key)
     {
         try {
-            $this->getMetadata($key);
+            $this->getDropboxMetadata($key);
 
             return true;
         } catch (Exception\FileNotFound $e) {
@@ -144,11 +148,11 @@ class Dropbox implements Adapter
         }
     }
 
-    private function getMetadata($key)
+    private function getDropboxMetadata($key)
     {
         try {
             $metadata = $this->client->getMetaData($key, false);
-        } catch (\Dropbox_Exception_NotFound $e) {
+        } catch (DropboxNotFoundException $e) {
             throw new Exception\FileNotFound($key, 0, $e);
         }
 

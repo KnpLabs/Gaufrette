@@ -4,6 +4,7 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\Util;
+use \CF_Container as RackspaceContainer;
 
 /**
  * Rackspace cloudfiles adapter
@@ -21,7 +22,7 @@ class RackspaceCloudfiles implements Adapter,
      *
      * @param CF_Container $container A CF_Container instance
      */
-    public function __construct(\CF_Container $container)
+    public function __construct(RackspaceContainer $container)
     {
         $this->container = $container;
     }
@@ -98,7 +99,7 @@ class RackspaceCloudfiles implements Adapter,
      */
     public function mtime($key)
     {
-        return;
+        return false;
     }
 
     /**
