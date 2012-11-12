@@ -74,6 +74,26 @@ class AmazonS3 extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
+    function it_should_not_mask_exception_when_read($service)
+    {
+        $service
+            ->if_bucket_exists('bucketName')
+            ->shouldBeCalled()
+            ->willReturn(true);
+        $service
+            ->get_object(
+                'bucketName',
+                'filename',
+                array()
+            )
+            ->willThrow(new \RuntimeException('read'));
+
+        $this->shouldThrow(new \RuntimeException('read'))->duringRead('filename');
+    }
+
+    /**
+     * @param \AmazonS3 $service
+     */
     function it_should_rename_file($service)
     {
         $service
@@ -97,6 +117,22 @@ class AmazonS3 extends ObjectBehavior
 
        $this->setMetadata('filename1', array('acl' => \AmazonS3::ACL_OWNER_READ));
        $this->rename('filename1', 'filename2')->shouldReturn(true);
+    }
+
+    /**
+     * @param \AmazonS3 $service
+     */
+    function it_should_not_mask_exception_when_rename($service)
+    {
+        $service
+            ->if_bucket_exists('bucketName')
+            ->shouldBeCalled()
+            ->willReturn(true);
+        $service
+            ->copy_object(ANY_ARGUMENT, ANY_ARGUMENT, ANY_ARGUMENT)
+            ->willThrow(new \RuntimeException('rename'));
+
+       $this->shouldThrow(new \RuntimeException('rename'))->duringRename('filename', 'filename1');
     }
 
     /**
@@ -178,6 +214,22 @@ class AmazonS3 extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
+    function it_should_not_mask_exception_when_write($service)
+    {
+        $service
+            ->if_bucket_exists('bucketName')
+            ->shouldBeCalled()
+            ->willReturn(true);
+        $service
+            ->create_object(ANY_ARGUMENT, ANY_ARGUMENT, ANY_ARGUMENT)
+            ->willThrow(new \RuntimeException('write'));
+
+       $this->shouldThrow(new \RuntimeException('write'))->duringWrite('filename', 'some content');
+    }
+
+    /**
+     * @param \AmazonS3 $service
+     */
     function it_should_check_if_file_exists($service)
     {
         $service
@@ -190,6 +242,22 @@ class AmazonS3 extends ObjectBehavior
 
         $service->if_object_exists('bucketName', 'filename')->willReturn(false);
         $this->exists('filename')->shouldReturn(false);
+    }
+
+    /**
+     * @param \AmazonS3 $service
+     */
+    function it_should_not_mask_exception_when_check_if_file_exists($service)
+    {
+        $service
+            ->if_bucket_exists('bucketName')
+            ->shouldBeCalled()
+            ->willReturn(true);
+        $service
+            ->if_object_exists('bucketName', 'filename')
+            ->willThrow(new \RuntimeException('exists'));
+
+       $this->shouldThrow(new \RuntimeException('exists'))->duringExists('filename');
     }
 
     /**
@@ -241,6 +309,22 @@ class AmazonS3 extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
+    function it_should_not_mask_exception_when_get_mtime($service)
+    {
+        $service
+            ->if_bucket_exists('bucketName')
+            ->shouldBeCalled()
+            ->willReturn(true);
+        $service
+            ->get_object_metadata('bucketName', 'filename', ANY_ARGUMENT)
+            ->willThrow(new \RuntimeException('mtime'));
+
+       $this->shouldThrow(new \RuntimeException('mtime'))->duringMtime('filename');
+    }
+
+    /**
+     * @param \AmazonS3 $service
+     */
     function it_should_delete_file($service)
     {
         $metadata = array('acl' => \AmazonS3::ACL_PRIVATE);
@@ -259,6 +343,25 @@ class AmazonS3 extends ObjectBehavior
 
         $this->setMetadata('filename', $metadata);
         $this->delete('filename')->shouldReturn(true);
+    }
+
+    /**
+     * @param \AmazonS3 $service
+     */
+    function it_should_not_mask_exception_when_delete($service)
+    {
+        $service
+            ->if_bucket_exists('bucketName')
+            ->willReturn(true);
+        $service
+            ->delete_object(
+                'bucketName',
+                'filename',
+                ANY_ARGUMENT
+            )
+            ->willThrow(new \RuntimeException('delete'));
+
+       $this->shouldThrow(new \RuntimeException('delete'))->duringDelete('filename');
     }
 
     /**
@@ -296,6 +399,21 @@ class AmazonS3 extends ObjectBehavior
             ->willReturn(array('filename2', 'aaa/filename', 'filename1'));
 
         $this->keys()->shouldReturn(array('aaa', 'aaa/filename', 'filename1', 'filename2'));
+    }
+
+    /**
+     * @param \AmazonS3 $service
+     */
+    function it_should_not_mask_exception_when_get_keys($service)
+    {
+        $service
+            ->if_bucket_exists('bucketName')
+            ->willReturn(true);
+        $service
+            ->get_object_list('bucketName')
+            ->willThrow(new \RuntimeException('keys'));
+
+       $this->shouldThrow(new \RuntimeException('keys'))->duringKeys();
     }
 
     /**

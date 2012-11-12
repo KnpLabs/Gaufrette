@@ -39,14 +39,12 @@ class RackspaceCloudfiles extends ObjectBehavior
      * @param \CF_Container $container
      * @param \CF_Object $object
      */
-    function it_should_not_fail_when_read_fail($container, $object)
+    function it_should_not_mask_exception_when_read($container, $object)
     {
-        $object->read()->willThrow(new \Exception);
+        $object->read()->willThrow(new \RuntimeException('read'));
         $container->get_object('filename')->willReturn($object);
 
-        $this->read('filename')->shouldReturn(false);
-
-        $container->get_object('filename')->willThrow(new \Exception);
+        $this->shouldThrow(new \RuntimeException('read'))->duringRead('filename');
     }
 
     /**
@@ -68,6 +66,17 @@ class RackspaceCloudfiles extends ObjectBehavior
         $this->exists('filename')->shouldReturn(true);
         $this->exists('filename2')->shouldReturn(false);
         $this->exists('filename3')->shouldReturn(false);
+    }
+
+    /**
+     * @param \CF_Container $container
+     * @param \CF_Object $object
+     */
+    function it_should_not_mask_exception_when_check_if_exists($container, $object)
+    {
+        $container->get_object('filename')->willThrow(new \RuntimeException('exists'));
+
+        $this->shouldThrow(new \RuntimeException('exists'))->duringRead('filename');
     }
 
     /**
@@ -104,6 +113,16 @@ class RackspaceCloudfiles extends ObjectBehavior
             ->willReturn($object);
 
         $this->write('filename', 'some content')->shouldReturn(false);
+    }
+
+    /**
+     * @param \CF_Container $container
+     */
+    function it_should_not_mask_exception_when_write($container)
+    {
+        $container->get_object('filename')->willThrow(new \RuntimeException('write'));
+
+        $this->shouldThrow(new \RuntimeException('write'))->duringWrite('filename', 'some content');
     }
 
     /**
@@ -154,11 +173,31 @@ class RackspaceCloudfiles extends ObjectBehavior
     /**
      * @param \CF_Container $container
      */
+    function it_should_not_mask_exception_when_rename($container)
+    {
+        $container->get_object('filename')->willThrow(new \RuntimeException('rename'));
+
+        $this->shouldThrow(new \RuntimeException('rename'))->duringRename('filename', 'fromFilename');
+    }
+
+    /**
+     * @param \CF_Container $container
+     */
     function it_should_get_keys($container)
     {
         $container->list_objects(0, null, null)->willReturn(array('filename2', 'filename1'));
 
         $this->keys()->shouldReturn(array('filename1', 'filename2'));
+    }
+
+    /**
+     * @param \CF_Container $container
+     */
+    function it_should_not_mask_exception_when_get_keys($container)
+    {
+        $container->list_objects(0, null, null)->willThrow(new \RuntimeException('keys'));
+
+        $this->shouldThrow(new \RuntimeException('keys'))->duringKeys();
     }
 
     function it_should_not_support_mtime()
@@ -182,6 +221,16 @@ class RackspaceCloudfiles extends ObjectBehavior
     /**
      * @param \CF_Container $container
      */
+    function it_should_not_mask_exception_when_calculate_checksum($container)
+    {
+        $container->get_object('filename')->willThrow(new \RuntimeException('checksum'));
+
+        $this->shouldThrow(new \RuntimeException('checksum'))->duringChecksum('filename');
+    }
+
+    /**
+     * @param \CF_Container $container
+     */
     function it_should_delete_object($container)
     {
         $container->delete_object('filename')->shouldBeCalled();
@@ -194,9 +243,19 @@ class RackspaceCloudfiles extends ObjectBehavior
      */
     function it_should_not_delete_object($container)
     {
-        $container->delete_object('filename')->willThrow(new \Exception);
+        $container->delete_object('filename')->willThrow(new \NoSuchObjectException);
 
         $this->delete('filename')->shouldReturn(false);
+    }
+
+    /**
+     * @param \CF_Container $container
+     */
+    function it_should_not_mask_exception_when_delete($container)
+    {
+        $container->delete_object('filename')->willThrow(new \RuntimeException('delete'));
+
+        $this->shouldThrow(new \RuntimeException('delete'))->duringDelete('filename');
     }
 
     function it_does_not_support_directory()

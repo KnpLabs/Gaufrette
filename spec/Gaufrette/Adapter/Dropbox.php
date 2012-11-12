@@ -32,9 +32,21 @@ class Dropbox extends ObjectBehavior
     /**
      * @param \Dropbox_API $dropbox
      */
-    function it_should_not_fail_when_cannot_read_at_dropbox($dropbox)
+    function it_should_not_mask_exception_from_client_during_read($dropbox)
     {
-        $dropbox->getFile('filename')->willThrow(new \Exception);
+        $dropbox->getFile('filename')->willThrow(new \RuntimeException('read'));
+
+        $this->shouldThrow(new \RuntimeException('read'))->duringRead('filename');
+    }
+
+    /**
+     * @param \Dropbox_API $dropbox
+     */
+    function it_should_not_read_file($dropbox)
+    {
+        $dropbox
+            ->getFile('filename')
+            ->willThrow(new \Dropbox_Exception_NotFound());
 
         $this->read('filename')->shouldReturn(false);
     }
@@ -79,6 +91,18 @@ class Dropbox extends ObjectBehavior
     /**
      * @param \Dropbox_API $dropbox
      */
+    function it_should_not_mask_exception_from_client_during_check_if_exists($dropbox)
+    {
+        $dropbox
+            ->getMetaData('filename', false)
+            ->willThrow(new \RuntimeException('exists'));
+
+        $this->shouldThrow(new \RuntimeException('exists'))->duringExists('filename');
+    }
+
+    /**
+     * @param \Dropbox_API $dropbox
+     */
     function it_should_get_keys($dropbox)
     {
         $dropbox
@@ -91,6 +115,18 @@ class Dropbox extends ObjectBehavior
             ));
 
         $this->keys()->shouldReturn(array('aaa', 'aaa/filename', 'filename'));
+    }
+
+    /**
+     * @param \Dropbox_API $dropbox
+     */
+    function it_should_not_mask_exception_from_client_during_getting_keys($dropbox)
+    {
+        $dropbox
+            ->getMetaData('/', true)
+            ->willThrow(new \RuntimeException('keys'));
+
+        $this->shouldThrow(new \RuntimeException('keys'))->duringKeys();
     }
 
     /**
@@ -130,13 +166,13 @@ class Dropbox extends ObjectBehavior
     /**
      * @param \Dropbox_API $dropbox
      */
-    function it_should_not_write_file($dropbox)
+    function it_should_not_mask_exception_from_client_during_write($dropbox)
     {
         $dropbox
             ->putFile('filename', ANY_ARGUMENT)
-            ->willThrow(new \Exception);
+            ->willThrow(new \RuntimeException('write'));
 
-        $this->write('filename', 'some content')->shouldReturn(false);
+        $this->shouldThrow(new \RuntimeException('write'))->duringWrite('filename', 'some content');
     }
 
     /**
@@ -158,7 +194,7 @@ class Dropbox extends ObjectBehavior
     {
         $dropbox
             ->delete('filename')
-            ->willThrow(new \Exception);
+            ->willThrow(new \Dropbox_Exception_NotFound());
 
         $this->delete('filename')->shouldReturn(false);
     }
@@ -182,7 +218,7 @@ class Dropbox extends ObjectBehavior
     {
         $dropbox
             ->move('filename', 'filename2')
-            ->willThrow(new \Exception);
+            ->willThrow(new \Dropbox_Exception_NotFound());
 
         $this->rename('filename', 'filename2')->shouldReturn(false);
     }
@@ -199,5 +235,41 @@ class Dropbox extends ObjectBehavior
             ));
 
         $this->mtime('filename')->shouldReturn(1311112538);
+    }
+
+    /**
+     * @param \Dropbox_API $dropbox
+     */
+    function it_should_not_fetch_mtime_when_file_not_found($dropbox)
+    {
+        $dropbox
+            ->getMetaData('filename', false)
+            ->willThrow(new \Dropbox_Exception_NotFound());
+
+        $this->mtime('filename')->shouldReturn(false);
+    }
+
+    /**
+     * @param \Dropbox_API $dropbox
+     */
+    function it_should_not_check_if_key_is_dir_when_file_not_found($dropbox)
+    {
+        $dropbox
+            ->getMetaData('filename', false)
+            ->willThrow(new \Dropbox_Exception_NotFound());
+
+        $this->isDirectory('filename')->shouldReturn(false);
+    }
+
+    /**
+     * @param \Dropbox_API $dropbox
+     */
+    function it_should_fail_checking_if_key_is_dir_when_dropbox_throws_exception($dropbox)
+    {
+        $dropbox
+            ->getMetaData('filename', false)
+            ->willThrow(new \RuntimeException('some exception'));
+
+        $this->shouldThrow(new \RuntimeException('some exception'))->duringIsDirectory('filename');
     }
 }

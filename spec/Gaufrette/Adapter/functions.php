@@ -64,6 +64,10 @@ function ftp_nlist($connection, $dirname)
 
 function ftp_connect($host, $password)
 {
+    if ('localhost' !== $host) {
+        return false;
+    }
+
     return fopen('php://temp', 'r');
 }
 

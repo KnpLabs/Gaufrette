@@ -31,12 +31,16 @@ class Dropbox implements Adapter
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \Dropbox_Exception_Forbidden
+     * @throws \Dropbox_Exception_OverQuota
+     * @throws \OAuthException
      */
     public function read($key)
     {
         try {
             return $this->client->getFile($key);
-        } catch (\Exception $e) {
+        } catch (DropboxNotFoundException $e) {
             return false;
         }
     }
@@ -46,13 +50,19 @@ class Dropbox implements Adapter
      */
     public function isDirectory($key)
     {
-        $metadata = $this->getDropboxMetadata($key);
+        try {
+            $metadata = $this->getDropboxMetadata($key);
+        } catch (Exception\FileNotFound $e) {
+            return false;
+        }
 
         return (boolean) isset($metadata['is_dir']) ? $metadata['is_dir'] : false;
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \Dropbox_Exception
      */
     public function write($key, $content)
     {
@@ -65,7 +75,7 @@ class Dropbox implements Adapter
         } catch (\Exception $e) {
             fclose($resource);
 
-            return false;
+            throw $e;
         }
 
         fclose($resource);
@@ -80,7 +90,7 @@ class Dropbox implements Adapter
     {
         try {
             $this->client->delete($key);
-        } catch (\Exception $e) {
+        } catch (DropboxNotFoundException $e) {
             return false;
         }
 
@@ -94,7 +104,7 @@ class Dropbox implements Adapter
     {
         try {
             $this->client->move($sourceKey, $targetKey);
-        } catch (\Exception $e) {
+        } catch (DropboxNotFoundException $e) {
             return false;
         }
 
@@ -106,7 +116,11 @@ class Dropbox implements Adapter
      */
     public function mtime($key)
     {
-        $metadata = $this->getDropboxMetadata($key);
+        try {
+            $metadata = $this->getDropboxMetadata($key);
+        } catch (Exception\FileNotFound $e) {
+            return false;
+        }
 
         return strtotime($metadata['modified']);
     }

@@ -39,11 +39,7 @@ class Zip implements Adapter
     }
 
     /**
-     * Reads the content of the file
-     *
-     * @param string $key
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function read($key)
     {

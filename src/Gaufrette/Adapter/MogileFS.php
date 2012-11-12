@@ -47,11 +47,7 @@ class MogileFS implements Adapter
      */
     public function read($key)
     {
-        try {
-            $paths = $this->getPaths($key);
-        } catch (\RuntimeException $e) {
-            return false;
-        }
+        $paths = $this->getPaths($key);
 
         $data = '';
 
@@ -71,7 +67,7 @@ class MogileFS implements Adapter
             }
         }
 
-        return $data;
+        return $data ?: false;
     }
 
     /**
@@ -111,11 +107,7 @@ class MogileFS implements Adapter
      */
     public function delete($key)
     {
-        try {
-            $this->doRequest('DELETE', array('key' => $key));
-        } catch (\RuntimeException $e) {
-            return false;
-        }
+        $this->doRequest('DELETE', array('key' => $key));
 
         return true;
     }
@@ -125,14 +117,10 @@ class MogileFS implements Adapter
      */
     public function rename($sourceKey, $targetKey)
     {
-        try {
-            $this->doRequest('RENAME', array(
-                'from_key'  => $sourceKey,
-                'to_key'    => $targetKey
-            ));
-        } catch (\RuntimeException $e) {
-            return false;
-        }
+        $this->doRequest('RENAME', array(
+            'from_key'  => $sourceKey,
+            'to_key'    => $targetKey
+        ));
 
         return true;
     }
@@ -156,11 +144,7 @@ class MogileFS implements Adapter
      */
     public function keys()
     {
-        try {
-            $result = $this->doRequest('LIST_KEYS');
-        } catch (\RuntimeException $e) {
-            return array();
-        }
+        $result = $this->doRequest('LIST_KEYS');
 
         unset($result['key_count'], $result['next_after']);
 

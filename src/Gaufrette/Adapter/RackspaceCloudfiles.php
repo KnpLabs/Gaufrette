@@ -29,17 +29,14 @@ class RackspaceCloudfiles implements Adapter,
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \InvalidResponseException
      */
     public function read($key)
     {
-        try {
-            $object = $this->container->get_object($key);
+         $object = $this->container->get_object($key);
 
-            return $object->read();
-        } catch (\Exception $e) {
-        }
-
-        return false;
+         return $object->read();
     }
 
     /**
@@ -47,12 +44,8 @@ class RackspaceCloudfiles implements Adapter,
      */
     public function rename($key, $new)
     {
-        try {
-            $this->write($new, $this->read($key));
-            $this->delete($key);
-        } catch (\Exception $e) {
-            return false;
-       }
+       $this->write($new, $this->read($key));
+       $this->delete($key);
 
        return true;
     }
@@ -114,12 +107,15 @@ class RackspaceCloudfiles implements Adapter,
 
     /**
      * {@inheritDoc}
+     *
+     * @throws InvalidResponseException
+     * @throws SyntaxException
      */
     public function delete($key)
     {
         try {
             $this->container->delete_object($key);
-        } catch (\Exception $e) {
+        } catch (\NoSuchObjectException $e) {
             return false;
         }
 
