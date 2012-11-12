@@ -2,8 +2,9 @@
 
 namespace Gaufrette\Adapter;
 
-use CF_Container;
+use Gaufrette\Adapter;
 use Gaufrette\Util;
+use \CF_Container as RackspaceContainer;
 
 /**
  * Rackspace cloudfiles adapter
@@ -11,32 +12,31 @@ use Gaufrette\Util;
  * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
-class RackspaceCloudfiles extends Base
+class RackspaceCloudfiles implements Adapter,
+                                     ChecksumCalculator
 {
     protected $container;
 
     /**
      * Contructor
      *
-     * @param  CF_Container $container A CF_Container instance
+     * @param CF_Container $container A CF_Container instance
      */
-    public function __construct(CF_Container $container)
+    public function __construct(RackspaceContainer $container)
     {
         $this->container = $container;
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \InvalidResponseException
      */
     public function read($key)
     {
-        $object = $this->container->get_object($key);
+         $object = $this->container->get_object($key);
 
-        try {
-            return $object->read();
-        } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
-        }
+         return $object->read();
     }
 
     /**
@@ -44,12 +44,10 @@ class RackspaceCloudfiles extends Base
      */
     public function rename($key, $new)
     {
-        try {
-            $this->write($new, $this->read($key));
-            $this->delete($key);
-        } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf('Could not rename the \'%s\' file to \'%s\'.', $key, $new));
-       }
+       $this->write($new, $this->read($key));
+       $this->delete($key);
+
+       return true;
     }
 
     /**
@@ -64,7 +62,7 @@ class RackspaceCloudfiles extends Base
         }
 
         if (!$object->write($content)) {
-            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
+            return false;
         }
 
         return Util\Size::fromContent($content);
@@ -83,7 +81,10 @@ class RackspaceCloudfiles extends Base
      */
     public function keys()
     {
-        return $this->container->list_objects(0, null, null);
+        $keys = $this->container->list_objects(0, null, null);
+        sort($keys);
+
+        return $keys;
     }
 
     /**
@@ -91,9 +92,7 @@ class RackspaceCloudfiles extends Base
      */
     public function mtime($key)
     {
-        // as far as I know, there is no such information available through the
-        // API provided by rackspace
-        return null;
+        return false;
     }
 
     /**
@@ -108,22 +107,33 @@ class RackspaceCloudfiles extends Base
 
     /**
      * {@inheritDoc}
+     *
+     * @throws InvalidResponseException
+     * @throws SyntaxException
      */
     public function delete($key)
     {
         try {
             $this->container->delete_object($key);
         } catch (\NoSuchObjectException $e) {
-            // @todo what do we do when the object does not exist?
-        } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
+            return false;
         }
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isDirectory($key)
+    {
+        return false;
     }
 
     /**
      * Tries to get the object for the specified key or return false
      *
-     * @param  string $key The key of the object
+     * @param string $key The key of the object
      *
      * @return CF_Object or FALSE if the object does not exist
      */

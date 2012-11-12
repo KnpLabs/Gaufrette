@@ -12,11 +12,11 @@ class Checksum
     /**
      * Returns the checksum of the given content
      *
-     * @param  string $content
+     * @param string $content
      *
      * @return string
      */
-    static public function fromContent($content)
+    public static function fromContent($content)
     {
         return md5($content);
     }
@@ -24,11 +24,11 @@ class Checksum
     /**
      * Returns the checksum of the specified file
      *
-     * @param  string $filename
+     * @param string $filename
      *
      * @return string
      */
-    static public function fromFile($filename)
+    public static function fromFile($filename)
     {
         return md5_file($filename);
     }

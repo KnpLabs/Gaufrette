@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Functional\Adapter;
 
+use Gaufrette\Filesystem;
 use Gaufrette\Adapter\SafeLocal;
 
 class SafeLocalTest extends FunctionalTestCase
@@ -12,12 +13,12 @@ class SafeLocalTest extends FunctionalTestCase
             mkdir($this->getDirectory());
         }
 
-        $this->adapter = new SafeLocal($this->getDirectory());
+        $this->filesystem = new Filesystem(new SafeLocal($this->getDirectory()));
     }
 
     public function tearDown()
     {
-        $this->adapter = null;
+        $this->filesystem = null;
 
         if (file_exists($this->getDirectory())) {
             $iterator = new \RecursiveIteratorIterator(
@@ -35,44 +36,6 @@ class SafeLocalTest extends FunctionalTestCase
                 }
             }
         }
-    }
-
-    /**
-     * @dataProvider getKeyPathData
-     */
-    public function testComputeKey($key, $path)
-    {
-        $this->assertEquals($key, $this->adapter->computeKey($path));
-    }
-
-    /**
-     * @dataProvider getKeyPathData
-     */
-    public function testComputePath($key, $path)
-    {
-        $this->assertEquals($path, $this->adapter->computePath($key));
-    }
-
-    public function getKeyPathData()
-    {
-        return array(
-            array(
-                '../../..',
-                $this->getDirectory() . '/Li4vLi4vLi4='
-            ),
-            array(
-                'foo/bar',
-                $this->getDirectory() . '/Zm9vL2Jhcg=='
-            ),
-            array(
-                'foo/foo/../bar',
-                $this->getDirectory() . '/Zm9vL2Zvby8uLi9iYXI='
-            ),
-            array(
-                'foo_bar',
-                $this->getDirectory() . '/Zm9vX2Jhcg=='
-            )
-        );
     }
 
     private function getDirectory()

@@ -7,16 +7,16 @@ namespace Gaufrette;
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-interface FileStream
+interface Stream
 {
     /**
      * Opens the stream in the specified mode
      *
-     * @param  StreamMode $mode
+     * @param StreamMode $mode
      *
      * @return Boolean TRUE on success or FALSE on failure
      */
-    function open(StreamMode $mode);
+    public function open(StreamMode $mode);
 
     /**
      * Reads the specified number of bytes from the current position
@@ -24,11 +24,11 @@ interface FileStream
      * If the current position is the end-of-file, you must return an empty
      * string.
      *
-     * @param  integer $count The number of bytes
+     * @param integer $count The number of bytes
      *
      * @return string
      */
-    function read($count);
+    public function read($count);
 
     /**
      * Writes the specified data
@@ -36,11 +36,11 @@ interface FileStream
      * Don't forget to update the current position of the stream by number of
      * bytes that were successfully written.
      *
-     * @param  string $data
+     * @param string $data
      *
      * @return integer The number of bytes that were successfully written
      */
-    function write($data);
+    public function write($data);
 
     /**
      * Closes the stream
@@ -50,7 +50,7 @@ interface FileStream
      *
      * @return void
      */
-    function close();
+    public function close();
 
     /**
      * Flushes the output
@@ -60,51 +60,51 @@ interface FileStream
      *
      * @return Boolean TRUE on success or FALSE on failure
      */
-    function flush();
+    public function flush();
 
     /**
      * Seeks to the specified offset
      *
-     * @param  integer $offset
-     * @param  integer $whence
+     * @param integer $offset
+     * @param integer $whence
      *
      * @return Boolean
      */
-    function seek($offset, $whence = SEEK_SET);
+    public function seek($offset, $whence = SEEK_SET);
 
     /**
      * Returns the current position
      *
      * @return integer
      */
-    function tell();
+    public function tell();
 
     /**
      * Indicates whether the current position is the end-of-file
      *
      * @return Boolean
      */
-    function eof();
+    public function eof();
 
     /**
      * Gathers statistics of the stream
      *
      * @return array
      */
-    function stat();
+    public function stat();
 
     /**
      * Retrieve the underlaying resource
      *
-     * @param integer $castAs
-     * @return mixed using resource or false
+     * @param  integer $castAs
+     * @return mixed   using resource or false
      */
-    function cast($castAs);
+    public function cast($castAs);
 
     /**
      * Delete a file
      *
      * @return Boolean TRUE on success FALSE otherwise
      */
-    function unlink();
+    public function unlink();
 }

@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Functional\Adapter;
 
+use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
 
 class LocalTest extends FunctionalTestCase
@@ -16,12 +17,12 @@ class LocalTest extends FunctionalTestCase
             mkdir($this->directory);
         }
 
-        $this->adapter = new Local($this->directory);
+        $this->filesystem = new Filesystem(new Local($this->directory));
     }
 
     public function tearDown()
     {
-        $this->adapter = null;
+        $this->filesystem = null;
 
         if (file_exists($this->directory)) {
             $iterator = new \RecursiveIteratorIterator(
@@ -43,46 +44,6 @@ class LocalTest extends FunctionalTestCase
 
     /**
      * @test
-     */
-    public function shouldComputeKey()
-    {
-        $adapter = new Local($this->directory);
-
-        $this->assertEquals('foobar', $adapter->computeKey($this->directory . '/foobar'));
-        $this->assertEquals('foo/bar', $adapter->computeKey($this->directory . '/foo/bar'));
-    }
-
-    /**
-     * @test
-     */
-    public function shouldComputeUnnormalizedKey()
-    {
-        $directory = str_replace('\\', '/', __DIR__) . '/filesystem/../filesystem';
-        $adapter = new Local($directory);
-
-        $this->assertEquals('foobar', $adapter->computeKey($directory . '/foobar'));
-        $this->assertEquals('foo/bar', $adapter->computeKey($directory . '/foo/bar'));
-    }
-
-    /**
-     * @test
-     * @group functional
-     */
-    public function shouldCreateDirectory()
-    {
-        $dirname = sprintf(
-            '%s/adapters/some',
-            dirname(__DIR__)
-        );
-
-        @rmdir($dirname);
-        $this->adapter->createDirectory($dirname);
-        $this->assertTrue(is_dir($dirname));
-        @rmdir($dirname);
-    }
-
-    /**
-     * @test
      * @group functional
      */
     public function shouldWorkWithSyslink()
@@ -100,11 +61,11 @@ class LocalTest extends FunctionalTestCase
         @unlink($linkname);
         symlink($dirname, $linkname);
 
-        $adapter = new Local($linkname);
-        $adapter->write('test.txt', 'abc 123');
+        $this->filesystem = new Filesystem(new Local($linkname));
+        $this->filesystem->write('test.txt', 'abc 123');
 
-        $this->assertSame('abc 123', $adapter->read('test.txt'));
-        $adapter->delete('test.txt');
+        $this->assertSame('abc 123', $this->filesystem->read('test.txt'));
+        $this->filesystem->delete('test.txt');
         @unlink($linkname);
         @rmdir($dirname);
     }
@@ -121,22 +82,25 @@ class LocalTest extends FunctionalTestCase
         );
         @mkdir($dirname);
 
-        $adapter = new Local($this->directory);
-        $adapter->write('/localDir/test.txt', 'some content');
+        $this->filesystem = new Filesystem(new Local($this->directory));
+        $this->filesystem->write('aaa.txt', 'some content');
+        $this->filesystem->write('localDir/test.txt', 'some content');
 
-        $dirs = $adapter->listDirectory('/localDir');
-
+        $dirs = $this->filesystem->listKeys('localDir/test');
         $this->assertEmpty($dirs['dirs']);
         $this->assertCount(1, $dirs['keys']);
-        $this->assertEquals('test.txt', $dirs['keys'][0]);
+        $this->assertEquals('localDir/test.txt', $dirs['keys'][0]);
 
-        $dirs = $adapter->listDirectory();
+        $dirs = $this->filesystem->listKeys();
 
         $this->assertCount(1, $dirs['dirs']);
         $this->assertEquals('localDir', $dirs['dirs'][0]);
-        $this->assertEmpty($dirs['keys']);
+        $this->assertCount(2, $dirs['keys']);
+        $this->assertEquals('aaa.txt', $dirs['keys'][0]);
+        $this->assertEquals('localDir/test.txt', $dirs['keys'][1]);
 
         @unlink($dirname.DIRECTORY_SEPARATOR.'test.txt');
+        @unlink($this->directory.DIRECTORY_SEPARATOR.'aaa.txt');
         @rmdir($dirname);
     }
 }

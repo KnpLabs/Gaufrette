@@ -2,16 +2,17 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Adapter;
 use Gaufrette\Util;
-use Gaufrette\Exception;
 
 /**
  * Apc adapter, a non-persistent adapter for when this sort of thing is appropriate
  *
  * @author Alexander Deruwe <alexander.deruwe@gmail.com>
  * @author Antoine Hérault <antoine.herault@gmail.com>
+ * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class Apc extends Base
+class Apc implements Adapter
 {
     protected $prefix;
     protected $ttl;
@@ -20,8 +21,8 @@ class Apc extends Base
      * Constructor
      *
      * @throws \RuntimeException
-     * @param string $prefix to avoid conflicts between filesystems
-     * @param int $ttl time to live, default is 0
+     * @param  string            $prefix to avoid conflicts between filesystems
+     * @param  int               $ttl    time to live, default is 0
      */
     public function __construct($prefix, $ttl = 0)
     {
@@ -38,15 +39,7 @@ class Apc extends Base
      */
     public function read($key)
     {
-        $this->assertExists($key);
-
-        $content = $this->apcFetch($this->computePath($key));
-
-        if (false === $content) {
-            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
-        }
-
-        return $content;
+        return apc_fetch($this->computePath($key));
     }
 
     /**
@@ -54,10 +47,10 @@ class Apc extends Base
      */
     public function write($key, $content, array $metadata = null)
     {
-        $result = $this->apcStore($this->computePath($key), $content, $this->ttl);
+        $result = apc_store($this->computePath($key), $content, $this->ttl);
 
-        if (false === $result) {
-            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
+        if (!$result) {
+            return false;
         }
 
         return Util\Size::fromContent($content);
@@ -68,7 +61,7 @@ class Apc extends Base
      */
     public function exists($key)
     {
-        return $this->apcExists($this->computePath($key));
+        return apc_exists($this->computePath($key));
     }
 
     /**
@@ -79,7 +72,7 @@ class Apc extends Base
         $cachedKeys = $this->getCachedKeysIterator();
 
         if (null === $cachedKeys) {
-            throw new \RuntimeException('Could not get the keys.');
+            return array();
         }
 
         $keys = array();
@@ -97,8 +90,6 @@ class Apc extends Base
      */
     public function mtime($key)
     {
-        $this->assertExists($key);
-
         $cachedKeys = iterator_to_array($this->getCachedKeysIterator($key, APC_ITER_MTIME));
 
         return $cachedKeys[$this->computePath($key)]['mtime'];
@@ -107,25 +98,9 @@ class Apc extends Base
     /**
      * {@inheritDoc}
      */
-    public function checksum($key)
-    {
-        $this->assertExists($key);
-
-        return Util\Checksum::fromContent($this->read($key));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function delete($key)
     {
-        $this->assertExists($key);
-
-        $result = $this->apcDelete($this->computePath($key));
-
-        if (false === $result) {
-            throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
-        }
+        return apc_delete($this->computePath($key));
     }
 
     /**
@@ -133,29 +108,25 @@ class Apc extends Base
      */
     public function rename($sourceKey, $targetKey)
     {
-        $this->assertExists($sourceKey);
+        // TODO: this probably allows for race conditions...
+        $written  = $this->write($targetKey, $this->read($sourceKey));
+        $deleted = $this->delete($sourceKey);
 
-        if ($this->exists($targetKey)) {
-            throw new Exception\UnexpectedFile($targetKey);
-        }
+        return $written && $deleted;
+    }
 
-        try {
-            // TODO: this probably allows for race conditions...
-            $this->write($targetKey, $this->read($sourceKey));
-            $this->delete($sourceKey);
-        } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf(
-                'Could not rename the "%s" file to "%s".',
-                $sourceKey,
-                $targetKey
-            ));
-        }
+    /**
+     * {@inheritDoc}
+     */
+    public function isDirectory($key)
+    {
+        return false;
     }
 
     /**
      * Computes the path for the given key
      *
-     * @param string $key
+     * @param  string $key
      * @return string
      */
     public function computePath($key)
@@ -163,36 +134,9 @@ class Apc extends Base
         return $this->prefix . $key;
     }
 
-    protected function assertExists($key)
-    {
-        if (!$this->exists($key)) {
-            throw new Exception\FileNotFound($key);
-        }
-    }
-
-    protected function apcFetch($path)
-    {
-        return apc_fetch($path);
-    }
-
-    protected function apcStore($path, $content, $ttl)
-    {
-        return apc_store($path, $content, $ttl);
-    }
-
-    protected function apcExists($path)
-    {
-        return apc_exists($path);
-    }
-
-    protected function apcDelete($path)
-    {
-        return apc_delete($path);
-    }
-
     /**
-     * @param string $key - by default ''
-     * @param integer $format - by default APC_ITER_NONE
+     * @param  string       $key    - by default ''
+     * @param  integer      $format - by default APC_ITER_NONE
      * @return \APCIterator
      *
      */

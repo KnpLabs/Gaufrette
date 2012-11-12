@@ -32,16 +32,22 @@
                     "type": "zip"
                 }
             }
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Herzult/php-ssh"
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.2"
     },
     "require-dev": {
         "amazonwebservices/aws-sdk-for-php": "1.5.*",
+        "phpspec/phpspec2": "1.0.*",
         "rackspace/php-cloudfiles": "*",
         "doctrine/dbal": ">=2.3",
-        "dropbox-php/dropbox-php": "*"
+        "dropbox-php/dropbox-php": "*",
+        "herzult/php-ssh": "*"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "*",
@@ -49,6 +55,7 @@
         "amazonwebservices/aws-sdk-for-php": "to use the Amazon S3 adapter",
         "doctrine/dbal": "to use the Doctrine DBAL adapter",
         "ext-zip": "to use the Zip adapter",
+        "ext-apc": "to use the APC adapter",
         "ext-curl": "*",
         "ext-mbstring": "*",
         "ext-mongo": "*"
@@ -60,5 +67,8 @@
         "branch-alias": {
             "dev-master": "0.2.x-dev"
         }
+    },
+    "config": {
+        "bin-dir": "bin"
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Adapter;
 use Gaufrette\Util;
-use Gaufrette\Exception;
 
 /**
  * In memory adapter
@@ -13,14 +13,14 @@ use Gaufrette\Exception;
  * @package Gaufrette
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class InMemory extends Base
+class InMemory implements Adapter
 {
     protected $files = array();
 
     /**
      * Constructor
      *
-     * @param  array $files An array of files
+     * @param array $files An array of files
      */
     public function __construct(array $files = array())
     {
@@ -30,7 +30,7 @@ class InMemory extends Base
     /**
      * Defines the files
      *
-     * @param  array $files An array of files
+     * @param array $files An array of files
      */
     public function setFiles(array $files)
     {
@@ -43,35 +43,28 @@ class InMemory extends Base
             $file = array_merge(array(
                 'content'   => null,
                 'mtime'     => null,
-                'checksum'  => null
             ), $file);
 
-            $this->setFile($key, $file['content'], $file['mtime'], $file['checksum']);
+            $this->setFile($key, $file['content'], $file['mtime']);
         }
     }
 
     /**
      * Defines a file
      *
-     * @param  string  $key      The key
-     * @param  string  $content  The content
-     * @param  integer $mtime    The last modified time (automatically set to now if NULL)
-     * @param  string  $checksum The checksum (automatically computed from the content if NULL)
+     * @param string  $key     The key
+     * @param string  $content The content
+     * @param integer $mtime   The last modified time (automatically set to now if NULL)
      */
-    public function setFile($key, $content = null, $mtime = null, $checksum = null)
+    public function setFile($key, $content = null, $mtime = null)
     {
         if (null === $mtime) {
             $mtime = time();
         }
 
-        if (null === $checksum) {
-            $checksum = Util\Checksum::fromContent($content);
-        }
-
         $this->files[$key] = array(
-            'content'   => (string)  $content,
-            'mtime'     => (integer) $mtime,
-            'checksum'  => (string)  $checksum
+            'content'   => (string) $content,
+            'mtime'     => (integer) $mtime
         );
     }
 
@@ -80,8 +73,6 @@ class InMemory extends Base
      */
     public function read($key)
     {
-        $this->assertExists($key);
-
         return $this->files[$key]['content'];
     }
 
@@ -90,15 +81,10 @@ class InMemory extends Base
      */
     public function rename($sourceKey, $targetKey)
     {
-        $this->assertExists($sourceKey);
+        $content = $this->read($sourceKey);
+        $this->delete($sourceKey);
 
-        if ($this->exists($targetKey)) {
-            throw new Exception\UnexpectedFile($targetKey);
-        }
-
-        $this->files[$targetKey] = $this->files[$sourceKey];
-        unset($this->files[$sourceKey]);
-        $this->files[$targetKey]['mtime'] = time();
+        return (boolean) $this->write($targetKey, $content);
     }
 
     /**
@@ -108,7 +94,6 @@ class InMemory extends Base
     {
         $this->files[$key]['content']  = $content;
         $this->files[$key]['mtime']    = time();
-        $this->files[$key]['checksum'] = Util\Checksum::fromContent($content);
 
         return Util\Size::fromContent($content);
     }
@@ -134,19 +119,7 @@ class InMemory extends Base
      */
     public function mtime($key)
     {
-        $this->assertExists($key);
-
-        return $this->files[$key]['mtime'];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function checksum($key)
-    {
-        $this->assertExists($key);
-
-        return $this->files[$key]['checksum'];
+        return isset($this->files[$key]['mtime']) ? $this->files[$key]['mtime'] : false;
     }
 
     /**
@@ -154,18 +127,17 @@ class InMemory extends Base
      */
     public function delete($key)
     {
-        $this->assertExists($key);
-
         unset($this->files[$key]);
         clearstatcache();
 
         return true;
     }
 
-    protected function assertExists($key)
+    /**
+     * {@inheritDoc}
+     */
+    public function isDirectory($path)
     {
-        if (!$this->exists($key)) {
-            throw new Exception\FileNotFound($key);
-        }
+        return false;
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Gaufrette\FileStream;
+namespace Gaufrette\Stream;
 
-use Gaufrette\FileStream;
+use Gaufrette\Stream;
 use Gaufrette\StreamMode;
 
 /**
@@ -10,7 +10,7 @@ use Gaufrette\StreamMode;
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Local implements FileStream
+class Local implements Stream
 {
     private $path;
     private $mode;
@@ -19,7 +19,7 @@ class Local implements FileStream
     /**
      * Constructor
      *
-     * @param  string $path
+     * @param string $path
      */
     public function __construct($path)
     {

@@ -3,6 +3,7 @@
 namespace Gaufrette\Functional\Adapter;
 
 use Gaufrette\Adapter\Apc;
+use Gaufrette\Filesystem;
 
 class ApcTest extends FunctionalTestCase
 {
@@ -16,18 +17,15 @@ class ApcTest extends FunctionalTestCase
 
         apc_clear_cache('user');
 
-        $this->adapter = new Apc('gaufrette-test.');
+        $this->filesystem = new Filesystem(new Apc('gaufrette-test.'));
     }
 
     public function tearDown()
     {
-        if (null === $this->adapter) {
-            return;
+        parent::tearDown();
+        if (extension_loaded('apc')) {
+            apc_clear_cache('user');
         }
-
-        apc_clear_cache('user');
-
-        $this->adapter = null;
     }
 
     /**

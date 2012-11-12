@@ -14,16 +14,16 @@ class SafeLocal extends Local
     /**
      * {@inheritDoc}
      */
-    public function computePath($key)
+    public function computeKey($path)
     {
-        return parent::computePath(base64_encode($key));
+        return base64_decode(parent::computeKey($path));
     }
 
     /**
      * {@inheritDoc}
      */
-    public function computeKey($path)
+    protected function computePath($key)
     {
-        return base64_decode(parent::computeKey($path));
+        return parent::computePath(base64_encode($key));
     }
 }

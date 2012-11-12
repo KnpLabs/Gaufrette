@@ -12,13 +12,13 @@ class Size
     /**
      * Returns the size in bytes from the given content
      *
-     * @param  string $content
+     * @param string $content
      *
      * @return integer
      *
      * @todo handle the case the mbstring is not loaded
      */
-    static public function fromContent($content)
+    public static function fromContent($content)
     {
         return mb_strlen($content);
     }
