@@ -2,9 +2,11 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Exception;
+use Gaufrette\Adapter;
+use Ssh\Sftp as SftpClient;
 
-class Sftp extends Base
+class Sftp implements Adapter,
+                      ChecksumCalculator
 {
     protected $sftp;
     protected $directory;
@@ -14,12 +16,12 @@ class Sftp extends Base
     /**
      * Constructor
      *
-     * @param  \Ssh\Sftp $sftp     An Sftp instance
-     * @param  string   $directory The distant directory
-     * @param  boolean  $create    Whether to create the remote directory if it
+     * @param \Ssh\Sftp $sftp      An Sftp instance
+     * @param string    $directory The distant directory
+     * @param boolean   $create    Whether to create the remote directory if it
      *                             does not exist
      */
-    public function __construct(\Ssh\Sftp $sftp, $directory = null, $create = false)
+    public function __construct(SftpClient $sftp, $directory = null, $create = false)
     {
         $this->sftp      = $sftp;
         $this->directory = $directory;
@@ -33,13 +35,7 @@ class Sftp extends Base
     {
         $this->initialize();
 
-        $this->assertExists($key);
-
         $content = $this->sftp->read($this->computePath($key));
-
-        if (false === $content) {
-            throw new \RuntimeException(sprintf('Could not read the \'%s\' file.', $key));
-        }
 
         return $content;
     }
@@ -49,42 +45,24 @@ class Sftp extends Base
      */
     public function rename($sourceKey, $targetKey)
     {
-        $this->assertExists($sourceKey);
-
-        if ($this->exists($targetKey)) {
-            throw new Exception\UnexpectedFile($targetKey);
-        }
-
         $sourcePath = $this->computePath($sourceKey);
         $targetPath = $this->computePath($targetKey);
 
         $this->ensureDirectoryExists(dirname($targetPath), true);
 
-        if(!$this->sftp->rename($sourcePath, $targetPath)) {
-            throw new \RuntimeException(sprintf(
-                'Could not rename the "%s" file to "%s".',
-                $sourceKey,
-                $targetKey
-            ));
-        }
+        return $this->sftp->rename($sourcePath, $targetPath);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content, array $metadata = null)
+    public function write($key, $content)
     {
         $this->initialize();
 
         $path = $this->computePath($key);
-
         $this->ensureDirectoryExists(dirname($path), true);
-
         $numBytes = $this->sftp->write($path, $content);
-
-        if (false === $numBytes) {
-            throw new \RuntimeException(sprintf('Could not write the \'%s\' file.', $key));
-        }
 
         return $numBytes;
     }
@@ -104,13 +82,35 @@ class Sftp extends Base
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function isDirectory($key)
     {
         $this->initialize();
 
-        $results = $this->sftp->listDirectory($this->directory, true);
+        $url = $this->sftp->getUrl($this->computePath($key));
 
-        return array_map(array($this, 'computeKey'), $results['files']);
+        return is_dir($url);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function keys()
+    {
+        $this->initialize();
+        $results = $this->sftp->listDirectory($this->directory, true);
+        $files = array_map(array($this, 'computeKey'), $results['files']);
+
+        $dirs = array();
+        foreach ($files as $file) {
+            if ('.' !== dirname($file)) {
+                $dirs[] = dirname($file);
+            }
+        }
+
+        $keys = array_merge($files, $dirs);
+        sort($keys);
+
+        return $keys;
     }
 
     /**
@@ -119,8 +119,6 @@ class Sftp extends Base
     public function mtime($key)
     {
         $this->initialize();
-
-        $this->assertExists($key);
 
         return filemtime($this->sftp->getUrl($this->computePath($key)));
     }
@@ -132,9 +130,11 @@ class Sftp extends Base
     {
         $this->initialize();
 
-        $this->assertExists($key);
+        if ($this->exists($key)) {
+            return md5_file($this->sftp->getUrl($this->computePath($key)));
+        }
 
-        return md5_file($this->sftp->getUrl($this->computePath($key)));
+        return false;
     }
 
     /**
@@ -144,39 +144,35 @@ class Sftp extends Base
     {
         $this->initialize();
 
-        $this->assertExists($key);
-
-        if (!unlink($this->sftp->getUrl($this->computePath($key)))) {
-            throw new \RuntimeException(sprintf('Could not delete the \'%s\' file.', $key));
-        }
-    }
-
-    /**
-     * Computes the path for the specified key
-     *
-     * @param  string $key
-     *
-     * @return string
-     */
-    protected function computePath($key)
-    {
-        return $this->directory . '/' . ltrim($key, '/');
+        return unlink($this->sftp->getUrl($this->computePath($key)));
     }
 
     /**
      * Computes the key from the specified path
      *
-     * @param  string $path
+     * @param string $path
      *
      * @return string
      */
-    protected function computeKey($path)
+    public function computeKey($path)
     {
         if (0 !== strpos($path, $this->directory)) {
             throw new \OutOfBoundsException(sprintf('The path \'%s\' is out of the filesystem.', $path));
         }
 
         return ltrim(substr($path, strlen($this->directory)), '/');
+    }
+
+    /**
+     * Computes the path for the specified key
+     *
+     * @param string $key
+     *
+     * @return string
+     */
+    protected function computePath($key)
+    {
+        return $this->directory . '/' . ltrim($key, '/');
     }
 
     /**
@@ -197,8 +193,8 @@ class Sftp extends Base
     /**
      * Ensures the specified directory exists
      *
-     * @param  string  $directory The directory that we ensure the existence
-     * @param  boolean $create    Whether to create it if it does not exist
+     * @param string  $directory The directory that we ensure the existence
+     * @param boolean $create    Whether to create it if it does not exist
      *
      * @throws RuntimeException if the specified directory does not exist and
      *                          could not be created
@@ -215,26 +211,12 @@ class Sftp extends Base
     /**
      * Creates the specified directory and its parents
      *
-     * @param  string $directory The directory to create
+     * @param string $directory The directory to create
      *
      * @return boolean TRUE on success, or FALSE on failure
      */
     protected function createDirectory($directory)
     {
         return mkdir($this->sftp->getUrl($directory), 0777, true);
-    }
-
-    /**
-     * Asserts that the specified file exists
-     *
-     * @param  string $key
-     *
-     * @throws Exception\FileNotFound if the file does not exist
-     */
-    private function assertExists($key)
-    {
-        if (!$this->exists($key)) {
-            throw new Exception\FileNotFound($key);
-        }
     }
 }

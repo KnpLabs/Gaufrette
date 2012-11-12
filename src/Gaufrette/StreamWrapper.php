@@ -10,16 +10,16 @@ namespace Gaufrette;
  */
 class StreamWrapper
 {
-    static private $filesystemMap;
+    private static $filesystemMap;
 
     private $stream;
 
     /**
      * Defines the filesystem map
      *
-     * @param  FilesystemMap $map
+     * @param FilesystemMap $map
      */
-    static public function setFilesystemMap(FilesystemMap $map)
+    public static function setFilesystemMap(FilesystemMap $map)
     {
         static::$filesystemMap = $map;
     }
@@ -29,7 +29,7 @@ class StreamWrapper
      *
      * @return FilesystemMap $map
      */
-    static public function getFilesystemMap()
+    public static function getFilesystemMap()
     {
         if (null === static::$filesystemMap) {
             static::$filesystemMap = static::createFilesystemMap();
@@ -41,9 +41,9 @@ class StreamWrapper
     /**
      * Registers the stream wrapper to handle the specified scheme
      *
-     * @param  string $schema Default is gaufrette
+     * @param string $schema Default is gaufrette
      */
-    static public function register($scheme = 'gaufrette')
+    public static function register($scheme = 'gaufrette')
     {
         static::streamWrapperUnregister($scheme);
 
@@ -59,7 +59,7 @@ class StreamWrapper
     /**
      * @return FilesystemMap
      */
-    static protected function createFilesystemMap()
+    protected static function createFilesystemMap()
     {
         return new FilesystemMap();
     }
@@ -67,16 +67,16 @@ class StreamWrapper
     /**
      * @param string $scheme - protocol scheme
      */
-    static protected function streamWrapperUnregister($scheme)
+    protected static function streamWrapperUnregister($scheme)
     {
         return @stream_wrapper_unregister($scheme);
     }
 
     /**
-     * @param string $scheme - protocol scheme
+     * @param string $scheme    - protocol scheme
      * @param string $className
      */
-    static protected function streamWrapperRegister($scheme, $className)
+    protected static function streamWrapperRegister($scheme, $className)
     {
         return stream_wrapper_register($scheme, $className);
     }
@@ -89,7 +89,7 @@ class StreamWrapper
     }
 
     /**
-     * @param int $bytes
+     * @param  int   $bytes
      * @return mixed
      */
     public function stream_read($bytes)
@@ -102,7 +102,7 @@ class StreamWrapper
     }
 
     /**
-     * @param string $data
+     * @param  string $data
      * @return int
      */
     public function stream_write($data)
@@ -134,8 +134,8 @@ class StreamWrapper
     }
 
     /**
-     * @param int $offset
-     * @param int $whence - one of values [SEEK_SET, SEEK_CUR, SEEK_END]
+     * @param  int     $offset
+     * @param  int     $whence - one of values [SEEK_SET, SEEK_CUR, SEEK_END]
      * @return boolean
      */
     public function stream_seek($offset, $whence = SEEK_SET)
@@ -184,8 +184,8 @@ class StreamWrapper
     }
 
     /**
-     * @param string $path
-     * @param int $flags
+     * @param  string $path
+     * @param  int    $flags
      * @return mixed
      * @todo handle $flags parameter
      */
@@ -203,7 +203,7 @@ class StreamWrapper
     }
 
     /**
-     * @param string $path
+     * @param  string $path
      * @return mixed
      */
     public function unlink($path)
@@ -241,7 +241,7 @@ class StreamWrapper
                 'query'     => null,
                 'fragment'  => null,
             ),
-            parse_url($path)
+            parse_url($path) ?: array()
         );
 
         $domain = $parts['host'];
@@ -262,7 +262,7 @@ class StreamWrapper
             ));
         }
 
-        return static::getFilesystemMap()->get($domain)->createFileStream($key);
+        return static::getFilesystemMap()->get($domain)->createStream($key);
     }
 
     protected function createStreamMode($mode)

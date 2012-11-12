@@ -6,6 +6,7 @@ namespace Gaufrette;
  * A filesystem is used to store and retrieve files
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
+ * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
 class Filesystem
 {
@@ -14,7 +15,7 @@ class Filesystem
     /**
      * Constructor
      *
-     * @param  Adapter $adapter A configured Adapter instance
+     * @param Adapter $adapter A configured Adapter instance
      */
     public function __construct(Adapter $adapter)
     {
@@ -34,7 +35,7 @@ class Filesystem
     /**
      * Indicates whether the file matching the specified key exists
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return boolean TRUE if the file exists, FALSE otherwise
      */
@@ -49,25 +50,39 @@ class Filesystem
      * @param string $key
      * @param string $new
      *
-     * @return boolean TRUE if the rename was successful, FALSE otherwise
+     * @return boolean                  TRUE if the rename was successful
+     * @throws Exception\FileNotFound   when sourceKey does not exist
+     * @throws Exception\UnexpectedFile when targetKey exists
+     * @throws \RuntimeException        when cannot rename
      */
-    public function rename($key, $new)
+    public function rename($sourceKey, $targetKey)
     {
-        return $this->adapter->rename($key, $new);
+        $this->assertHasFile($sourceKey);
+
+        if ($this->has($targetKey)) {
+            throw new Exception\UnexpectedFile($targetKey);
+        }
+
+        if (! $this->adapter->rename($sourceKey, $targetKey)) {
+            throw new \RuntimeException(sprintf('Could not rename the "%s" key to "%s".', $sourceKey, $targetKey));
+        }
+
+        return true;
     }
 
     /**
      * Returns the file matching the specified key
      *
-     * @param  string  $key    Key of the file
-     * @param  boolean $create Whether to create the file if it does not exist
+     * @param string  $key    Key of the file
+     * @param boolean $create Whether to create the file if it does not exist
      *
+     * @throws Gaufrette\Exception\FileNotFound
      * @return File
      */
     public function get($key, $create = false)
     {
-        if (!$create && !$this->has($key)) {
-            throw new \InvalidArgumentException(sprintf('The file %s does not exist.', $key));
+        if (!$create) {
+            $this->assertHasFile($key);
         }
 
         return $this->createFile($key);
@@ -76,51 +91,65 @@ class Filesystem
     /**
      * Writes the given content into the file
      *
-     * @param  string  $key       Key of the file
-     * @param  string  $content   Content to write in the file
-     * @param  boolean $overwrite Whether to overwrite the file if exists
+     * @param string  $key       Key of the file
+     * @param string  $content   Content to write in the file
+     * @param boolean $overwrite Whether to overwrite the file if exists
      *
      * @return integer The number of bytes that were written into the file
      */
-    public function write($key, $content, $overwrite = false, array $metadata = null)
+    public function write($key, $content, $overwrite = false)
     {
         if (!$overwrite && $this->has($key)) {
-            throw new \InvalidArgumentException(sprintf('The file %s already exists and can not be overwritten.', $key));
+            throw new \InvalidArgumentException(sprintf('The key "%s" already exists and can not be overwritten.', $key));
         }
 
-        return $this->adapter->write($key, $content, $metadata);
+        $numBytes = $this->adapter->write($key, $content);
+
+        if (false === $numBytes) {
+            throw new \RuntimeException(sprintf('Could not write the "%s" key content.', $key));
+        }
+
+        return $numBytes;
     }
 
     /**
      * Reads the content from the file
      *
-     * @param  string $key Key of the file
+     * @param  string                 $key Key of the file
+     * @throws Exception\FileNotFound when file does not exist
+     * @throws \RuntimeException      when cannot read file
      *
      * @return string
      */
     public function read($key)
     {
-        if (!$this->has($key)) {
-            throw new \InvalidArgumentException(sprintf('The file %s does not exist.', $key));
+        $this->assertHasFile($key);
+
+        $content = $this->adapter->read($key);
+
+        if (false === $content) {
+            throw new \RuntimeException(sprintf('Could not read the "%s" key content.', $key));
         }
 
-        return $this->adapter->read($key);
+        return $content;
     }
 
     /**
      * Deletes the file matching the specified key
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return boolean
      */
     public function delete($key)
     {
-        if (!$this->has($key)) {
-            throw new \InvalidArgumentException(sprintf('The file %s does not exist.', $key));
+        $this->assertHasFile($key);
+
+        if ($this->adapter->delete($key)) {
+            return true;
         }
 
-        return $this->adapter->delete($key);
+        throw new \RuntimeException(sprintf('Could not remove the "%s" key.', $key));
     }
 
     /**
@@ -136,73 +165,94 @@ class Filesystem
     /**
      * Returns an array of all items (files and directories) matching the specified pattern
      *
+     * @param  string $pattern
      * @return array
      */
-    public function listDirectory($directory = '')
+    public function listKeys($pattern = '')
     {
-        $listing = $this->adapter->listDirectory($directory);
+        $dirs = array();
+        $keys = array();
 
-        // Cache adapter returns null if source-Adapter does not provide the listDirectory method
-        if (!$listing) {
-            $listing = array(
-                'keys'  => $this->keys(),
-                'dirs'  => array()
-            );
+        foreach ($this->keys() as $key) {
+            if (empty($pattern) || false !== strpos($key, $pattern)) {
+                if ($this->adapter->isDirectory($key)) {
+                    $dirs[] = $key;
+                } else {
+                    $keys[] = $key;
+                }
+            }
         }
 
-        return $listing;
+        return array(
+            'keys' => $keys,
+            'dirs' => $dirs
+        );
     }
 
     /**
      * Returns the last modified time of the specified file
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return integer An UNIX like timestamp
      */
     public function mtime($key)
     {
+        $this->assertHasFile($key);
+
         return $this->adapter->mtime($key);
     }
 
     /**
      * Returns the checksum of the specified file's content
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return string A MD5 hash
      */
     public function checksum($key)
     {
-        return $this->adapter->checksum($key);
-    }
+        $this->assertHasFile($key);
 
-    public function supportsMetadata()
-    {
-        return $this->adapter->supportsMetadata();
+        if ($this->adapter instanceof Adapter\ChecksumCalculator) {
+            return $this->adapter->checksum($key);
+        }
+
+        return Util\Checksum::fromContent($this->read($key));
     }
 
     /**
-     * Creates a new file stream for the specified key
-     *
-     * @param  string $key
-     *
-     * @return FileStream
+     * {@inheritDoc}
      */
-    public function createFileStream($key)
+    public function createStream($key)
     {
-        return $this->adapter->createFileStream($key, $this);
+        if ($this->adapter instanceof Adapter\StreamFactory) {
+            return $this->adapter->createStream($key);
+        }
+
+        return new Stream\InMemoryBuffer($this, $key);
     }
 
     /**
-     * Creates a new File instance and returns it
-     *
-     * @param  string $key
-     *
-     * @return File
+     * {@inheritDoc}
      */
     public function createFile($key)
     {
-        return $this->adapter->createFile($key, $this);
+        if ($this->adapter instanceof Adapter\FileFactory) {
+            return $this->adapter->createFile($key, $this);
+        }
+
+        return new File($key, $this);
+    }
+
+    /**
+     * @param $key
+     * @throws Gaufrette\Exception\FileNotFound
+     */
+    private function assertHasFile($key)
+    {
+        if (! $this->has($key)) {
+            throw new Exception\FileNotFound($key);
+        }
     }
 }

@@ -179,14 +179,15 @@ echo file_get_contents('gaufrette://foo/hello.txt'); // Says "Hello World!"
 Running the Tests
 -----------------
 
-The tests use PHPUnit.
+The tests use phpspec2 and PHPUnit.
 
 ### Setup the vendor libraries
 
 As some filesystem adapters use vendor libraries, you should install the vendors:
 
     $ cd gaufrette
-    $ bin/install_vendors.sh
+    $ php composer.phar install --dev
+    $ sh bin/configure_test_env.sh
 
 It will avoid skip a lot of tests.
 
@@ -194,6 +195,10 @@ It will avoid skip a lot of tests.
 
 In the Gaufrette root directory:
 
-    $ phpunit -c .
+To check if classes specification pass:
+    $ php bin/phpspec run
+
+To check basic functionality of the adapters (adapters should be configured you will see many skipped tests):
+    $ phpunit
 
 Is it green?

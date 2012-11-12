@@ -2,6 +2,9 @@
 
 namespace Gaufrette;
 
+use Gaufrette\Adapter\MetadataSupporter;
+use Gaufrette\Exception\FileNotFound;
+
 /**
  * Points to a file in a filesystem
  *
@@ -30,26 +33,21 @@ class File
     protected $name = null;
 
     /**
-     * Moment of the initial creation
-     * @var DateTime created
-     */
-    protected $created = null;
-
-    /**
      * File size in bytes
      * @var int size
      */
-    protected $size = null;
+    protected $size = 0;
 
     /**
      * Constructor
      *
-     * @param  string     $key
-     * @param  Filesystem $filesystem
+     * @param string     $key
+     * @param Filesystem $filesystem
      */
     public function __construct($key, Filesystem $filesystem)
     {
         $this->key = $key;
+        $this->name = $key;
         $this->filesystem = $filesystem;
     }
 
@@ -64,46 +62,21 @@ class File
     }
 
     /**
-     * Returns the filesystem
-     *
-     * @return Filesystem
-     */
-    public function getFilesystem()
-    {
-        return $this->filesystem;
-    }
-
-    /**
      * Returns the content
      *
+     * @throws Gaufrette\Exception\FileNotFound
+     *
+     * @param  array  $metadata optional metadata which should be send when read
      * @return string
      */
-    public function getContent()
+    public function getContent($metadata = array())
     {
-        //If content has already been read for this file, just return it immediately
         if (isset($this->content)) {
             return $this->content;
         }
-        if (!$this->exists()) {
-            throw new \LogicException('The file does not exists in the filesystem.');
-        }
-        $this->content = $this->filesystem->read($this->key);
+        $this->setMetadata($metadata);
 
-        return $this->content;
-    }
-
-    /**
-     * Gets the metadata array if the adapter can support it
-     *
-     * @return array $metadata or null
-     * @throws LogicException if metadata is not supported
-     */
-    public function getMetadata()
-    {
-        if ($this->filesystem->supportsMetadata()) {
-            return $this->metadata;
-        }
-        throw new \LogicException("This filesystem adapter does not support metadata");
+        return $this->content = $this->filesystem->read($this->key);
     }
 
     /**
@@ -115,66 +88,20 @@ class File
     }
 
     /**
-     * @return DateTime created
-     */
-    public function getCreated()
-    {
-        return $this->created;
-    }
-
-    /**
      * @return int size of the file
      */
     public function getSize()
     {
-        return $this->size;
-    }
-
-    /**
-     * Sets the content
-     *
-     * @param  string $content
-     *
-     * @return integer The number of bytes that were written into the file, or
-     *                 FALSE on failure
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
-
-        //To maintain consistency between this object and filesystem, write immediately when content is being set.
-        return $this->filesystem->write($this->key, $this->content, true);
-    }
-
-    /**
-     * Sets the metadata array to be stored in adapters that can support it
-     *
-     * @param array $metadata
-     * @throws LogicException if metadata is not supported
-     */
-    public function setMetadata(array $metadata)
-    {
-        if ($this->filesystem->supportsMetadata()) {
-            $this->metadata = $metadata;
-        } else {
-            throw new \LogicException("This filesystem adapter does not support metadata");
+        if ($this->size) {
+            return $this->size;
         }
-    }
 
-    /**
-     * @param string name of the file
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
+        try {
+            return $this->size = Util\Size::fromContent($this->getContent());
+        } catch (FileNotFound $exception) {
+        }
 
-    /**
-     * @param \DateTime created
-     */
-    public function setCreated(\DateTime $created)
-    {
-        $this->created = $created;
+        return 0;
     }
 
     /**
@@ -183,6 +110,31 @@ class File
     public function setSize($size)
     {
         $this->size = $size;
+    }
+
+    /**
+     * Sets the content
+     *
+     * @param string $content
+     * @param array  $metadata optional metadata which should be send when write
+     *
+     * @return integer The number of bytes that were written into the file, or
+     *                 FALSE on failure
+     */
+    public function setContent($content, $metadata = array())
+    {
+        $this->content = $content;
+        $this->setMetadata($metadata);
+
+        return $this->size = $this->filesystem->write($this->key, $this->content, true);
+    }
+
+    /**
+     * @param string name of the file
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 
     /**
@@ -198,13 +150,14 @@ class File
     /**
      * Deletes the file from the filesystem
      *
-     * @return  boolean TRUE on success, or FALSE on failure
+     * @throws Gaufrette\Exception\FileNotFound
+     * @throws \RuntimeException                when cannot delete file
+     * @param  array                            $metadata optional metadata which should be send when write
+     * @return boolean                          TRUE on success
      */
-    public function delete()
+    public function delete($metadata = array())
     {
-        if (!$this->exists()) {
-            throw new \LogicException('The file could not be deleted as it does not exist.');
-        }
+        $this->setMetadata($metadata);
 
         return $this->filesystem->delete($this->key);
     }
@@ -212,10 +165,35 @@ class File
     /**
      * Creates a new file stream instance of the file
      *
-     * @return  FileStream
+     * @return FileStream
      */
-    public function createFileStream()
+    public function createStream()
     {
-        return $this->filesystem->createFileStream($this->key);
+        return $this->filesystem->createStream($this->key);
+    }
+
+    /**
+     * Sets the metadata array to be stored in adapters that can support it
+     *
+     * @param  array   $metadata
+     * @return boolean
+     */
+    protected function setMetadata(array $metadata)
+    {
+        if ($metadata && $this->supportsMetadata()) {
+            $this->filesystem->getAdapter()->setMetadata($this->key, $metadata);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return boolean
+     */
+    private function supportsMetadata()
+    {
+        return $this->filesystem->getAdapter() instanceof MetadataSupporter;
     }
 }

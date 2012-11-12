@@ -3,6 +3,7 @@
 namespace Gaufrette\Functional\Adapter;
 
 use Gaufrette\Adapter\Zip;
+use Gaufrette\Filesystem;
 
 class ZipTest extends FunctionalTestCase
 {
@@ -14,16 +15,12 @@ class ZipTest extends FunctionalTestCase
 
         @touch(__DIR__ . '/test.zip');
 
-        $this->adapter = new Zip(__DIR__ . '/test.zip');
+        $this->filesystem = new Filesystem(new Zip(__DIR__ . '/test.zip'));
     }
 
     public function tearDown()
     {
-        if (null === $this->adapter) {
-            return;
-        }
-
-        $this->adapter = null;
+        parent::tearDown();
 
         @unlink(__DIR__ . '/test.zip');
     }
@@ -36,15 +33,6 @@ class ZipTest extends FunctionalTestCase
     public function shouldNotAcceptInvalidZipArchive()
     {
         new Zip(__FILE__);
-    }
-
-    /**
-     * @test
-     * @group functional
-     */
-    public function shouldNotSupportMetadata()
-    {
-        $this->assertFalse($this->adapter->supportsMetadata());
     }
 
     /**
