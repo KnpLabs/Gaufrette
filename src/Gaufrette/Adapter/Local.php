@@ -55,7 +55,9 @@ class Local implements Adapter,
      */
     public function write($key, $content)
     {
-        return file_put_contents($this->computePath($key), $content);
+        $path = $this->computePath($key);
+        $this->ensureDirectoryExists(dirname($path), true);
+        return file_put_contents($path, $content);
     }
 
     /**
