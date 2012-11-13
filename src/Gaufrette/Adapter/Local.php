@@ -55,9 +55,7 @@ class Local implements Adapter,
      */
     public function write($key, $content)
     {
-        $path = $this->computePath($key);
-        $this->ensureDirectoryExists(dirname($path), true);
-        return file_put_contents($path, $content);
+        return file_put_contents($this->computePath($key), $content);
     }
 
     /**
@@ -172,9 +170,10 @@ class Local implements Adapter,
      */
     protected function computePath($key)
     {
-        $this->ensureDirectoryExists($this->directory, $this->create);
+        $path = $this->normalizePath($this->directory . '/' . $key);
+        $this->ensureDirectoryExists(dirname($path), $this->create);
 
-        return $this->normalizePath($this->directory . '/' . $key);
+        return $path;
     }
 
     /**
