@@ -2,7 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
-use \AmazonS3;
+use \AmazonS3 as AmazonClient;
 use Gaufrette\Adapter;
 
 /**
@@ -17,10 +17,10 @@ class AclAwareAmazonS3 implements Adapter,
     protected $delegate;
     protected $s3;
     protected $bucketName;
-    protected $aclConstant = AmazonS3::ACL_PRIVATE;
+    protected $aclConstant = AmazonClient::ACL_PRIVATE;
     protected $users = array();
 
-    public function __construct(Adapter $delegate, AmazonS3 $s3, $bucketName)
+    public function __construct(Adapter $delegate, AmazonClient $s3, $bucketName)
     {
         $this->delegate = $delegate;
         $this->s3 = $s3;

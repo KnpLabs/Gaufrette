@@ -20,10 +20,20 @@ class Ftp extends ObjectBehavior
         $this->shouldHaveType('Gaufrette\Adapter');
     }
 
-    function it_should_check_if_file_exists()
+    function it_should_check_if_file_exists_for_absolute_path()
     {
         $this->exists('filename')->shouldReturn(true);
         $this->exists('aa/filename')->shouldReturn(false);
+    }
+
+    function it_should_check_if_file_exists_for_relative_path()
+    {
+        $this->beConstructedWith('/home/l3l0/relative', 'localhost');
+
+        $this->exists('filename')->shouldReturn(true);
+        $this->exists('filename2')->shouldReturn(false);
+        $this->exists('aa/filename')->shouldReturn(false);
+        $this->exists('some/otherfilename')->shouldReturn(true);
     }
 
     function it_should_read_file()

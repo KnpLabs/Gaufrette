@@ -110,7 +110,7 @@ class Ftp implements Adapter,
         $file  = $this->computePath($key);
         $items = ftp_nlist($this->getConnection(), dirname($file));
 
-        return $items && in_array($file, $items);
+        return $items && (in_array($file, $items) || in_array(basename($file), $items));
     }
 
     /**
@@ -141,6 +141,10 @@ class Ftp implements Adapter,
      */
     public function delete($key)
     {
+        if ($this->isDirectory($key)) {
+            return ftp_rmdir($this->getConnection(), $this->computePath($key));
+        }
+
         return ftp_delete($this->getConnection(), $this->computePath($key));
     }
 

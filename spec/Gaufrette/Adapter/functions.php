@@ -47,7 +47,7 @@ function ftp_fget($connection, &$fileResource, $path, $mode)
 
 function ftp_chdir($connection, $dirname)
 {
-    return in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa'));
+    return in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa', '/home/l3l0/relative', '/home/l3l0/relative/some'));
 }
 
 function ftp_nlist($connection, $dirname)
@@ -57,6 +57,10 @@ function ftp_nlist($connection, $dirname)
             return array('/home/l3l0/filename');
         case '/home/l3l0/aaa':
             return array('/home/l3l0/aaa/filename', '/home/l3l0/aaa/otherFilename');
+        case '/home/l3l0/relative':
+            return array('filename', 'some');
+        case '/home/l3l0/relative/some':
+            return array('otherfilename');
     }
 
     return false;
@@ -69,6 +73,11 @@ function ftp_connect($host, $password)
     }
 
     return fopen('php://temp', 'r');
+}
+
+function ftp_close($connection)
+{
+    return fclose($connection);
 }
 
 function ftp_rawlist($connection, $directory, $recursive = false)
@@ -175,7 +184,7 @@ function is_link($link)
 
 function mkdir($directory, $mode, $recursive)
 {
-    return ('/home/other' === $directory) ? true : false;
+    return (in_array($directory, array('/home/other', '/home/somedir/aaa'))) ? true : false;
 }
 
 function apc_fetch($path)

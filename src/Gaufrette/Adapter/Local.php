@@ -55,7 +55,10 @@ class Local implements Adapter,
      */
     public function write($key, $content)
     {
-        return file_put_contents($this->computePath($key), $content);
+        $path = $this->computePath($key);
+        $this->ensureDirectoryExists(dirname($path), true);
+
+        return file_put_contents($path, $content);
     }
 
     /**
@@ -63,7 +66,10 @@ class Local implements Adapter,
      */
     public function rename($sourceKey, $targetKey)
     {
-        return rename($this->computePath($sourceKey), $this->computePath($targetKey));
+        $targetPath = $this->computePath($targetKey);
+        $this->ensureDirectoryExists(dirname($targetPath), true);
+
+        return rename($this->computePath($sourceKey), $targetPath);
     }
 
     /**
@@ -118,6 +124,10 @@ class Local implements Adapter,
      */
     public function delete($key)
     {
+        if ($this->isDirectory($key)) {
+            return rmdir($this->computePath($key));
+        }
+
         return unlink($this->computePath($key));
     }
 
@@ -170,10 +180,9 @@ class Local implements Adapter,
      */
     protected function computePath($key)
     {
-        $path = $this->normalizePath($this->directory . '/' . $key);
-        $this->ensureDirectoryExists(dirname($path), $this->create);
+        $this->ensureDirectoryExists($this->directory, $this->create);
 
-        return $path;
+        return $this->normalizePath($this->directory . '/' . $key);
     }
 
     /**

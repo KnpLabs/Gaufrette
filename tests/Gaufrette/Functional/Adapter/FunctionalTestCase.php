@@ -25,7 +25,7 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
     {
         $basename = $this->getAdapterName();
         $filename = sprintf(
-            '%s/filesystems/%s.php',
+            '%s/adapters/%s.php',
             dirname(__DIR__),
             $basename
         );
@@ -60,8 +60,10 @@ EOF
     public function shouldWriteAndRead()
     {
         $this->assertEquals(12, $this->filesystem->write('foo', 'Some content'));
+        $this->assertEquals(13, $this->filesystem->write('test/subdir/foo', 'Some content1', true));
 
         $this->assertEquals('Some content', $this->filesystem->read('foo'));
+        $this->assertEquals('Some content1', $this->filesystem->read('test/subdir/foo'));
     }
 
     /**
@@ -87,6 +89,8 @@ EOF
         $this->filesystem->write('foo', 'Some content');
 
         $this->assertTrue($this->filesystem->has('foo'));
+        $this->assertFalse($this->filesystem->has('test/somefile'));
+        $this->assertFalse($this->filesystem->has('test/somefile'));
     }
 
     /**
@@ -123,6 +127,13 @@ EOF
         $this->assertFalse($this->filesystem->has('foo'));
         $this->assertEquals('Some content', $this->filesystem->read('boo'));
         $this->filesystem->delete('boo');
+
+        $this->filesystem->write('foo', 'Some content');
+        $this->filesystem->rename('foo', 'somedir/sub/boo');
+
+        $this->assertFalse($this->filesystem->has('somedir/sub/foo'));
+        $this->assertEquals('Some content', $this->filesystem->read('somedir/sub/boo'));
+        $this->filesystem->delete('somedir/sub/boo');
     }
 
     /**
