@@ -123,7 +123,7 @@ class AmazonS3 implements Adapter,
         $opt = array_replace_recursive(
             array('acl'  => AmazonClient::ACL_PUBLIC),
             $this->getMetadata($key),
-            array('content' => $content)
+            array('body' => $content)
         );
 
         $response = $this->service->create_object(
