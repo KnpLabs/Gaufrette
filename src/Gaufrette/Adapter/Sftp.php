@@ -75,6 +75,7 @@ class Sftp implements Adapter,
         $this->initialize();
 
         $url = $this->sftp->getUrl($this->computePath($key));
+        clearstatcache();
 
         return file_exists($url);
     }
