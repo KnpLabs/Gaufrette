@@ -177,13 +177,13 @@ class AmazonS3 extends ObjectBehavior
                 'filename',
                 array(
                     'acl' => \AmazonS3::ACL_PRIVATE,
-                    'content' => 'some content'
+                    'body' => 'some content'
                 )
             )
             ->shouldBeCalled()
             ->willReturn(new \CFResponse(array('x-aws-requestheaders' => array('Content-Length' => 12)), 'some content', 200));
 
-        $this->setMetadata('filename', array('acl' => \AmazonS3::ACL_PRIVATE, 'content' => 'other content'));
+        $this->setMetadata('filename', array('acl' => \AmazonS3::ACL_PRIVATE, 'body' => 'other content'));
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
@@ -202,7 +202,7 @@ class AmazonS3 extends ObjectBehavior
                 'filename',
                 array(
                     'acl' => \AmazonS3::ACL_PUBLIC,
-                    'content' => 'some content'
+                    'body' => 'some content'
                 )
             )
             ->shouldBeCalled()
