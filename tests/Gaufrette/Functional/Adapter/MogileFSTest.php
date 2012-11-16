@@ -9,7 +9,7 @@ class MogileFSTest extends FunctionalTestCase
     /**
      * @group functional
      */
-    public function testMtime()
+    public function shouldGetMtime()
     {
         $this->markTestSkipped('Not supported by the adpater.');
     }
@@ -17,7 +17,7 @@ class MogileFSTest extends FunctionalTestCase
     /**
      * @group functional
      */
-    public function testMtimeNonExistingFile()
+    public function shouldGetMtimeNonExistingFile()
     {
         $this->markTestSkipped('Not supported by the adpater.');
     }

@@ -27,13 +27,4 @@ class ApcTest extends FunctionalTestCase
             apc_clear_cache('user');
         }
     }
-
-    /**
-     * @test
-     * @group functional
-     */
-    public function shouldNotSupportMetadata()
-    {
-        $this->assertFalse($this->adapter->supportsMetadata());
-    }
 }
