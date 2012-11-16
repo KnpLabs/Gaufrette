@@ -144,7 +144,15 @@ class MogileFS implements Adapter
      */
     public function keys()
     {
-        $result = $this->doRequest('LIST_KEYS');
+        try {
+            $result = $this->doRequest('LIST_KEYS');
+        } catch (\RuntimeException $e) {
+            if (self::ERR_NONE_MATCH === $e->getCode()) {
+                return array();
+            }
+
+            throw $e;
+        }
 
         unset($result['key_count'], $result['next_after']);
 
