@@ -110,7 +110,7 @@ class AmazonS3 implements Adapter,
             $this->getMetadata($sourceKey)
         );
 
-        return $response->isOK();
+        return $response->isOK() && $this->delete($sourceKey);
     }
 
     /**

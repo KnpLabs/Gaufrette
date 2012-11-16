@@ -4,7 +4,7 @@ $key    = 'XXXXXXXXXXXXXXXXXXXX';
 $secret = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 $bucket = 'gaufrette-test';
 
-$service = new AmazonS3(compact($key, $secret));
+$service = new AmazonS3(array('key' => $key, 'secret' => $secret));
 $service->delete_all_objects($bucket);
 
 return new Gaufrette\Adapter\AmazonS3($service, $bucket);

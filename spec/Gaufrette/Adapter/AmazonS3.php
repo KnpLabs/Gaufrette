@@ -114,6 +114,14 @@ class AmazonS3 extends ObjectBehavior
             )
             ->shouldBeCalled()
             ->willReturn(new \CFResponse('header', 'some content', 200));
+        $service
+            ->delete_object(
+                'bucketName',
+                'filename1',
+                ANY_ARGUMENT
+            )
+            ->shouldBeCalled()
+            ->willReturn(new \CFResponse(array(), 'some', 200));
 
        $this->setMetadata('filename1', array('acl' => \AmazonS3::ACL_OWNER_READ));
        $this->rename('filename1', 'filename2')->shouldReturn(true);
