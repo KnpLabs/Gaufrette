@@ -273,6 +273,6 @@ class AmazonS3 implements Adapter,
             return $key;
         }
 
-        return sprintf('%s/%s', $this->directory, $key);
+        return sprintf('%s/%s', $directory, $key);
     }
 }
