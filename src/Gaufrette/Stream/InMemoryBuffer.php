@@ -44,10 +44,9 @@ class InMemoryBuffer implements Stream
         }
 
         if ($mode->impliesExistingContentDeletion()) {
-            $this->filesystem->write($this->key, '', true);
-            $this->content = '';
+            $this->content = $this->fileSystemWrite();
         } else {
-            $this->content = $this->filesystem->read($this->key);
+            $this->content = $exists ? $this->filesystem->read($this->key) : $this->fileSystemWrite();
         }
 
         $this->numBytes = Util\Size::fromContent($this->content);
@@ -138,7 +137,7 @@ class InMemoryBuffer implements Stream
         }
 
         try {
-            $this->filesystem->write($this->key, $this->content, true);
+            $this->fileSystemWrite($this->content);
         } catch (\Exception $e) {
             return false;
         }
@@ -207,5 +206,16 @@ class InMemoryBuffer implements Stream
     protected function hasNewContentAtFurtherPosition()
     {
         return $this->position > 0 && !$this->content;
+    }
+
+    /**
+     * @param string $content Empty string by default
+     * @param bool $overwrite Overwrite by default
+     * @return string
+     */
+    protected function fileSystemWrite($content = '', $overwrite = true)
+    {
+        $this->filesystem->write($this->key, $content, $overwrite);
+        return $content;
     }
 }
