@@ -43,10 +43,14 @@ class InMemoryBuffer implements Stream
             return false;
         }
 
+        if (!$exists && $mode->allowsNewFileOpening()) {
+            $this->content = $this->writeContent('');
+        }
+
         if ($mode->impliesExistingContentDeletion()) {
-            $this->content = $this->fileSystemWrite();
+            $this->content = $this->writeContent('');
         } else {
-            $this->content = $exists ? $this->filesystem->read($this->key) : $this->fileSystemWrite();
+            $this->content = $this->filesystem->read($this->key);
         }
 
         $this->numBytes = Util\Size::fromContent($this->content);
@@ -137,7 +141,7 @@ class InMemoryBuffer implements Stream
         }
 
         try {
-            $this->fileSystemWrite($this->content);
+            $this->writeContent($this->content);
         } catch (\Exception $e) {
             return false;
         }
@@ -213,9 +217,10 @@ class InMemoryBuffer implements Stream
      * @param bool $overwrite Overwrite by default
      * @return string
      */
-    protected function fileSystemWrite($content = '', $overwrite = true)
+    protected function writeContent($content = '', $overwrite = true)
     {
         $this->filesystem->write($this->key, $content, $overwrite);
+
         return $content;
     }
 }

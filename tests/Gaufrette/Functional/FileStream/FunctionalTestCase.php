@@ -161,6 +161,28 @@ class FunctionalTestCase extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->filesystem->has('test.txt'));
     }
 
+    /**
+     * @test
+     * @dataProvider modesProvider
+     */
+    public function shouldCreateNewFile($mode)
+    {
+        $fileHandler = fopen('gaufrette://filestream/test.txt', $mode);
+        $this->assertTrue(file_exists('gaufrette://filestream/test.txt'));
+    }
+
+    public static function modesProvider()
+    {
+        return array(
+            array('w'),
+            array('a+'),
+            array('w+'),
+            array('ab+'),
+            array('wb'),
+            array('wb+')
+        );
+    }
+
     protected function registerLocalFilesystemInStream()
     {
         $filesystemMap = StreamWrapper::getFilesystemMap();
