@@ -43,7 +43,6 @@ class InMemoryBuffer implements Stream
             return false;
         }
 
-
         if ($mode->impliesExistingContentDeletion()) {
             $this->content = $this->writeContent('');
         } elseif (!$exists && $mode->allowsNewFileOpening()) {
