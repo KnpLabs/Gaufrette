@@ -537,4 +537,17 @@ class AmazonS3 extends ObjectBehavior
             ->shouldThrow(new \RuntimeException('Failed to create the configured bucket "bucketName".'))
             ->duringExists('filename');
     }
+
+    /**
+     * @param \AmazonS3 $service
+     */
+    function it_should_set_region_when_region_option_is_set($service)
+    {
+        $service
+            ->set_region(\AmazonS3::REGION_EU_W1)
+            ->shouldBeCalled();
+
+        $this->beConstructedWith($service, 'bucketName', array('region' => \AmazonS3::REGION_EU_W1));
+        $this->exists('filename');
+    }
 }
