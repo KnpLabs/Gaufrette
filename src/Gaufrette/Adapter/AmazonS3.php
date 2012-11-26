@@ -231,6 +231,10 @@ class AmazonS3 implements Adapter,
             return;
         }
 
+        if (isset($this->options['region'])) {
+            $this->service->set_region($this->options['region']);
+        }
+
         if ($this->service->if_bucket_exists($this->bucket)) {
             $this->ensureBucket = true;
 
