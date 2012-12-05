@@ -18,9 +18,9 @@ class RackspaceCloudfiles implements Adapter,
     protected $container;
 
     /**
-     * Contructor
+     * Constructor
      *
-     * @param CF_Container $container A CF_Container instance
+     * @param RackspaceContainer $container A CF_Container instance
      */
     public function __construct(RackspaceContainer $container)
     {

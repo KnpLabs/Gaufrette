@@ -8,7 +8,7 @@ $connection = DriverManager::getConnection(array(
     'memory' => true,
 ));
 
-$plaftform = $connection->getDatabasePlatform();
+$platform = $connection->getDatabasePlatform();
 
 $schemaManager = $connection->getSchemaManager();
 
@@ -24,7 +24,7 @@ $table->addColumn('content', 'blob');
 $table->addColumn('mtime', 'integer');
 $table->addColumn('checksum', 'string', array('length' => 32));
 
-foreach ($schema->toSql($plaftform) as $query) {
+foreach ($schema->toSql($platform) as $query) {
     $connection->exec($query);
 }
 

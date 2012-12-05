@@ -380,7 +380,7 @@ class Filesystem extends ObjectBehavior
     /**
      * @param \spec\Gaufrette\Adapter $extendedAdapter
      */
-    function it_should_delegate_checksum_calculation_to_adapter_when_adapter_is_checksum_calulator($extendedAdapter)
+    function it_should_delegate_checksum_calculation_to_adapter_when_adapter_is_checksum_calculator($extendedAdapter)
     {
         $this->beConstructedWith($extendedAdapter);
         $extendedAdapter->exists('filename')->shouldBeCalled()->willReturn(true);

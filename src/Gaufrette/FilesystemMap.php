@@ -13,7 +13,7 @@ class FilesystemMap
 
     /**
      * Returns an array of all the registered filesystems where the key is the
-     * domain and the value the filsystem
+     * domain and the value the filesystem
      *
      * @return array
      */

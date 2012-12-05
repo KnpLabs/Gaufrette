@@ -129,7 +129,7 @@ class StreamWrapper extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_should_seet_in_stream($stream)
+    function it_should_seek_in_stream($stream)
     {
         $stream->seek(12, SEEK_SET)->shouldBeCalled()->willReturn(true);
         $this->stream_open('gaufrette://some/filename', 'w+');

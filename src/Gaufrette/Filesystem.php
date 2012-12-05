@@ -47,8 +47,8 @@ class Filesystem
     /**
      * Renames a file
      *
-     * @param string $key
-     * @param string $new
+     * @param string $sourceKey
+     * @param string $targetKey
      *
      * @return boolean                  TRUE if the rename was successful
      * @throws Exception\FileNotFound   when sourceKey does not exist

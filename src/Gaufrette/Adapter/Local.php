@@ -132,7 +132,7 @@ class Local implements Adapter,
     }
 
     /**
-     * @param  string  $directory
+     * @param  string  $key
      * @return boolean
      */
     public function isDirectory($key)

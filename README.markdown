@@ -66,14 +66,14 @@ echo $file->getContent(); // Hello World
 
 ### Cache a slow filesystem
 
-If you have to deal with a slow filesystem, it is out of quetion to use it directly.
+If you have to deal with a slow filesystem, it is out of question to use it directly.
 So, you need a cache! Happily, Gaufrette offers a cache system ready for use.
 It consist of an adapter itself composed of two adapters:
 
     * The *source* adapter that should be cached
     * The *cache* adapter that is used to cache
 
-Here is an exemple of how to cache an ftp filesystem:
+Here is an example of how to cache an ftp filesystem:
 
 ```php
 <?php
@@ -162,7 +162,7 @@ Streaming Files
 ---------------
 
 Sometimes, you don't have the choice, you must get a streamable file URL (i.e
-to transform an image). Let's take a look at the following exemple:
+to transform an image). Let's take a look at the following example:
 
 ```php
 $adapter = new InMemoryAdapter(array('hello.txt' => 'Hello World!'));
