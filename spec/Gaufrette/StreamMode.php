@@ -70,14 +70,14 @@ class StreamMode extends ObjectBehavior
         $this->allowsNewFileOpening()->shouldReturn(false);
     }
 
-    function it_implies_exsisting_content_deletion()
+    function it_implies_existing_content_deletion()
     {
         $this->beConstructedWith('w+');
 
         $this->allowsNewFileOpening()->shouldReturn(true);
     }
 
-    function it_does_not_implies_exsisting_content_deletion()
+    function it_does_not_implies_existing_content_deletion()
     {
         $this->beConstructedWith('r+');
 

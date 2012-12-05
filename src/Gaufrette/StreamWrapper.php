@@ -41,7 +41,7 @@ class StreamWrapper
     /**
      * Registers the stream wrapper to handle the specified scheme
      *
-     * @param string $schema Default is gaufrette
+     * @param string $scheme Default is gaufrette
      */
     public static function register($scheme = 'gaufrette')
     {

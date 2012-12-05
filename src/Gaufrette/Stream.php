@@ -94,7 +94,7 @@ interface Stream
     public function stat();
 
     /**
-     * Retrieve the underlaying resource
+     * Retrieve the underlying resource
      *
      * @param  integer $castAs
      * @return mixed   using resource or false

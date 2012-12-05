@@ -11,7 +11,7 @@ interface MetadataSupporter
 {
     /**
      * @param string $key
-     * @param array  $metadata
+     * @param array  $content
      */
     public function setMetadata($key, $content);
 

@@ -11,7 +11,7 @@ class MogileFSTest extends FunctionalTestCase
      */
     public function shouldGetMtime()
     {
-        $this->markTestSkipped('Not supported by the adpater.');
+        $this->markTestSkipped('Not supported by the adapter.');
     }
 
     /**
@@ -19,6 +19,6 @@ class MogileFSTest extends FunctionalTestCase
      */
     public function shouldGetMtimeNonExistingFile()
     {
-        $this->markTestSkipped('Not supported by the adpater.');
+        $this->markTestSkipped('Not supported by the adapter.');
     }
 }
