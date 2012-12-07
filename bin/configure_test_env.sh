@@ -4,6 +4,6 @@ sudo apt-get install libssh2-1-dev libssh2-php &> /dev/null
 sudo pecl install mongo &> /dev/null
 touch .interactive
 (sudo pecl install -f ssh2 < .interactive) &> /dev/null
-#echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
-#echo "extension=ssh2.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+sudo pecl info mongo
+
 cp tests/Gaufrette/Functional/adapters/DoctrineDbal.php.dist tests/Gaufrette/Functional/adapters/DoctrineDbal.php -f
