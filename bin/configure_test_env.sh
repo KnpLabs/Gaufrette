@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo apt-get install libssh2-1-dev libssh2-php &> /dev/null
-pecl install mongo &> /dev/null
+sudo pecl install mongo
 touch .interactive
 (pecl install -f ssh2 < .interactive) &> /dev/null
 #echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
