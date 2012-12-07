@@ -9,5 +9,5 @@ before_script:
   - composer install --dev
 
 script:
-  - php bin/phpspec run
+  - php bin/phpspec run -fpretty --verbose
   - phpunit
