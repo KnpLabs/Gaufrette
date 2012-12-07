@@ -256,6 +256,7 @@ class MogileFS implements Adapter
      */
     private function doRequest($cmd, $args = array())
     {
+        clearstatcache();
         $args['domain'] = $this->domain;
         $params = http_build_query($args);
 
