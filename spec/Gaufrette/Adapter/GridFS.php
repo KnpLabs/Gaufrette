@@ -5,7 +5,7 @@ namespace spec\Gaufrette\Adapter;
 use PHPSpec2\ObjectBehavior;
 
 //Hack cause of new version of mongo-ext https://github.com/padraic/mockery/issues/110
-\Mockery::getConfiguration()->setInternalClassMethodParamMap("MongoCollection", "aggregate", array('&$pipeline', '&$op'));
+\Mockery::getConfiguration()->setInternalClassMethodParamMap("MongoCollection", "aggregate", array('$pipeline', '$op = null', '$some = null'));
 
 class GridFS extends ObjectBehavior
 {
