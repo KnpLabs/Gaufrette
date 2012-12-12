@@ -3,7 +3,7 @@ Gaufrette
 
 Gaufrette is a PHP5 library that provides a filesystem abstraction layer.
 
-This project is under intensive development but we do not want to breaks BC.
+This project is under intensive development but we do not want to break BC.
 
 [![Build Status](https://secure.travis-ci.org/KnpLabs/Gaufrette.png)](http://travis-ci.org/KnpLabs/Gaufrette)
 
