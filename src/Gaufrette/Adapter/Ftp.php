@@ -175,7 +175,7 @@ class Ftp implements Adapter,
         $fileData = $dirs = array();
         foreach ($items as $itemData) {
             
-            if (strpos($itemData['name'],'.') !== false) {
+            if ('..' === $itemData['name'] || '.' === $itemData['name']) {
                 continue;
             }
             
