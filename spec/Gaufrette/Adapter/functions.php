@@ -85,8 +85,12 @@ function ftp_rawlist($connection, $directory, $recursive = false)
     if ('/home/l3l0' === $directory)
     {
         return array(
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 ..",
             "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 aaa",
             "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename.exe",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .htaccess",
             "lrwxrwxrwx   1 vincent  vincent        11 Jul 12 12:16 www -> aaa"
         );
     }

@@ -66,9 +66,9 @@ class Ftp extends ObjectBehavior
         $this->rename('filename', 'invalid')->shouldReturn(false);
     }
 
-    function it_should_fetch_keys()
+    function it_should_fetch_keys_without_directories_dots()
     {
-        $this->keys()->shouldReturn(array('filename', 'aaa', 'aaa/filename'));
+        $this->keys()->shouldReturn(array('filename', 'filename.exe', '.htaccess', 'aaa', 'aaa/filename'));
     }
 
     function it_should_get_mtime()
