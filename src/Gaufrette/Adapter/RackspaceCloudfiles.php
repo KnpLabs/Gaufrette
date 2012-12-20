@@ -137,7 +137,7 @@ class RackspaceCloudfiles implements Adapter,
      *
      * @return CF_Object or FALSE if the object does not exist
      */
-    protected function tryGetObject($key)
+    public function tryGetObject($key)
     {
         try {
             return $this->container->get_object($key);
