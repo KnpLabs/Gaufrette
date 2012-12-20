@@ -255,4 +255,12 @@ class Filesystem
             throw new Exception\FileNotFound($key);
         }
     }
+
+    /** 
+     * {@inheritDoc}
+     */
+    public function getObject($key)
+    {
+            return $this->adapter->tryGetObject($key);
+    }
 }
