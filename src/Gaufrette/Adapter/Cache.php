@@ -198,7 +198,7 @@ class Cache implements Adapter,
             try {
                 $dateCache = $this->cache->mtime($key);
 
-                if (time() - $this->ttl < $dateCache) {
+                if (time() - $this->ttl >= $dateCache) {
                     $dateSource = $this->source->mtime($key);
                     $needsReload = $dateCache < $dateSource;
                 } else {
