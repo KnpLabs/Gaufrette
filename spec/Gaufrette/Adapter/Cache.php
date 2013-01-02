@@ -69,7 +69,8 @@ class Cache extends ObjectBehavior
     {
         $source->read('filename')->shouldNotBeCalled();
         $cache->read('filename')->shouldBeCalled()->willReturn('some content');
-        $cache->mtime('filename')->willReturn(strtotime('2010-10-10'));
+        $source->mtime('filename')->willReturn(strtotime('2010-10-11'));
+        $cache->mtime('filename')->willReturn(strtotime('2010-10-12'));
 
         $this->read('filename')->shouldReturn('some content');
     }
@@ -83,8 +84,8 @@ class Cache extends ObjectBehavior
         $source->read('filename')->shouldBeCalled()->willReturn('some other content');
         $cache->read('filename')->shouldNotBeCalled();
         $cache->write('filename', 'some other content')->shouldBeCalled();
-        $cache->mtime('filename')->willReturn(strtotime('+1 day'));
-        $source->mtime('filename')->willReturn(strtotime('+2 days'));
+        $source->mtime('filename')->willReturn(strtotime('2010-10-11'));
+        $cache->mtime('filename')->willReturn(strtotime('2010-10-10'));
 
         $this->read('filename')->shouldReturn('some other content');
     }
