@@ -15,7 +15,8 @@ use Doctrine\DBAL\Connection;
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
 class DoctrineDbal implements Adapter,
-                              ChecksumCalculator
+                              ChecksumCalculator,
+                              ListKeysAware
 {
     protected $connection;
     protected $table;
@@ -164,6 +165,32 @@ class DoctrineDbal implements Adapter,
         );
 
         return $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function listKeys($pattern = '')
+    {
+        $pattern = trim($pattern);
+
+        $keys = $this->connection->fetchAll(
+            sprintf(
+                'SELECT %s AS _key FROM %s WHERE %s LIKE :pattern',
+                $this->getQuotedColumn('key'),
+                $this->getQuotedTable(),
+                $this->getQuotedColumn('key')
+            ),
+            array('pattern' => sprintf('%s%%', $pattern))
+        );
+
+        return array(
+            'dirs' => array(),
+            'keys' => array_map(function ($value) {
+                    return $value['_key'];
+                },
+                $keys)
+        );
     }
 
     private function getQuotedTable()

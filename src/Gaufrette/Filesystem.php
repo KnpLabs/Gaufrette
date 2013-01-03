@@ -2,6 +2,8 @@
 
 namespace Gaufrette;
 
+use Gaufrette\Adapter\ListKeysAware;
+
 /**
  * A filesystem is used to store and retrieve files
  *
@@ -170,6 +172,10 @@ class Filesystem
      */
     public function listKeys($pattern = '')
     {
+        if ($this->adapter instanceof ListKeysAware) {
+            return $this->adapter->listKeys($pattern);
+        }
+
         $dirs = array();
         $keys = array();
 
