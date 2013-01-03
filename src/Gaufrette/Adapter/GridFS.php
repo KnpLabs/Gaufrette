@@ -15,7 +15,8 @@ use \MongoDate;
  */
 class GridFS implements Adapter,
                         ChecksumCalculator,
-                        MetadataSupporter
+                        MetadataSupporter,
+                        ListKeysAware
 {
     private $metadata = array();
     protected $gridFS = null;
@@ -147,5 +148,35 @@ class GridFS implements Adapter,
     private function find($key, array $fields = array())
     {
         return $this->gridFS->findOne($key, $fields);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function listKeys($pattern = '')
+    {
+        $pattern = trim($pattern);
+
+        if ('' == $pattern) {
+            return array(
+                'dirs' => array(),
+                'keys' => $this->keys()
+            );
+        }
+
+        $result = array(
+            'dirs' => array(),
+            'keys' => array()
+        );
+
+        $gridFiles = $this->gridFS->find(array(
+            'filename' => new \MongoRegex(sprintf('/^%s/', $pattern))
+        ));
+
+        foreach ($gridFiles as $file) {
+            $result['keys'][] = $file->getFilename();
+        }
+
+        return $result;
     }
 }

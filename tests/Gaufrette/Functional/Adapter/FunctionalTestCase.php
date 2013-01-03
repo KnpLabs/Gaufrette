@@ -6,6 +6,9 @@ use Gaufrette\Filesystem;
 
 abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Filesystem
+     */
     protected $filesystem;
 
     public function getAdapterName()
