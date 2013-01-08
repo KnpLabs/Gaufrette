@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette\Adapter;
+namespace Gaufrette;
 
 /**
  * Interface which add supports for metadata
