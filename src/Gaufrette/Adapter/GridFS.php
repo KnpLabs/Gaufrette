@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\File;
 use Gaufrette\Adapter;
 use \MongoGridFS as MongoGridFs;
 use \MongoDate;
@@ -18,7 +19,6 @@ class GridFS implements Adapter,
                         MetadataSupporter,
                         ListKeysAware
 {
-    private $metadata = array();
     protected $gridFS = null;
 
     /**
@@ -36,9 +36,9 @@ class GridFS implements Adapter,
      */
     public function read($key)
     {
-        $file = $this->find($key);
+        $gridFile = $this->find($key);
 
-        return ($file) ? $file->getBytes() : false;
+        return ($gridFile) ? $gridFile->getBytes() : false;
     }
 
     /**
@@ -50,13 +50,42 @@ class GridFS implements Adapter,
             $this->delete($key);
         }
 
-        $metadata = array_replace_recursive(array('date' => new MongoDate()), $this->getMetadata($key), array('filename' => $key));
-        $id   = $this->gridFS->storeBytes($content, $metadata);
-        $file = $this->gridFS->findOne(array('_id' => $id));
+        $id = $this->gridFS->storeBytes($content);
+        $gridFile = $this->gridFS->findOne(array('_id' => $id));
 
-        return $file->getSize();
+        return $gridFile->getSize();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function readFile($key)
+    {
+        $gridFile = $this->gridFS->findOne(array('filename' => $key));
+        $file = new File($key);                
+        $file->setContent($gridFile->getBytes());
+        
+        return $file;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function writeFile($file)
+    {
+        $key = $file->getKey();
+        if ($this->exists($key)) {
+            $this->delete($key);
+        }
+        
+        $gridMetadata = array_replace_recursive(array('date' => new MongoDate()), array('metadata' => $file->getMetadata()), array('filename' => $key));
+        $id = $this->gridFS->storeBytes($file->getContent(), $gridMetadata);
+        $gridfsFile = $this->gridFS->findOne(array('_id' => $id));
+        $file->setSize($gridfsFile->getSize());
+        
+        return $file;
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -124,27 +153,11 @@ class GridFS implements Adapter,
      */
     public function delete($key)
     {
-        $file = $this->find($key, array('_id'));
+        $gridFile = $this->find($key, array('_id'));
 
-        return $file && $this->gridFS->delete($file->file['_id']);
+        return $gridFile && $this->gridFS->delete($gridFile->file['_id']);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setMetadata($key, $metadata)
-    {
-        $this->metadata[$key] = $metadata;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getMetadata($key)
-    {
-        return isset($this->metadata[$key]) ? $this->metadata[$key] : array();
-    }
-
+    
     private function find($key, array $fields = array())
     {
         return $this->gridFS->findOne($key, $fields);
@@ -179,4 +192,12 @@ class GridFS implements Adapter,
 
         return $result;
     }
+        
+    public function isMetadataKeyAllowed($metaKey)
+    {
+        //GridFS accepts any metadata key
+        return true;    
+    }
+    
+    
 }

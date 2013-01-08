@@ -4,6 +4,8 @@ namespace Gaufrette;
 
 use Gaufrette\Adapter\ListKeysAware;
 
+use Gaufrette\File;
+
 /**
  * A filesystem is used to store and retrieve files
  *
@@ -81,13 +83,9 @@ class Filesystem
      * @throws Gaufrette\Exception\FileNotFound
      * @return File
      */
-    public function get($key, $create = false)
+    public function get($key)
     {
-        if (!$create) {
-            $this->assertHasFile($key);
-        }
-
-        return $this->createFile($key);
+        return $this->readFile($key);
     }
 
     /**
@@ -114,6 +112,29 @@ class Filesystem
         return $numBytes;
     }
 
+    
+    /**
+     * Writes a complete file object into storage
+     * 
+     * @param File $file File object with a valid key and content
+     * @throws \InvalidArgumentException when key or content are not set for file
+     * 
+     * @return File $file
+     */
+    public function writeFile(File $file)
+    {
+        $key = $file->getKey();
+        if (! isset($key) || strlen($key."") < 1) {
+            throw new \InvalidArgumentException(sprintf('Key is not set for file. Cannot write.'));
+        }
+        if (strlen($file->getContent()) < 1) {
+            throw new \InvalidArgumentException(sprintf('Content is not for file "%s". Cannot write.'), $key);            
+        }
+        $file = $this->adapter->writeFile($file);
+                
+        return $file; 
+    }
+    
     /**
      * Reads the content from the file
      *
@@ -135,7 +156,15 @@ class Filesystem
 
         return $content;
     }
-
+    
+    /**
+     * Fetch a single populated file object
+     */
+    public function readFile($key)
+    {
+        return $this->adapter->readFile($key);
+    }    
+    
     /**
      * Deletes the file matching the specified key
      *

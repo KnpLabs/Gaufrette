@@ -30,6 +30,15 @@ interface Adapter
     public function write($key, $content);
 
     /**
+     * Writes complete file to filesystem
+     *
+     * @param File   $file
+     *
+     * @return File file object
+     */
+    public function writeFile($file);
+    
+    /**
      * Indicates whether the file exists
      *
      * @param string $key
