@@ -98,7 +98,7 @@ class GridFS implements Adapter,
         $id = $this->gridFS->storeBytes($file->getContent(), $gridMetadata);
         $gridfsFile = $this->gridFS->findOne(array('_id' => $id));
 
-        return $gridfsFile->getSize();
+        return $gridFSFile->file['length'];
     }
     
     /**
