@@ -8,7 +8,7 @@ use \MongoGridFSFile;
 /**
  * Points to a file in a filesystem
  *
- * @author Antoine Hérault <antoine.herault@gmail.com>
+ * @author Tomi Saarinen <tomi.saarinen@rohea.com>
  */
 class GridFS extends File
 {
@@ -17,8 +17,8 @@ class GridFS extends File
     /**
      * Constructor
      *
-     * @param string     $key
-     * @param Filesystem $filesystem
+     * @param string $key
+     * @param \MongoGridFSFile $gridFSFile
      */
     public function __construct($key, MongoGridFSFile $gridFSFile = null)
     {
@@ -29,16 +29,19 @@ class GridFS extends File
     /**
      * Returns the content
      *
-     * @return string
+     * @return string content bytes
      */
     public function getContent()
     {
         if (isset($this->content)) {
             return $this->content;
         }
+        if (isset($this->gridFSFile)) {
+            //This operation is lazy and should not be called before the bytes are actually needed in app.
+            return $this->gridFSFile->getBytes();
+        }
         
-        //This operation is lazy and should not be called before the bytes are actually needed in app.
-        return $this->gridFSFile->getBytes();
+        return null;
     }  
     
 }

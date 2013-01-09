@@ -57,8 +57,10 @@ class GridFS implements Adapter,
         //Set data for file (do not set content, it's lazy)
         $file->setMetadata($gridFSFile->file['metadata']);
         $file->setName($gridFSFile->file['name']);
-        $file->setDate($gridFSFile->file['date']);
+        $file->setTimestamp($gridFSFile->file['date']->sec);
+        $file->setSize($gridFSFile->file['length']);
         $file->setChecksum($gridFSFile->file['md5']);
+        //@todo: Mimetype
 
         return $file;        
     }

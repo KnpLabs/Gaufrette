@@ -42,7 +42,7 @@ class File
      * File date
      * @var date
      */    
-    protected $date;
+    protected $timestamp;
 
     /**
      * String checksum MD5
@@ -154,14 +154,14 @@ class File
         $this->mimetype = $mimetype;
     }
        
-    public function getDate()
+    public function getTimestamp()
     {
-        return $this->date;
+        return $this->timestamp;
     }
 
-    public function setDate($date)
+    public function setTimestamp($timestamp)
     {
-        $this->date = $date;
+        $this->timestamp = $timestamp;
     }
        
     public function getChecksum()
