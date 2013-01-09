@@ -109,6 +109,9 @@ class Filesystem
      */
     public function write($key, $content, $overwrite = false, $metadata = null)
     {
+        if (!is_bool($overwrite)) {
+            throw new \InvalidArgumentException(sprintf('Param overwrite must be boolean.'));            
+        }
         if (!$overwrite && $this->exists($key)) {
             throw new \InvalidArgumentException(sprintf('The key "%s" already exists and can not be overwritten.', $key));
         }
@@ -132,6 +135,9 @@ class Filesystem
     public function writeFile(AbstractFile $file, $overwrite = false)
     {
         $key = $file->getKey();
+        if (!is_bool($overwrite)) {
+            throw new \InvalidArgumentException(sprintf('Param overwrite must be boolean.'));            
+        }
         if (! isset($key) || strlen($key."") < 1) {
             throw new \InvalidArgumentException(sprintf('Key is not set for file. Cannot write file.'));
         }

@@ -55,7 +55,9 @@ class GridFS implements Adapter,
         $gridFSFile = $this->gridFS->findOne(array('filename' => $key));
         $file = new File($gridFSFile->file['filename'], $gridFSFile);
         //Set data for file (do not set content, it's lazy)
-        $file->setMetadata($gridFSFile->file['metadata']);
+        if (isset($gridFSFile->file['metadata'])) {
+            $file->setMetadata($gridFSFile->file['metadata']);
+        }
         $file->setName($gridFSFile->file['name']);
         $file->setTimestamp($gridFSFile->file['date']->sec);
         $file->setSize($gridFSFile->file['length']);
@@ -79,7 +81,7 @@ class GridFS implements Adapter,
                                                 array('name' => $name),
                                                 array('metadata' => $metadata),
                                                 array('filename' => $key));        
-        $id   = $this->gridFS->storeBytes($content, $metadata);
+        $id = $this->gridFS->storeBytes($content, $gridMetadata);
         $gridfsFile = $this->gridFS->findOne(array('_id' => $id));
 
         return $gridfsFile->getSize();
