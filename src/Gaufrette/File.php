@@ -39,13 +39,13 @@ class File
     protected $mimetype = "";
     
     /**
-     * File date
-     * @var date
+     * Unix Timestamp that is altered whenever file is created or updated.
+     * @var timestamp
      */    
     protected $timestamp;
 
     /**
-     * String checksum MD5
+     * MD5 checksum of the file content
      * @var checksum
      */
     protected $checksum;
