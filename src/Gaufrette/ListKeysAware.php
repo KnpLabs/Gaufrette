@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette\Adapter;
+namespace Gaufrette;
 
 /**
  * interface that adds support of native listKeys to adapter

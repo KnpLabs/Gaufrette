@@ -2,10 +2,14 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\File as AbstractFile;
+use Gaufrette\File\Local as File;
+use Gaufrette\Filesystem;
 use Gaufrette\Util;
 use Gaufrette\Adapter;
 use Gaufrette\Stream;
-use Gaufrette\Adapter\StreamFactory;
+use Gaufrette\StreamFactory;
+use Gaufrette\ChecksumCalculator;
 use Gaufrette\Exception;
 
 /**
@@ -14,7 +18,7 @@ use Gaufrette\Exception;
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class Local implements Adapter,
+class Local implements Adapter,                    
                        StreamFactory,
                        ChecksumCalculator
 {
@@ -53,7 +57,25 @@ class Local implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content)
+    public function get($key)
+    {
+        $file = new File($key);
+        $path = $this->computePath($key);
+        $file->setContent(file_get_contents($path));
+        //Set data for file (do not set content, it's lazy)
+        $file->setName("TODO: Set human-readable filename somehow...");
+        $file->setDate(filemtime($path));
+        $file->setSize(filesize($path));
+        $file->setChecksum(Util\Checksum::fromFile($path));
+        //@todo: Set Mimetype
+        
+        return $file;  
+    }    
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function write($key, $content, $metadata = null)
     {
         $path = $this->computePath($key);
         $this->ensureDirectoryExists(dirname($path), true);
@@ -61,6 +83,25 @@ class Local implements Adapter,
         return file_put_contents($path, $content);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function writeFile(AbstractFile $file)
+    {
+        $key = $file->getKey();
+        if (! isset($key) || strlen($key."") < 1) {
+            throw new \InvalidArgumentException(sprintf('Key is not set for file. Cannot write file.'));
+        }
+        if (strlen($file->getContent()) < 1) {
+            throw new \InvalidArgumentException(sprintf('Content is not for file "%s". Cannot write file.'), $key);
+        }
+        $path = $this->computePath($key);
+        $this->ensureDirectoryExists(dirname($path), true);
+        file_put_contents($path, $file->getContent());
+
+        return $file;
+    }    
+    
     /**
      * {@inheritDoc}
      */

@@ -1,8 +1,6 @@
 <?php
 
-namespace Gaufrette\Adapter;
-
-use Gaufrette\Filesystem;
+namespace Gaufrette;
 
 /**
  * Interface for the file creation class
@@ -19,5 +17,5 @@ interface FileFactory
      *
      * @return File
      */
-    public function createFile($key, Filesystem $filesystem);
+    public function createFile($key, $content = null);
 }

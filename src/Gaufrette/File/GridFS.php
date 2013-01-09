@@ -1,59 +1,18 @@
 <?php
-
-namespace Gaufrette;
+namespace Gaufrette\File;
 
 use Gaufrette\Exception\FileNotFound;
+use Gaufrette\File;
+use \MongoGridFSFile;
 
 /**
  * Points to a file in a filesystem
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
- * @author Tomi Saarinen <tomi.saarinen@rohea.com>
  */
-class File
+class GridFS extends File
 {
-    protected $key;
-
-    /**
-     * Content variable is lazy. It will not be read from filesystem until it's requested first time
-     * @var content
-     */
-    protected $content = null;
-
-    /**
-     * Human readable filename (usually the end of the key)
-     * @var string name
-     */
-    protected $name = null;
-    
-    /**
-     * File size in bytes
-     * @var int size
-     */
-    protected $size = 0;
-
-    /**
-     * File mimetype
-     * @var string mimetype
-     */
-    protected $mimetype = "";
-    
-    /**
-     * File date
-     * @var date
-     */    
-    protected $date;
-
-    /**
-     * String checksum MD5
-     * @var checksum
-     */
-    protected $checksum;
-    
-    /**
-     * @var array metadata in associative array. Only for adapters that support metadata
-     */
-    protected $metadata = null;
+    private $gridFSFile = null;
     
     /**
      * Constructor
@@ -61,9 +20,10 @@ class File
      * @param string     $key
      * @param Filesystem $filesystem
      */
-    public function __construct($key)    
+    public function __construct($key, MongoGridFSFile $gridFSFile = null)
     {
         $this->key = $key;
+        $this->gridFSFile = $gridFSFile;
     }
 
     /**
@@ -86,7 +46,10 @@ class File
      */
     public function getContent()
     {
-        return $this->content;
+        if (isset($this->content)) {
+            return $this->content;
+        }
+        return $this->gridFSFile->getBytes();
     }
 
     /**
@@ -144,26 +107,16 @@ class File
         $this->size = $size;
     }
 
-    public function getMimeType()
+    public function getMimetype()
     {
         return $this->mimetype;
     }
     
-    public function setMimeType($mimetype)
+    public function setMimetype($mimetype)
     {
         $this->mimetype = $mimetype;
     }
-       
-    public function getDate()
-    {
-        return $this->date;
-    }
-
-    public function setDate($date)
-    {
-        $this->date = $date;
-    }
-       
+    
     public function getChecksum()
     {
         return $this->checksum;
@@ -171,8 +124,9 @@ class File
     
     public function setChecksum($checksum)
     {
-        $this->checksum = $checksum;        
+        $this->checksum = $checksum;
     }
+    
     /**
      * Get metadata array
      *
@@ -192,6 +146,8 @@ class File
     public function setMetadata(array $metadata)
     {
         $this->metadata = $metadata;
+        
+        return true;
     }
 
     
@@ -204,7 +160,10 @@ class File
      */
     public function getMetadataItem($metaKey)
     {
-        return $this->metadata[$metaKey];        
+        if (! $this->supportsMetadata()) {
+            throw new \RuntimeException("This adapter does not support metadata.");
+        }
+        return $this->metadata;        
     }
     
     /**
@@ -218,8 +177,24 @@ class File
      */
     public function setMetadataItem($metaKey, $metaValue)
     {
+        if (isset($this->metadata[$metaKey])) {
+            throw new \RuntimeException("Key '$metaKey' for metadata is already in use.");
+        }
         $this->metadata[$metaKey] = $metaValue;
+        
+        return true;
     }
 
+    /**
+     * Creates a new file stream instance of the file
+     *
+     * @return FileStream
+     */
+    /*
+    public function createStream()
+    {
+        return $this->filesystem->createStream($this->key);
+    }
+    */
     
 }
