@@ -19,7 +19,7 @@ class Cache extends ObjectBehavior
     {
         $this->shouldHaveType('Gaufrette\Adapter\Cache');
         $this->shouldHaveType('Gaufrette\Adapter');
-        $this->shouldHaveType('Gaufrette\Adapter\MetadataSupporter');
+        $this->shouldHaveType('Gaufrette\MetadataSupporter');
     }
 
     /**
