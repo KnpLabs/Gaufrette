@@ -2,7 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\File as AbstractFile;
+use Gaufrette\File as GenericFile;
 use Gaufrette\File\GridFS as File;
 use Gaufrette\Adapter;
 use Gaufrette\FileFactory;
@@ -64,7 +64,7 @@ class GridFS implements Adapter,
         $file->setChecksum($gridFSFile->file['md5']);
         //@todo: Mimetype
 
-        return $file;        
+        return $file;
     }
     
     /**
@@ -82,15 +82,15 @@ class GridFS implements Adapter,
                                                 array('metadata' => $metadata),
                                                 array('filename' => $key));        
         $id = $this->gridFS->storeBytes($content, $gridMetadata);
-        $gridfsFile = $this->gridFS->findOne(array('_id' => $id));
+        $gridFSFile = $this->gridFS->findOne(array('_id' => $id));
 
-        return $gridfsFile->getSize();
+        return $gridFSFile->getSize();
     }
 
     /**
      * {@inheritDoc}
      */    
-    public function writeFile(AbstractFile $file)
+    public function writeFile(GenericFile $file)
     {
         $key = $file->getKey();
         $gridMetadata = array_replace_recursive(array('date' => new MongoDate()),
@@ -98,9 +98,13 @@ class GridFS implements Adapter,
                                                 array('metadata' => $file->getMetadata()),
                                                 array('filename' => $key));
         $id = $this->gridFS->storeBytes($file->getContent(), $gridMetadata);
-        $gridfsFile = $this->gridFS->findOne(array('_id' => $id));
+        $gridFSFile = $this->gridFS->findOne(array('_id' => $id));
+        if ($file instanceof File) {
+            $file->setGridFSFile($gridFSFile);
+        }
+        $file->setSize($gridFSFile->file['length']);
 
-        return $gridFSFile->file['length'];
+        return $file;
     }
     
     /**
@@ -224,7 +228,7 @@ class GridFS implements Adapter,
         if (isset($content)) {
             $f->setContent($content);
         }
-        return $f;        
+        return $f;
     }
 
     /**

@@ -4,7 +4,7 @@ namespace Gaufrette;
 use Gaufrette\Adapter\ListKeysAware;
 use Gaufrette\FileFactory;
 
-use Gaufrette\File as AbstractFile;
+use Gaufrette\File as GenericFile;
 
 /**
  * A filesystem is used to store and retrieve files
@@ -124,7 +124,7 @@ class Filesystem
      *
      * @return Gaufrette\File file
      */    
-    public function writeFile(AbstractFile $file, $overwrite = false)
+    public function writeFile(GenericFile $file, $overwrite = false)
     {
         $key = $file->getKey();
         if (!is_bool($overwrite)) {
@@ -133,7 +133,8 @@ class Filesystem
         if (! isset($key) || strlen($key."") < 1) {
             throw new \InvalidArgumentException(sprintf('Key is not set for file. Cannot write file.'));
         }
-        if (strlen($file->getContent()) < 1) {
+        $content = $file->getContent();
+        if (!isset($content) || strlen($content) < 1) {
             throw new \InvalidArgumentException(sprintf('Content is not for file "%s". Cannot write file.'), $key);
         }
         if (!$overwrite && $this->has($key)) {
@@ -143,7 +144,7 @@ class Filesystem
             $this->delete($key);
         }
 
-        return $this->adapter->writeFile($file);        
+        return $this->adapter->writeFile($file);
     }
 
     /**

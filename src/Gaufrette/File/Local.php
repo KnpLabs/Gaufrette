@@ -13,7 +13,7 @@ use Gaufrette\File;
  */
 class Local extends File
 {
-    private $path = "";
+    private $path = null;
     
     /**
      * Constructor
@@ -21,12 +21,21 @@ class Local extends File
      * @param string $key
      * @param string $path to file in local fs
      */
-    public function __construct($key, $path)
+    public function __construct($key)
     {
         $this->key = $key;
-        $this->path = $path;
     }
 
+    public function getPath()
+    {
+        return $this->path;
+    }
+    
+    public function setPath($path)
+    {
+        $this->path = $path;
+    }
+        
     /**
      * Returns the content
      *

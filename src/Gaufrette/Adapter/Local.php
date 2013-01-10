@@ -2,7 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\File as AbstractFile;
+use Gaufrette\File as GenericFile;
 use Gaufrette\File\Local as File;
 use Gaufrette\Filesystem;
 use Gaufrette\Util;
@@ -10,6 +10,7 @@ use Gaufrette\Adapter;
 use Gaufrette\Stream;
 use Gaufrette\StreamFactory;
 use Gaufrette\ChecksumCalculator;
+use Gaufrette\FileFactory;
 use Gaufrette\Exception;
 
 /**
@@ -20,7 +21,8 @@ use Gaufrette\Exception;
  */
 class Local implements Adapter,
                        StreamFactory,
-                       ChecksumCalculator
+                       ChecksumCalculator,
+                       FileFactory
 {
     protected $directory;
     private $create;
@@ -86,18 +88,15 @@ class Local implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function writeFile(AbstractFile $file)
+    public function writeFile(GenericFile $file)
     {
         $key = $file->getKey();
-        if (! isset($key) || strlen($key."") < 1) {
-            throw new \InvalidArgumentException(sprintf('Key is not set for file. Cannot write file.'));
-        }
-        if (strlen($file->getContent()) < 1) {
-            throw new \InvalidArgumentException(sprintf('Content is not for file "%s". Cannot write file.'), $key);
-        }
         $path = $this->computePath($key);
         $this->ensureDirectoryExists(dirname($path), true);
         file_put_contents($path, $file->getContent());
+        if ($file instanceof File) {
+            $file->setPath($path);
+        }
 
         return $file;
     }
@@ -282,5 +281,22 @@ class Local implements Adapter,
         if (!$created) {
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
         }
+    }
+    
+    /**
+     * Factory method for a new empty file object
+     *
+     * @param string $key
+     * @param string $content
+     *
+     * @return Gaufrette\File\Local file
+     */
+    public function createFile($key, $content = null)
+    {
+        $f = new File($key);
+        if (isset($content)) {
+            $f->setContent($content);
+        }
+        return $f;
     }
 }

@@ -20,12 +20,21 @@ class GridFS extends File
      * @param string $key
      * @param \MongoGridFSFile $gridFSFile
      */
-    public function __construct($key, MongoGridFSFile $gridFSFile = null)
+    public function __construct($key)
     {
         $this->key = $key;
-        $this->gridFSFile = $gridFSFile;
     }
 
+    public function getGridFSFile()
+    {
+        return $this->gridFSFile;
+    }    
+    
+    public function setGridFSFile($gridFSFile)
+    {
+        $this->gridFSFile = $gridFSFile;
+    }    
+    
     /**
      * Returns the content
      *
