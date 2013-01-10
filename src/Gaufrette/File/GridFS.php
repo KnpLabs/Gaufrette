@@ -38,7 +38,10 @@ class GridFS extends File
         }
         if (isset($this->gridFSFile)) {
             //This operation is lazy and should not be called before the bytes are actually needed in app.
-            return $this->gridFSFile->getBytes();
+            $content = $this->gridFSFile->getBytes();
+            $this->setContent($content);
+            
+            return $content;
         }
         
         return null;

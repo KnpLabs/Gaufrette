@@ -40,7 +40,7 @@ class Local extends File
         if (isset($this->path)) {
             //Let's not read bytes into memory before it's absolutely necessary
             $content = file_get_contents($this->path);
-            $file->setContent($content);
+            $this->setContent($content);
 
             return $content;
         }
