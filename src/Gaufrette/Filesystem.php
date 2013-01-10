@@ -102,7 +102,7 @@ class Filesystem
     public function write($key, $content, $overwrite = false, $metadata = null)
     {
         if (!is_bool($overwrite)) {
-            throw new \InvalidArgumentException(sprintf('Param overwrite must be boolean.'));            
+            throw new \InvalidArgumentException(sprintf('Param overwrite must be boolean.'));
         }
         if (!$overwrite && $this->exists($key)) {
             throw new \InvalidArgumentException(sprintf('The key "%s" already exists and can not be overwritten.', $key));
@@ -142,10 +142,10 @@ class Filesystem
         if ($this->has($key)) {
             $this->delete($key);
         }
-        
+
         return $this->adapter->writeFile($file);        
     }
-    
+
     /**
      * Reads the content from the file
      *
