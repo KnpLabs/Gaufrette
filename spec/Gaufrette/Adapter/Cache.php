@@ -158,8 +158,8 @@ class Cache extends ObjectBehavior
 }
 
 interface CacheTestExtendedAdapter extends \Gaufrette\Adapter,
-                                           \Gaufrette\Adapter\ChecksumCalculator,
-                                           \Gaufrette\Adapter\MetadataSupporter
+                                           \Gaufrette\ChecksumCalculator,
+                                           \Gaufrette\MetadataSupporter
 {
 
 }
