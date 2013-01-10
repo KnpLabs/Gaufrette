@@ -37,21 +37,13 @@ class Filesystem
     }
 
     /**
-     * Deprecated. Legacy forward for BC
-     */
-    public function has($key)
-    {
-        return $this->exists($key);
-    }
-
-    /**
-     * Indicates whether the file matching the specified key exists. Now with more consistent naming :)
+     * Indicates whether the file matching the specified key exists.
      *
      * @param string $key
      *
      * @return boolean TRUE if the file exists, FALSE otherwise
      */
-    public function exists($key)
+    public function has($key)
     {
         return $this->adapter->exists($key);
     }    
