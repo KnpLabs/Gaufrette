@@ -53,7 +53,8 @@ class GridFS implements Adapter,
     public function get($key)
     {
         $gridFSFile = $this->gridFS->findOne(array('filename' => $key));
-        $file = new File($gridFSFile->file['filename'], $gridFSFile);
+        $file = new File($gridFSFile->file['filename']);
+        $file->setGridFSFile($gridFSFile);
         //Set data for file (do not set content, it's lazy)
         if (isset($gridFSFile->file['metadata'])) {
             $file->setMetadata($gridFSFile->file['metadata']);

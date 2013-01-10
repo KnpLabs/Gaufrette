@@ -18,6 +18,7 @@ use Gaufrette\Exception;
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
+ * @author Tomi Saarinen <tomi.saarinen@rohea.com>
  */
 class Local implements Adapter,
                        StreamFactory,
@@ -62,9 +63,10 @@ class Local implements Adapter,
     public function get($key)
     {
         $path = $this->computePath($key);
-        $file = new File($key, $path);        
-        $info = pathinfo($path);        
+        $file = new File($key);
+        $info = pathinfo($path);
         //Set data for file (do not set content, it's lazy)
+        $file->setPath($path);
         $file->setName($info['basename']);
         $file->setTimestamp(filemtime($path));
         $file->setSize(filesize($path));

@@ -63,7 +63,7 @@ class Filesystem
     {
         $this->assertHasFile($sourceKey);
 
-        if ($this->exists($targetKey)) {
+        if ($this->has($targetKey)) {
             throw new Exception\UnexpectedFile($targetKey);
         }
 
@@ -104,7 +104,7 @@ class Filesystem
         if (!is_bool($overwrite)) {
             throw new \InvalidArgumentException(sprintf('Param overwrite must be boolean.'));
         }
-        if (!$overwrite && $this->exists($key)) {
+        if (!$overwrite && $this->has($key)) {
             throw new \InvalidArgumentException(sprintf('The key "%s" already exists and can not be overwritten.', $key));
         }
 
