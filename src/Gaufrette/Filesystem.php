@@ -155,7 +155,7 @@ class Filesystem
     }
 
     /**
-     * Returns an array of all keys matching the specified pattern
+     * Returns an array of all keys
      *
      * @return array
      */
@@ -165,22 +165,26 @@ class Filesystem
     }
 
     /**
-     * Returns an array of all items (files and directories) matching the specified pattern
+     * Lists keys beginning with pattern prefix
+     * (no wildcard / regex matching)
      *
-     * @param  string $pattern
+     * if adapter implements ListKeysAware interface, adapter's implementation will be used,
+     * in not, ALL keys will be requested and iterated through.
+     *
+     * @param  string $prefix
      * @return array
      */
-    public function listKeys($pattern = '')
+    public function listKeys($prefix = '')
     {
         if ($this->adapter instanceof ListKeysAware) {
-            return $this->adapter->listKeys($pattern);
+            return $this->adapter->listKeys($prefix);
         }
 
         $dirs = array();
         $keys = array();
 
         foreach ($this->keys() as $key) {
-            if (empty($pattern) || false !== strpos($key, $pattern)) {
+            if (empty($prefix) || false !== strpos($key, $prefix)) {
                 if ($this->adapter->isDirectory($key)) {
                     $dirs[] = $key;
                 } else {

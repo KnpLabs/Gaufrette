@@ -153,11 +153,11 @@ class GridFS implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function listKeys($pattern = '')
+    public function listKeys($prefix = '')
     {
-        $pattern = trim($pattern);
+        $prefix = trim($prefix);
 
-        if ('' == $pattern) {
+        if ('' == $prefix) {
             return array(
                 'dirs' => array(),
                 'keys' => $this->keys()
@@ -170,7 +170,7 @@ class GridFS implements Adapter,
         );
 
         $gridFiles = $this->gridFS->find(array(
-            'filename' => new \MongoRegex(sprintf('/^%s/', $pattern))
+            'filename' => new \MongoRegex(sprintf('/^%s/', $prefix))
         ));
 
         foreach ($gridFiles as $file) {
