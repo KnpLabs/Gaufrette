@@ -18,7 +18,7 @@ use Gaufrette\Exception;
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class Local implements Adapter,                    
+class Local implements Adapter,
                        StreamFactory,
                        ChecksumCalculator
 {
@@ -59,18 +59,18 @@ class Local implements Adapter,
      */
     public function get($key)
     {
-        $file = new File($key);
         $path = $this->computePath($key);
-        $file->setContent(file_get_contents($path));
+        $file = new File($key, $path);        
+        $info = pathinfo($path);        
         //Set data for file (do not set content, it's lazy)
-        $file->setName("TODO: Set human-readable filename somehow...");
-        $file->setDate(filemtime($path));
+        $file->setName($info['basename']);
+        $file->setTimestamp(filemtime($path));
         $file->setSize(filesize($path));
         $file->setChecksum(Util\Checksum::fromFile($path));
         //@todo: Set Mimetype
-        
-        return $file;  
-    }    
+
+        return $file;
+    }
     
     /**
      * {@inheritDoc}
@@ -100,8 +100,8 @@ class Local implements Adapter,
         file_put_contents($path, $file->getContent());
 
         return $file;
-    }    
-    
+    }
+
     /**
      * {@inheritDoc}
      */

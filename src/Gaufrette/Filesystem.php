@@ -136,10 +136,10 @@ class Filesystem
         if (strlen($file->getContent()) < 1) {
             throw new \InvalidArgumentException(sprintf('Content is not for file "%s". Cannot write file.'), $key);
         }
-        if (!$overwrite && $this->exists($key)) {
+        if (!$overwrite && $this->has($key)) {
             throw new \RuntimeException(sprintf('The key "%s" already exists and can not be overwritten.', $key));
         }        
-        if ($this->exists($key)) {
+        if ($this->has($key)) {
             $this->delete($key);
         }
         
