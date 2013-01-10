@@ -2,6 +2,8 @@
 
 namespace Gaufrette;
 
+use Gaufrette\File as GenericFile;
+
 /**
  * Interface for the filesystem adapters
  *
@@ -29,6 +31,15 @@ interface Adapter
      */
     public function write($key, $content);
 
+    /**
+     * Writes file object into storage
+     * 
+     * @param object $file
+     *
+     * @return object $file
+     */    
+    public function writeFile(GenericFile $file);
+    
     /**
      * Indicates whether the file exists
      *

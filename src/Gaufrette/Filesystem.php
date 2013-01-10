@@ -1,8 +1,10 @@
 <?php
-
 namespace Gaufrette;
 
 use Gaufrette\Adapter\ListKeysAware;
+use Gaufrette\FileFactory;
+
+use Gaufrette\File as GenericFile;
 
 /**
  * A filesystem is used to store and retrieve files
@@ -35,7 +37,7 @@ class Filesystem
     }
 
     /**
-     * Indicates whether the file matching the specified key exists
+     * Indicates whether the file matching the specified key exists.
      *
      * @param string $key
      *
@@ -44,8 +46,8 @@ class Filesystem
     public function has($key)
     {
         return $this->adapter->exists($key);
-    }
-
+    }    
+    
     /**
      * Renames a file
      *
@@ -76,18 +78,15 @@ class Filesystem
      * Returns the file matching the specified key
      *
      * @param string  $key    Key of the file
-     * @param boolean $create Whether to create the file if it does not exist
      *
      * @throws Gaufrette\Exception\FileNotFound
      * @return File
      */
-    public function get($key, $create = false)
+    public function get($key)
     {
-        if (!$create) {
-            $this->assertHasFile($key);
-        }
+        $this->assertHasFile($key);
 
-        return $this->createFile($key);
+        return $this->adapter->get($key);
     }
 
     /**
@@ -96,22 +95,56 @@ class Filesystem
      * @param string  $key       Key of the file
      * @param string  $content   Content to write in the file
      * @param boolean $overwrite Whether to overwrite the file if exists
+     * @param array   $metadata  Optional metadata for adapters supporting it
      *
      * @return integer The number of bytes that were written into the file
      */
-    public function write($key, $content, $overwrite = false)
+    public function write($key, $content, $overwrite = false, $metadata = null)
     {
+        if (!is_bool($overwrite)) {
+            throw new \InvalidArgumentException(sprintf('Param overwrite must be boolean.'));
+        }
         if (!$overwrite && $this->has($key)) {
             throw new \InvalidArgumentException(sprintf('The key "%s" already exists and can not be overwritten.', $key));
         }
 
-        $numBytes = $this->adapter->write($key, $content);
+        $numBytes = $this->adapter->write($key, $content, $metadata);
 
         if (false === $numBytes) {
             throw new \RuntimeException(sprintf('Could not write the "%s" key content.', $key));
         }
 
         return $numBytes;
+    }
+
+    /**
+     * Writes a complete file into storage
+     *
+     * @param Gaufrette\File file
+     *
+     * @return Gaufrette\File file
+     */    
+    public function writeFile(GenericFile $file, $overwrite = false)
+    {
+        $key = $file->getKey();
+        if (!is_bool($overwrite)) {
+            throw new \InvalidArgumentException(sprintf('Param overwrite must be boolean.'));            
+        }
+        if (! isset($key) || strlen($key."") < 1) {
+            throw new \InvalidArgumentException(sprintf('Key is not set for file. Cannot write file.'));
+        }
+        $content = $file->getContent();
+        if (!isset($content) || strlen($content) < 1) {
+            throw new \InvalidArgumentException(sprintf('Content is not for file "%s". Cannot write file.'), $key);
+        }
+        if (!$overwrite && $this->has($key)) {
+            throw new \RuntimeException(sprintf('The key "%s" already exists and can not be overwritten.', $key));
+        }        
+        if ($this->has($key)) {
+            $this->delete($key);
+        }
+
+        return $this->adapter->writeFile($file);
     }
 
     /**
@@ -244,7 +277,7 @@ class Filesystem
      */
     public function createFile($key)
     {
-        if ($this->adapter instanceof Adapter\FileFactory) {
+        if ($this->adapter instanceof FileFactory) {
             return $this->adapter->createFile($key, $this);
         }
 

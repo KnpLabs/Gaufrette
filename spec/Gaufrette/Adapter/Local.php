@@ -138,6 +138,6 @@ class Local extends ObjectBehavior
 
     function it_should_be_able_to_calculate_checksum()
     {
-        $this->shouldHaveType('Gaufrette\Adapter\ChecksumCalculator');
+        $this->shouldHaveType('Gaufrette\ChecksumCalculator');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Gaufrette\Adapter;
+namespace Gaufrette;
 
 /**
  * Interface which add checksum calculation support to adapter

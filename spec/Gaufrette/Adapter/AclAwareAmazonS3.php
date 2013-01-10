@@ -19,7 +19,7 @@ class AclAwareAmazonS3 extends ObjectBehavior
     {
         $this->shouldHaveType('Gaufrette\Adapter\AclAwareAmazonS3');
         $this->shouldHaveType('Gaufrette\Adapter');
-        $this->shouldHaveType('Gaufrette\Adapter\MetadataSupporter');
+        $this->shouldHaveType('Gaufrette\MetadataSupporter');
     }
 
     /**
@@ -229,6 +229,6 @@ class AclAwareAmazonS3 extends ObjectBehavior
 }
 
 interface TestDelegateAdapter extends \Gaufrette\Adapter,
-                                      \Gaufrette\Adapter\MetadataSupporter
+                                      \Gaufrette\MetadataSupporter
 {
 }

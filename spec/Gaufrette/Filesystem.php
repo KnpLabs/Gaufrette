@@ -392,8 +392,8 @@ class Filesystem extends ObjectBehavior
 }
 
 interface Adapter extends \Gaufrette\Adapter,
-                          \Gaufrette\Adapter\FileFactory,
-                          \Gaufrette\Adapter\StreamFactory,
-                          \Gaufrette\Adapter\ChecksumCalculator,
-                          \Gaufrette\Adapter\MetadataSupporter
+                          \Gaufrette\FileFactory,
+                          \Gaufrette\StreamFactory,
+                          \Gaufrette\ChecksumCalculator,
+                          \Gaufrette\MetadataSupporter
 {}
