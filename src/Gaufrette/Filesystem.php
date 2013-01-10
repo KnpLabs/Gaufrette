@@ -165,7 +165,7 @@ class Filesystem
     }
 
     /**
-     * Lists keys beginning with pattern prefix
+     * Lists keys beginning with given prefix
      * (no wildcard / regex matching)
      *
      * if adapter implements ListKeysAware interface, adapter's implementation will be used,
