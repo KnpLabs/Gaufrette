@@ -51,6 +51,13 @@ class File
     protected $checksum;
     
     /**
+     * Optional uri for file. Useful for certain types of CDN adapters.
+     * Can be used to store file uri when file is created to avoid extra requests to cdn server
+     * @var uri
+     */    
+    protected $uri = null;
+    
+    /**
      * @var array metadata in associative array. Only for adapters that support metadata
      */
     protected $metadata = null;
@@ -173,6 +180,17 @@ class File
     {
         $this->checksum = $checksum;        
     }
+    
+    public function getUri()
+    {
+        return $this->uri;
+    }
+    
+    public function setUri($uri)
+    {
+        $this->uri = $uri;
+    }
+    
     /**
      * Get metadata array
      *
