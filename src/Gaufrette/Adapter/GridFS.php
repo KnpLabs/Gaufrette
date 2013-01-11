@@ -2,8 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\File as GenericFile;
-use Gaufrette\File\GridFS as File;
+use Gaufrette\File;
+use Gaufrette\File\GridFS as GridFSFile;
 use Gaufrette\Adapter;
 use Gaufrette\FileFactory;
 use Gaufrette\ChecksumCalculator;
@@ -53,7 +53,7 @@ class GridFS implements Adapter,
     public function get($key)
     {
         $gridFSFile = $this->gridFS->findOne(array('filename' => $key));
-        $file = new File($gridFSFile->file['filename']);
+        $file = new GridFSFile($gridFSFile->file['filename']);
         $file->setGridFSFile($gridFSFile);
         //Set data for file (do not set content, it's lazy)
         if (isset($gridFSFile->file['metadata'])) {
@@ -78,10 +78,12 @@ class GridFS implements Adapter,
         }
         //@todo: Parse human-readable name for file from key somehow because plain keys are usually ugly.
         $name = $key;
-        $gridMetadata = array_replace_recursive(array('date' => new MongoDate()),
-                                                array('name' => $name),
-                                                array('metadata' => $metadata),
-                                                array('filename' => $key));        
+        $gridMetadata = array(
+            'date' => new MongoDate(),
+            'name' => $name,
+            'metadata' => $metadata,
+            'filename' => $key,
+        );
         $id = $this->gridFS->storeBytes($content, $gridMetadata);
         $gridFSFile = $this->gridFS->findOne(array('_id' => $id));
 
@@ -91,23 +93,27 @@ class GridFS implements Adapter,
     /**
      * {@inheritDoc}
      */    
-    public function writeFile(GenericFile $file)
+    public function writeFile(File $file)
     {
         $key = $file->getKey();
-        $gridMetadata = array_replace_recursive(array('date' => new MongoDate()),
-                                                array('name' => $file->getName()),
-                                                array('metadata' => $file->getMetadata()),
-                                                array('filename' => $key));
+        $gridMetadata = array(
+            'date' => new MongoDate(),
+            'name' => $file->getName(),
+            'metadata' => $file->getMetadata(),
+            'filename' => $key,
+        );
         $id = $this->gridFS->storeBytes($file->getContent(), $gridMetadata);
         $gridFSFile = $this->gridFS->findOne(array('_id' => $id));
-        if ($file instanceof File) {
+        if ($file instanceof GridFSFile) {
             $file->setGridFSFile($gridFSFile);
         }
+        $file->setTimestamp($gridFSFile->file['date']->sec);
         $file->setSize($gridFSFile->file['length']);
+        $file->setChecksum($gridFSFile->file['md5']);
 
-        return $file;
+        return true;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -225,7 +231,7 @@ class GridFS implements Adapter,
      */
     public function createFile($key, $content = null)
     {
-        $f = new File($key);
+        $f = new GridFSFile($key);
         if (isset($content)) {
             $f->setContent($content);
         }
@@ -240,5 +246,4 @@ class GridFS implements Adapter,
         //GridFS accepts any metadata key
         return true;
     }
-
 }

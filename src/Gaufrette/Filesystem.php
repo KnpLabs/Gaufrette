@@ -1,10 +1,11 @@
 <?php
 namespace Gaufrette;
 
-use Gaufrette\Adapter\ListKeysAware;
+use Gaufrette\ListKeysAware;
 use Gaufrette\FileFactory;
+use Gaufrette\MetadataSupporter;
 
-use Gaufrette\File as GenericFile;
+use Gaufrette\File;
 
 /**
  * A filesystem is used to store and retrieve files
@@ -104,6 +105,12 @@ class Filesystem
         if (!is_bool($overwrite)) {
             throw new \InvalidArgumentException(sprintf('Param overwrite must be boolean.'));
         }
+        if (! isset($key) || strlen($key."") < 1) {
+            throw new \InvalidArgumentException(sprintf('Key is not set for file. Cannot write file.'));
+        }
+        if (!isset($content) || strlen($content) < 1) {
+            throw new \InvalidArgumentException(sprintf('Content is not for file "%s". Cannot write file.'), $key);
+        }
         if (!$overwrite && $this->has($key)) {
             throw new \InvalidArgumentException(sprintf('The key "%s" already exists and can not be overwritten.', $key));
         }
@@ -122,13 +129,13 @@ class Filesystem
      *
      * @param Gaufrette\File file
      *
-     * @return Gaufrette\File file
+     * @return boolean success
      */    
-    public function writeFile(GenericFile $file, $overwrite = false)
+    public function writeFile(File $file, $overwrite = false)
     {
         $key = $file->getKey();
         if (!is_bool($overwrite)) {
-            throw new \InvalidArgumentException(sprintf('Param overwrite must be boolean.'));            
+            throw new \InvalidArgumentException(sprintf('Param overwrite must be boolean.'));
         }
         if (! isset($key) || strlen($key."") < 1) {
             throw new \InvalidArgumentException(sprintf('Key is not set for file. Cannot write file.'));
@@ -282,6 +289,22 @@ class Filesystem
         }
 
         return new File($key, $this);
+    }
+
+    /**
+     * Function for checking if filesystem supports given metadata key
+     *
+     * @param string metaKey
+     *
+     * @return boolean TRUE if supports, FALSE if not
+     */
+    public function isMetadataKeyAllowed($metaKey)
+    {
+        if ($this->adapter instanceof MetadataSupporter) {
+            return $this->adapter->isMetadataKeyAllowed($metaKey);
+        }
+
+        return false;
     }
 
     /**

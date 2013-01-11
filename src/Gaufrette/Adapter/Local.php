@@ -2,8 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\File as GenericFile;
-use Gaufrette\File\Local as File;
+use Gaufrette\File;
+use Gaufrette\File\Local as LocalFile;
 use Gaufrette\Filesystem;
 use Gaufrette\Util;
 use Gaufrette\Adapter;
@@ -63,7 +63,7 @@ class Local implements Adapter,
     public function get($key)
     {
         $path = $this->computePath($key);
-        $file = new File($key);
+        $file = new LocalFile($key);
         $info = pathinfo($path);
         //Set data for file (do not set content, it's lazy)
         $file->setPath($path);
@@ -90,17 +90,21 @@ class Local implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function writeFile(GenericFile $file)
+    public function writeFile(File $file)
     {
         $key = $file->getKey();
         $path = $this->computePath($key);
         $this->ensureDirectoryExists(dirname($path), true);
         file_put_contents($path, $file->getContent());
-        if ($file instanceof File) {
+        if ($file instanceof LocalFile) {
             $file->setPath($path);
         }
-
-        return $file;
+        $info = pathinfo($path);
+        $file->setName($info['basename']);
+        $file->setTimestamp(filemtime($path));
+        $file->setSize(filesize($path));
+        $file->setChecksum(Util\Checksum::fromFile($path));
+        return true;
     }
 
     /**
@@ -295,7 +299,7 @@ class Local implements Adapter,
      */
     public function createFile($key, $content = null)
     {
-        $f = new File($key);
+        $f = new LocalFile($key);
         if (isset($content)) {
             $f->setContent($content);
         }

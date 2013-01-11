@@ -81,7 +81,6 @@ class File
      *
      * @throws Gaufrette\Exception\FileNotFound
      *
-     * @param  array  $metadata optional metadata which should be send when read
      * @return string
      */
     public function getContent()
@@ -93,7 +92,6 @@ class File
      * Sets the content
      *
      * @param string $content
-     * @param array  $metadata optional metadata which should be send when write
      *
      * @return integer The number of bytes that were written into the file, or
      *                 FALSE on failure
@@ -181,7 +179,7 @@ class File
      */
     public function getMetadata()
     {
-        return isset($this->metadata) ? $this->metadata : null;
+        return isset($this->metadata) ? $this->metadata : array();
     }
     
     /**
@@ -201,11 +199,14 @@ class File
      *
      * @param string metaKey
      *
-     * @return string value
+     * @return string value, null if key does not exist
      */
     public function getMetadataItem($metaKey)
     {
-        return $this->metadata[$metaKey];        
+        if (isset($this->metadata[$metaKey])) {
+            return $this->metadata[$metaKey];
+        }
+        return null;
     }
     
     /**
@@ -213,12 +214,9 @@ class File
      * 
      * @param   string  $metaKey
      * @param   string  $metaValue
-     * @throws  \RuntimeException when metaKey is already reserved
-     *
-     * @return  boolean success
      */
     public function setMetadataItem($metaKey, $metaValue)
-    {
+    {        
         $this->metadata[$metaKey] = $metaValue;
     }
 
