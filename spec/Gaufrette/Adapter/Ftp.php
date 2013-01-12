@@ -99,6 +99,14 @@ class Ftp extends ObjectBehavior
         $this->createFile('filename', $filesystem)->shouldReturnAnInstanceOf('\Gaufrette\File');
     }
 
+    /**
+     * @param \Gaufrette\Filesystem $filesystem
+     */
+    function it_should_create_file_in_not_existing_directory($filesystem)
+    {
+        $this->createFile('bb/cc/dd/filename', $filesystem)->shouldReturnAnInstanceOf('\Gaufrette\File');
+    }
+
     function it_should_check_is_directory()
     {
         $this->isDirectory('aaa')->shouldReturn(true);
