@@ -25,7 +25,7 @@ class File
      * @var string name
      */
     protected $name = null;
-    
+
     /**
      * File size in bytes
      * @var int size
@@ -37,31 +37,31 @@ class File
      * @var string mimetype
      */
     protected $mimetype = "";
-    
+
     /**
      * Unix Timestamp that is altered whenever file is created or updated.
-     * @var timestamp
-     */    
+     * @var int timestamp
+     */
     protected $timestamp;
 
     /**
      * MD5 checksum of the file content
-     * @var checksum
+     * @var string checksum
      */
     protected $checksum;
-    
+
     /**
-     * @var array metadata in associative array. Only for adapters that support metadata
+     * Metadata in associative array. Only for adapters that support metadata
+     * @var array metadata
      */
-    protected $metadata = null;
-    
+    protected $metadata = array();
+
     /**
      * Constructor
      *
      * @param string     $key
-     * @param Filesystem $filesystem
      */
-    public function __construct($key)    
+    public function __construct($key)
     {
         $this->key = $key;
     }
@@ -79,8 +79,6 @@ class File
     /**
      * Returns the content
      *
-     * @throws Gaufrette\Exception\FileNotFound
-     *
      * @return string
      */
     public function getContent()
@@ -92,15 +90,12 @@ class File
      * Sets the content
      *
      * @param string $content
-     *
-     * @return integer The number of bytes that were written into the file, or
-     *                 FALSE on failure
      */
     public function setContent($content)
     {
         $this->content = $content;
-    }    
-    
+    }
+
     /**
      * @return string name of the file
      */
@@ -115,8 +110,8 @@ class File
     public function setName($name)
     {
         $this->name = $name;
-    }    
-    
+    }
+
     /**
      * @return int size of the file
      */
@@ -146,12 +141,12 @@ class File
     {
         return $this->mimetype;
     }
-    
+
     public function setMimeType($mimetype)
     {
         $this->mimetype = $mimetype;
     }
-       
+
     public function getTimestamp()
     {
         return $this->timestamp;
@@ -161,17 +156,17 @@ class File
     {
         $this->timestamp = $timestamp;
     }
-       
+
     public function getChecksum()
     {
         return $this->checksum;
     }
-    
+
     public function setChecksum($checksum)
     {
-        $this->checksum = $checksum;        
+        $this->checksum = $checksum;
     }
-    
+
     /**
      * Get metadata array
      *
@@ -179,9 +174,9 @@ class File
      */
     public function getMetadata()
     {
-        return isset($this->metadata) ? $this->metadata : array();
+        return $this->metadata;
     }
-    
+
     /**
      * Sets the metadata array to be stored in adapters that can support it
      *
@@ -193,7 +188,7 @@ class File
         $this->metadata = $metadata;
     }
 
-    
+
     /**
      * Get single metadata item
      *
@@ -208,17 +203,15 @@ class File
         }
         return null;
     }
-    
+
     /**
      * Add one metadata item to file (only if adapter supports metadata)
-     * 
+     *
      * @param   string  $metaKey
      * @param   string  $metaValue
      */
     public function setMetadataItem($metaKey, $metaValue)
-    {        
+    {
         $this->metadata[$metaKey] = $metaValue;
     }
-
-    
 }

@@ -75,7 +75,7 @@ class Local implements Adapter,
 
         return $file;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -288,14 +288,14 @@ class Local implements Adapter,
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
         }
     }
-    
+
     /**
      * Factory method for a new empty file object
      *
      * @param string $key
      * @param string $content
      *
-     * @return Gaufrette\File\Local file
+     * @return Gaufrette\File\Local
      */
     public function createFile($key, $content = null)
     {
