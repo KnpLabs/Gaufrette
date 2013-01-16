@@ -108,7 +108,7 @@ class Ftp implements Adapter,
     public function exists($key)
     {
         $file  = $this->computePath($key);
-        $items = ftp_nlist($this->getConnection(), dirname($file));
+        $items = ftp_nlist($this->getConnection(), '-al ' . dirname($file));
 
         return $items && (in_array($file, $items) || in_array(basename($file), $items));
     }
@@ -169,16 +169,16 @@ class Ftp implements Adapter,
         $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
 
         $items = $this->parseRawlist(
-            ftp_rawlist($this->getConnection(), $this->directory . $directory ) ? : array()
+            ftp_rawlist($this->getConnection(), '-al ' . $this->directory . $directory ) ? : array()
         );
 
         $fileData = $dirs = array();
         foreach ($items as $itemData) {
-            
+
             if ('..' === $itemData['name'] || '.' === $itemData['name']) {
                 continue;
             }
-            
+
             $item = array(
                 'name'  => $itemData['name'],
                 'path'  => trim(($directory ? $directory . '/' : '') . $itemData['name'], '/'),
