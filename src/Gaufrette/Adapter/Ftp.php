@@ -26,6 +26,7 @@ class Ftp implements Adapter,
     protected $create;
     protected $mode;
     protected $fileData = array();
+    private $creatingBaseDirectory = false;
 
     /**
      * Constructor
@@ -174,11 +175,11 @@ class Ftp implements Adapter,
 
         $fileData = $dirs = array();
         foreach ($items as $itemData) {
-            
+
             if ('..' === $itemData['name'] || '.' === $itemData['name']) {
                 continue;
             }
-            
+
             $item = array(
                 'name'  => $itemData['name'],
                 'path'  => trim(($directory ? $directory . '/' : '') . $itemData['name'], '/'),
@@ -280,7 +281,9 @@ class Ftp implements Adapter,
         }
 
         // change directory again to return in the base directory
-        ftp_chdir($this->getConnection(), $this->directory);
+        if (!$this->creatingBaseDirectory) {
+            ftp_chdir($this->getConnection(), $this->directory);
+        }
 
         return true;
     }
@@ -395,12 +398,15 @@ class Ftp implements Adapter,
 
         // ensure the adapter's directory exists
         if ('/' !== $this->directory) {
+            $this->creatingBaseDirectory = true;
             try {
                 $this->ensureDirectoryExists($this->directory, $this->create);
             } catch (\RuntimeException $e) {
+                $this->creatingBaseDirectory = false;
                 $this->close();
                 throw $e;
             }
+            $this->creatingBaseDirectory = false;
 
             // change the current directory for the adapter's directory
             if (!ftp_chdir($this->connection, $this->directory)) {

@@ -104,4 +104,11 @@ class Ftp extends ObjectBehavior
         $this->isDirectory('aaa')->shouldReturn(true);
         $this->isDirectory('filename')->shouldReturn(false);
     }
+
+    function it_should_create_base_directory_without_warning()
+    {
+        $this->beConstructedWith('/home/l3l0/new', 'localhost', array('create' => true));
+
+        $this->listDirectory()->shouldReturn(array('keys' => array(), 'dirs' => array()));
+    }
 }
