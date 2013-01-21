@@ -39,6 +39,12 @@ class File
     protected $size = 0;
 
     /**
+     * File date modified
+     * @var int mtime
+     */
+    protected $mtime = null;
+
+    /**
      * Constructor
      *
      * @param string     $key
@@ -102,6 +108,16 @@ class File
         }
 
         return 0;
+    }
+
+    /**
+     * Returns the file modified time
+     *
+     * @return int
+     */    
+    public function getMtime()
+    {
+        return $this->mtime = $this->filesystem->mtime($this->key);
     }
 
     /**
