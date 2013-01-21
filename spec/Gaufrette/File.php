@@ -36,6 +36,16 @@ class File extends ObjectBehavior
 
     /**
      * @param \Gaufrette\Filesystem $filesystem
+     */
+    function it_should_get_mtime($filesystem)
+    {
+        $filesystem->mtime('filename')->shouldBeCalled()->willReturn(1358797854);
+
+        $this->getMtime()->shouldReturn(1358797854);
+    }
+
+    /**
+     * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
     function it_should_pass_metadata_when_write_content($filesystem, $adapter)
