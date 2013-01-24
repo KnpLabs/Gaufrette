@@ -124,11 +124,13 @@ class Local implements Adapter,
      */
     public function delete($key)
     {
-        if ($this->isDirectory($key)) {
-            return rmdir($this->computePath($key));
+        $path = $this->computePath($key);
+
+        if (is_dir($path)) {
+            return rmdir($path);
         }
 
-        return unlink($this->computePath($key));
+        return unlink($path);
     }
 
     /**
