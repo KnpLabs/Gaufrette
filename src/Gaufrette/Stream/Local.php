@@ -31,6 +31,10 @@ class Local implements Stream
      */
     public function open(StreamMode $mode)
     {
+        if ($mode->allowsWrite() && !is_dir(dirname($this->path))) {
+            mkdir(dirname($this->path), 0777, true);
+        }
+
         $fileHandle = @fopen($this->path, $mode->getMode());
 
         if (false === $fileHandle) {
