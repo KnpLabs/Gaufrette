@@ -53,29 +53,6 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
     }
 
     /**
-     * Initializes the container
-     */
-    protected function initialize()
-    {
-        if (!$this->initialized) {
-            if (!$this->authentication->authenticated()) {
-                $this->authentication->authenticate();
-            }
-
-            $conn = new RackspaceConnection($this->authentication);
-
-            $container = null;
-            if ($this->createContainer) {
-                $this->container = $conn->create_container($this->containerName);
-            } else {
-                $this->container = $conn->get_container($this->containerName);
-            }
-
-            $this->initialized = true;
-        }
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function read($key)
@@ -133,5 +110,28 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
         $this->initialize();
 
         return parent::delete($key);
+    }
+
+    /**
+     * Initializes the container
+     */
+    protected function initialize()
+    {
+        if (!$this->initialized) {
+            if (!$this->authentication->authenticated()) {
+                $this->authentication->authenticate();
+            }
+
+            $conn = new RackspaceConnection($this->authentication);
+
+            $container = null;
+            if ($this->createContainer) {
+                $this->container = $conn->create_container($this->containerName);
+            } else {
+                $this->container = $conn->get_container($this->containerName);
+            }
+
+            $this->initialized = true;
+        }
     }
 }
