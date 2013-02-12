@@ -12,13 +12,12 @@ use Gaufrette\Adapter\RackspaceCloudfiles;
  * Rackspace cloudfiles adapter (based on the default gaufrette rackspace adapter) that issues authentication and
  * initializes the container only when needed to.
  *
- * @package GaufretteBundle
  * @author  Luciano Mammino <lmammino@oryzone.com>
  */
 class LazyRackspaceCloudfiles extends RackspaceCloudfiles
 {
     /**
-     * @var \CF_Authentication $authentication
+     * @var RackspaceAuthentication $authentication
      */
     protected $authentication;
 
@@ -41,9 +40,10 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
      * Constructor.
      * Creates a new Rackspace adapter starting from a rackspace authentication instance and a container name
      *
-     * @param \CF_Authentication $authentication
-     * @param string             $containerName
-     * @param bool               $createContainer if <code>TRUE</code> will try to create the container if not existent. Default <code>FALSE</code>
+     * @param RackspaceAuthentication $authentication
+     * @param string                  $containerName
+     * @param bool                    $createContainer if <code>TRUE</code> will try to create the container if not
+     *  existent. Default <code>FALSE</code>
      */
     public function __construct(RackspaceAuthentication $authentication, $containerName, $createContainer = FALSE)
     {
@@ -58,16 +58,18 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
     protected function initialize()
     {
         if (!$this->initialized) {
-            if(!$this->authentication->authenticated())
+            if (!$this->authentication->authenticated()) {
                 $this->authentication->authenticate();
+            }
 
             $conn = new RackspaceConnection($this->authentication);
 
             $container = NULL;
-            if($this->createContainer)
+            if ($this->createContainer) {
                 $this->container = $conn->create_container($this->containerName);
-            else
+            } else {
                 $this->container = $conn->get_container($this->containerName);
+            }
 
             $this->initialized = TRUE;
         }
