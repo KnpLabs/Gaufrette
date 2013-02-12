@@ -34,7 +34,7 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
     /**
      * @var bool $initialized
      */
-    protected $initialized = FALSE;
+    protected $initialized = false;
 
     /**
      * Constructor.
@@ -43,7 +43,7 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
      * @param RackspaceAuthentication $authentication
      * @param string                  $containerName
      * @param bool                    $createContainer if <code>true</code> will try to create the container if not
-     *  existent. Default <code>FALSE</code>
+     *  existent. Default <code>false</code>
      */
     public function __construct(RackspaceAuthentication $authentication, $containerName, $createContainer = false)
     {
