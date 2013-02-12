@@ -2,9 +2,9 @@
 
 namespace Gaufrette\Adapter;
 
-use \CF_Container as RackspaceContainer,
-    \CF_Authentication as RackspaceAuthentication,
-    \CF_Connection as RackspaceConnection;
+use \CF_Container as RackspaceContainer;
+use \CF_Authentication as RackspaceAuthentication;
+use \CF_Connection as RackspaceConnection;
 
 use Gaufrette\Adapter\RackspaceCloudfiles;
 
