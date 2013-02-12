@@ -42,8 +42,8 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
      * Creates a new Rackspace adapter starting from a rackspace authentication instance and a container name
      *
      * @param \CF_Authentication $authentication
-     * @param string $containerName
-     * @param bool $createContainer if <code>TRUE</code> will try to create the container if not existent. Default <code>FALSE</code>
+     * @param string             $containerName
+     * @param bool               $createContainer if <code>TRUE</code> will try to create the container if not existent. Default <code>FALSE</code>
      */
     public function __construct(RackspaceAuthentication $authentication, $containerName, $createContainer = FALSE)
     {
@@ -57,8 +57,7 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
      */
     protected function initialize()
     {
-        if(!$this->initialized)
-        {
+        if (!$this->initialized) {
             if(!$this->authentication->authenticated())
                 $this->authentication->authenticate();
 
@@ -80,6 +79,7 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
     public function read($key)
     {
         $this->initialize();
+
         return parent::read($key);
     }
 
@@ -89,6 +89,7 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
     public function write($key, $content, array $metadata = null)
     {
         $this->initialize();
+
         return parent::write($key, $content, $metadata);
     }
 
@@ -98,6 +99,7 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
     public function exists($key)
     {
         $this->initialize();
+
         return parent::exists($key);
     }
 
@@ -107,6 +109,7 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
     public function keys()
     {
         $this->initialize();
+
         return parent::keys();
     }
 
@@ -116,6 +119,7 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
     public function checksum($key)
     {
         $this->initialize();
+
         return parent::keys();
     }
 
@@ -125,6 +129,7 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
     public function delete($key)
     {
         $this->initialize();
+
         return parent::delete($key);
     }
 }
