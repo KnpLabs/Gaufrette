@@ -42,10 +42,10 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
      *
      * @param RackspaceAuthentication $authentication
      * @param string                  $containerName
-     * @param bool                    $createContainer if <code>TRUE</code> will try to create the container if not
+     * @param bool                    $createContainer if <code>true</code> will try to create the container if not
      *  existent. Default <code>FALSE</code>
      */
-    public function __construct(RackspaceAuthentication $authentication, $containerName, $createContainer = FALSE)
+    public function __construct(RackspaceAuthentication $authentication, $containerName, $createContainer = false)
     {
         $this->authentication = $authentication;
         $this->containerName = $containerName;
@@ -64,14 +64,14 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
 
             $conn = new RackspaceConnection($this->authentication);
 
-            $container = NULL;
+            $container = null;
             if ($this->createContainer) {
                 $this->container = $conn->create_container($this->containerName);
             } else {
                 $this->container = $conn->get_container($this->containerName);
             }
 
-            $this->initialized = TRUE;
+            $this->initialized = true;
         }
     }
 
