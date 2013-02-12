@@ -6,7 +6,7 @@ php:
 
 before_script:
   - ./bin/configure_test_env.sh
-  - composer install --dev --prefer-source
+  - composer self-update && composer install --dev --prefer-source
 
 script:
   - php bin/phpspec run -fpretty --verbose
