@@ -104,8 +104,7 @@ class Filesystem
     public function write($key, $content, $overwrite = false)
     {
         if (!$overwrite && $this->has($key)) {
-            throw new Exception\FileAlreadyExists(sprintf('The key "%s" already exists and can not be overwritten.',
-                $key));
+            throw new Exception\FileAlreadyExists($key);
         }
 
         $numBytes = $this->adapter->write($key, $content);
