@@ -22,8 +22,8 @@ class RackspaceCloudfiles implements Adapter,
     /**
      * Constructor
      *
-     * @param RackspaceContainer $container A CF_Container instance
-     * @param bool $purgeOnOverwrite if <code>true</code> will purge the cdn automatically when overwriting a file
+     * @param RackspaceContainer $container        A CF_Container instance
+     * @param bool               $purgeOnOverwrite if <code>true</code> will purge the cdn automatically when overwriting a file
      */
     public function __construct(RackspaceContainer $container, $purgeOnOverwrite = true)
     {
@@ -92,7 +92,7 @@ class RackspaceCloudfiles implements Adapter,
         }
 
         // checks if needs to purge the object from the cdn
-        if(!$new && $this->purgeOnOverwrite && $this->container->cdn_enabled) {
+        if (!$new && $this->purgeOnOverwrite && $this->container->cdn_enabled) {
             $object->purge_from_cdn();
         }
 
