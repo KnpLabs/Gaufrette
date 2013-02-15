@@ -6,7 +6,6 @@ namespace spec\Gaufrette\Adapter;
 require_once 'functions.php';
 
 use PHPSpec2\ObjectBehavior;
-use PHPSpec2\Exception\Example\FailureException;
 
 class Ftp extends ObjectBehavior
 {
