@@ -112,4 +112,18 @@ class Ftp extends ObjectBehavior
         $this->isDirectory('aaa')->shouldReturn(true);
         $this->isDirectory('filename')->shouldReturn(false);
     }
+
+    function it_should_fetch_keys_with_hidden_files()
+    {
+        $this->beConstructedWith('/home/l3l1', 'localhost');
+
+        $this->keys()->shouldReturn(array('filename', '.htaccess'));
+    }
+
+    function it_should_check_if_hidden_file_exists()
+    {
+        $this->beConstructedWith('/home/l3l1', 'localhost');
+
+        $this->exists('.htaccess')->shouldReturn(true);
+    }
 }
