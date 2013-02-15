@@ -27,6 +27,8 @@ Try it!
 
 ### Setup your filesystem
 
+Following an example with the local filesystem adapter. To setup other adapters, look up the [testcases](https://github.com/KnpLabs/Gaufrette/tree/master/tests/Gaufrette/Functional/adapters).
+
 ```php
 <?php
 
