@@ -2,6 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
+global $createdDirectory;
+
 function ftp_delete($connection, $path)
 {
     if ($path === '/home/l3l0/invalid') {
@@ -47,7 +49,31 @@ function ftp_fget($connection, &$fileResource, $path, $mode)
 
 function ftp_chdir($connection, $dirname)
 {
-    return in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa', '/home/l3l0/relative', '/home/l3l0/relative/some', '/home/l3l1'));
+    if (in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa', '/home/l3l0/relative', '/home/l3l0/relative/some', '/home/l3l1'))) {
+       return true;
+    }
+
+    global $createdDirectory;
+
+    if ($createdDirectory && $createdDirectory === $dirname) {
+       return true;
+    }
+
+    trigger_error(sprintf('%s: No such file or directory', $dirname), E_USER_WARNING);
+
+    return false;
+}
+
+function ftp_mkdir($connection, $dirname)
+{
+    if (in_array($dirname, array('/home/l3l0/new'))) {
+        global $createdDirectory;
+        $createdDirectory = $dirname;
+
+        return true;
+    }
+
+    return false;
 }
 
 function ftp_nlist($connection, $dirname)

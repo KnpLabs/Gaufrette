@@ -6,6 +6,7 @@ namespace spec\Gaufrette\Adapter;
 require_once 'functions.php';
 
 use PHPSpec2\ObjectBehavior;
+use PHPSpec2\Exception\Example\FailureException;
 
 class Ftp extends ObjectBehavior
 {
@@ -125,5 +126,23 @@ class Ftp extends ObjectBehavior
         $this->beConstructedWith('/home/l3l1', 'localhost');
 
         $this->exists('.htaccess')->shouldReturn(true);
+    }
+
+    function it_should_create_base_directory_without_warning()
+    {
+        global $createdDirectory;
+        $createdDirectory = '';
+
+        $this->beConstructedWith('/home/l3l0/new', 'localhost', array('create' => true));
+
+        $this->listDirectory()->shouldReturn(array('keys' => array(), 'dirs' => array()));
+    }
+
+    function it_should_not_create_base_directory_and_should_throw_exception()
+    {
+        global $createdDirectory;
+        $createdDirectory = '';
+
+        $this->shouldThrow(new \RuntimeException("The directory '/home/l3l0/new' does not exist."))->during('__construct', array('/home/l3l0/new', 'localhost', array('create' => false)));
     }
 }
