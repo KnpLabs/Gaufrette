@@ -44,6 +44,8 @@ class Ftp implements Adapter,
         $this->passive   = isset($options['passive']) ? $options['passive'] : false;
         $this->create    = isset($options['create']) ? $options['create'] : false;
         $this->mode      = isset($options['mode']) ? $options['mode'] : FTP_BINARY;
+
+        $this->ensureDirectoryExists($this->directory, $this->create);
     }
 
     /**
