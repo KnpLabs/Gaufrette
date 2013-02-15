@@ -47,7 +47,20 @@ function ftp_fget($connection, &$fileResource, $path, $mode)
 
 function ftp_chdir($connection, $dirname)
 {
-    return in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa', '/home/l3l0/relative', '/home/l3l0/relative/some'));
+    if ('/home/l3l0/new' == $dirname) {
+        static $newDirectoryCall = 0;
+        $newDirectoryCall++;
+        if (2 == $newDirectoryCall) {
+            return true;
+        }
+    }
+
+    if (!in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa', '/home/l3l0/relative', '/home/l3l0/relative/some'))) {
+        trigger_error(sprintf('%s: No such file or directory', $dirname), E_USER_WARNING);
+        return false;
+    }
+
+    return true;
 }
 
 function ftp_nlist($connection, $dirname)
@@ -114,6 +127,11 @@ function ftp_login($connection, $username, $password)
     return true;
 }
 
+function ftp_mkdir($ftp_stream, $directory)
+{
+    return '/home/l3l0/new' == $directory;
+}
+
 function file_get_contents($path)
 {
     return sprintf('%s content', $path);
@@ -153,7 +171,7 @@ function extension_loaded($name)
         return true;
     }
 
-    return $extensionLoaded;   
+    return $extensionLoaded;
 }
 
 function opendir($url)
