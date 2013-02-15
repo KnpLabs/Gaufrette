@@ -30,6 +30,9 @@
                 "dist": {
                     "url": "https://github.com/rackspace/php-cloudfiles/zipball/master",
                     "type": "zip"
+                },
+                "autoload": {
+                    "files": ["cloudfiles.php"]
                 }
             }
         },
