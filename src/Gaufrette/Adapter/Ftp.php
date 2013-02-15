@@ -108,7 +108,7 @@ class Ftp implements Adapter,
     public function exists($key)
     {
         $file  = $this->computePath($key);
-        $items = ftp_nlist($this->getConnection(), '-al ' . dirname($file));
+        $items = ftp_nlist($this->getConnection(), dirname($file));
 
         return $items && (in_array($file, $items) || in_array(basename($file), $items));
     }

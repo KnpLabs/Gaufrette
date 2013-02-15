@@ -64,12 +64,8 @@ function ftp_nlist($connection, $dirname)
             return array('otherfilename');
     }
 
-    if ('/home/l3l1' === end($arguments) && '-al' === reset($arguments)) {
+    if ('/home/l3l1' === end($arguments)) {
         return array('/home/l3l1/filename', '/home/l3l1/.htaccess');
-    }
-
-    if ('/home/l3l1' === end($arguments) && '-al' != reset($arguments)) {
-        return array('/home/l3l1/filename');
     }
 
     return false;
