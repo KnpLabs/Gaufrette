@@ -14,7 +14,7 @@ use Gaufrette\Adapter\RackspaceCloudfiles;
 class LazyRackspaceCloudfiles extends RackspaceCloudfiles
 {
     /**
-     * @var ConnectionFactoryInterface $authentication
+     * @var RackspaceCloudfiles\ConnectionFactoryInterface $authentication
      */
     protected $connectionFactory;
 

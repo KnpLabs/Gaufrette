@@ -14,6 +14,9 @@ class AuthenticationConnectionFactory implements ConnectionFactoryInterface
         $this->authentication = $authentication;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function create()
     {
         if (!$this->authentication->authenticated()) {

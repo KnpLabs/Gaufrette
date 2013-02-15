@@ -7,7 +7,7 @@ use PHPSpec2\ObjectBehavior;
 class LazyRackspaceCloudfiles extends ObjectBehavior
 {
     /**
-     * @param Gaufrette\Adapter\RackspaceCloudfiles\ConnectionFactoryInterface $connectionFactory
+     * @param \Gaufrette\Adapter\RackspaceCloudfiles\ConnectionFactoryInterface $connectionFactory
      * @param \CF_Connection $connection
      */
     function let($connectionFactory, $connection)
