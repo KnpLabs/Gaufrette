@@ -213,10 +213,12 @@ class Ftp implements Adapter,
             $this->listDirectory($directory);
         }
 
-        $fileData = $this->fileData[$key];
+        if (isset($this->fileData[$key])) {
+            $fileData = $this->fileData[$key];
 
-        $file->setName($fileData['name']);
-        $file->setSize($fileData['size']);
+            $file->setName($fileData['name']);
+            $file->setSize($fileData['size']);
+        }
 
         return $file;
     }
