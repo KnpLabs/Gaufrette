@@ -2,9 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
-use \CF_Container as RackspaceContainer;
-use \CF_Authentication as RackspaceAuthentication;
-use \CF_Connection as RackspaceConnection;
+use \CF_Authentication;
+use \CF_Connection;
 
 use Gaufrette\Adapter\RackspaceCloudfiles;
 
@@ -17,7 +16,7 @@ use Gaufrette\Adapter\RackspaceCloudfiles;
 class LazyRackspaceCloudfiles extends RackspaceCloudfiles
 {
     /**
-     * @var RackspaceAuthentication $authentication
+     * @var \CF_Authentication $authentication
      */
     protected $authentication;
 
@@ -40,12 +39,12 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
      * Constructor.
      * Creates a new Rackspace adapter starting from a rackspace authentication instance and a container name
      *
-     * @param RackspaceAuthentication $authentication
-     * @param string                  $containerName
-     * @param bool                    $createContainer if <code>true</code> will try to create the container if not
+     * @param \CF_Authentication $authentication
+     * @param string             $containerName
+     * @param bool               $createContainer if <code>true</code> will try to create the container if not
      *  existent. Default <code>false</code>
      */
-    public function __construct(RackspaceAuthentication $authentication, $containerName, $createContainer = false)
+    public function __construct(\CF_Authentication $authentication, $containerName, $createContainer = false)
     {
         $this->authentication = $authentication;
         $this->containerName = $containerName;
@@ -122,9 +121,8 @@ class LazyRackspaceCloudfiles extends RackspaceCloudfiles
                 $this->authentication->authenticate();
             }
 
-            $conn = new RackspaceConnection($this->authentication);
+            $conn = new \CF_Connection($this->authentication);
 
-            $container = null;
             if ($this->createContainer) {
                 $this->container = $conn->create_container($this->containerName);
             } else {
