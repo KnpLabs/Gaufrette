@@ -93,10 +93,11 @@ class Filesystem
     /**
      * Writes the given content into the file
      *
-     * @param string  $key       Key of the file
-     * @param string  $content   Content to write in the file
-     * @param boolean $overwrite Whether to overwrite the file if exists
-     * @param array   $metadata  Optional metadata for adapters supporting it
+     * @param string  $key                 Key of the file
+     * @param string  $content             Content to write in the file
+     * @param boolean $overwrite           Whether to overwrite the file if exists
+     * @throws Exception\FileAlreadyExists When file already exists and overwrite is false
+     * @throws \RuntimeException           When for any reason content could not be written
      *
      * @return integer The number of bytes that were written into the file
      */
@@ -112,7 +113,7 @@ class Filesystem
             throw new \InvalidArgumentException(sprintf('Content is not for file "%s". Cannot write file.'), $key);
         }
         if (!$overwrite && $this->has($key)) {
-            throw new \InvalidArgumentException(sprintf('The key "%s" already exists and can not be overwritten.', $key));
+            throw new Exception\FileAlreadyExists($key);
         }
 
         $numBytes = $this->adapter->write($key, $content, $metadata);
@@ -180,6 +181,7 @@ class Filesystem
      * Deletes the file matching the specified key
      *
      * @param string $key
+     * @throws \RuntimeException when cannot read file
      *
      * @return boolean
      */
@@ -195,7 +197,7 @@ class Filesystem
     }
 
     /**
-     * Returns an array of all keys matching the specified pattern
+     * Returns an array of all keys
      *
      * @return array
      */
@@ -205,22 +207,26 @@ class Filesystem
     }
 
     /**
-     * Returns an array of all items (files and directories) matching the specified pattern
+     * Lists keys beginning with given prefix
+     * (no wildcard / regex matching)
      *
-     * @param  string $pattern
+     * if adapter implements ListKeysAware interface, adapter's implementation will be used,
+     * in not, ALL keys will be requested and iterated through.
+     *
+     * @param  string $prefix
      * @return array
      */
-    public function listKeys($pattern = '')
+    public function listKeys($prefix = '')
     {
         if ($this->adapter instanceof ListKeysAware) {
-            return $this->adapter->listKeys($pattern);
+            return $this->adapter->listKeys($prefix);
         }
 
         $dirs = array();
         $keys = array();
 
         foreach ($this->keys() as $key) {
-            if (empty($pattern) || false !== strpos($key, $pattern)) {
+            if (empty($prefix) || false !== strpos($key, $prefix)) {
                 if ($this->adapter->isDirectory($key)) {
                     $dirs[] = $key;
                 } else {
@@ -309,7 +315,7 @@ class Filesystem
 
     /**
      * @param $key
-     * @throws Gaufrette\Exception\FileNotFound
+     * @throws Exception\FileNotFound
      */
     private function assertHasFile($key)
     {

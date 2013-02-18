@@ -106,6 +106,27 @@ creating the ``\AmazonS3`` object:
 define("AWS_CERTIFICATE_AUTHORITY", true);
 ```
 
+Using FTP adapters
+---------------
+
+Some FTP servers need valid configuration so Gaufrette can working with them as expected.
+
+### Pure Ftpd
+
+To handle hidden files we need to configure it by:
+
+```bash
+echo "yes" > /etc/pure-ftpd/conf/DisplayDotFiles
+```
+
+### Proftpd
+
+To handle hidden files we need to change `ListOptions` in proftpd configuration (at debian system `/etc/proftpd/proftpd.conf` probably) to:
+
+```bash
+ListOptions  "-la"
+```
+
 Using Gaufrette in a Symfony2 project
 -------------------------------------
 

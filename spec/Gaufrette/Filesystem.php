@@ -165,7 +165,7 @@ class Filesystem extends ObjectBehavior
         $adapter->write('filename', 'some content to write')->shouldNotBeCalled();
 
         $this
-            ->shouldThrow(new \InvalidArgumentException('The key "filename" already exists and can not be overwritten.'))
+            ->shouldThrow(new \Gaufrette\Exception\FileAlreadyExists('filename'))
             ->duringWrite('filename', 'some content to write');
     }
 

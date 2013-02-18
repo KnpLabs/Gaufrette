@@ -169,16 +169,16 @@ class Ftp implements Adapter,
         $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
 
         $items = $this->parseRawlist(
-            ftp_rawlist($this->getConnection(), $this->directory . $directory ) ? : array()
+            ftp_rawlist($this->getConnection(), '-al ' . $this->directory . $directory ) ? : array()
         );
 
         $fileData = $dirs = array();
         foreach ($items as $itemData) {
-            
+
             if ('..' === $itemData['name'] || '.' === $itemData['name']) {
                 continue;
             }
-            
+
             $item = array(
                 'name'  => $itemData['name'],
                 'path'  => trim(($directory ? $directory . '/' : '') . $itemData['name'], '/'),
@@ -213,10 +213,12 @@ class Ftp implements Adapter,
             $this->listDirectory($directory);
         }
 
-        $fileData = $this->fileData[$key];
+        if (isset($this->fileData[$key])) {
+            $fileData = $this->fileData[$key];
 
-        $file->setName($fileData['name']);
-        $file->setSize($fileData['size']);
+            $file->setName($fileData['name']);
+            $file->setSize($fileData['size']);
+        }
 
         return $file;
     }

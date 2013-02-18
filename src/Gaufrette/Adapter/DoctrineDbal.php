@@ -170,9 +170,9 @@ class DoctrineDbal implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function listKeys($pattern = '')
+    public function listKeys($prefix = '')
     {
-        $pattern = trim($pattern);
+        $prefix = trim($prefix);
 
         $keys = $this->connection->fetchAll(
             sprintf(
@@ -181,7 +181,7 @@ class DoctrineDbal implements Adapter,
                 $this->getQuotedTable(),
                 $this->getQuotedColumn('key')
             ),
-            array('pattern' => sprintf('%s%%', $pattern))
+            array('pattern' => sprintf('%s%%', $prefix))
         );
 
         return array(

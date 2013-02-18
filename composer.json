@@ -43,7 +43,7 @@
     },
     "require-dev": {
         "amazonwebservices/aws-sdk-for-php": "1.5.*",
-        "phpspec/phpspec2": "1.0.*",
+        "phpspec/phpspec2": "dev-master",
         "rackspace/php-cloudfiles": "*",
         "doctrine/dbal": ">=2.3",
         "dropbox-php/dropbox-php": "*",
