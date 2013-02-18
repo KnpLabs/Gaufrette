@@ -18,7 +18,7 @@ class AmazonS3 extends ObjectBehavior
     {
         $this->shouldHaveType('Gaufrette\Adapter\AmazonS3');
         $this->shouldHaveType('Gaufrette\Adapter');
-        $this->shouldHaveType('Gaufrette\Adapter\MetadataSupporter');
+        $this->shouldHaveType('Gaufrette\MetadataSupporter');
     }
 
     /**

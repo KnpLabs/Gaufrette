@@ -2,6 +2,8 @@
 
 namespace Gaufrette;
 
+use Gaufrette\File;
+
 /**
  * Interface for the filesystem adapters
  *
@@ -29,6 +31,15 @@ interface Adapter
      */
     public function write($key, $content);
 
+    /**
+     * Writes file object into storage
+     * 
+     * @param File $file
+     *
+     * @return boolean success
+     */    
+    public function writeFile(File $file);
+    
     /**
      * Indicates whether the file exists
      *
