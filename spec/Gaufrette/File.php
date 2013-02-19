@@ -186,5 +186,5 @@ class File extends ObjectBehavior
 }
 
 interface MetadataAdapter extends \Gaufrette\Adapter,
-                                  \Gaufrette\Adapter\MetadataSupporter
+                                  \Gaufrette\MetadataSupporter
 {}

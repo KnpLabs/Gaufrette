@@ -20,7 +20,7 @@ class RackspaceCloudfiles extends ObjectBehavior
     {
         $this->shouldHaveType('Gaufrette\Adapter\RackspaceCloudfiles');
         $this->shouldHaveType('Gaufrette\Adapter');
-        $this->shouldHaveType('Gaufrette\Adapter\ChecksumCalculator');
+        $this->shouldHaveType('Gaufrette\ChecksumCalculator');
     }
 
     /**

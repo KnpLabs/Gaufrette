@@ -21,7 +21,7 @@ class DoctrineDbal extends ObjectBehavior
     {
         $this->shouldHaveType('Gaufrette\Adapter\DoctrineDbal');
         $this->shouldHaveType('Gaufrette\Adapter');
-        $this->shouldHaveType('Gaufrette\Adapter\ChecksumCalculator');
+        $this->shouldHaveType('Gaufrette\ChecksumCalculator');
     }
 
     function it_should_not_handle_directories()

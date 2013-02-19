@@ -2,10 +2,15 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\File;
+use Gaufrette\File\Local as LocalFile;
+use Gaufrette\Filesystem;
 use Gaufrette\Util;
 use Gaufrette\Adapter;
 use Gaufrette\Stream;
-use Gaufrette\Adapter\StreamFactory;
+use Gaufrette\StreamFactory;
+use Gaufrette\ChecksumCalculator;
+use Gaufrette\FileFactory;
 use Gaufrette\Exception;
 
 /**
@@ -13,10 +18,12 @@ use Gaufrette\Exception;
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
+ * @author Tomi Saarinen <tomi.saarinen@rohea.com>
  */
 class Local implements Adapter,
                        StreamFactory,
-                       ChecksumCalculator
+                       ChecksumCalculator,
+                       FileFactory
 {
     protected $directory;
     private $create;
@@ -53,12 +60,51 @@ class Local implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content)
+    public function get($key)
+    {
+        $path = $this->computePath($key);
+        $file = new LocalFile($key);
+        $info = pathinfo($path);
+        //Set data for file (do not set content, it's lazy)
+        $file->setPath($path);
+        $file->setName($info['basename']);
+        $file->setTimestamp(filemtime($path));
+        $file->setSize(filesize($path));
+        $file->setChecksum(Util\Checksum::fromFile($path));
+        //@todo: Set Mimetype
+
+        return $file;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function write($key, $content, $metadata = null)
     {
         $path = $this->computePath($key);
         $this->ensureDirectoryExists(dirname($path), true);
 
         return file_put_contents($path, $content);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function writeFile(File $file)
+    {
+        $key = $file->getKey();
+        $path = $this->computePath($key);
+        $this->ensureDirectoryExists(dirname($path), true);
+        file_put_contents($path, $file->getContent());
+        if ($file instanceof LocalFile) {
+            $file->setPath($path);
+        }
+        $info = pathinfo($path);
+        $file->setName($info['basename']);
+        $file->setTimestamp(filemtime($path));
+        $file->setSize(filesize($path));
+        $file->setChecksum(Util\Checksum::fromFile($path));
+        return true;
     }
 
     /**
@@ -241,5 +287,22 @@ class Local implements Adapter,
         if (!$created) {
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
         }
+    }
+
+    /**
+     * Factory method for a new empty file object
+     *
+     * @param string $key
+     * @param string $content
+     *
+     * @return Gaufrette\File\Local
+     */
+    public function createFile($key, $content = null)
+    {
+        $f = new LocalFile($key);
+        if (isset($content)) {
+            $f->setContent($content);
+        }
+        return $f;
     }
 }

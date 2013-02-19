@@ -19,7 +19,7 @@ class Cache extends ObjectBehavior
     {
         $this->shouldHaveType('Gaufrette\Adapter\Cache');
         $this->shouldHaveType('Gaufrette\Adapter');
-        $this->shouldHaveType('Gaufrette\Adapter\MetadataSupporter');
+        $this->shouldHaveType('Gaufrette\MetadataSupporter');
     }
 
     /**
@@ -158,8 +158,8 @@ class Cache extends ObjectBehavior
 }
 
 interface CacheTestExtendedAdapter extends \Gaufrette\Adapter,
-                                           \Gaufrette\Adapter\ChecksumCalculator,
-                                           \Gaufrette\Adapter\MetadataSupporter
+                                           \Gaufrette\ChecksumCalculator,
+                                           \Gaufrette\MetadataSupporter
 {
 
 }
