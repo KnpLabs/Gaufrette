@@ -145,7 +145,10 @@ class Local implements Adapter,
      */
     public function createStream($key)
     {
-        return new Stream\Local($this->computePath($key));
+        $path = $this->computePath($key);
+        $this->ensureDirectoryExists(dirname($path), true);
+
+        return new Stream\Local($path);
     }
 
     public function checksum($key)
