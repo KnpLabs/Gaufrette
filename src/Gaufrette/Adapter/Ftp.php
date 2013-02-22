@@ -44,8 +44,6 @@ class Ftp implements Adapter,
         $this->passive   = isset($options['passive']) ? $options['passive'] : false;
         $this->create    = isset($options['create']) ? $options['create'] : false;
         $this->mode      = isset($options['mode']) ? $options['mode'] : FTP_BINARY;
-
-        $this->ensureDirectoryExists($this->directory, $this->create);
     }
 
     /**
@@ -53,6 +51,8 @@ class Ftp implements Adapter,
      */
     public function read($key)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $temp = fopen('php://temp', 'r+');
 
         if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), $this->mode)) {
@@ -71,6 +71,8 @@ class Ftp implements Adapter,
      */
     public function write($key, $content)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $path = $this->computePath($key);
         $directory = dirname($path);
 
@@ -96,6 +98,8 @@ class Ftp implements Adapter,
      */
     public function rename($sourceKey, $targetKey)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $sourcePath = $this->computePath($sourceKey);
         $targetPath = $this->computePath($targetKey);
 
@@ -109,6 +113,8 @@ class Ftp implements Adapter,
      */
     public function exists($key)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $file  = $this->computePath($key);
         $items = ftp_nlist($this->getConnection(), dirname($file));
 
@@ -120,6 +126,8 @@ class Ftp implements Adapter,
      */
     public function keys()
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         return $this->fetchKeys();
     }
 
@@ -128,6 +136,8 @@ class Ftp implements Adapter,
      */
     public function mtime($key)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $mtime = ftp_mdtm($this->getConnection(), $this->computePath($key));
 
         // the server does not support this function
@@ -143,6 +153,8 @@ class Ftp implements Adapter,
      */
     public function delete($key)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         if ($this->isDirectory($key)) {
             return ftp_rmdir($this->getConnection(), $this->computePath($key));
         }
@@ -155,6 +167,8 @@ class Ftp implements Adapter,
      */
     public function isDirectory($key)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         return $this->isDir($this->computePath($key));
     }
 
@@ -168,6 +182,8 @@ class Ftp implements Adapter,
      */
     public function listDirectory($directory = '')
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
 
         $items = $this->parseRawlist(
@@ -208,6 +224,8 @@ class Ftp implements Adapter,
      */
     public function createFile($key, Filesystem $filesystem)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $file = new File($key, $filesystem);
 
         if (!array_key_exists($key, $this->fileData)) {

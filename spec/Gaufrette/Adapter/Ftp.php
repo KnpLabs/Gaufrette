@@ -142,6 +142,8 @@ class Ftp extends ObjectBehavior
         global $createdDirectory;
         $createdDirectory = '';
 
-        $this->shouldThrow(new \RuntimeException("The directory '/home/l3l0/new' does not exist."))->during('__construct', array('/home/l3l0/new', 'localhost', array('create' => false)));
+        $this->beConstructedWith('/home/l3l0/new', 'localhost', array('create' => false));
+
+        $this->shouldThrow(new \RuntimeException("The directory '/home/l3l0/new' does not exist."))->during('listDirectory', array());
     }
 }
