@@ -4,6 +4,7 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\File;
 use Gaufrette\Adapter;
+use Gaufrette\MetadataSupporter;
 use Gaufrette\Adapter\InMemory as InMemoryAdapter;
 
 /**
@@ -113,6 +114,15 @@ class Cache implements Adapter,
     /**
      * {@inheritDoc}
      */
+    public function writeFile(File $file)
+    {
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function exists($key)
     {
         return $this->source->exists($key);
@@ -183,6 +193,15 @@ class Cache implements Adapter,
         }
 
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isMetadataKeyAllowed($metaKey)
+    {
+        //@todo: What should we return?
+        return true;
     }
 
     /**

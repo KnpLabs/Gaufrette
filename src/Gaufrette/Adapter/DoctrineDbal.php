@@ -2,10 +2,13 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\File;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 
 use Doctrine\DBAL\Connection;
+use Gaufrette\ChecksumCalculator;
+use Gaufrette\ListKeysAware;
 
 /**
  * Doctrine DBAL adapter
@@ -142,6 +145,15 @@ class DoctrineDbal implements Adapter,
         }
 
         return Util\Size::fromContent($content);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function writeFile(File $file)
+    {
+
+        return true;
     }
 
     /**

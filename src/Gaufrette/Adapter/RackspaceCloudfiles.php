@@ -2,8 +2,10 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\File;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
+use Gaufrette\ChecksumCalculator;
 use \CF_Container as RackspaceContainer;
 
 /**
@@ -66,6 +68,15 @@ class RackspaceCloudfiles implements Adapter,
         }
 
         return Util\Size::fromContent($content);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function writeFile(File $file)
+    {
+
+        return true;
     }
 
     /**

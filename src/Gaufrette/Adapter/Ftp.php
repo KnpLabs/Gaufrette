@@ -6,6 +6,7 @@ use Gaufrette\Adapter;
 use Gaufrette\File;
 use Gaufrette\Filesystem;
 use Gaufrette\Exception;
+use Gaufrette\FileFactory;
 
 /**
  * Ftp adapter
@@ -87,6 +88,15 @@ class Ftp implements Adapter,
         fclose($temp);
 
         return $size;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function writeFile(File $file)
+    {
+
+        return true;
     }
 
     /**
@@ -204,8 +214,15 @@ class Ftp implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function createFile($key, Filesystem $filesystem)
+    public function createFile($key, $content = null)
     {
+        $f = new File($key);
+        if (isset($content)) {
+            $f->setContent($content);
+        }
+
+        return $f;
+        /*
         $file = new File($key, $filesystem);
 
         if (!array_key_exists($key, $this->fileData)) {
@@ -221,6 +238,7 @@ class Ftp implements Adapter,
         }
 
         return $file;
+        */
     }
 
     /**

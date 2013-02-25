@@ -3,7 +3,9 @@
 namespace Gaufrette\Adapter;
 
 use \AmazonS3 as AmazonClient;
+use Gaufrette\File;
 use Gaufrette\Adapter;
+use Gaufrette\MetadataSupporter;
 
 /**
  * Makes the AmazonS3 adapter ACL aware.
@@ -111,6 +113,15 @@ class AclAwareAmazonS3 implements Adapter,
     /**
      * {@inheritDoc}
      */
+    public function writeFile(File $file)
+    {
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function exists($key)
     {
         return $this->delegate->exists($key);
@@ -160,6 +171,14 @@ class AclAwareAmazonS3 implements Adapter,
         }
 
         return array();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isMetadataKeyAllowed($metaKey)
+    {
+        return true;
     }
 
     /**

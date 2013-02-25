@@ -67,7 +67,7 @@ class GridFS implements Adapter,
 
         return $file;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -92,7 +92,7 @@ class GridFS implements Adapter,
 
     /**
      * {@inheritDoc}
-     */    
+     */
     public function writeFile(File $file)
     {
         $key = $file->getKey();
@@ -240,7 +240,7 @@ class GridFS implements Adapter,
 
     /**
      * {@inheritDoc}
-     */    
+     */
     public function isMetadataKeyAllowed($metaKey)
     {
         //GridFS accepts any metadata key
