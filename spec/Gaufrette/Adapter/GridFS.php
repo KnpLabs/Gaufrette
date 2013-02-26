@@ -128,7 +128,7 @@ class GridFS extends ObjectBehavior
             ->findOne(array('_id' => 'someId'))
             ->willReturn($file);
 
-        $this->setMetadata('filename', array('date' => 1234, 'someother' => 'metadata'));
+        //$this->setMetadata('filename', array('date' => 1234, 'someother' => 'metadata'));
         $this
             ->write('filename', 'some content')
             ->shouldReturn(12);
@@ -206,7 +206,7 @@ class GridFS extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(true);
 
-        $this->setMetadata('otherFilename', array('date' => 1234));
+        //$this->setMetadata('otherFilename', array('date' => 1234));
         $this->rename('filename', 'otherFilename')->shouldReturn(true);
     }
 
