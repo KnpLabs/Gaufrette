@@ -149,8 +149,8 @@ class GridFS implements Adapter,
         $keys   = array();
         $cursor = $this->gridFS->find(array(), array('filename'));
 
-        foreach ($cursor as $file) {
-            $keys[] = $file->getFilename();
+        foreach ($cursor as $gridfsFile) {
+            $keys[] = $gridfsFile->getFilename();
         }
 
         return $keys;

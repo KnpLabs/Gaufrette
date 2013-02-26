@@ -113,16 +113,6 @@ class Filesystem extends ObjectBehavior
     }
 
     /**
-     * @param \Gaufrette\Adapter $adapter
-     */
-    function it_should_get_file_object_when_file_does_not_exist_but_can_be_created($adapter)
-    {
-        $adapter->exists('filename')->willReturn(false);
-
-        $this->get('filename', true)->shouldBeAnInstanceOf('Gaufrette\File');
-    }
-
-    /**
      * @param \spec\Gaufrette\Adapter $extendedAdapter
      * @param \Gaufrette\File $file
      */

@@ -112,8 +112,9 @@ class GridFS extends ObjectBehavior
     /**
      * @param \MongoGridFS $gridFs
      * @param \MongoGridFSFile $file
+     * @param \MongoDate $date
      */
-    function it_should_write_file($gridFs, $file)
+    function it_should_write_file($gridFs, $file, $date)
     {
         $file
             ->getSize()
@@ -121,16 +122,21 @@ class GridFS extends ObjectBehavior
         $gridFs
             ->findOne('filename', array())
             ->willReturn(null);
+        $gridMetadata = array(
+            'date' => $date,
+            'name' => 'filename',
+            'metadata' => array('fooMeta' => 'barData'),
+            'filename' => 'filename',
+        );
         $gridFs
-            ->storeBytes('some content', array('date' => 1234, 'someother' => 'metadata', 'filename' => 'filename'))
+            ->storeBytes('some content', $gridMetadata)
             ->willReturn('someId');
         $gridFs
             ->findOne(array('_id' => 'someId'))
             ->willReturn($file);
 
-        //$this->setMetadata('filename', array('date' => 1234, 'someother' => 'metadata'));
         $this
-            ->write('filename', 'some content')
+            ->write('filename', 'some content', array('fooMeta' => 'barData'))
             ->shouldReturn(12);
     }
 

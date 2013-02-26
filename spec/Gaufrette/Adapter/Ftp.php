@@ -11,7 +11,7 @@ class Ftp extends ObjectBehavior
 {
     function let()
     {
-        $this->beConstructedWith('/home/l3l0', 'localhost');
+        $this->beConstructedWith(sys_get_temp_dir().'/l3l0', 'localhost');
     }
 
     function it_should_be_initializable()
@@ -28,7 +28,7 @@ class Ftp extends ObjectBehavior
 
     function it_should_check_if_file_exists_for_relative_path()
     {
-        $this->beConstructedWith('/home/l3l0/relative', 'localhost');
+        $this->beConstructedWith(sys_get_temp_dir().'/l3l0/relative', 'localhost');
 
         $this->exists('filename')->shouldReturn(true);
         $this->exists('filename2')->shouldReturn(false);
@@ -115,14 +115,14 @@ class Ftp extends ObjectBehavior
 
     function it_should_fetch_keys_with_hidden_files()
     {
-        $this->beConstructedWith('/home/l3l1', 'localhost');
+        $this->beConstructedWith(sys_get_temp_dir().'/l3l1', 'localhost');
 
         $this->keys()->shouldReturn(array('filename', '.htaccess'));
     }
 
     function it_should_check_if_hidden_file_exists()
     {
-        $this->beConstructedWith('/home/l3l1', 'localhost');
+        $this->beConstructedWith(sys_get_temp_dir().'/l3l1', 'localhost');
 
         $this->exists('.htaccess')->shouldReturn(true);
     }
@@ -132,7 +132,7 @@ class Ftp extends ObjectBehavior
         global $createdDirectory;
         $createdDirectory = '';
 
-        $this->beConstructedWith('/home/l3l0/new', 'localhost', array('create' => true));
+        $this->beConstructedWith(sys_get_temp_dir().'/l3l0/new', 'localhost', array('create' => true));
 
         $this->listDirectory()->shouldReturn(array('keys' => array(), 'dirs' => array()));
     }
@@ -142,6 +142,6 @@ class Ftp extends ObjectBehavior
         global $createdDirectory;
         $createdDirectory = '';
 
-        $this->shouldThrow(new \RuntimeException("The directory '/home/l3l0/new' does not exist."))->during('__construct', array('/home/l3l0/new', 'localhost', array('create' => false)));
+        $this->shouldThrow(new \RuntimeException("The directory '".sys_get_temp_dir()."/l3l0/new' does not exist."))->during('__construct', array(sys_get_temp_dir().'/l3l0/new', 'localhost', array('create' => false)));
     }
 }

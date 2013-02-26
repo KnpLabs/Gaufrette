@@ -6,7 +6,7 @@ global $createdDirectory;
 
 function ftp_delete($connection, $path)
 {
-    if ($path === '/home/l3l0/invalid') {
+    if ($path === sys_get_temp_dir().'/l3l0/invalid') {
         return false;
     }
 
@@ -15,7 +15,7 @@ function ftp_delete($connection, $path)
 
 function ftp_mdtm($connection, $path)
 {
-    if ($path === '/home/l3l0/invalid') {
+    if ($path === sys_get_temp_dir().'/l3l0/invalid') {
         return -1;
     }
 
@@ -24,12 +24,12 @@ function ftp_mdtm($connection, $path)
 
 function ftp_rename($connection, $from, $to)
 {
-    return ! ('/home/l3l0/invalid' === $from or '/home/l3l0/invalid' === $to);
+    return ! (sys_get_temp_dir().'/l3l0/invalid' === $from or sys_get_temp_dir().'/l3l0/invalid' === $to);
 }
 
 function ftp_fput($connection, $path, $fileResource, $mode)
 {
-    if ('/home/l3l0/filename' === $path) {
+    if (sys_get_temp_dir().'/l3l0/filename' === $path) {
         return true;
     }
 
@@ -38,7 +38,7 @@ function ftp_fput($connection, $path, $fileResource, $mode)
 
 function ftp_fget($connection, &$fileResource, $path, $mode)
 {
-    if ('/home/l3l0/filename' === $path) {
+    if (sys_get_temp_dir().'/l3l0/filename' === $path) {
         $bytes = \fwrite($fileResource, 'some content');
 
         return true;
@@ -49,7 +49,7 @@ function ftp_fget($connection, &$fileResource, $path, $mode)
 
 function ftp_chdir($connection, $dirname)
 {
-    if (in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa', '/home/l3l0/relative', '/home/l3l0/relative/some', '/home/l3l1'))) {
+    if (in_array($dirname, array(sys_get_temp_dir().'/l3l0', sys_get_temp_dir().'/l3l0/aaa', sys_get_temp_dir().'/l3l0/relative', sys_get_temp_dir().'/l3l0/relative/some', sys_get_temp_dir().'/l3l1'))) {
        return true;
     }
 
@@ -66,7 +66,7 @@ function ftp_chdir($connection, $dirname)
 
 function ftp_mkdir($connection, $dirname)
 {
-    if (in_array($dirname, array('/home/l3l0/new'))) {
+    if (in_array($dirname, array(sys_get_temp_dir().'/l3l0/new'))) {
         global $createdDirectory;
         $createdDirectory = $dirname;
 
@@ -80,18 +80,18 @@ function ftp_nlist($connection, $dirname)
 {
     $arguments = explode(' ', $dirname);
     switch (end($arguments)) {
-        case '/home/l3l0':
-            return array('/home/l3l0/filename');
-        case '/home/l3l0/aaa':
-            return array('/home/l3l0/aaa/filename', '/home/l3l0/aaa/otherFilename');
-        case '/home/l3l0/relative':
+        case sys_get_temp_dir().'/l3l0':
+            return array(sys_get_temp_dir().'/l3l0/filename');
+        case sys_get_temp_dir().'/l3l0/aaa':
+            return array(sys_get_temp_dir().'/l3l0/aaa/filename', sys_get_temp_dir().'/l3l0/aaa/otherFilename');
+        case sys_get_temp_dir().'/l3l0/relative':
             return array('filename', 'some');
-        case '/home/l3l0/relative/some':
+        case sys_get_temp_dir().'/l3l0/relative/some':
             return array('otherfilename');
     }
 
-    if ('/home/l3l1' === end($arguments)) {
-        return array('/home/l3l1/filename', '/home/l3l1/.htaccess');
+    if (sys_get_temp_dir().'/l3l1' === end($arguments)) {
+        return array(sys_get_temp_dir().'/l3l1/filename', sys_get_temp_dir().'/l3l1/.htaccess');
     }
 
     return false;
@@ -114,7 +114,7 @@ function ftp_close($connection)
 function ftp_rawlist($connection, $directory, $recursive = false)
 {
     $arguments = explode(' ', $directory);
-    if ('/home/l3l0' === end($arguments))
+    if (sys_get_temp_dir().'/l3l0' === end($arguments))
     {
         return array(
             "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
@@ -127,14 +127,14 @@ function ftp_rawlist($connection, $directory, $recursive = false)
         );
     }
 
-    if ('/home/l3l0/aaa' === end($arguments))
+    if (sys_get_temp_dir().'/l3l0/aaa' === end($arguments))
     {
         return array(
             "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename"
         );
     }
 
-    if ('/home/l3l1' === end($arguments) && '-al' === reset($arguments))
+    if (sys_get_temp_dir().'/l3l1' === end($arguments) && '-al' === reset($arguments))
     {
         return array(
                 "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
@@ -144,7 +144,7 @@ function ftp_rawlist($connection, $directory, $recursive = false)
         );
     }
 
-    if ('/home/l3l1' === end($arguments) && '-al' != reset($arguments))
+    if (sys_get_temp_dir().'/l3l1' === end($arguments) && '-al' != reset($arguments))
     {
         return array(
                 "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
@@ -187,7 +187,7 @@ function rename($from, $to)
 
 function file_exists($path)
 {
-    return in_array($path, array('/home/l3l0/filename', '/home/somedir/filename', 'ssh+ssl://localhost/home/l3l0/filename')) ? true : false;
+    return in_array($path, array(sys_get_temp_dir().'/l3l0/filename', sys_get_temp_dir().'/somedir/filename', 'ssh+ssl://localhost/home/l3l0/filename')) ? true : false;
 }
 
 function iterator_to_array($iterator)
@@ -219,17 +219,17 @@ function filemtime($key)
 
 function unlink($key)
 {
-    return in_array($key, array('/home/l3l0/filename', '/home/somedir/filename')) ? true : false;
+    return in_array($key, array(sys_get_temp_dir().'/l3l0/filename', sys_get_temp_dir().'/somedir/filename')) ? true : false;
 }
 
 function is_dir($key)
 {
-    return (in_array($key, array('/home/l3l0', '/home/l3l0/dir', '/home/somedir', '/home/somedir/dir', '/home/l3l1'))) ? true : false;
+    return (in_array($key, array(sys_get_temp_dir().'/l3l0', sys_get_temp_dir().'/l3l0/dir', sys_get_temp_dir().'/somedir', sys_get_temp_dir().'/somedir/dir', sys_get_temp_dir().'/l3l1'))) ? true : false;
 }
 
 function realpath($link)
 {
-    return ('symbolicLink' === $link) ? '/home/somedir' : $link;
+    return ('symbolicLink' === $link) ? sys_get_temp_dir().'/somedir' : $link;
 }
 
 function is_link($link)
@@ -239,7 +239,7 @@ function is_link($link)
 
 function mkdir($directory, $mode, $recursive)
 {
-    return (in_array($directory, array('/home/other', '/home/somedir/aaa'))) ? true : false;
+    return (in_array($directory, array(sys_get_temp_dir().'/other', sys_get_temp_dir().'/somedir/aaa'))) ? true : false;
 }
 
 function apc_fetch($path)

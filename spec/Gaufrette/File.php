@@ -6,12 +6,9 @@ use PHPSpec2\ObjectBehavior;
 
 class File extends ObjectBehavior
 {
-    /**
-     * @param \Gaufrette\Filesystem $filesystem
-     */
-    function let($filesystem)
+    function let()
     {
-        $this->beConstructedWith('filename', $filesystem);
+        $this->beConstructedWith('filename');
     }
 
     function it_should_be_initializable()
@@ -24,10 +21,7 @@ class File extends ObjectBehavior
         $this->getKey()->shouldReturn('filename');
     }
 
-    /**
-     * @param \Gaufrette\Filesystem $filesystem
-     */
-    function it_should_get_content($filesystem)
+    function it_should_get_content()
     {
         //$filesystem->read('filename')->shouldBeCalled()->willReturn('Some content');
         $this->setContent("Some content");
@@ -66,6 +60,7 @@ class File extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
+    /* not relevant anymore
     function it_should_pass_metadata_when_read_content($filesystem, $adapter)
     {
         $metadata = array('id' => '123');
@@ -74,12 +69,13 @@ class File extends ObjectBehavior
 
         $this->getContent($metadata);
     }
+    */
 
     /**
      * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
-    /*
+    /* not relevant anymore
     function it_should_pass_metadata_when_delete_content($filesystem, $adapter)
     {
         $metadata = array('id' => '123');
@@ -107,6 +103,7 @@ class File extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
+    /*
     function it_should_set_content($filesystem, $adapter)
     {
         $adapter->setMetadata('filename', array())->shouldNotBeCalled();
@@ -116,6 +113,7 @@ class File extends ObjectBehavior
         $this->setContent('some content')->shouldReturn(21);
         $this->getContent('filename')->shouldReturn('some content');
     }
+    */
 
     function it_should_set_key_as_name_by_default()
     {
@@ -131,27 +129,32 @@ class File extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
+    /*
     function it_should_set_size_for_new_file($filesystem)
     {
         $filesystem->write('filename', 'some content', true)->shouldBeCalled()->willReturn(21);
 
         $this->setContent('some content');
-        $this->getSize()->shouldReturn(21);
+        $this->getSize()->shouldReturn(12);
     }
+    */
 
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
+    /*
     function it_should_calculate_size_when_is_not_set($filesystem)
     {
         $filesystem->read('filename')->shouldBeCalled()->willReturn('some content');
 
         $this->getSize()->shouldReturn(12);
     }
+    */
 
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
+    /*
     function it_should_set_size($filesystem)
     {
         $filesystem->read('filename')->shouldNotBeCalled();
@@ -159,6 +162,7 @@ class File extends ObjectBehavior
         $this->setSize(21);
         $this->getSize()->shouldReturn(21);
     }
+    */
 
     /**
      * @param \Gaufrette\Filesystem $filesystem
