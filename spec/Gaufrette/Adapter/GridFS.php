@@ -128,12 +128,16 @@ class GridFS extends ObjectBehavior
             'metadata' => array('fooMeta' => 'barData'),
             'filename' => 'filename',
         );
+        //This is not fixed enough or does not work for some other reason... but is probably the reason for Mockery Exception
+        $date
+            ->willReturn(new \MongoDate(strtotime("2010-01-15 00:00:00")));
         $gridFs
             ->storeBytes('some content', $gridMetadata)
             ->willReturn('someId');
         $gridFs
             ->findOne(array('_id' => 'someId'))
             ->willReturn($file);
+
 
         $this
             ->write('filename', 'some content', array('fooMeta' => 'barData'))
