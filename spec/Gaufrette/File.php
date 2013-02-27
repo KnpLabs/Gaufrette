@@ -29,6 +29,11 @@ class File extends ObjectBehavior
         $this->getContent()->shouldReturn('Some content');
     }
 
+    function it_should_get_null_content_if_content_is_not_set()
+    {
+        $this->getContent()->shouldReturn(null);
+    }
+
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
@@ -130,6 +135,7 @@ class File extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      */
     /*
+    //Removed because file does not know its filesystem anymore
     function it_should_set_size_for_new_file($filesystem)
     {
         $filesystem->write('filename', 'some content', true)->shouldBeCalled()->willReturn(21);
@@ -143,6 +149,7 @@ class File extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      */
     /*
+    //Removed because file does not know its filesystem anymore
     function it_should_calculate_size_when_is_not_set($filesystem)
     {
         $filesystem->read('filename')->shouldBeCalled()->willReturn('some content');
@@ -155,6 +162,7 @@ class File extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      */
     /*
+    //Removed because file does not know its filesystem anymore
     function it_should_set_size($filesystem)
     {
         $filesystem->read('filename')->shouldNotBeCalled();
@@ -169,7 +177,8 @@ class File extends ObjectBehavior
      */
     function it_should_get_zero_size_when_file_not_found($filesystem)
     {
-        $filesystem->read('filename')->willThrow(new \Gaufrette\Exception\FileNotFound('filename'));
+        //getSize is only a trivial getter
+        //$filesystem->read('filename')->willThrow(new \Gaufrette\Exception\FileNotFound('filename'));
 
         $this->getSize()->shouldReturn(0);
     }
@@ -178,6 +187,7 @@ class File extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      */
     /*
+    //The behaviour has changed so that there are no 'empty files' anymore.
     function it_should_check_exists_in_filesystem($filesystem)
     {
         $filesystem->has('filename')->willReturn(true);
@@ -192,6 +202,7 @@ class File extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      */
     /*
+    //Cannot delete file through file anymore (because file does not know its filesystem). File must be deleted through filesystem.
     function it_should_delete_file_from_filesystem($filesystem)
     {
         $filesystem->delete('filename')->shouldBeCalled()->willReturn(true);
