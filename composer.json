@@ -50,7 +50,8 @@
         "rackspace/php-cloudfiles": "*",
         "doctrine/dbal": ">=2.3",
         "dropbox-php/dropbox-php": "*",
-        "herzult/php-ssh": "*"
+        "herzult/php-ssh": "*",
+        "phpunit/phpunit": "3.7.*"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "*",
