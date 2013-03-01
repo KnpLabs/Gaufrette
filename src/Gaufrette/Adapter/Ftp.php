@@ -336,15 +336,26 @@ class Ftp implements Adapter,
         $parsed = array();
         foreach ($rawlist as $line) {
             $infos = preg_split("/[\s]+/", $line, 9);
-            $infos[7] = (strrpos($infos[7], ':') != 2 ) ? ($infos[7] . ' 00:00') : (date('Y') . ' ' . $infos[7]);
 
-            if ('total' !== $infos[0]) {
+            if ($this->isLinuxListing($infos)) {
+                $infos[7] = (strrpos($infos[7], ':') != 2 ) ? ($infos[7] . ' 00:00') : (date('Y') . ' ' . $infos[7]);
+                if ('total' !== $infos[0]) {
+                    $parsed[] = array(
+                        'perms' => $infos[0],
+                        'num'   => $infos[1],
+                        'size'  => $infos[4],
+                        'time'  => strtotime($infos[5] . ' ' . $infos[6] . '. ' . $infos[7]),
+                        'name'  => $infos[8]
+                    );
+                }
+            } else {
+                $isDir = (boolean) ('<dir>' === $infos[2]);
                 $parsed[] = array(
-                    'perms' => $infos[0],
-                    'num'   => $infos[1],
-                    'size'  => $infos[4],
-                    'time'  => strtotime($infos[5] . ' ' . $infos[6] . '. ' . $infos[7]),
-                    'name'  => $infos[8]
+                    'perms' => $isDir ? 'd' : '-',
+                    'num'   => '',
+                    'size'  => $isDir ? '' : $infos[2],
+                    'time'  => strtotime($infos[0] . ' ' . $infos[1]),
+                    'name'  => $infos[3]
                 );
             }
         }
@@ -454,5 +465,10 @@ class Ftp implements Adapter,
         if (!$this->exists($key)) {
             throw new Exception\FileNotFound($key);
         }
+    }
+
+    private function isLinuxListing($info)
+    {
+        return count($info) >= 9;
     }
 }
