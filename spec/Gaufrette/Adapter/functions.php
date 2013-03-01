@@ -49,7 +49,7 @@ function ftp_fget($connection, &$fileResource, $path, $mode)
 
 function ftp_chdir($connection, $dirname)
 {
-    if (in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa', '/home/l3l0/relative', '/home/l3l0/relative/some', '/home/l3l1'))) {
+    if (in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa', '/home/l3l0/relative', '/home/l3l0/relative/some', '/home/l3l1', 'C:\Ftp'))) {
        return true;
     }
 
@@ -150,6 +150,16 @@ function ftp_rawlist($connection, $directory, $recursive = false)
                 "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
                 "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 ..",
                 "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename",
+        );
+    }
+
+    // https://github.com/KnpLabs/Gaufrette/issues/147
+    if ('C:\Ftp' === end($arguments))
+    {
+        return array(
+                "05-26-12  08:03PM       <DIR>          archive",
+                "12-04-12  06:57PM                16142 file1.zip",
+                "12-05-12  04:01PM                16142 file2.zip",
         );
     }
 

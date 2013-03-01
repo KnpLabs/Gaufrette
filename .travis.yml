@@ -10,4 +10,4 @@ before_script:
 
 script:
   - php bin/phpspec run -fpretty --verbose
-  - phpunit
+  - bin/phpunit
