@@ -2,8 +2,6 @@
 
 namespace spec\Gaufrette\Adapter;
 
-require_once __DIR__.'/../../../vendor/rackspace/php-cloudfiles/cloudfiles.php';
-
 use PHPSpec2\ObjectBehavior;
 
 class RackspaceCloudfiles extends ObjectBehavior
