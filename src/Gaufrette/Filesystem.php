@@ -6,6 +6,7 @@ use Gaufrette\FileFactory;
 use Gaufrette\MetadataSupporter;
 
 use Gaufrette\File;
+use Gaufrette\Exception\EmptyFile;
 
 /**
  * A filesystem is used to store and retrieve files
@@ -47,8 +48,8 @@ class Filesystem
     public function has($key)
     {
         return $this->adapter->exists($key);
-    }    
-    
+    }
+
     /**
      * Renames a file
      *
@@ -131,7 +132,7 @@ class Filesystem
      * @param Gaufrette\File file
      *
      * @return boolean success
-     */    
+     */
     public function writeFile(File $file, $overwrite = false)
     {
         $key = $file->getKey();
@@ -143,11 +144,11 @@ class Filesystem
         }
         $content = $file->getContent();
         if (!isset($content) || strlen($content) < 1) {
-            throw new \InvalidArgumentException(sprintf('Content is not for file "%s". Cannot write file.'), $key);
+            throw new EmptyFile($key);
         }
         if (!$overwrite && $this->has($key)) {
             throw new \RuntimeException(sprintf('The key "%s" already exists and can not be overwritten.', $key));
-        }        
+        }
         if ($this->has($key)) {
             $this->delete($key);
         }
