@@ -172,6 +172,23 @@ class Filesystem extends ObjectBehavior
 
     /**
      * @param \Gaufrette\Adapter $adapter
+     * @param \Gaufrette\File $file
+     */
+    function it_should_populate_file_size_after_successful_write_file($adapter, $file)
+    {
+        $file->getKey->willReturn('filename');
+        $content = "some content to write";
+        $file->getContent()->willReturn($content);
+
+        $adapter->has('filename')->willReturn(false);
+
+        $this->writeFile($file, false);
+        $file->getSize()->shouldReturn(strlen($content));
+    }
+
+
+    /**
+     * @param \Gaufrette\Adapter $adapter
      */
     function it_should_fail_when_write_is_not_successful($adapter)
     {

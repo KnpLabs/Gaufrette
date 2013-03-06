@@ -108,7 +108,39 @@ class MogileFS implements Adapter
      */
     public function writeFile(File $file)
     {
+        $closeres = false;
+        $metadata = $file->getMetadata();
+        $key = $file->getKey();
+        if (mb_strlen($file->getContent()) > 0) {
+            $res = $this->doRequest("CREATE_OPEN", array("key" => $key, "class" => $metadata['mogile_class']));
 
+            if ($res && preg_match('/^http:\/\/([a-z0-9.-]*):([0-9]*)\/(.*)$/', $res['path'], $matches)) {
+                $host = $matches[1];
+                $port = $matches[2];
+                $path = $matches[3];
+
+                $status = $this->putFile($res['path'], $file->getContent());
+
+                if ($status) {
+                    $params = array("key" => $key, "class" => $metadata['mogile_class'], "devid" => $res['devid'],
+                                    "fid" => $res['fid'], "path" => urldecode($res['path']));
+                    $closeres = $this->doRequest("CREATE_CLOSE", $params);
+
+                    //Should set timestamp given by mogile
+                    //$file->setTimestamp(0);
+
+                    //This is a bit stupid because the size of the written content is not validated anyhow by MogileFS
+                    $file->setSize(Util\Size::fromContent($file->getContent()));
+
+                    // does not support checksum yet
+                    //$file->setChecksum("");
+                }
+            }
+        }
+
+        if (!is_array($closeres)) {
+            return false;
+        }
         return true;
     }
 
