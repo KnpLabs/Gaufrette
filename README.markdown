@@ -108,6 +108,47 @@ creating the ``\AmazonS3`` object:
 define("AWS_CERTIFICATE_AUTHORITY", true);
 ```
 
+Using OpenCloud
+---------------
+To use the OpenCloud adapter you will need to create a connection using the [OpenCloud SDK](https://github.com/rackspace/php-opencloud).
+You can then fetch the ObjectStore which is required for the OpenCloud adapter.
+
+### OpenCloud
+
+```php
+$connection = new OpenCloud\OpenStack(
+    'https://example.com/v2/identity',
+    array(
+        'username' => 'your username',
+        'password' => 'your Keystone password',
+        'tenantName' => 'your tenant (project) name'
+    ));
+
+$objectStore = $connection->ObjectStore('cloudFiles', 'LON', 'publicURL');
+
+$adapter = new Gaufrette\Adapter\OpenCloud(
+    $objectStore,
+    'container-name'
+);
+
+$filesystem = new Filesystem($adapter);
+
+```
+
+### Rackspace
+
+Rackspace uses a difference connection class
+
+```php
+$connection = new OpenCloud\Rackspace(
+     'https://identity.api.rackspacecloud.com/v2.0/',
+     array(
+         'username' => 'rackspace-user',
+         'apiKey' => '0900af093093788912388fc09dde090ffee09'
+     ));
+
+```
+
 Using FTP adapters
 ---------------
 
