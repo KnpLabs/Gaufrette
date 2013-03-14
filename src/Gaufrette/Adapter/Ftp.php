@@ -417,7 +417,7 @@ class Ftp implements Adapter,
         // login ftp user
         if (!ftp_login($this->connection, $username, $password)) {
             $this->close();
-            throw new \RuntimeException(sprintf('Could not login as %s.', $this->username));
+            throw new \RuntimeException(sprintf('Could not login as %s.', $username));
         }
 
         // switch to passive mode if needed
