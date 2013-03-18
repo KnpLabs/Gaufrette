@@ -48,6 +48,7 @@
         "amazonwebservices/aws-sdk-for-php": "1.5.*",
         "phpspec/phpspec2": "dev-master",
         "rackspace/php-cloudfiles": "*",
+        "rackspace/php-opencloud": "dev-master",
         "doctrine/dbal": ">=2.3",
         "dropbox-php/dropbox-php": "*",
         "herzult/php-ssh": "*",
