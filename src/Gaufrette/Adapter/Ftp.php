@@ -116,9 +116,20 @@ class Ftp implements Adapter,
         $this->ensureDirectoryExists($this->directory, $this->create);
 
         $file  = $this->computePath($key);
-        $items = ftp_nlist($this->getConnection(), dirname($file));
+        $lines = ftp_rawlist($this->getConnection(), '-al ' . dirname($file));
 
-        return $items && (in_array($file, $items) || in_array(basename($file), $items));
+        if (false === $lines) {
+            return false;
+        }
+
+        $pattern = '{(?<!->) '.preg_quote(basename($file)).'( -> |$)}m';
+        foreach ($lines as $line) {
+            if (preg_match($pattern, $line)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -450,20 +461,6 @@ class Ftp implements Adapter,
     {
         if ($this->isConnected()) {
             ftp_close($this->connection);
-        }
-    }
-
-    /**
-     * Asserts the specified file exists
-     *
-     * @param string $key
-     *
-     * @throws Exception\FileNotFound if the file does not exist
-     */
-    private function assertExists($key)
-    {
-        if (!$this->exists($key)) {
-            throw new Exception\FileNotFound($key);
         }
     }
 
