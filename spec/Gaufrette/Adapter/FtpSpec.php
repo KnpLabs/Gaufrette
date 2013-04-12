@@ -35,6 +35,13 @@ class FtpSpec extends ObjectBehavior
         $this->exists('some/otherfilename')->shouldReturn(true);
     }
 
+    function it_checks_if_dir_exists_for_symlink()
+    {
+        $this->exists('www')->shouldReturn(true);
+        $this->exists('vendor')->shouldReturn(true);
+        $this->exists('bbb')->shouldReturn(false);
+    }
+
     function it_reads_file()
     {
         $this->read('filename')->shouldReturn('some content');
