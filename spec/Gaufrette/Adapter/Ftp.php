@@ -99,9 +99,58 @@ class Ftp extends ObjectBehavior
         $this->createFile('filename', $filesystem)->shouldReturnAnInstanceOf('\Gaufrette\File');
     }
 
+    /**
+     * @param \Gaufrette\Filesystem $filesystem
+     */
+    function it_should_create_file_in_not_existing_directory($filesystem)
+    {
+        $this->createFile('bb/cc/dd/filename', $filesystem)->shouldReturnAnInstanceOf('\Gaufrette\File');
+    }
+
     function it_should_check_is_directory()
     {
         $this->isDirectory('aaa')->shouldReturn(true);
         $this->isDirectory('filename')->shouldReturn(false);
+    }
+
+    function it_should_fetch_keys_with_hidden_files()
+    {
+        $this->beConstructedWith('/home/l3l1', 'localhost');
+
+        $this->keys()->shouldReturn(array('filename', '.htaccess'));
+    }
+
+    function it_should_check_if_hidden_file_exists()
+    {
+        $this->beConstructedWith('/home/l3l1', 'localhost');
+
+        $this->exists('.htaccess')->shouldReturn(true);
+    }
+
+    function it_should_create_base_directory_without_warning()
+    {
+        global $createdDirectory;
+        $createdDirectory = '';
+
+        $this->beConstructedWith('/home/l3l0/new', 'localhost', array('create' => true));
+
+        $this->listDirectory()->shouldReturn(array('keys' => array(), 'dirs' => array()));
+    }
+
+    function it_should_not_create_base_directory_and_should_throw_exception()
+    {
+        global $createdDirectory;
+        $createdDirectory = '';
+
+        $this->beConstructedWith('/home/l3l0/new', 'localhost', array('create' => false));
+
+        $this->shouldThrow(new \RuntimeException("The directory '/home/l3l0/new' does not exist."))->during('listDirectory', array());
+    }
+
+    function it_should_fetch_keys_for_windows()
+    {
+        $this->beConstructedWith('C:\Ftp', 'localhost');
+
+        $this->keys()->shouldReturn(array('archive', 'file1.zip', 'file2.zip'));
     }
 }

@@ -93,16 +93,18 @@ class Filesystem
     /**
      * Writes the given content into the file
      *
-     * @param string  $key       Key of the file
-     * @param string  $content   Content to write in the file
-     * @param boolean $overwrite Whether to overwrite the file if exists
+     * @param string  $key                 Key of the file
+     * @param string  $content             Content to write in the file
+     * @param boolean $overwrite           Whether to overwrite the file if exists
+     * @throws Exception\FileAlreadyExists When file already exists and overwrite is false
+     * @throws \RuntimeException           When for any reason content could not be written
      *
      * @return integer The number of bytes that were written into the file
      */
     public function write($key, $content, $overwrite = false)
     {
         if (!$overwrite && $this->has($key)) {
-            throw new \InvalidArgumentException(sprintf('The key "%s" already exists and can not be overwritten.', $key));
+            throw new Exception\FileAlreadyExists($key);
         }
 
         $numBytes = $this->adapter->write($key, $content);
@@ -140,6 +142,7 @@ class Filesystem
      * Deletes the file matching the specified key
      *
      * @param string $key
+     * @throws \RuntimeException when cannot read file
      *
      * @return boolean
      */
@@ -257,7 +260,7 @@ class Filesystem
 
     /**
      * @param $key
-     * @throws Gaufrette\Exception\FileNotFound
+     * @throws Exception\FileNotFound
      */
     private function assertHasFile($key)
     {

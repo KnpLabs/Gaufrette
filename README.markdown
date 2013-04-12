@@ -27,6 +27,8 @@ Try it!
 
 ### Setup your filesystem
 
+Following an example with the local filesystem adapter. To setup other adapters, look up the [testcases](https://github.com/KnpLabs/Gaufrette/tree/master/tests/Gaufrette/Functional/adapters).
+
 ```php
 <?php
 
@@ -104,6 +106,68 @@ creating the ``\AmazonS3`` object:
 
 ```php
 define("AWS_CERTIFICATE_AUTHORITY", true);
+```
+
+Using OpenCloud
+---------------
+To use the OpenCloud adapter you will need to create a connection using the [OpenCloud SDK](https://github.com/rackspace/php-opencloud).
+You can then fetch the ObjectStore which is required for the OpenCloud adapter.
+
+### OpenCloud
+
+```php
+$connection = new OpenCloud\OpenStack(
+    'https://example.com/v2/identity',
+    array(
+        'username' => 'your username',
+        'password' => 'your Keystone password',
+        'tenantName' => 'your tenant (project) name'
+    ));
+
+$objectStore = $connection->ObjectStore('cloudFiles', 'LON', 'publicURL');
+
+$adapter = new Gaufrette\Adapter\OpenCloud(
+    $objectStore,
+    'container-name'
+);
+
+$filesystem = new Filesystem($adapter);
+
+```
+
+### Rackspace
+
+Rackspace uses a difference connection class
+
+```php
+$connection = new OpenCloud\Rackspace(
+     'https://identity.api.rackspacecloud.com/v2.0/',
+     array(
+         'username' => 'rackspace-user',
+         'apiKey' => '0900af093093788912388fc09dde090ffee09'
+     ));
+
+```
+
+Using FTP adapters
+---------------
+
+Some FTP servers need valid configuration so Gaufrette can working with them as expected.
+
+### Pure Ftpd
+
+To handle hidden files we need to configure it by:
+
+```bash
+echo "yes" > /etc/pure-ftpd/conf/DisplayDotFiles
+```
+
+### Proftpd
+
+To handle hidden files we need to change `ListOptions` in proftpd configuration (at debian system `/etc/proftpd/proftpd.conf` probably) to:
+
+```bash
+ListOptions  "-la"
 ```
 
 Using Gaufrette in a Symfony2 project
