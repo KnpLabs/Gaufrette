@@ -118,7 +118,7 @@ class OpenCloud implements Adapter,
     public function exists($key)
     {
         $this->initialize();
-        return $this->tryGetObject($key)->bytes > 0;
+        return ($this->tryGetObject($key) !== false);
     }
 
     /**
