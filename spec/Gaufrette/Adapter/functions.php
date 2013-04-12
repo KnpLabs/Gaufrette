@@ -76,27 +76,6 @@ function ftp_mkdir($connection, $dirname)
     return false;
 }
 
-function ftp_nlist($connection, $dirname)
-{
-    $arguments = explode(' ', $dirname);
-    switch (end($arguments)) {
-        case '/home/l3l0':
-            return array('/home/l3l0/filename');
-        case '/home/l3l0/aaa':
-            return array('/home/l3l0/aaa/filename', '/home/l3l0/aaa/otherFilename');
-        case '/home/l3l0/relative':
-            return array('filename', 'some');
-        case '/home/l3l0/relative/some':
-            return array('otherfilename');
-    }
-
-    if ('/home/l3l1' === end($arguments)) {
-        return array('/home/l3l1/filename', '/home/l3l1/.htaccess');
-    }
-
-    return false;
-}
-
 function ftp_connect($host, $password)
 {
     if ('localhost' !== $host) {
@@ -123,14 +102,30 @@ function ftp_rawlist($connection, $directory, $recursive = false)
             "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename",
             "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename.exe",
             "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .htaccess",
-            "lrwxrwxrwx   1 vincent  vincent        11 Jul 12 12:16 www -> aaa"
+            "lrwxrwxrwx   1 vincent  vincent        11 Jul 12 12:16 www -> aaa",
+            "lrwxrwxrwx   1 vincent  vincent        11 Jul 12 12:16 vendor -> bbb",
         );
     }
 
     if ('/home/l3l0/aaa' === end($arguments))
     {
         return array(
-            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename"
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename",
+        );
+    }
+
+    if ('/home/l3l0/relative' === end($arguments))
+    {
+        return array(
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 some",
+        );
+    }
+
+    if ('/home/l3l0/relative/some' === end($arguments))
+    {
+        return array(
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 otherfilename",
         );
     }
 
