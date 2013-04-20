@@ -23,12 +23,12 @@
                 "name": "rackspace/php-cloudfiles",
                 "version": "master",
                 "source": {
-                    "url":  "git://github.com/rackspace/php-cloudfiles.git",
+                    "url":  "git://github.com/rackerlabs/php-cloudfiles.git",
                     "type": "git",
                     "reference": "master"
                 },
                 "dist": {
-                    "url": "https://github.com/rackspace/php-cloudfiles/zipball/master",
+                    "url": "https://github.com/rackerlabs/php-cloudfiles/zipball/master",
                     "type": "zip"
                 },
                 "autoload": {
