@@ -1,5 +1,5 @@
 {
-    "hash": "43a051992b6dbce50d171784fadcc0d1",
+    "hash": "0557c6bf3b54057cf0c8a7f25ef0d79d",
     "packages": [
 
     ],
@@ -1114,12 +1114,12 @@
             "version": "master",
             "source": {
                 "type": "git",
-                "url": "git://github.com/rackspace/php-cloudfiles.git",
+                "url": "git://github.com/rackerlabs/php-cloudfiles.git",
                 "reference": "master"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/rackspace/php-cloudfiles/zipball/master",
+                "url": "https://github.com/rackerlabs/php-cloudfiles/zipball/master",
                 "reference": null,
                 "shasum": null
             },
@@ -1129,7 +1129,42 @@
                     "cloudfiles.php"
                 ]
             },
-            "time": "2013-01-10 18:09:51"
+            "time": "2013-02-20 21:04:46"
+        },
+        {
+            "name": "rackspace/php-opencloud",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rackspace/php-opencloud.git",
+                "reference": "c3850c5e7d749357873f0ebf6bcde9692f33049c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rackspace/php-opencloud/zipball/c3850c5e7d749357873f0ebf6bcde9692f33049c",
+                "reference": "c3850c5e7d749357873f0ebf6bcde9692f33049c",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.3.0"
+            },
+            "time": "2013-03-30 12:53:51",
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "lib/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Rackspace open cloud php library",
+            "keywords": [
+                "cloudfiles",
+                "opencloud"
+            ]
         },
         {
             "name": "symfony/console",
@@ -1317,6 +1352,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "rackspace/php-opencloud": 20,
         "phpspec/phpspec2": 20
     }
 }
