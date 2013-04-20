@@ -90,7 +90,7 @@ class Local implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function writeFile(File $file)
+    public function store(File $file)
     {
         $key = $file->getKey();
         $path = $this->computePath($key);

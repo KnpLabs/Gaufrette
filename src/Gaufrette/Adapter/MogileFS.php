@@ -106,7 +106,7 @@ class MogileFS implements Adapter
     /**
      * {@inheritDoc}
      */
-    public function writeFile(File $file)
+    public function store(File $file)
     {
         $closeres = false;
         $metadata = $file->getMetadata();

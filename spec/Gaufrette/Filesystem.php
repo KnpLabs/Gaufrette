@@ -167,7 +167,7 @@ class Filesystem extends ObjectBehavior
     {
         $file->getKey()->willReturn('filename');
         $file->getContent()->shouldBeCalled()->willReturn(null);
-        $this->writeFile($file, false)->shouldThrow(new \Gaufrette\Exception\EmptyFile('filename'));
+        $this->store($file, false)->shouldThrow(new \Gaufrette\Exception\EmptyFile('filename'));
     }
 
     /**
@@ -182,7 +182,7 @@ class Filesystem extends ObjectBehavior
 
         $adapter->has('filename')->willReturn(false);
 
-        $this->writeFile($file, false);
+        $this->store($file, false);
         $file->getSize()->shouldReturn(strlen($content));
     }
 

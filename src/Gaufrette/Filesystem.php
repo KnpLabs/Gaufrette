@@ -127,13 +127,14 @@ class Filesystem
     }
 
     /**
-     * Writes a complete file into storage
+     * Stores a complete file into file storage
      *
      * @param Gaufrette\File file
+     * @param boolean overwrite
      *
      * @return boolean success
      */
-    public function writeFile(File $file, $overwrite = false)
+    public function store(File $file, $overwrite = false)
     {
         $key = $file->getKey();
         if (!is_bool($overwrite)) {
@@ -153,7 +154,7 @@ class Filesystem
             $this->delete($key);
         }
 
-        return $this->adapter->writeFile($file);
+        return $this->adapter->store($file);
     }
 
     /**

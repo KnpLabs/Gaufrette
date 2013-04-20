@@ -52,6 +52,8 @@ class Ftp implements Adapter,
      */
     public function read($key)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $temp = fopen('php://temp', 'r+');
 
         if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), $this->mode)) {
@@ -70,6 +72,8 @@ class Ftp implements Adapter,
      */
     public function write($key, $content)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $path = $this->computePath($key);
         $directory = dirname($path);
 
@@ -93,7 +97,7 @@ class Ftp implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function writeFile(File $file)
+    public function store(File $file)
     {
 
         return true;
@@ -104,6 +108,8 @@ class Ftp implements Adapter,
      */
     public function rename($sourceKey, $targetKey)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $sourcePath = $this->computePath($sourceKey);
         $targetPath = $this->computePath($targetKey);
 
@@ -117,6 +123,8 @@ class Ftp implements Adapter,
      */
     public function exists($key)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $file  = $this->computePath($key);
         $items = ftp_nlist($this->getConnection(), dirname($file));
 
@@ -128,6 +136,8 @@ class Ftp implements Adapter,
      */
     public function keys()
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         return $this->fetchKeys();
     }
 
@@ -136,6 +146,8 @@ class Ftp implements Adapter,
      */
     public function mtime($key)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $mtime = ftp_mdtm($this->getConnection(), $this->computePath($key));
 
         // the server does not support this function
@@ -151,6 +163,8 @@ class Ftp implements Adapter,
      */
     public function delete($key)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         if ($this->isDirectory($key)) {
             return ftp_rmdir($this->getConnection(), $this->computePath($key));
         }
@@ -163,6 +177,8 @@ class Ftp implements Adapter,
      */
     public function isDirectory($key)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         return $this->isDir($this->computePath($key));
     }
 
@@ -176,6 +192,8 @@ class Ftp implements Adapter,
      */
     public function listDirectory($directory = '')
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
 
         $items = $this->parseRawlist(
@@ -222,23 +240,6 @@ class Ftp implements Adapter,
         }
 
         return $f;
-        /*
-        $file = new File($key, $filesystem);
-
-        if (!array_key_exists($key, $this->fileData)) {
-            $directory = dirname($key) == '.' ? '' : dirname($key);
-            $this->listDirectory($directory);
-        }
-
-        if (isset($this->fileData[$key])) {
-            $fileData = $this->fileData[$key];
-
-            $file->setName($fileData['name']);
-            $file->setSize($fileData['size']);
-        }
-
-        return $file;
-        */
     }
 
     /**
@@ -334,15 +335,26 @@ class Ftp implements Adapter,
         $parsed = array();
         foreach ($rawlist as $line) {
             $infos = preg_split("/[\s]+/", $line, 9);
-            $infos[7] = (strrpos($infos[7], ':') != 2 ) ? ($infos[7] . ' 00:00') : (date('Y') . ' ' . $infos[7]);
 
-            if ('total' !== $infos[0]) {
+            if ($this->isLinuxListing($infos)) {
+                $infos[7] = (strrpos($infos[7], ':') != 2 ) ? ($infos[7] . ' 00:00') : (date('Y') . ' ' . $infos[7]);
+                if ('total' !== $infos[0]) {
+                    $parsed[] = array(
+                        'perms' => $infos[0],
+                        'num'   => $infos[1],
+                        'size'  => $infos[4],
+                        'time'  => strtotime($infos[5] . ' ' . $infos[6] . '. ' . $infos[7]),
+                        'name'  => $infos[8]
+                    );
+                }
+            } else {
+                $isDir = (boolean) ('<dir>' === $infos[2]);
                 $parsed[] = array(
-                    'perms' => $infos[0],
-                    'num'   => $infos[1],
-                    'size'  => $infos[4],
-                    'time'  => strtotime($infos[5] . ' ' . $infos[6] . '. ' . $infos[7]),
-                    'name'  => $infos[8]
+                    'perms' => $isDir ? 'd' : '-',
+                    'num'   => '',
+                    'size'  => $isDir ? '' : $infos[2],
+                    'time'  => strtotime($infos[0] . ' ' . $infos[1]),
+                    'name'  => $infos[3]
                 );
             }
         }
@@ -404,7 +416,7 @@ class Ftp implements Adapter,
         // login ftp user
         if (!ftp_login($this->connection, $username, $password)) {
             $this->close();
-            throw new \RuntimeException(sprintf('Could not login as %s.', $this->username));
+            throw new \RuntimeException(sprintf('Could not login as %s.', $username));
         }
 
         // switch to passive mode if needed
@@ -452,5 +464,10 @@ class Ftp implements Adapter,
         if (!$this->exists($key)) {
             throw new Exception\FileNotFound($key);
         }
+    }
+
+    private function isLinuxListing($info)
+    {
+        return count($info) >= 9;
     }
 }

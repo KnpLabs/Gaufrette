@@ -13,6 +13,7 @@ use \CF_Container as RackspaceContainer;
  *
  * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
+ * @deprecated php-cloudfiles is deprecated and will be unavailable after August 1, 2013
  */
 class RackspaceCloudfiles implements Adapter,
                                      ChecksumCalculator
@@ -73,7 +74,7 @@ class RackspaceCloudfiles implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function writeFile(File $file)
+    public function store(File $file)
     {
 
         return true;

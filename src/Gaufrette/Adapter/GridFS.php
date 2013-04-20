@@ -93,7 +93,7 @@ class GridFS implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function writeFile(File $file)
+    public function store(File $file)
     {
         $key = $file->getKey();
         $gridMetadata = array(

@@ -142,6 +142,15 @@ class Ftp extends ObjectBehavior
         global $createdDirectory;
         $createdDirectory = '';
 
-        $this->shouldThrow(new \RuntimeException("The directory '".sys_get_temp_dir()."/l3l0/new' does not exist."))->during('__construct', array(sys_get_temp_dir().'/l3l0/new', 'localhost', array('create' => false)));
+        $this->beConstructedWith('/home/l3l0/new', 'localhost', array('create' => false));
+
+        $this->shouldThrow(new \RuntimeException("The directory '".sys_get_temp_dir()."/l3l0/new' does not exist."))->during('listDirectory', array());
+    }
+
+    function it_should_fetch_keys_for_windows()
+    {
+        $this->beConstructedWith('C:\Ftp', 'localhost');
+
+        $this->keys()->shouldReturn(array('archive', 'file1.zip', 'file2.zip'));
     }
 }
