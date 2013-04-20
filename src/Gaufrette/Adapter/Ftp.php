@@ -118,7 +118,10 @@ class Ftp implements Adapter,
         $file  = $this->computePath($key);
         $items = ftp_nlist($this->getConnection(), dirname($file));
 
-        return $items && (in_array($file, $items) || in_array(basename($file), $items));
+        return $items && in_array(
+            basename($file),
+            array_map('basename', $items)
+        );
     }
 
     /**
