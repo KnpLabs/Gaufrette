@@ -11,7 +11,7 @@ class Local extends ObjectBehavior
 {
     function let()
     {
-        $this->beConstructedWith(sys_get_temp_dir().'/somedir');
+        $this->beConstructedWith('/home/somedir');
     }
 
     function letgo()
@@ -27,7 +27,7 @@ class Local extends ObjectBehavior
 
     function it_should_read_file()
     {
-        $this->read('filename')->shouldReturn(sys_get_temp_dir().'/somedir/filename content');
+        $this->read('filename')->shouldReturn('/home/somedir/filename content');
     }
 
     function it_should_write_file()
@@ -37,7 +37,7 @@ class Local extends ObjectBehavior
 
     function it_should_rename_file()
     {
-        $this->rename('filename', 'aaa/filename2')->shouldReturn(sys_get_temp_dir().'/somedir/filename to /home/somedir/aaa/filename2');
+        $this->rename('filename', 'aaa/filename2')->shouldReturn('/home/somedir/filename to /home/somedir/aaa/filename2');
     }
 
     function it_should_check_if_file_exists()
@@ -49,7 +49,7 @@ class Local extends ObjectBehavior
     function it_should_get_keys()
     {
         global $iteratorToArray;
-        $iteratorToArray = array(sys_get_temp_dir().'/somedir/filename', sys_get_temp_dir().'/somedir/filename1', sys_get_temp_dir().'/somedir/aaa/filename');
+        $iteratorToArray = array('/home/somedir/filename', '/home/somedir/filename1', '/home/somedir/aaa/filename');
 
         $this->keys()->shouldReturn(array('aaa', 'aaa/filename', 'filename', 'filename1'));
     }
@@ -80,60 +80,60 @@ class Local extends ObjectBehavior
     {
         $this->beConstructedWith('symbolicLink');
 
-        $this->read('filename')->shouldReturn(sys_get_temp_dir().'/somedir/filename content');
+        $this->read('filename')->shouldReturn('/home/somedir/filename content');
     }
 
     function it_should_not_allow_to_read_path_above_main_file_directory()
     {
         $this
-            ->shouldThrow(new \OutOfBoundsException('The path "'.sys_get_temp_dir().'/filename" is out of the filesystem.'))
+            ->shouldThrow(new \OutOfBoundsException('The path "'.'/home/filename" is out of the filesystem.'))
             ->duringRead('../filename');
         $this
-            ->shouldThrow(new \OutOfBoundsException('The path "'.sys_get_temp_dir().'/filename" is out of the filesystem.'))
+            ->shouldThrow(new \OutOfBoundsException('The path "'.'/home/filename" is out of the filesystem.'))
             ->duringExists('../filename');
     }
 
     function it_should_fail_when_directory_does_not_exists()
     {
-        $this->beConstructedWith(sys_get_temp_dir().'/other');
+        $this->beConstructedWith('/home/other');
 
         $this
-            ->shouldThrow(new \RuntimeException('The directory "'.sys_get_temp_dir().'/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringRead('filename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "'.sys_get_temp_dir().'/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringWrite('filename', 'some content');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "'.sys_get_temp_dir().'/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringRename('filename', 'otherFilename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "'.sys_get_temp_dir().'/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringExists('filename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "'.sys_get_temp_dir().'/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringKeys();
         $this
-            ->shouldThrow(new \RuntimeException('The directory "'.sys_get_temp_dir().'/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringMtime('filename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "'.sys_get_temp_dir().'/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringDelete('filename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "'.sys_get_temp_dir().'/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringIsDirectory('filename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "'.sys_get_temp_dir().'/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringCreateStream('filename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "'.sys_get_temp_dir().'/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringChecksum('filename');
     }
 
     function it_should_create_directory_when_does_not_exists()
     {
-        $this->beConstructedWith(sys_get_temp_dir().'/other', true);
+        $this->beConstructedWith('/home/other', true);
 
-        $this->read('filename')->shouldReturn(sys_get_temp_dir().'/other/filename content');
+        $this->read('filename')->shouldReturn('/home/other/filename content');
     }
 
     function it_should_be_able_to_calculate_checksum()

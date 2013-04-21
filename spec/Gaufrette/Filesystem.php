@@ -163,7 +163,7 @@ class Filesystem extends ObjectBehavior
      * @param \Gaufrette\Adapter $adapter
      * @param \Gaufrette\File $file
      */
-    function it_should_fail_when_writing_file_object_with_no_content($adapter, $file)
+    function it_should_fail_when_storing_file_object_with_no_content($adapter, $file)
     {
         $file->getKey()->willReturn('filename');
         $file->getContent()->shouldBeCalled()->willReturn(null);
