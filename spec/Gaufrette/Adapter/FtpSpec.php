@@ -42,6 +42,13 @@ class FtpSpec extends ObjectBehavior
         $this->exists('bbb')->shouldReturn(false);
     }
 
+    function it_checks_if_dir_exists_with_special_and_unicode_chars_in_name()
+    {
+        $this->beConstructedWith('/home/l3l2', 'localhost');
+
+        $this->exists('a b c d -> žežulička')->shouldReturn(true);
+    }
+
     function it_reads_file()
     {
         $this->read('filename')->shouldReturn('some content');
@@ -75,6 +82,13 @@ class FtpSpec extends ObjectBehavior
     function it_fetches_keys_without_directories_dots()
     {
         $this->keys()->shouldReturn(array('filename', 'filename.exe', '.htaccess', 'aaa', 'aaa/filename'));
+    }
+
+    function it_fetches_keys_with_spaces_and_unicode_chars()
+    {
+        $this->beConstructedWith('/home/l3l2', 'localhost');
+
+        $this->keys()->shouldReturn(array('Žľuťoučký kůň.pdf', 'a b c d -> žežulička', 'a b c d -> žežulička/do re mi.pdf'));
     }
 
     function it_fetches_mtime()

@@ -49,7 +49,7 @@ function ftp_fget($connection, &$fileResource, $path, $mode)
 
 function ftp_chdir($connection, $dirname)
 {
-    if (in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa', '/home/l3l0/relative', '/home/l3l0/relative/some', '/home/l3l1', 'C:\Ftp'))) {
+    if (in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa', '/home/l3l0/relative', '/home/l3l0/relative/some', '/home/l3l1', '/home/l3l2', '/home/l3l2/a b c d -> žežulička', 'C:\Ftp'))) {
        return true;
     }
 
@@ -92,7 +92,7 @@ function ftp_close($connection)
 
 function ftp_rawlist($connection, $directory, $recursive = false)
 {
-    $arguments = explode(' ', $directory);
+    $arguments = explode(' ', $directory, 2);
     if ('/home/l3l0' === end($arguments))
     {
         return array(
@@ -132,19 +132,38 @@ function ftp_rawlist($connection, $directory, $recursive = false)
     if ('/home/l3l1' === end($arguments) && '-al' === reset($arguments))
     {
         return array(
-                "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
-                "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 ..",
-                "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename",
-                "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .htaccess",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 ..",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .htaccess",
         );
     }
 
     if ('/home/l3l1' === end($arguments) && '-al' != reset($arguments))
     {
         return array(
-                "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
-                "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 ..",
-                "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 ..",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename",
+        );
+    }
+
+    if ('/home/l3l2' === end($arguments))
+    {
+        return array(
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 ..",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 a b c d -> žežulička",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 Žľuťoučký kůň.pdf",
+        );
+    }
+
+    if ('/home/l3l2/a b c d -> žežulička' === end($arguments))
+    {
+        return array(
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 ..",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 do re mi.pdf",
         );
     }
 
