@@ -14,7 +14,8 @@ use Gaufrette\Exception;
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
 class Ftp implements Adapter,
-                     FileFactory
+                     FileFactory,
+                     ListKeysAware
 {
     protected $connection = null;
     protected $directory;
@@ -139,7 +140,38 @@ class Ftp implements Adapter,
     {
         $this->ensureDirectoryExists($this->directory, $this->create);
 
-        return $this->fetchKeys();
+        $keys = $this->fetchKeys();
+
+        return $keys['keys'];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function listKeys($prefix = '')
+    {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
+        preg_match('/(.*?)[^\/]*$/', $prefix, $match);
+        $directory = rtrim($match[1], '/');
+
+        $keys = $this->fetchKeys($directory, false);
+
+        if ($directory === $prefix) {
+            return $keys;
+        }
+
+        $filteredKeys = array();
+        foreach (array('keys', 'dirs') as $hash) {
+            $filteredKeys[$hash] = array();
+            foreach ($keys[$hash] as $key) {
+                if (0 === strpos($key, $prefix)) {
+                    $filteredKeys[$hash][] = $key;
+                }
+            }
+        }
+
+        return $filteredKeys;
     }
 
     /**
@@ -318,21 +350,64 @@ class Ftp implements Adapter,
         return true;
     }
 
-    /**
-     * Fetch all Keys recursive
-     *
-     * @param string $directory
-     */
-    private function fetchKeys($directory = '')
+    private function fetchKeys($directory = '', $onlyKeys = true)
     {
-        $items = $this->listDirectory($directory);
+        $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
 
-        $keys = $items['dirs'];
-        foreach ($items['dirs'] as $dir) {
-            $keys = array_merge($keys, $this->fetchKeys($dir));
+        $lines = ftp_rawlist($this->getConnection(), '-alR '. $this->directory . $directory);
+
+        if (false === $lines) {
+            return array();
         }
 
-        return array_merge($items['keys'], $keys);
+        $regexDir = '/'.preg_quote($this->directory . $directory, '/').'\/?(.+):$/u';
+        $regexItem = '/^(?:([d\-\d])\S+)\s+\S+(?:(?:\s+\S+){5})?\s+(\S+)\s+(.+?)$/';
+
+        $prevLine = null;
+        $directories = array();
+        $keys = array('keys' => array(), 'dirs' => array());
+
+        foreach ((array) $lines as $line) {
+            if ('' === $prevLine && preg_match($regexDir, $line, $match)) {
+                $directory = $match[1];
+                unset($directories[$directory]);
+                if ($onlyKeys) {
+                    $keys = array(
+                        'keys' => array_merge($keys['keys'], $keys['dirs']),
+                        'dirs' => array()
+                    );
+                }
+            } elseif (preg_match($regexItem, $line, $tokens)) {
+                $name = $tokens[3];
+
+                if ('.' === $name || '..' === $name) {
+                    continue;
+                }
+
+                $path = ltrim($directory . '/' . $name, '/');
+
+                if ('d' === $tokens[1] || '<dir>' === $tokens[2]) {
+                    $keys['dirs'][] = $path;
+                    $directories[$path] = true;
+                } else {
+                    $keys['keys'][] = $path;
+                }
+            }
+            $prevLine = $line;
+        }
+
+        if ($onlyKeys) {
+            $keys = array(
+                'keys' => array_merge($keys['keys'], $keys['dirs']),
+                'dirs' => array()
+            );
+        }
+
+        foreach (array_keys($directories) as $directory) {
+            $keys = array_merge_recursive($keys, $this->fetchKeys($directory, $onlyKeys));
+        }
+
+        return $keys;
     }
 
     /**
