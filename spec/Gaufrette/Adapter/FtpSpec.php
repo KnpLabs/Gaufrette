@@ -19,6 +19,11 @@ class FtpSpec extends ObjectBehavior
         $this->shouldHaveType('Gaufrette\Adapter');
     }
 
+    function it_supports_native_list_keys()
+    {
+        $this->shouldHaveType('Gaufrette\Adapter\ListKeysAware');
+    }
+
     function it_checks_if_file_exists_for_absolute_path()
     {
         $this->exists('filename')->shouldReturn(true);
@@ -89,6 +94,41 @@ class FtpSpec extends ObjectBehavior
         $this->beConstructedWith('/home/l3l2', 'localhost');
 
         $this->keys()->shouldReturn(array('Žľuťoučký kůň.pdf', 'a b c d -> žežulička', 'a b c d -> žežulička/do re mi.pdf'));
+    }
+
+    function it_fetches_keys_recursive()
+    {
+        $this->beConstructedWith('/home/l3l3', 'localhost');
+
+        $this->keys()->shouldReturn(array('filename', 'filename.exe', '.htaccess', 'aaa', 'www', 'aaa/filename', 'www/filename', 'www/some', 'www/some/otherfilename'));
+    }
+
+    function it_lists_keys()
+    {
+        $this->listKeys()->shouldReturn(array(
+            'keys' => array('filename', 'filename.exe', '.htaccess', 'aaa/filename'),
+            'dirs' => array('aaa')
+        ));
+
+        $this->listKeys('file')->shouldReturn(array(
+            'keys' => array('filename', 'filename.exe'),
+            'dirs' => array()
+        ));
+
+        $this->listKeys('name')->shouldReturn(array(
+            'keys' => array(),
+            'dirs' => array()
+        ));
+
+        $this->listKeys('aaa')->shouldReturn(array(
+            'keys' => array('aaa/filename'),
+            'dirs' => array('aaa')
+        ));
+
+        $this->listKeys('aaa/')->shouldReturn(array(
+            'keys' => array('aaa/filename'),
+            'dirs' => array()
+        ));
     }
 
     function it_fetches_mtime()

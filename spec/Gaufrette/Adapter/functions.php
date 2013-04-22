@@ -49,7 +49,7 @@ function ftp_fget($connection, &$fileResource, $path, $mode)
 
 function ftp_chdir($connection, $dirname)
 {
-    if (in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa', '/home/l3l0/relative', '/home/l3l0/relative/some', '/home/l3l1', '/home/l3l2', '/home/l3l2/a b c d -> žežulička', 'C:\Ftp'))) {
+    if (in_array($dirname, array('/home/l3l0', '/home/l3l0/aaa', '/home/l3l0/relative', '/home/l3l0/relative/some', '/home/l3l1', '/home/l3l2', '/home/l3l2/a b c d -> žežulička', '/home/l3l3', 'C:\Ftp'))) {
        return true;
     }
 
@@ -129,7 +129,7 @@ function ftp_rawlist($connection, $directory, $recursive = false)
         );
     }
 
-    if ('/home/l3l1' === end($arguments) && '-al' === reset($arguments))
+    if ('/home/l3l1' === end($arguments) && 0 === strpos(reset($arguments), '-al'))
     {
         return array(
             "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
@@ -139,7 +139,7 @@ function ftp_rawlist($connection, $directory, $recursive = false)
         );
     }
 
-    if ('/home/l3l1' === end($arguments) && '-al' != reset($arguments))
+    if ('/home/l3l1' === end($arguments) && false === strpos(reset($arguments), '-al'))
     {
         return array(
             "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
@@ -166,6 +166,39 @@ function ftp_rawlist($connection, $directory, $recursive = false)
             "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 do re mi.pdf",
         );
     }
+
+    if ('/home/l3l3' === end($arguments) && '-alR' === reset($arguments))
+    {
+        return array(
+            "/home/l3l3:",
+            "total: 12",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 ..",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 aaa",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename.exe",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .htaccess",
+            "drwxrwxrwx   1 vincent  vincent        11 Jul 12 12:16 www",
+            "lrwxrwxrwx   1 vincent  vincent        11 Jul 12 12:16 vendor -> bbb",
+            "",
+            "/home/l3l3/aaa:",
+            "total: 8",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename",
+            "",
+            "/home/l3l3/www:",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 ..",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 filename",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 some",
+            "",
+            "/home/l3l3/www/some:",
+            "total 5",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 .",
+            "drwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 ..",
+            "-rwxr-x---  15 vincent  vincent      4096 Nov  3 21:31 otherfilename",
+        );
+    }
+
 
     // https://github.com/KnpLabs/Gaufrette/issues/147
     if ('C:\Ftp' === end($arguments))
