@@ -187,7 +187,7 @@ class Filesystem
         $keys = array();
 
         foreach ($this->keys() as $key) {
-            if (empty($prefix) || false !== strpos($key, $prefix)) {
+            if (empty($prefix) || 0 === strpos($key, $prefix)) {
                 if ($this->adapter->isDirectory($key)) {
                     $dirs[] = $key;
                 } else {
