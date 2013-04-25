@@ -4,7 +4,7 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use OpenCloud\ObjectStore\Container;
-use OpenCloud\ObjectStore;
+use OpenCloud\ObjectStore\Service;
 use OpenCloud\ObjectStore\CreateUpdateError;
 use OpenCloud\ObjectStore\ObjFetchError;
 
@@ -38,7 +38,7 @@ class OpenCloud implements Adapter,
      */
     protected $container;
 
-    public function __construct(ObjectStore $objectStore, $containerName, $createContainer = false, $detectContentType = true)
+    public function __construct(Service $objectStore, $containerName, $createContainer = false, $detectContentType = true)
     {
         $this->objectStore = $objectStore;
         $this->containerName = $containerName;
