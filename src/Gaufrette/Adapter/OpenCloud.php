@@ -38,7 +38,7 @@ class OpenCloud implements Adapter,
      */
     protected $container;
 
-    public function __construct(ObjectStore $objectStore, $containerName, $createContainer = false, $detectContentType = true)
+    public function __construct(ObjectStore\Service $objectStore, $containerName, $createContainer = false, $detectContentType = true)
     {
         $this->objectStore = $objectStore;
         $this->containerName = $containerName;
@@ -101,6 +101,9 @@ class OpenCloud implements Adapter,
                 }
 
                 $object->Create($data);
+            }
+            if (empty($object->bytes) && !empty($object->content_length)) {
+                return $object->content_length;
             }
             return $object->bytes;
         }catch(CreateUpdateError $updateError){
@@ -218,7 +221,9 @@ class OpenCloud implements Adapter,
     {
         try{
             return $this->container->DataObject($key);
-        }catch (ObjFetchError $objFetchError){
+        } catch (\OpenCloud\Base\Exceptions\ObjFetchError $ObjFetchError) {
+            return false;
+        } catch (ObjFetchError $objFetchError){
             return false;
         }
     }
