@@ -38,7 +38,7 @@ class OpenCloud implements Adapter,
      */
     protected $container;
 
-    public function __construct(ObjectStore $objectStore, $containerName, $createContainer = false, $detectContentType = true)
+    public function __construct(ObjectStore\Service $objectStore, $containerName, $createContainer = false, $detectContentType = true)
     {
         $this->objectStore = $objectStore;
         $this->containerName = $containerName;
