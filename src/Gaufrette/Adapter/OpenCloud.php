@@ -102,6 +102,9 @@ class OpenCloud implements Adapter,
 
                 $object->Create($data);
             }
+            if (empty($object->bytes) && !empty($object->content_length)) {
+                return $object->content_length;
+            }
             return $object->bytes;
         }catch(CreateUpdateError $updateError){
             return false;
@@ -218,7 +221,9 @@ class OpenCloud implements Adapter,
     {
         try{
             return $this->container->DataObject($key);
-        }catch (ObjFetchError $objFetchError){
+        } catch (\OpenCloud\Base\Exceptions\ObjFetchError $ObjFetchError) {
+            return false;
+        } catch (ObjFetchError $objFetchError){
             return false;
         }
     }
