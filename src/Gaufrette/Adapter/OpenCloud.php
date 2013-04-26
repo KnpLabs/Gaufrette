@@ -5,8 +5,8 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use OpenCloud\ObjectStore\Container;
 use OpenCloud\ObjectStore\Service;
-use OpenCloud\ObjectStore\CreateUpdateError;
-use OpenCloud\ObjectStore\ObjFetchError;
+use OpenCloud\Base\Exceptions\CreateUpdateError;
+use OpenCloud\Base\Exceptions\ObjFetchError;
 
 /**
  * OpenCloud adapter
