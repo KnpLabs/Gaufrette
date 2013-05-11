@@ -216,6 +216,27 @@ class AmazonS3 implements Adapter,
 
         return false;
     }
+    
+    /**
+     * Retrieve the S3 object URL for the given key.
+     *
+     * @param string $key
+     * @param integer|string $preauth Look at \AmazonS3::get_object_url() docs
+     * @param array $opt Look at \AmazonS3::get_object_url() docs
+     *
+     * @see \AmazonS3::get_object_url()
+     *
+     * @return string The S3 object URL
+     */
+    public function getObjectUrl($key, $preauth = 0, array $opt = array())
+    {
+        return $this->service->get_object_url(
+            $this->bucket,
+            $this->computePath($key),
+            $preauth,
+            $opt
+        );
+    }
 
     /**
      * Ensures the specified bucket exists. If the bucket does not exists
