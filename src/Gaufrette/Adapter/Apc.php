@@ -77,7 +77,7 @@ class Apc implements Adapter
 
         $keys = array();
         foreach ($cachedKeys as $key => $value) {
-            $pattern = sprintf('/^%s/', preg_quote($this->prefix));
+            $pattern = sprintf('/^%s/', preg_quote($this->prefix, '/'));
             $keys[] = preg_replace($pattern, '', $key);
         }
         sort($keys);
@@ -142,7 +142,7 @@ class Apc implements Adapter
      */
     protected function getCachedKeysIterator($key = '', $format = APC_ITER_NONE)
     {
-        $pattern = sprintf('/^%s/', preg_quote($this->prefix.$key));
+        $pattern = sprintf('/^%s/', preg_quote($this->prefix.$key, '/'));
 
         return new \APCIterator('user', $pattern, $format);
     }
