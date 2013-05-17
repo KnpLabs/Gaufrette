@@ -34,7 +34,7 @@ class Ftp implements Adapter,
      *
      * @param string $directory The directory to use in the ftp server
      * @param string $host      The host of the ftp server
-     * @param array  $options   The options like port, username, password, passive, create, mode, timeout_check
+     * @param array  $options   The options like port, username, password, passive, create, mode, check_timeout
      */
     public function __construct($directory, $host, $options = array())
     {
