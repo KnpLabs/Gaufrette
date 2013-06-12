@@ -26,9 +26,29 @@ class AmazonS3 implements Adapter,
         $this->service = $service;
         $this->bucket  = $bucket;
         $this->options = array_replace_recursive(
-            array('directory' => '', 'create' => false, 'region' => AmazonClient::REGION_US_E1),
+            array('directory' => '', 'create' => false, 'region' => AmazonClient::REGION_US_E1, 'acl' => AmazonClient::ACL_PUBLIC),
             $options
         );
+    }
+
+    /** 
+     * Set the acl used when writing files
+     *
+     * @param string $acl
+     */
+    public function setAcl($acl)
+    {
+        $this->options['acl'] = $acl;
+    }
+
+    /**
+     * Get the acl used when writing files
+     * 
+     * @return string
+     */
+    public function getAcl()
+    {
+        return $this->options['acl'];
     }
 
     /**
@@ -116,12 +136,12 @@ class AmazonS3 implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content, $permission = AmazonClient::ACL_PUBLIC)
+    public function write($key, $content)
     {
         $this->ensureBucketExists();
 
         $opt = array_replace_recursive(
-            array('acl'  => $permission),
+            array('acl'  => $this->options['acl']),
             $this->getMetadata($key),
             array('body' => $content)
         );
