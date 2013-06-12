@@ -116,12 +116,12 @@ class AmazonS3 implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content)
+    public function write($key, $content, $permission = AmazonClient::ACL_PUBLIC)
     {
         $this->ensureBucketExists();
 
         $opt = array_replace_recursive(
-            array('acl'  => AmazonClient::ACL_PUBLIC),
+            array('acl'  => $permission),
             $this->getMetadata($key),
             array('body' => $content)
         );
