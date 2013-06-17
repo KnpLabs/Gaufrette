@@ -26,24 +26,27 @@ class Ftp implements Adapter,
     protected $create;
     protected $mode;
     protected $fileData = array();
+    protected $lastConnection;
+    protected $checkTimeout;
 
     /**
      * Constructor
      *
      * @param string $directory The directory to use in the ftp server
      * @param string $host      The host of the ftp server
-     * @param array  $options   The options like port, username, password, passive, create, mode
+     * @param array  $options   The options like port, username, password, passive, create, mode, check_timeout
      */
     public function __construct($directory, $host, $options = array())
     {
-        $this->directory = (string) $directory;
-        $this->host      = $host;
-        $this->port      = isset($options['port']) ? $options['port'] : 21;
-        $this->username  = isset($options['username']) ? $options['username'] : null;
-        $this->password  = isset($options['password']) ? $options['password'] : null;
-        $this->passive   = isset($options['passive']) ? $options['passive'] : false;
-        $this->create    = isset($options['create']) ? $options['create'] : false;
-        $this->mode      = isset($options['mode']) ? $options['mode'] : FTP_BINARY;
+        $this->directory    = (string) $directory;
+        $this->host         = $host;
+        $this->port         = isset($options['port']) ? $options['port'] : 21;
+        $this->username     = isset($options['username']) ? $options['username'] : null;
+        $this->password     = isset($options['password']) ? $options['password'] : null;
+        $this->passive      = isset($options['passive']) ? $options['passive'] : false;
+        $this->create       = isset($options['create']) ? $options['create'] : false;
+        $this->mode         = isset($options['mode']) ? $options['mode'] : FTP_BINARY;
+        $this->checkTimeout = isset($options['check_timeout']) ? (int) $options['check_timeout'] : 5;
     }
 
     /**
@@ -380,7 +383,21 @@ class Ftp implements Adapter,
      */
     private function isConnected()
     {
-        return is_resource($this->connection);
+        if(!is_resource($this->connection)) {
+            return false;
+        }
+
+        if($this->checkTimeout > 0 && $this->lastConnection < (time() - $this->checkTimeout)) {
+            $this->lastConnection = time();
+
+            // If ftp_nlist return false, we are disconnected
+            if(false === ftp_nlist($this->connection, '.')) {
+                ftp_close($this->connection);
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -441,6 +458,8 @@ class Ftp implements Adapter,
                 throw new \RuntimeException(sprintf('Could not change current directory for the \'%s\' directory.', $this->directory));
             }
         }
+
+        $this->lastConnection = time();
     }
 
     /**
