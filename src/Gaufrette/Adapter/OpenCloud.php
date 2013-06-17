@@ -148,7 +148,11 @@ class OpenCloud implements Adapter,
     public function mtime($key)
     {
         $this->initialize();
-        $lastModified = $this->tryGetObject($key)->last_modified;
+        $object = $this->tryGetObject($key);
+        $lastModified = $object->last_modified;
+        if (empty($lastModified) && !empty($object->extra_headers['Last-Modified'])) {
+            $lastModified = date('Y-m-d H:i:s', strtotime($object->extra_headers['Last-Modified']));
+        }
         return $lastModified;
     }
 
