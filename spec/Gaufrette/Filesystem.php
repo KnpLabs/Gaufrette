@@ -289,7 +289,7 @@ class Filesystem extends ObjectBehavior
         );
         $this->listKeys('Key')->shouldReturn(
             array(
-                'keys' => array('testKey', 'KeyTest'),
+                'keys' => array('KeyTest'),
                 'dirs' => array()
             )
         );
@@ -326,7 +326,7 @@ class Filesystem extends ObjectBehavior
         $this->listKeys('Key')->shouldReturn(
             array(
                 'keys' => array('KeyTest'),
-                'dirs' => array('testKey')
+                'dirs' => array()
             )
         );
     }
