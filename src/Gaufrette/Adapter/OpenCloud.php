@@ -34,6 +34,10 @@ class OpenCloud implements Adapter,
      */
     protected $detectContentType;
     /**
+     * @var array
+     */
+    protected $dataObjectsCache;
+    /**
      * @var Container
      */
     protected $container;
@@ -58,6 +62,7 @@ class OpenCloud implements Adapter,
                 $container = $this->objectStore->Container($this->containerName);
             }
             $this->container = $container;
+            $this->dataObjectsCache = array();
         }
     }
 
@@ -102,6 +107,7 @@ class OpenCloud implements Adapter,
 
                 $object->Create($data);
             }
+            $this->dataObjectsCache[$key] = null;
             return $object->bytes;
         }catch(CreateUpdateError $updateError){
             return false;
@@ -164,6 +170,7 @@ class OpenCloud implements Adapter,
         $this->initialize();
         try{
             $this->tryGetObject($key)->Delete();
+            $this->dataObjectsCache[$key] = null;
         }catch (ObjectStore\DeleteError $deleteError){
             return false;
         }
@@ -217,7 +224,11 @@ class OpenCloud implements Adapter,
     protected function tryGetObject($key)
     {
         try{
-            return $this->container->DataObject($key);
+            if (!empty($this->dataObjectsCache[$key])) {
+                return $this->dataObjectsCache[$key];
+            }
+            $this->dataObjectsCache[$key] = $this->container->DataObject($key);
+            return $this->dataObjectsCache[$key];
         }catch (ObjFetchError $objFetchError){
             return false;
         }
