@@ -35,10 +35,6 @@
                     "files": ["cloudfiles.php"]
                 }
             }
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Herzult/php-ssh"
         }
     ],
     "require": {
@@ -48,6 +44,7 @@
         "amazonwebservices/aws-sdk-for-php": "1.5.*",
         "rackspace/php-opencloud"  : "dev-master",
         "phpspec/phpspec2": "dev-master",
+        "phpseclib/phpseclib": "dev-master",
         "rackspace/php-cloudfiles": "*",
         "doctrine/dbal": ">=2.3",
         "dropbox-php/dropbox-php": "*",
@@ -59,6 +56,7 @@
         "dropbox-php/dropbox-php": "to use the Dropbox adapter",
         "rackspace/php-opencloud"  : "to use Opencloud adapter",
         "amazonwebservices/aws-sdk-for-php": "to use the Amazon S3 adapter",
+        "phpseclib/phpseclib": "to use the SFTP",
         "doctrine/dbal": "to use the Doctrine DBAL adapter",
         "ext-zip": "to use the Zip adapter",
         "ext-apc": "to use the APC adapter",
