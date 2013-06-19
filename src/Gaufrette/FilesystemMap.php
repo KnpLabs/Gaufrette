@@ -106,4 +106,20 @@ class FilesystemMap
     {
         $this->filesystems = array();
     }
+
+    /**
+     * @param Filesystem $filesystem
+     *
+     * @return Boolean|string
+     */
+    public function seek(Filesystem $filesystem)
+    {
+        foreach ($this->filesystems as $domain => $fs) {
+            if ($fs === $filesystem) {
+                return $domain;
+            }
+        }
+
+        return false;
+    }
 }

@@ -68,4 +68,15 @@ class FilesystemMap extends ObjectBehavior
         $this->has('other')->shouldReturn(false);
         $this->all()->shouldReturn(array());
     }
+
+    /**
+     * @param Gaufrette\Filesystem $filesystem
+     * @param Gaufrette\Filesystem $filesystem2
+     */
+    function it_should_seek_for_filesystem_domain($filesystem, $filesystem2)
+    {
+        $this->set('some', $filesystem);
+        $this->seek($filesystem)->shouldReturn('some');
+        $this->seek($filesystem2)->shouldReturn(false);
+    }
 }

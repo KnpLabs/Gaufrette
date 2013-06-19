@@ -114,7 +114,7 @@ class File
      * Returns the file modified time
      *
      * @return int
-     */    
+     */
     public function getMtime()
     {
         return $this->mtime = $this->filesystem->mtime($this->key);
@@ -186,6 +186,14 @@ class File
     public function createStream()
     {
         return $this->filesystem->createStream($this->key);
+    }
+
+    /**
+     * @return Filesystem
+     */
+    public function getFilesystem()
+    {
+        return $this->filesystem;
     }
 
     /**
