@@ -110,7 +110,7 @@ class FilesystemMap
     /**
      * @param Filesystem $filesystem
      *
-     * @return Boolean|string
+     * @return null|string
      */
     public function seek(Filesystem $filesystem)
     {
@@ -119,7 +119,5 @@ class FilesystemMap
                 return $domain;
             }
         }
-
-        return false;
     }
 }

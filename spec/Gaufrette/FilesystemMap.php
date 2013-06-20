@@ -77,6 +77,6 @@ class FilesystemMap extends ObjectBehavior
     {
         $this->set('some', $filesystem);
         $this->seek($filesystem)->shouldReturn('some');
-        $this->seek($filesystem2)->shouldReturn(false);
+        $this->seek($filesystem2)->shouldReturn(null);
     }
 }
