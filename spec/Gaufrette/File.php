@@ -183,6 +183,14 @@ class File extends ObjectBehavior
         $filesystem->delete('filename')->shouldBeCalled()->willReturn(true);
         $this->delete()->shouldReturn(true);
     }
+
+    /**
+     * @param \Gaufrette\Filesystem $filesystem
+     */
+    function it_should_return_filesystem($filesystem)
+    {
+        $this->getFilesystem()->shouldReturn($filesystem);
+    }
 }
 
 interface MetadataAdapter extends \Gaufrette\Adapter,
