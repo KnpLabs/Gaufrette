@@ -194,7 +194,7 @@ class StreamWrapper
         $stream = $this->createStream($path);
 
         try {
-            $stream->open($this->createStreamMode('r+'));
+            $stream->open($this->createStreamMode('r'));
         } catch (\RuntimeException $e) {
             return false;
         }
