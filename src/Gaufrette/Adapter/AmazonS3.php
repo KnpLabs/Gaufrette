@@ -26,7 +26,7 @@ class AmazonS3 implements Adapter,
         $this->service = $service;
         $this->bucket  = $bucket;
         $this->options = array_replace_recursive(
-            array('directory' => '', 'create' => false, 'region' => AmazonClient::REGION_US_E1),
+            array('directory' => '', 'create' => false, 'region' => AmazonClient::REGION_US_E1, 'mime-type' => true),
             $options
         );
     }
@@ -125,6 +125,15 @@ class AmazonS3 implements Adapter,
             $this->getMetadata($key),
             array('body' => $content)
         );
+
+        if ($this->options['mime-type'] === true) {
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $opt['contentType'] = $finfo->buffer($content);
+
+            if ($opt['contentType'] === false) {
+                return false;
+            }
+        }
 
         $response = $this->service->create_object(
             $this->bucket,
