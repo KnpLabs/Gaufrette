@@ -2,9 +2,9 @@
 
 namespace spec\Gaufrette;
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
 
-class File extends ObjectBehavior
+class FileSpec extends ObjectBehavior
 {
     /**
      * @param \Gaufrette\Filesystem $filesystem
@@ -14,12 +14,12 @@ class File extends ObjectBehavior
         $this->beConstructedWith('filename', $filesystem);
     }
 
-    function it_should_be_initializable()
+    function it_is_initializable()
     {
         $this->shouldHaveType('Gaufrette\File');
     }
 
-    function it_should_gives_access_to_key()
+    function it_gives_access_to_key()
     {
         $this->getKey()->shouldReturn('filename');
     }
@@ -27,7 +27,7 @@ class File extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_should_get_content($filesystem)
+    function it_gets_content($filesystem)
     {
         $filesystem->read('filename')->shouldBeCalled()->willReturn('Some content');
 
@@ -37,7 +37,7 @@ class File extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_should_get_mtime($filesystem)
+    function it_gets_mtime($filesystem)
     {
         $filesystem->mtime('filename')->shouldBeCalled()->willReturn(1358797854);
 
@@ -48,10 +48,11 @@ class File extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
-    function it_should_pass_metadata_when_write_content($filesystem, $adapter)
+    function it_pass_metadata_when_write_content($filesystem, $adapter)
     {
         $metadata = array('id' => '123');
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
+        $filesystem->write('filename', 'some content', true)->willReturn(12);
         $filesystem->getAdapter()->willReturn($adapter);
 
         $this->setContent('some content', $metadata);
@@ -61,10 +62,11 @@ class File extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
-    function it_should_pass_metadata_when_read_content($filesystem, $adapter)
+    function it_pass_metadata_when_read_content($filesystem, $adapter)
     {
         $metadata = array('id' => '123');
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
+        $filesystem->read('filename')->willReturn('some content');
         $filesystem->getAdapter()->willReturn($adapter);
 
         $this->getContent($metadata);
@@ -74,10 +76,11 @@ class File extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
-    function it_should_pass_metadata_when_delete_content($filesystem, $adapter)
+    function it_pass_metadata_when_delete_content($filesystem, $adapter)
     {
         $metadata = array('id' => '123');
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
+        $filesystem->delete('filename')->willReturn(true);
         $filesystem->getAdapter()->willReturn($adapter);
 
         $this->delete($metadata);
@@ -85,22 +88,9 @@ class File extends ObjectBehavior
 
     /**
      * @param \Gaufrette\Filesystem $filesystem
-     * @param \Gaufrette\Adapter $adapter
-     */
-    function it_should_not_set_metadata_by_default($filesystem, $adapter)
-    {
-        $metadata = array('id' => '123');
-        $adapter->setMetadata('filename', $metadata)->shouldNotBeCalled();
-        $filesystem->getAdapter()->willReturn($adapter);
-
-        $this->setContent('some content', $metadata);
-    }
-
-    /**
-     * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
-    function it_should_set_content($filesystem, $adapter)
+    function it_sets_content_of_file($filesystem, $adapter)
     {
         $adapter->setMetadata('filename', array())->shouldNotBeCalled();
         $filesystem->getAdapter()->willReturn($adapter);
@@ -110,12 +100,12 @@ class File extends ObjectBehavior
         $this->getContent('filename')->shouldReturn('some content');
     }
 
-    function it_should_set_key_as_name_by_default()
+    function it_sets_key_as_name_by_default()
     {
         $this->getName()->shouldReturn('filename');
     }
 
-    function it_should_set_name()
+    function it_sets_name()
     {
         $this->setName('name');
         $this->getName()->shouldReturn('name');
@@ -124,7 +114,7 @@ class File extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_should_set_size_for_new_file($filesystem)
+    function it_sets_size_for_new_file($filesystem)
     {
         $filesystem->write('filename', 'some content', true)->shouldBeCalled()->willReturn(21);
 
@@ -135,7 +125,7 @@ class File extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_should_calculate_size_when_is_not_set($filesystem)
+    function it_calculates_size_from_content($filesystem)
     {
         $filesystem->read('filename')->shouldBeCalled()->willReturn('some content');
 
@@ -145,7 +135,7 @@ class File extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_should_set_size($filesystem)
+    function it_allows_to_set_size($filesystem)
     {
         $filesystem->read('filename')->shouldNotBeCalled();
 
@@ -156,7 +146,7 @@ class File extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_should_get_zero_size_when_file_not_found($filesystem)
+    function it_gets_zero_size_when_file_not_found($filesystem)
     {
         $filesystem->read('filename')->willThrow(new \Gaufrette\Exception\FileNotFound('filename'));
 
@@ -166,7 +156,7 @@ class File extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_should_check_exists_in_filesystem($filesystem)
+    function it_check_if_file_with_key_exists_in_filesystem($filesystem)
     {
         $filesystem->has('filename')->willReturn(true);
         $this->exists()->shouldReturn(true);
@@ -178,7 +168,7 @@ class File extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_should_delete_file_from_filesystem($filesystem)
+    function it_deletes_file_from_filesystem($filesystem)
     {
         $filesystem->delete('filename')->shouldBeCalled()->willReturn(true);
         $this->delete()->shouldReturn(true);
