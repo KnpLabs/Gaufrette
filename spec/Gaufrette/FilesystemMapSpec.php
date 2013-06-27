@@ -2,11 +2,11 @@
 
 namespace spec\Gaufrette;
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
 
-class FilesystemMap extends ObjectBehavior
+class FilesystemMapSpec extends ObjectBehavior
 {
-    function it_should_be_initializable()
+    function it_is_initializable()
     {
         $this->shouldHaveType('Gaufrette\FilesystemMap');
     }
@@ -14,7 +14,7 @@ class FilesystemMap extends ObjectBehavior
     /**
      * @param Gaufrette\Filesystem $filesystem
      */
-    function it_should_check_if_has_mapped_filesystem($filesystem)
+    function it_checks_if_has_mapped_filesystem($filesystem)
     {
         $this->set('some', $filesystem);
         $this->has('some')->shouldReturn(true);
@@ -24,23 +24,24 @@ class FilesystemMap extends ObjectBehavior
     /**
      * @param Gaufrette\Filesystem $filesystem
      */
-    function it_should_set_mapped_filesystem($filesystem)
+    function it_sets_mapped_filesystem($filesystem)
     {
         $this->set('some', $filesystem);
         $this->get('some')->shouldReturn($filesystem);
     }
 
-    function it_should_fail_when_get_filesystem_which_was_not_mapped()
+    function it_fails_when_get_filesystem_which_was_not_mapped()
     {
         $this
             ->shouldThrow(new \InvalidArgumentException('There is no filesystem defined for the "some" domain.'))
-            ->duringGet('some');
+            ->duringGet('some')
+        ;
     }
 
     /**
      * @param Gaufrette\Filesystem $filesystem
      */
-    function it_should_remove_mapped_filesystem($filesystem)
+    function it_removes_mapped_filesystem($filesystem)
     {
         $this->set('some', $filesystem);
         $this->remove('some');
@@ -48,17 +49,18 @@ class FilesystemMap extends ObjectBehavior
         $this->has('some')->shouldReturn(false);
     }
 
-    function it_should_fail_when_remove_filesystem_which_was_not_mapped()
+    function it_fails_when_try_to_remove_filesystem_which_was_not_mapped()
     {
         $this
             ->shouldThrow(new \InvalidArgumentException('Cannot remove the "some" filesystem as it is not defined.'))
-            ->duringRemove('some');
+            ->duringRemove('some')
+        ;
     }
 
     /**
      * @param Gaufrette\Filesystem $filesystem
      */
-    function it_should_remove_all_filesystems($filesystem)
+    function it_removes_all_filesystems($filesystem)
     {
         $this->set('some', $filesystem);
         $this->set('other', $filesystem);

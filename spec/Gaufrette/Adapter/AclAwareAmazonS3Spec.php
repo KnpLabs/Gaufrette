@@ -2,9 +2,9 @@
 
 namespace spec\Gaufrette\Adapter;
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
 
-class AclAwareAmazonS3 extends ObjectBehavior
+class AclAwareAmazonS3Spec extends ObjectBehavior
 {
     /**
      * @param \Gaufrette\Adapter $adapter
@@ -15,9 +15,8 @@ class AclAwareAmazonS3 extends ObjectBehavior
         $this->beConstructedWith($adapter, $service, 'bucketName');
     }
 
-    function it_is_initializable()
+    function it_is_adapter()
     {
-        $this->shouldHaveType('Gaufrette\Adapter\AclAwareAmazonS3');
         $this->shouldHaveType('Gaufrette\Adapter');
     }
 
@@ -47,14 +46,17 @@ class AclAwareAmazonS3 extends ObjectBehavior
         $service
             ->set_object_acl('bucketName', 'filename2', \AmazonS3::ACL_PRIVATE)
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), '', 200));
+            ->willReturn(new \CFResponse(array(), '', 200))
+        ;
         $adapter
             ->rename('filename', 'filename2')
             ->shouldBeCalled()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
         $adapter
             ->delete('filename')
-            ->shouldNotBeCalled();
+            ->shouldNotBeCalled()
+        ;
 
         $this->rename('filename', 'filename2')->shouldReturn(true);
     }
@@ -89,10 +91,12 @@ class AclAwareAmazonS3 extends ObjectBehavior
         $service
             ->set_object_acl('bucketName', 'filename2', array(array('id' => 'someId', 'permission' => \AmazonS3::GRANT_READ)))
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), '', 200));
+            ->willReturn(new \CFResponse(array(), '', 200))
+        ;
         $adapter
             ->rename('filename', 'filename2')
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $this->setUsers(array(array('id' => 'someId', 'permission' => 'read')));
         $this->rename('filename', 'filename2')->shouldReturn(true);
@@ -107,14 +111,17 @@ class AclAwareAmazonS3 extends ObjectBehavior
         $service
             ->set_object_acl('bucketName', 'filename', \AmazonS3::ACL_PRIVATE)
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), '', 200));
+            ->willReturn(new \CFResponse(array(), '', 200))
+        ;
         $adapter
             ->write('filename', 'some content')
             ->shouldBeCalled()
-            ->willReturn(12);
+            ->willReturn(12)
+        ;
         $adapter
             ->delete('filename')
-            ->shouldNotBeCalled();
+            ->shouldNotBeCalled()
+        ;
 
         $this->write('filename', 'some content')->shouldReturn(12);
     }
@@ -128,14 +135,17 @@ class AclAwareAmazonS3 extends ObjectBehavior
         $service
             ->set_object_acl('bucketName', 'filename', \AmazonS3::ACL_PRIVATE)
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), '', 500));
+            ->willReturn(new \CFResponse(array(), '', 500))
+        ;
         $adapter
             ->write('filename', 'some content')
             ->shouldBeCalled()
-            ->willReturn(12);
+            ->willReturn(12)
+        ;
         $adapter
             ->delete('filename')
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+        ;
 
         $this->write('filename', 'some content')->shouldReturn(false);
     }
@@ -149,10 +159,12 @@ class AclAwareAmazonS3 extends ObjectBehavior
         $service
             ->set_object_acl('bucketName', 'filename', array(array('id' => 'someId', 'permission' => \AmazonS3::GRANT_READ)))
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), '', 200));
+            ->willReturn(new \CFResponse(array(), '', 200))
+        ;
         $adapter
             ->write('filename', 'some content')
-            ->willReturn(12);
+            ->willReturn(12)
+        ;
 
         $this->setUsers(array(array('id' => 'someId', 'permission' => 'read')));
         $this->write('filename', 'some content')->shouldReturn(12);
@@ -199,7 +211,7 @@ class AclAwareAmazonS3 extends ObjectBehavior
      */
     function it_delegates_keys($adapter)
     {
-        $adapter->keys->willReturn(array('filename', 'filename2'));
+        $adapter->keys()->willReturn(array('filename', 'filename2'));
 
         $this->keys()->shouldReturn(array('filename', 'filename2'));
     }
@@ -217,18 +229,6 @@ class AclAwareAmazonS3 extends ObjectBehavior
 
         $this->setMetadata('filename', array('some'));
         $this->getMetadata('filename')->shouldReturn(array('some2'));
-    }
-
-    /**
-     * @param \Gaufrette\Adapter $adapter
-     */
-    function it_does_not_delegate_metadata_when_delegate_object_does_not_support_it($adapter)
-    {
-        $adapter->setMetadata('filename', array('some'))->shouldNotBeCalled();
-        $adapter->getMetadata('filename')->shouldNotBeCalled();
-
-        $this->setMetadata('filename', array('some'));
-        $this->getMetadata('filename')->shouldReturn(array());
     }
 }
 

@@ -2,12 +2,10 @@
 
 namespace spec\Gaufrette\Adapter;
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 
-//Hack cause of new version of mongo-ext https://github.com/padraic/mockery/issues/110
-\Mockery::getConfiguration()->setInternalClassMethodParamMap("MongoCollection", "aggregate", array('$pipeline', '$op = null', '$some = null'));
-
-class GridFS extends ObjectBehavior
+class GridFSSpec extends ObjectBehavior
 {
     /**
      * @param \MongoGridFS $gridFs
@@ -17,25 +15,41 @@ class GridFS extends ObjectBehavior
         $this->beConstructedWith($gridFs);
     }
 
-    function it_should_be_initializable()
+    function it_is_adapter()
     {
-        $this->shouldHaveType('Gaufrette\Adapter\GridFS');
         $this->shouldHaveType('Gaufrette\Adapter');
+    }
+
+    function it_is_checksum_calculator()
+    {
+        $this->shouldHaveType('Gaufrette\Adapter\ChecksumCalculator');
+    }
+
+    function it_supports_metadata()
+    {
+        $this->shouldHaveType('Gaufrette\Adapter\MetadataSupporter');
+    }
+
+    function it_supports_native_list_keys()
+    {
+        $this->shouldHaveType('Gaufrette\Adapter\ListKeysAware');
     }
 
     /**
      * @param \MongoGridFS $gridFs
      * @param \MongoGridFSFile $file
      */
-    function it_should_read_file($gridFs, $file)
+    function it_reads_file($gridFs, $file)
     {
         $file
             ->getBytes()
-            ->willReturn('some content');
+            ->willReturn('some content')
+        ;
         $gridFs
             ->findOne('filename', array())
             ->shouldBeCalled()
-            ->willReturn($file);
+            ->willReturn($file)
+        ;
 
         $this->read('filename')->shouldReturn('some content');
     }
@@ -43,12 +57,13 @@ class GridFS extends ObjectBehavior
     /**
      * @param \MongoGridFS $gridFs
      */
-    function it_should_not_fail_when_cannot_read($gridFs)
+    function it_does_not_fail_when_cannot_read($gridFs)
     {
         $gridFs
             ->findOne('filename', array())
             ->shouldBeCalled()
-            ->willReturn(null);
+            ->willReturn(null)
+        ;
 
         $this->read('filename')->shouldReturn(false);
     }
@@ -57,14 +72,16 @@ class GridFS extends ObjectBehavior
      * @param \MongoGridFS $gridFs
      * @param \MongoGridFSFile $file
      */
-    function it_should_check_if_exists($gridFs, $file)
+    function it_checks_if_file_exists($gridFs, $file)
     {
         $gridFs
             ->findOne('filename', array())
-            ->willReturn($file);
+            ->willReturn($file)
+        ;
         $gridFs
             ->findOne('filename2', array())
-            ->willReturn(null);
+            ->willReturn(null)
+        ;
 
         $this->exists('filename')->shouldReturn(true);
         $this->exists('filename2')->shouldReturn(false);
@@ -73,16 +90,18 @@ class GridFS extends ObjectBehavior
     /**
      * @param \MongoGridFS $gridFs
      */
-    function it_should_delete_file($gridFs)
+    function it_deletes_file($gridFs)
     {
         $file = new \stdClass;
         $file->file = array('_id' => 123);
         $gridFs
             ->findOne('filename', array('_id'))
-            ->willReturn($file);
+            ->willReturn($file)
+        ;
         $gridFs
             ->delete(123)
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $this->delete('filename')->shouldReturn(true);
     }
@@ -90,22 +109,24 @@ class GridFS extends ObjectBehavior
     /**
      * @param \MongoGridFS $gridFs
      */
-    function it_should_not_delete_file($gridFs)
+    function it_does_not_delete_file($gridFs)
     {
         $file = new \stdClass;
         $file->file = array('_id' => 123);
         $gridFs
             ->findOne('filename', array('_id'))
-            ->willReturn($file);
-
+            ->willReturn($file)
+        ;
         $gridFs
             ->delete(123)
-            ->willReturn(false);
+            ->willReturn(false)
+        ;
         $this->delete('filename')->shouldReturn(false);
 
         $gridFs
             ->findOne('filename', array('_id'))
-            ->willReturn(null);
+            ->willReturn(null)
+        ;
         $this->delete('filename')->shouldReturn(false);
     }
 
@@ -113,98 +134,118 @@ class GridFS extends ObjectBehavior
      * @param \MongoGridFS $gridFs
      * @param \MongoGridFSFile $file
      */
-    function it_should_write_file($gridFs, $file)
+    function it_writes_file($gridFs, $file)
     {
         $file
             ->getSize()
-            ->willReturn(12);
+            ->willReturn(12)
+        ;
         $gridFs
             ->findOne('filename', array())
-            ->willReturn(null);
+            ->willReturn(null)
+        ;
         $gridFs
             ->storeBytes('some content', array('date' => 1234, 'someother' => 'metadata', 'filename' => 'filename'))
-            ->willReturn('someId');
+            ->willReturn('someId')
+        ;
         $gridFs
             ->findOne(array('_id' => 'someId'))
-            ->willReturn($file);
+            ->willReturn($file)
+        ;
 
         $this->setMetadata('filename', array('date' => 1234, 'someother' => 'metadata'));
         $this
             ->write('filename', 'some content')
-            ->shouldReturn(12);
+            ->shouldReturn(12)
+        ;
     }
 
     /**
      * @param \MongoGridFS $gridFs
      * @param \MongoGridFSFile $file
      */
-    function it_should_update_file($gridFs, $file)
+    function it_updates_file($gridFs, $file)
     {
         $someFile = new \stdClass;
         $someFile->file = array('_id' => 123);
         $gridFs
             ->findOne('filename', array('_id'))
             ->shouldBeCalled()
-            ->willReturn($someFile);
+            ->willReturn($someFile)
+        ;
         $gridFs
             ->delete(123)
             ->shouldBeCalled()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $file
             ->getSize()
-            ->willReturn(12);
+            ->willReturn(12)
+        ;
         $gridFs
             ->findOne('filename', array())
-            ->willReturn($file);
+            ->willReturn($file)
+        ;
         $gridFs
-            ->storeBytes(ANY_ARGUMENT, ANY_ARGUMENT)
-            ->willReturn('someId');
+            ->storeBytes(Argument::any(), Argument::any())
+            ->willReturn('someId')
+        ;
         $gridFs
             ->findOne(array('_id' => 'someId'))
-            ->willReturn($file);
+            ->willReturn($file)
+        ;
 
         $this
             ->write('filename', 'some content')
-            ->shouldReturn(12);
+            ->shouldReturn(12)
+        ;
     }
 
     /**
      * @param \MongoGridFS $gridFs
      * @param \MongoGridFSFile $file
      */
-    function it_should_rename_file($gridFs, $file)
+    function it_renames_file($gridFs, $file)
     {
         $file
             ->getBytes()
-            ->willReturn('some content');
+            ->willReturn('some content')
+        ;
         $file
             ->getSize()
-            ->willReturn(12);
+            ->willReturn(12)
+        ;
         $gridFs
             ->findOne('otherFilename', array())
-            ->willReturn(null);
+            ->willReturn(null)
+        ;
         $gridFs
             ->findOne('filename', array())
             ->shouldBeCalled()
-            ->willReturn($file);
+            ->willReturn($file)
+        ;
         $gridFs
             ->storeBytes('some content', array('date' => 1234, 'filename' => 'otherFilename'))
             ->shouldBeCalled()
-            ->willReturn('someId');
+            ->willReturn('someId')
+        ;
 
         $fileToDelete = new \stdClass;
         $fileToDelete->file = array('_id' => 123);
         $gridFs
             ->findOne('filename', array('_id'))
-            ->willReturn($fileToDelete);
+            ->willReturn($fileToDelete)
+        ;
         $gridFs
             ->findOne(array('_id' => 'someId'))
-            ->willReturn($file);
+            ->willReturn($file)
+        ;
         $gridFs
             ->delete(123)
             ->shouldBeCalled()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $this->setMetadata('otherFilename', array('date' => 1234));
         $this->rename('filename', 'otherFilename')->shouldReturn(true);
@@ -213,11 +254,12 @@ class GridFS extends ObjectBehavior
     /**
      * @param \MongoGridFS $gridFs
      */
-    function it_should_get_keys($gridFs, $file, $otherFile)
+    function it_fetches_keys($gridFs, $file, $otherFile)
     {
         $gridFs
             ->find(array(), array('filename'))
-            ->willReturn(array(new File('filename'), new File('otherFilename')));
+            ->willReturn(array(new TestFile('filename'), new TestFile('otherFilename')))
+        ;
 
         $this->keys()->shouldReturn(array('filename', 'otherFilename'));
     }
@@ -225,7 +267,7 @@ class GridFS extends ObjectBehavior
     /**
      * @param \MongoGridFS $gridFs
      */
-    function it_should_get_mtime($gridFs)
+    function it_fetches_mtime($gridFs)
     {
         $time = new \stdClass;
         $time->sec = 12345;
@@ -234,7 +276,8 @@ class GridFS extends ObjectBehavior
         $someFile->file = array('date' => $time);
         $gridFs
             ->findOne('filename', array('date'))
-            ->willReturn($someFile);
+            ->willReturn($someFile)
+        ;
 
         $this->mtime('filename')->shouldReturn(12345);
     }
@@ -242,19 +285,20 @@ class GridFS extends ObjectBehavior
     /**
      * @param \MongoGridFS $gridFs
      */
-    function it_should_calculate_checksum($gridFs)
+    function it_calculates_checksum($gridFs)
     {
         $someFile = new \stdClass;
         $someFile->file = array('md5' => 'md5123');
         $gridFs
             ->findOne('filename', array('md5'))
-            ->willReturn($someFile);
+            ->willReturn($someFile)
+        ;
 
         $this->checksum('filename')->shouldReturn('md5123');
     }
 }
 
-class File
+class TestFile
 {
     private $filename;
 
