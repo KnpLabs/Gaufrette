@@ -2,18 +2,18 @@
 
 namespace spec\Gaufrette\Util;
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
 
-class Path extends ObjectBehavior
+class PathSpec extends ObjectBehavior
 {
-    function it_should_check_if_path_is_absolute()
+    function it_checks_if_path_is_absolute()
     {
         $this->isAbsolute('/home/path')->shouldBe(true);
         $this->isAbsolute('home/path')->shouldBe(false);
         $this->isAbsolute('../home/path')->shouldBe(false);
     }
 
-    function it_should_normalize_file_path()
+    function it_normalizes_file_path()
     {
         $this->normalize('C:\\some\other.txt')->shouldReturn('c:/some/other.txt');
         $this->normalize('..\other.txt')->shouldReturn('../other.txt');

@@ -2,9 +2,9 @@
 
 namespace spec\Gaufrette\Adapter\RackspaceCloudfiles;
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
 
-class AuthenticationConnectionFactory extends ObjectBehavior
+class AuthenticationConnectionFactorySpec extends ObjectBehavior
 {
     /**
      * @param \CF_Authentication $authentication
@@ -14,22 +14,24 @@ class AuthenticationConnectionFactory extends ObjectBehavior
         $this->beConstructedWith($authentication);
     }
 
-    function it_should_be_initializable()
+    function it_is_initializable()
     {
         $this->shouldHaveType('Gaufrette\Adapter\RackspaceCloudfiles\AuthenticationConnectionFactory');
         $this->shouldHaveType('Gaufrette\Adapter\RackspaceCloudfiles\ConnectionFactoryInterface');
     }
 
-    function it_should_create_cf_connection()
+    function it_creates_cf_connection($authentication)
     {
+        $authentication->authenticated()->willReturn(true);
         $this->create()->shouldReturnAnInstanceOf('\CF_Connection');
     }
 
-    function it_should_authenticate_when_not_authenticated($authentication)
+    function it_authenticates_when_was_not_authenticated_before($authentication)
     {
         $authentication->authenticated()->willReturn(false);
-        $authentication->authenticate()->shouldBeCalled();
-        $authentication->authenticated()->willReturn(true);
+        $authentication->authenticate()->shouldBeCalled()->will(function () use ($authentication) {
+            $authentication->authenticated()->willReturn(true);
+        });
 
         $this->create()->shouldReturnAnInstanceOf('\CF_Connection');
     }

@@ -2,11 +2,11 @@
 
 namespace spec\Gaufrette\Util;
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
 
-class Size extends ObjectBehavior
+class SizeSpec extends ObjectBehavior
 {
-    function it_should_calculate_size_of_content()
+    function it_calculates_size_of_content()
     {
         $this->fromContent('some content')->shouldReturn(12);
         $this->fromContent('some other content')->shouldReturn(18);

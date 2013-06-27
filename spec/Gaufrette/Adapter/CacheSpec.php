@@ -2,9 +2,9 @@
 
 namespace spec\Gaufrette\Adapter;
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
 
-class Cache extends ObjectBehavior
+class CacheSpec extends ObjectBehavior
 {
     /**
      * @param \Gaufrette\Adapter $source
@@ -15,10 +15,13 @@ class Cache extends ObjectBehavior
         $this->beConstructedWith($source, $cache);
     }
 
-    function it_should_be_initializable()
+    function it_is_adapter()
     {
-        $this->shouldHaveType('Gaufrette\Adapter\Cache');
         $this->shouldHaveType('Gaufrette\Adapter');
+    }
+
+    function it_supports_metadata()
+    {
         $this->shouldHaveType('Gaufrette\Adapter\MetadataSupporter');
     }
 
@@ -26,7 +29,7 @@ class Cache extends ObjectBehavior
      * @param \spec\Gaufrette\Adapter\CacheTestExtendedAdapter $extendedSource
      * @param \spec\Gaufrette\Adapter\CacheTestExtendedAdapter $extendedCache
      */
-    function it_should_handle_metadata_when_cached_adapters_supports_metadata($extendedSource, $extendedCache)
+    function it_handles_metadata_when_cached_adapters_supports_metadata($extendedSource, $extendedCache)
     {
         $extendedSource->setMetadata('filename', array('metadata'))->shouldBeCalled();
         $extendedCache->setMetadata('filename', array('metadata'))->shouldBeCalled();
@@ -39,22 +42,8 @@ class Cache extends ObjectBehavior
 
     /**
      * @param \Gaufrette\Adapter $source
-     * @param \Gaufrette\Adapter $cache
      */
-    function it_should_ignore_metadata_when_cached_adapters_does_not_support_metadata($source, $cache)
-    {
-        $source->setMetadata('filename', array('metadata'))->shouldNotBeCalled();
-        $cache->setMetadata('filename', array('metadata'))->shouldNotBeCalled();
-        $source->getMetadata('filename')->shouldNotBeCalled();
-
-        $this->setMetadata('filename', array('metadata'));
-        $this->getMetadata('filename')->shouldReturn(false);
-    }
-
-    /**
-     * @param \Gaufrette\Adapter $source
-     */
-    function it_should_delegate_is_directory_to_source($source)
+    function it_delegates_is_directory_check_to_source($source)
     {
         $source->isDirectory('filename')->shouldBeCalled()->willReturn(true);
 
@@ -65,12 +54,13 @@ class Cache extends ObjectBehavior
      * @param \Gaufrette\Adapter $source
      * @param \Gaufrette\Adapter $cache
      */
-    function it_should_read_from_cache($source, $cache)
+    function it_reads_from_cache_adapter($source, $cache)
     {
         $source->read('filename')->shouldNotBeCalled();
         $cache->read('filename')->shouldBeCalled()->willReturn('some content');
         $source->mtime('filename')->willReturn(strtotime('2010-10-11'));
         $cache->mtime('filename')->willReturn(strtotime('2010-10-12'));
+        $cache->exists('filename')->willReturn(true);
 
         $this->read('filename')->shouldReturn('some content');
     }
@@ -79,13 +69,14 @@ class Cache extends ObjectBehavior
      * @param \Gaufrette\Adapter $source
      * @param \Gaufrette\Adapter $cache
      */
-    function it_should_read_from_source_and_write_to_cache($source, $cache)
+    function it_update_cache_adapter_when_source_file_is_modified($source, $cache)
     {
         $source->read('filename')->shouldBeCalled()->willReturn('some other content');
         $cache->read('filename')->shouldNotBeCalled();
         $cache->write('filename', 'some other content')->shouldBeCalled();
         $source->mtime('filename')->willReturn(strtotime('2010-10-11'));
         $cache->mtime('filename')->willReturn(strtotime('2010-10-10'));
+        $cache->exists('filename')->willReturn(true);
 
         $this->read('filename')->shouldReturn('some other content');
     }
@@ -94,7 +85,7 @@ class Cache extends ObjectBehavior
      * @param \Gaufrette\Adapter $source
      * @param \Gaufrette\Adapter $cache
      */
-    function it_should_rename_file_in_source_and_cache($source, $cache)
+    function it_rename_file_in_source_and_cache($source, $cache)
     {
         $source->rename('filename', 'filename2')->shouldBeCalled();
         $cache->rename('filename', 'filename2')->shouldBeCalled()->willReturn(true);
@@ -106,7 +97,7 @@ class Cache extends ObjectBehavior
      * @param \Gaufrette\Adapter $source
      * @param \Gaufrette\Adapter $cache
      */
-    function it_should_write_file_to_source_and_cache($source, $cache)
+    function it_writes_file_to_source_and_cache($source, $cache)
     {
         $source->write('filename', 'some content')->shouldBeCalled();
         $cache->write('filename', 'some content')->shouldBeCalled()->willReturn(12);
@@ -118,7 +109,7 @@ class Cache extends ObjectBehavior
      * @param \Gaufrette\Adapter $source
      * @param \Gaufrette\Adapter $cache
      */
-    function it_should_delete_file_from_source_and_cache($source, $cache)
+    function it_deletes_file_from_source_and_cache($source, $cache)
     {
         $source->delete('filename')->shouldBeCalled()->willReturn(true);
         $cache->delete('filename')->shouldBeCalled()->willReturn(true);
@@ -129,7 +120,7 @@ class Cache extends ObjectBehavior
     /**
      * @param \Gaufrette\Adapter $source
      */
-    function it_should_check_if_exists_in_source($source)
+    function it_check_if_exists_in_source($source)
     {
         $source->exists('filename')->shouldBeCalled()->willReturn(true);
 
@@ -139,7 +130,7 @@ class Cache extends ObjectBehavior
     /**
      * @param \Gaufrette\Adapter $source
      */
-    function it_should_get_mtime_from_source($source)
+    function it_get_mtime_from_source($source)
     {
         $source->mtime('filename')->shouldBeCalled()->willReturn(1234);
 
@@ -149,7 +140,7 @@ class Cache extends ObjectBehavior
     /**
      * @param \Gaufrette\Adapter $source
      */
-    function it_should_get_keys_from_source($source)
+    function it_get_keys_from_source($source)
     {
         $source->keys()->willReturn(array('filename2', 'filename1', 'filename'));
 
