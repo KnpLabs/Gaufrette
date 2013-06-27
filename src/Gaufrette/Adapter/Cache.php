@@ -197,12 +197,11 @@ class Cache implements Adapter,
         if ($this->cache->exists($key)) {
             try {
                 $dateCache = $this->cache->mtime($key);
+                $needsReload = false;
 
                 if (time() - $this->ttl >= $dateCache) {
                     $dateSource = $this->source->mtime($key);
                     $needsReload = $dateCache < $dateSource;
-                } else {
-                    $needsReload = false;
                 }
             } catch (\RuntimeException $e) { }
         }

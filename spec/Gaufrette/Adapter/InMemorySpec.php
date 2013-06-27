@@ -2,9 +2,9 @@
 
 namespace spec\Gaufrette\Adapter;
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
 
-class InMemory extends ObjectBehavior
+class InMemorySpec extends ObjectBehavior
 {
     function let()
     {
@@ -14,51 +14,51 @@ class InMemory extends ObjectBehavior
         ));
     }
 
-    function it_should_be_initializable()
+    function it_is_adapter()
     {
-        $this->shouldHaveType('Gaufrette\Adapter\InMemory');
+        $this->shouldHaveType('Gaufrette\Adapter');
     }
 
-    function it_should_read_file()
+    function it_reads_file()
     {
         $this->read('filename')->shouldReturn('content');
     }
 
-    function it_should_write_file()
+    function it_writes_file()
     {
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
-    function it_should_rename_file()
+    function it_renames_file()
     {
          $this->rename('filename', 'aaa/filename2')->shouldReturn(true);
          $this->exists('filename')->shouldReturn(false);
          $this->exists('aaa/filename2')->shouldReturn(true);
     }
 
-    function it_should_check_if_file_exists()
+    function it_checks_if_file_exists()
     {
         $this->exists('filename')->shouldReturn(true);
         $this->exists('filenameTest')->shouldReturn(false);
     }
 
-    function it_should_get_keys()
+    function it_fetches_keys()
     {
         $this->keys()->shouldReturn(array('filename', 'filename2'));
     }
 
-    function it_should_get_mtime()
+    function it_fetches_mtime()
     {
         $this->mtime('filename')->shouldReturn(12345);
     }
 
-    function it_should_delete_file()
+    function it_deletes_file()
     {
         $this->delete('filename')->shouldReturn(true);
         $this->exists('filename')->shouldReturn(false);
     }
 
-    function it_should_not_handle_dirs()
+    function it_does_not_handle_dirs()
     {
         $this->isDirectory('filename')->shouldReturn(false);
         $this->isDirectory('filename2')->shouldReturn(false);
