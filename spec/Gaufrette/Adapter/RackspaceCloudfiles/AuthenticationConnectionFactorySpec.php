@@ -29,8 +29,8 @@ class AuthenticationConnectionFactorySpec extends ObjectBehavior
     function it_authenticates_when_was_not_authenticated_before($authentication)
     {
         $authentication->authenticated()->willReturn(false);
-        $authentication->authenticate()->shouldBeCalled()->will(function () {
-            $this->authenticated()->willReturn(true);
+        $authentication->authenticate()->shouldBeCalled()->will(function () use ($authentication) {
+            $authentication->authenticated()->willReturn(true);
         });
 
         $this->create()->shouldReturnAnInstanceOf('\CF_Connection');
