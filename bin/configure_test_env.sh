@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo apt-get install -qq libssh2-1-dev libssh2-php
-pecl install mongo &> /dev/null
+pecl install -f mongo
 touch .interactive
 (pecl install -f ssh2 < .interactive)
 
