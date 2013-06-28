@@ -19,6 +19,11 @@ class FtpSpec extends ObjectBehavior
         $this->shouldHaveType('Gaufrette\Adapter');
     }
 
+    function it_supports_native_list_keys()
+    {
+        $this->shouldHaveType('Gaufrette\Adapter\ListKeysAware');
+    }
+
     function it_checks_if_file_exists_for_absolute_path()
     {
         $this->exists('filename')->shouldReturn(true);
@@ -33,6 +38,20 @@ class FtpSpec extends ObjectBehavior
         $this->exists('filename2')->shouldReturn(false);
         $this->exists('aa/filename')->shouldReturn(false);
         $this->exists('some/otherfilename')->shouldReturn(true);
+    }
+
+    function it_checks_if_dir_exists_for_symlink()
+    {
+        $this->exists('www')->shouldReturn(true);
+        $this->exists('vendor')->shouldReturn(true);
+        $this->exists('bbb')->shouldReturn(false);
+    }
+
+    function it_checks_if_dir_exists_with_special_and_unicode_chars_in_name()
+    {
+        $this->beConstructedWith('/home/l3l2', 'localhost');
+
+        $this->exists('a b c d -> žežulička')->shouldReturn(true);
     }
 
     function it_reads_file()
@@ -68,6 +87,48 @@ class FtpSpec extends ObjectBehavior
     function it_fetches_keys_without_directories_dots()
     {
         $this->keys()->shouldReturn(array('filename', 'filename.exe', '.htaccess', 'aaa', 'aaa/filename'));
+    }
+
+    function it_fetches_keys_with_spaces_and_unicode_chars()
+    {
+        $this->beConstructedWith('/home/l3l2', 'localhost');
+
+        $this->keys()->shouldReturn(array('Žľuťoučký kůň.pdf', 'a b c d -> žežulička', 'a b c d -> žežulička/do re mi.pdf'));
+    }
+
+    function it_fetches_keys_recursive()
+    {
+        $this->beConstructedWith('/home/l3l3', 'localhost');
+
+        $this->keys()->shouldReturn(array('filename', 'filename.exe', '.htaccess', 'aaa', 'www', 'aaa/filename', 'www/filename', 'www/some', 'www/some/otherfilename'));
+    }
+
+    function it_lists_keys()
+    {
+        $this->listKeys()->shouldReturn(array(
+            'keys' => array('filename', 'filename.exe', '.htaccess', 'aaa/filename'),
+            'dirs' => array('aaa')
+        ));
+
+        $this->listKeys('file')->shouldReturn(array(
+            'keys' => array('filename', 'filename.exe'),
+            'dirs' => array()
+        ));
+
+        $this->listKeys('name')->shouldReturn(array(
+            'keys' => array(),
+            'dirs' => array()
+        ));
+
+        $this->listKeys('aaa')->shouldReturn(array(
+            'keys' => array('aaa/filename'),
+            'dirs' => array('aaa')
+        ));
+
+        $this->listKeys('aaa/')->shouldReturn(array(
+            'keys' => array('aaa/filename'),
+            'dirs' => array()
+        ));
     }
 
     function it_fetches_mtime()
