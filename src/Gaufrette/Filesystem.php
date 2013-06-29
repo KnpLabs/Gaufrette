@@ -13,6 +13,13 @@ use Gaufrette\Adapter\ListKeysAware;
 class Filesystem
 {
     protected $adapter;
+    
+    /**
+     * Contains File objects created with $this->createFile() method
+     * 
+     * @var array 
+     */
+    protected $fileRegister = array();
 
     /**
      * Constructor
@@ -67,6 +74,11 @@ class Filesystem
 
         if (! $this->adapter->rename($sourceKey, $targetKey)) {
             throw new \RuntimeException(sprintf('Could not rename the "%s" key to "%s".', $sourceKey, $targetKey));
+        }
+        
+        if(array_key_exists($sourceKey, $this->fileRegister)) {
+            $this->fileRegister[$targetKey] = $this->fileRegister[$sourceKey];
+            unset($this->fileRegister[$sourceKey]);
         }
 
         return true;
@@ -151,6 +163,9 @@ class Filesystem
         $this->assertHasFile($key);
 
         if ($this->adapter->delete($key)) {
+            if(array_key_exists($key, $this->fileRegister)) {
+                unset($this->fileRegister[$key]);
+            }
             return true;
         }
 
@@ -251,11 +266,16 @@ class Filesystem
      */
     public function createFile($key)
     {
-        if ($this->adapter instanceof Adapter\FileFactory) {
-            return $this->adapter->createFile($key, $this);
+        if(array_key_exists($key, $this->fileRegister)) {
+            return $this->fileRegister[$key];
+        } else {
+            if ($this->adapter instanceof Adapter\FileFactory) {
+                $this->fileRegister[$key] = $this->adapter->createFile($key, $this);
+            } else {
+                $this->fileRegister[$key] = new File($key, $this);
+            }
+            return $this->fileRegister[$key];
         }
-
-        return new File($key, $this);
     }
 
     /**
