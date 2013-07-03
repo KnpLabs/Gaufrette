@@ -266,16 +266,15 @@ class Filesystem
      */
     public function createFile($key)
     {
-        if(array_key_exists($key, $this->fileRegister)) {
-            return $this->fileRegister[$key];
-        } else {
+        if(false === array_key_exists($key, $this->fileRegister)) {
             if ($this->adapter instanceof Adapter\FileFactory) {
                 $this->fileRegister[$key] = $this->adapter->createFile($key, $this);
             } else {
                 $this->fileRegister[$key] = new File($key, $this);
             }
-            return $this->fileRegister[$key];
         }
+
+        return $this->fileRegister[$key];
     }
 
     /**
