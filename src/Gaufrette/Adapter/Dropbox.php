@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\File;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Exception;
@@ -81,6 +82,15 @@ class Dropbox implements Adapter
         fclose($resource);
 
         return Util\Size::fromContent($content);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function store(File $file)
+    {
+
+        return true;
     }
 
     /**

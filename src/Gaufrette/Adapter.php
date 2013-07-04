@@ -38,7 +38,7 @@ interface Adapter
      *
      * @return boolean success
      */    
-    public function writeFile(File $file);
+    public function store(File $file);
     
     /**
      * Indicates whether the file exists

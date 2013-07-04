@@ -3,7 +3,9 @@
 namespace Gaufrette\Adapter;
 
 use \AmazonS3 as AmazonClient;
+use Gaufrette\File;
 use Gaufrette\Adapter;
+use Gaufrette\MetadataSupporter;
 
 /**
  * Amazon S3 adapter
@@ -74,6 +76,15 @@ class AmazonS3 implements Adapter,
     /**
      * {@inheritDoc}
      */
+    public function isMetadataKeyAllowed($metaKey)
+    {
+        //Amazon S3 accepts any metadata key
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function read($key)
     {
         $this->ensureBucketExists();
@@ -137,6 +148,15 @@ class AmazonS3 implements Adapter,
         };
 
         return intval($response->header["x-aws-requestheaders"]["Content-Length"]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function store(File $file)
+    {
+
+        return true;
     }
 
     /**

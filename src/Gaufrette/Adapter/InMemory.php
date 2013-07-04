@@ -4,6 +4,7 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\Util;
+use Gaufrette\File;
 
 /**
  * In memory adapter
@@ -96,6 +97,15 @@ class InMemory implements Adapter
         $this->files[$key]['mtime']    = time();
 
         return Util\Size::fromContent($content);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function store(File $file)
+    {
+
+        return true;
     }
 
     /**

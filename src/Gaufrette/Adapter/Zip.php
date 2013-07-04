@@ -3,6 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use ZipArchive;
+use Gaufrette\File;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Exception;
@@ -64,6 +65,15 @@ class Zip implements Adapter
         }
 
         return Util\Size::fromContent($content);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function store(File $file)
+    {
+
+        return true;
     }
 
     /**

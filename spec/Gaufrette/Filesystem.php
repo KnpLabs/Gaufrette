@@ -113,16 +113,6 @@ class Filesystem extends ObjectBehavior
     }
 
     /**
-     * @param \Gaufrette\Adapter $adapter
-     */
-    function it_should_get_file_object_when_file_does_not_exist_but_can_be_created($adapter)
-    {
-        $adapter->exists('filename')->willReturn(false);
-
-        $this->get('filename', true)->shouldBeAnInstanceOf('Gaufrette\File');
-    }
-
-    /**
      * @param \spec\Gaufrette\Adapter $extendedAdapter
      * @param \Gaufrette\File $file
      */
@@ -168,6 +158,34 @@ class Filesystem extends ObjectBehavior
             ->shouldThrow(new \Gaufrette\Exception\FileAlreadyExists('filename'))
             ->duringWrite('filename', 'some content to write');
     }
+
+    /**
+     * @param \Gaufrette\Adapter $adapter
+     * @param \Gaufrette\File $file
+     */
+    function it_should_fail_when_storing_file_object_with_no_content($adapter, $file)
+    {
+        $file->getKey()->willReturn('filename');
+        $file->getContent()->shouldBeCalled()->willReturn(null);
+        $this->store($file, false)->shouldThrow(new \Gaufrette\Exception\EmptyFile('filename'));
+    }
+
+    /**
+     * @param \Gaufrette\Adapter $adapter
+     * @param \Gaufrette\File $file
+     */
+    function it_should_populate_file_size_after_successful_write_file($adapter, $file)
+    {
+        $file->getKey->willReturn('filename');
+        $content = "some content to write";
+        $file->getContent()->willReturn($content);
+
+        $adapter->has('filename')->willReturn(false);
+
+        $this->store($file, false);
+        $file->getSize()->shouldReturn(strlen($content));
+    }
+
 
     /**
      * @param \Gaufrette\Adapter $adapter

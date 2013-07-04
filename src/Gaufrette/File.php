@@ -107,6 +107,9 @@ class File
      */
     public function getName()
     {
+        if (! isset($this->name)) {
+            return $this->key;
+        }
         return $this->name;
     }
 
@@ -139,7 +142,7 @@ class File
      * Returns the file modified time
      *
      * @return int
-     */    
+     */
     public function getMtime()
     {
         return $this->mtime = $this->filesystem->mtime($this->key);

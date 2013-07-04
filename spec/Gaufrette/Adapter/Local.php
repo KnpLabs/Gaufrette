@@ -86,10 +86,10 @@ class Local extends ObjectBehavior
     function it_should_not_allow_to_read_path_above_main_file_directory()
     {
         $this
-            ->shouldThrow(new \OutOfBoundsException('The path "/home/filename" is out of the filesystem.'))
+            ->shouldThrow(new \OutOfBoundsException('The path "'.'/home/filename" is out of the filesystem.'))
             ->duringRead('../filename');
         $this
-            ->shouldThrow(new \OutOfBoundsException('The path "/home/filename" is out of the filesystem.'))
+            ->shouldThrow(new \OutOfBoundsException('The path "'.'/home/filename" is out of the filesystem.'))
             ->duringExists('../filename');
     }
 
@@ -98,34 +98,34 @@ class Local extends ObjectBehavior
         $this->beConstructedWith('/home/other');
 
         $this
-            ->shouldThrow(new \RuntimeException('The directory "/home/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringRead('filename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "/home/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringWrite('filename', 'some content');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "/home/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringRename('filename', 'otherFilename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "/home/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringExists('filename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "/home/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringKeys();
         $this
-            ->shouldThrow(new \RuntimeException('The directory "/home/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringMtime('filename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "/home/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringDelete('filename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "/home/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringIsDirectory('filename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "/home/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringCreateStream('filename');
         $this
-            ->shouldThrow(new \RuntimeException('The directory "/home/other" does not exist.'))
+            ->shouldThrow(new \RuntimeException('The directory "'.'/home/other" does not exist.'))
             ->duringChecksum('filename');
     }
 

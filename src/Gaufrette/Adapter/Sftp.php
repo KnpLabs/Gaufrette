@@ -2,7 +2,9 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\File;
 use Gaufrette\Adapter;
+use Gaufrette\ChecksumCalculator;
 use Ssh\Sftp as SftpClient;
 
 class Sftp implements Adapter,
@@ -65,6 +67,15 @@ class Sftp implements Adapter,
         $numBytes = $this->sftp->write($path, $content);
 
         return $numBytes;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function store(File $file)
+    {
+
+        return true;
     }
 
     /**

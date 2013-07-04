@@ -14,7 +14,7 @@ class Sftp extends ObjectBehavior
      */
     function let($sftp)
     {
-        $this->beConstructedWith($sftp, '/home/l3l0');
+        $this->beConstructedWith($sftp, sys_get_temp_dir().'/l3l0');
     }
 
     function it_should_be_initializable()
@@ -30,8 +30,8 @@ class Sftp extends ObjectBehavior
     function it_should_get_keys($sftp)
     {
         $sftp
-            ->listDirectory('/home/l3l0', true)
-            ->willReturn(array('files' => array('/home/l3l0/filename', '/home/l3l0/filename1', '/home/l3l0/aaa/filename')));
+            ->listDirectory(sys_get_temp_dir().'/l3l0', true)
+            ->willReturn(array('files' => array(sys_get_temp_dir().'/l3l0/filename', sys_get_temp_dir().'/l3l0/filename1', sys_get_temp_dir().'/l3l0/aaa/filename')));
 
         $this->keys()->shouldReturn(array('aaa', 'aaa/filename', 'filename', 'filename1'));
     }
@@ -42,7 +42,7 @@ class Sftp extends ObjectBehavior
     function it_should_read_file($sftp)
     {
         $sftp
-            ->read('/home/l3l0/filename')
+            ->read(sys_get_temp_dir().'/l3l0/filename')
             ->shouldBeCalled()
             ->willReturn('some content');
 
@@ -55,7 +55,7 @@ class Sftp extends ObjectBehavior
     function it_should_write_file($sftp)
     {
         $sftp
-            ->write('/home/l3l0/filename', 'some content')
+            ->write(sys_get_temp_dir().'/l3l0/filename', 'some content')
             ->shouldBeCalled()
             ->willReturn(12);
 
@@ -68,7 +68,7 @@ class Sftp extends ObjectBehavior
     function it_should_rename_file($sftp)
     {
         $sftp
-            ->rename('/home/l3l0/filename', '/home/l3l0/filename1')
+            ->rename(sys_get_temp_dir().'/l3l0/filename', sys_get_temp_dir().'/l3l0/filename1')
             ->shouldBeCalled()
             ->willReturn(true);
 
@@ -81,14 +81,14 @@ class Sftp extends ObjectBehavior
     function it_should_check_if_file_exists($sftp)
     {
         $sftp
-            ->getUrl('/home/l3l0')
+            ->getUrl(sys_get_temp_dir().'/l3l0')
             ->willReturn('ssh+ssl://localhost/home/l3l0');
         $sftp
-            ->getUrl('/home/l3l0/filename')
+            ->getUrl(sys_get_temp_dir().'/l3l0/filename')
             ->shouldBeCalled()
             ->willReturn('ssh+ssl://localhost/home/l3l0/filename');
         $sftp
-            ->getUrl('/home/l3l0/filename1')
+            ->getUrl(sys_get_temp_dir().'/l3l0/filename1')
             ->shouldBeCalled()
             ->willReturn('ssh+ssl://localhost/home/l3l0/filename1');
 

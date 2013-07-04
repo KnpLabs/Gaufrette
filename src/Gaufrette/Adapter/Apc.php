@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\File;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 
@@ -54,6 +55,15 @@ class Apc implements Adapter
         }
 
         return Util\Size::fromContent($content);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function store(File $file)
+    {
+
+        return true;
     }
 
     /**

@@ -2,8 +2,6 @@
 
 namespace spec\Gaufrette\Adapter;
 
-require_once __DIR__.'/../../../vendor/rackspace/php-cloudfiles/cloudfiles.php';
-
 use PHPSpec2\ObjectBehavior;
 
 class RackspaceCloudfiles extends ObjectBehavior
@@ -61,7 +59,7 @@ class RackspaceCloudfiles extends ObjectBehavior
             ->willReturn(false);
         $container
             ->get_object('filename3')
-            ->willThrow(new \NoSuchObjectException);
+            ->willThrow(new \Exception);
 
         $this->exists('filename')->shouldReturn(true);
         $this->exists('filename2')->shouldReturn(false);
@@ -243,7 +241,7 @@ class RackspaceCloudfiles extends ObjectBehavior
      */
     function it_should_not_delete_object($container)
     {
-        $container->delete_object('filename')->willThrow(new \NoSuchObjectException);
+        $container->delete_object('filename')->willThrow(new \Exception);
 
         $this->delete('filename')->shouldReturn(false);
     }
