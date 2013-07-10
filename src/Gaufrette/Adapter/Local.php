@@ -40,11 +40,9 @@ class Local implements Adapter,
         }
 
 		$this->options = array_replace_recursive(
-            array(
-				'directory_levels' => 0,
-			),
-            $options
-        );
+		    array('directory_levels' => 0),
+		    $options
+		);
 
         $this->create = $create;
     }
@@ -203,9 +201,9 @@ class Local implements Adapter,
     {
         $path = Util\Path::normalize($path);
 
-		if(intval($this->options['directory_levels']) > 0){
-			$path = Util\Path::applyDirectoryLevels($path, $this->options['directory_levels']);
-		}
+        if($this->options['directory_levels'] > 0){
+            $path = Util\Path::applyDirectoryLevels($path, $this->options['directory_levels']);
+        }
 
         if (0 !== strpos($path, $this->directory)) {
             throw new \OutOfBoundsException(sprintf('The path "%s" is out of the filesystem.', $path));
