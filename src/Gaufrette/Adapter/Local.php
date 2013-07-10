@@ -39,10 +39,10 @@ class Local implements Adapter,
             $this->directory = realpath($this->directory);
         }
 
-		$this->options = array_replace_recursive(
-		    array('directory_levels' => 0),
-		    $options
-		);
+        $this->options = array_replace_recursive(
+            array('directory_levels' => 0),
+            $options
+        );
 
         $this->create = $create;
     }
