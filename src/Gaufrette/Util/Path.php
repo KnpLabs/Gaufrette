@@ -48,23 +48,20 @@ class Path
      * Apply directory levels to given path
      *
      * @param string $path
-     * @param integer number of levels
+     * @param integer $levels
      *
      * @return string
      */
-    public static function applyDirectoryLevels($path, $levels = 1){
-
+    public static function applyDirectoryLevels($path, $levels = 1)
+    {
         $levels     = (int) $levels;
         $tokens     = explode('/', $path);
-
         $basename   = array_pop($tokens);
         $filename   = pathinfo($basename, PATHINFO_FILENAME);
         $name       = $filename . str_repeat('0', $levels);
 
-        for($i=1; $i<=$levels; $i++){
-
+        for ($i = 1; $i <= $levels; $i++) {
             $tokens[] = substr($name, 0, $i);
-
         }
 
         $tokens[]   = $basename;

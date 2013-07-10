@@ -201,7 +201,7 @@ class Local implements Adapter,
     {
         $path = Util\Path::normalize($path);
 
-        if($this->options['directory_levels'] > 0){
+        if ($this->options['directory_levels'] > 0) {
             $path = Util\Path::applyDirectoryLevels($path, $this->options['directory_levels']);
         }
 
