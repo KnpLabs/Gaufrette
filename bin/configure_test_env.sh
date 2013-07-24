@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sudo apt-get update -qq
 sudo apt-get install -qq libssh2-1-dev libssh2-php
 pecl install -f mongo
 touch .interactive
