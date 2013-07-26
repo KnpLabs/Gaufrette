@@ -6,7 +6,9 @@ use \AmazonS3 as AmazonClient;
 use Gaufrette\Adapter;
 
 /**
- * Amazon S3 adapter
+ * Amazon S3 adapter using the AWS SDK for PHP v1.x.
+ *
+ * See the AwsS3 adapter for using the AWS SDK for PHP v2.x.
  *
  * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
@@ -31,7 +33,7 @@ class AmazonS3 implements Adapter,
         );
     }
 
-    /** 
+    /**
      * Set the acl used when writing files
      *
      * @param string $acl
@@ -43,7 +45,7 @@ class AmazonS3 implements Adapter,
 
     /**
      * Get the acl used when writing files
-     * 
+     *
      * @return string
      */
     public function getAcl()

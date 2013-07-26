@@ -41,6 +41,7 @@
         "php": ">=5.3.2"
     },
     "require-dev": {
+        "aws/aws-sdk-php": "~2",
         "amazonwebservices/aws-sdk-for-php": "1.5.*",
         "rackspace/php-opencloud"  : "dev-master",
         "phpspec/phpspec": "2.0.*",
@@ -55,7 +56,8 @@
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",
         "dropbox-php/dropbox-php": "to use the Dropbox adapter",
         "rackspace/php-opencloud"  : "to use Opencloud adapter",
-        "amazonwebservices/aws-sdk-for-php": "to use the Amazon S3 adapter",
+        "aws/aws-sdk-php": "to use the Amazon S3 adapter",
+        "amazonwebservices/aws-sdk-for-php": "to use the legacy Amazon S3 adapters",
         "phpseclib/phpseclib": "to use the SFTP",
         "doctrine/dbal": "to use the Doctrine DBAL adapter",
         "ext-zip": "to use the Zip adapter",
