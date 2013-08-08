@@ -3,7 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-use Aws\S3\S3Client as S3Client;
+use Aws\S3\S3Client;
 
 /**
  * Amazon S3 adapter using the AWS SDK for PHP v2.x
