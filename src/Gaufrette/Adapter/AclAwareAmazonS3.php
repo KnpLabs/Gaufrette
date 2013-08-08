@@ -6,7 +6,11 @@ use \AmazonS3 as AmazonClient;
 use Gaufrette\Adapter;
 
 /**
- * Makes the AmazonS3 adapter ACL aware.
+ * Makes the AmazonS3 adapter ACL aware. Uses the AWS SDK for PHP v1.x
+ *
+ * See the AwsS3 adapter for using the AWS SDK for PHP v2.x. There is
+ * no distinction in the AwsS3 adapter between an ACL aware adapter
+ * and regular adapter.
  *
  * @package Gaufrette
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>

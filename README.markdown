@@ -100,13 +100,18 @@ The third parameter of the cache adapter is the time to live of the cache.
 
 Using Amazon S3
 ---------------
-You will need to specify a CA certificate to be able to talk to Amazon servers
-in https. You can use the one which is shipped with the SDK by defining before
-creating the ``\AmazonS3`` object:
+When using the legacy Amazon S3 adapters, you will need to specify a CA
+certificate to be able to talk to Amazon servers in https. You can use
+the one which is shipped with the SDK by defining before creating the
+``\AmazonS3`` object:
 
 ```php
 define("AWS_CERTIFICATE_AUTHORITY", true);
 ```
+
+Specifying a custom CA certificate is not required when using the
+`Gaufrette\Adapter\AmazonS3` adapter because it uses the newest version of the
+AWS SDK for PHP.
 
 Using OpenCloud
 ---------------
@@ -183,21 +188,17 @@ In your Symfony2 project, add to ``deps``:
 
 # if you want to use Amazon S3
 [aws-sdk]
-    git=https://github.com/amazonwebservices/aws-sdk-for-php
-```
-
-and to ``app/autoload.php``, at the end:
-
-```php
-// AWS SDK needs a special autoloader
-require_once __DIR__.'/../vendor/aws-sdk/sdk.class.php';
+    git=https://github.com/aws/aws-sdk-php
 ```
 
 And then, you can simply add them as services of your dependency injection container.
 As an example, here is services declaration to use Amazon S3:
 
 ```xml
-<service id="acme.s3" class="AmazonS3">
+<service id="acme.s3"
+         class="Aws\\S3\\S3Client"
+         factory-class="Aws\\S3\\S3Client"
+         factory-method="factory">
     <argument type="collection">
         <argument key="key">%acme.aws_key%</argument>
         <argument key="secret">%acme.aws_secret_key%</argument>
@@ -212,14 +213,6 @@ As an example, here is services declaration to use Amazon S3:
 <service id="acme.fs" class="Gaufrette\Filesystem">
     <argument type="service" id="acme.s3.adapter"></argument>
 </service>
-```
-
-Don't forget to set the constant to tell the AWS SDK to use its CA cert (somewhere
-that will be executed before creating the ``\AmazonS3`` object):
-```php
-define("AWS_CERTIFICATE_AUTHORITY", true);
-$fs = $container->get('acme.fs');
-// use $fs
 ```
 
 Streaming Files
