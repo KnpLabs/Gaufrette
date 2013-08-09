@@ -4,17 +4,18 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\Util;
+use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
 
 use WindowsAzure\Blob\Models\CreateBlobOptions;
 use WindowsAzure\Blob\Models\CreateContainerOptions;
 use WindowsAzure\Blob\Models\DeleteContainerOptions;
-use WindowsAzure\Common\ServicesBuilder;
 use WindowsAzure\Common\ServiceException;
 
 /**
  * Microsoft Azure Blob Storage adapter
  *
  * @author Luciano Mammino <lmammino@oryzone.com>
+ * @author Paweł Czyżewski <pawel.czyzewski@enginewerk.com>
  */
 class AzureBlobStorage implements Adapter,
                                   MetadataSupporter
@@ -26,24 +27,19 @@ class AzureBlobStorage implements Adapter,
     const ERROR_CONTAINER_NOT_FOUND = 'ContainerNotFound';
 
     /**
-     * @var string  $connectionString
+     * @var AzureBlobStorage\BlobProxyFactoryInterface $blobProxyFactory
      */
-    protected $connectionString;
+    protected $blobProxyFactory;
 
     /**
-     * @var string  $containerName
+     * @var string $containerName
      */
     protected $containerName;
 
     /**
-     * @var bool    $detectContentType
+     * @var bool $detectContentType
      */
     protected $detectContentType;
-
-    /**
-     * @var bool    $calculateChecksum
-     */
-    protected $calculateChecksum;
 
     /**
      * @var \WindowsAzure\Blob\Internal\IBlob $blobProxy
@@ -53,21 +49,19 @@ class AzureBlobStorage implements Adapter,
     /**
      * Constructor
      *
-     * @param string $connectionString
-     * @param string $containerName
-     * @param bool   $create
-     * @param bool   $detectContentType
-     * @param bool   $calculateChecksum
+     * @param AzureBlobStorage\BlobProxyFactoryInterface $blobProxyFactory
+     * @param string                                     $containerName
+     * @param bool                                       $create
+     * @param bool                                       $detectContentType
      */
-    public function __construct($connectionString, $containerName, $create = false, $detectContentType = true,
-                                $calculateChecksum = true)
+    public function __construct(BlobProxyFactoryInterface $blobProxyFactory, $containerName, $create = false, $detectContentType = true)
     {
-        $this->connectionString = $connectionString;
+        $this->blobProxyFactory = $blobProxyFactory;
         $this->containerName = $containerName;
         $this->detectContentType = $detectContentType;
-        $this->calculateChecksum = $calculateChecksum;
-        if($create)
+        if ($create) {
             $this->createContainer($containerName);
+        }
     }
 
     /**
@@ -154,10 +148,6 @@ class AzureBlobStorage implements Adapter,
                 $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
                 $contentType = $fileInfo->buffer($content);
                 $options->setContentType($contentType);
-            }
-
-            if ($this->calculateChecksum) {
-                $options->setContentMD5(Util\Checksum::fromContent($content));
             }
 
             $this->blobProxy->createBlockBlob($this->containerName, $key, $content, $options);
@@ -281,6 +271,8 @@ class AzureBlobStorage implements Adapter,
      */
     public function setMetadata($key, $content)
     {
+        $this->init();
+
         try {
             $this->blobProxy->setBlobMetadata($this->containerName, $key, $content);
         } catch (ServiceException $e) {
@@ -301,6 +293,8 @@ class AzureBlobStorage implements Adapter,
      */
     public function getMetadata($key)
     {
+        $this->init();
+
         try {
             $properties = $this->blobProxy->getBlobProperties($this->containerName, $key);
 
@@ -323,8 +317,9 @@ class AzureBlobStorage implements Adapter,
      */
     protected function init()
     {
-        if($this->blobProxy == null)
-            $this->blobProxy = ServicesBuilder::getInstance()->createBlobService($this->connectionString);
+        if ($this->blobProxy == null) {
+            $this->blobProxy = $this->blobProxyFactory->create();
+        }
     }
 
     /**
@@ -336,7 +331,10 @@ class AzureBlobStorage implements Adapter,
     protected function getErrorCodeFromServiceException(ServiceException $exception)
     {
         $xml = simplexml_load_string($exception->getErrorReason());
+        if(isset($xml->Code))
 
-        return (string) $xml->Code;
+            return (string) $xml->Code;
+
+        return $exception->getErrorReason();
     }
 }
