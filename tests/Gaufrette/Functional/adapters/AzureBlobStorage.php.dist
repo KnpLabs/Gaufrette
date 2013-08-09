@@ -1,0 +1,7 @@
+<?php
+
+$connectionString   = 'BlobEndpoint=http://XXXXXXXXXXX.blob.core.windows.net/;AccountName=XXXXXXXXXXXX;AccountKey=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+$containerName      = 'gaufrette-test';
+$create             = true;
+
+return new Gaufrette\Adapter\AzureBlobStorage($connectionString, $containerName, $create);
