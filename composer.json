@@ -35,6 +35,10 @@
                     "files": ["cloudfiles.php"]
                 }
             }
+        },
+        {
+            "type": "pear",
+            "url": "http://pear.php.net"
         }
     ],
     "require": {
@@ -50,7 +54,8 @@
         "doctrine/dbal": ">=2.3",
         "dropbox-php/dropbox-php": "*",
         "herzult/php-ssh": "*",
-        "phpunit/phpunit": "3.7.*"
+        "phpunit/phpunit": "3.7.*",
+        "microsoft/windowsazure": "*"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",
@@ -60,6 +65,7 @@
         "amazonwebservices/aws-sdk-for-php": "to use the legacy Amazon S3 adapters",
         "phpseclib/phpseclib": "to use the SFTP",
         "doctrine/dbal": "to use the Doctrine DBAL adapter",
+        "microsoft/windowsazure": "to use Microsoft Azure Blob Storage adapter",
         "ext-zip": "to use the Zip adapter",
         "ext-apc": "to use the APC adapter",
         "ext-curl": "*",
