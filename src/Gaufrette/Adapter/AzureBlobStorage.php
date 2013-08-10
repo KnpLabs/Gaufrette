@@ -86,7 +86,7 @@ class AzureBlobStorage implements Adapter,
                     $containerName,
                     $e->getErrorText(),
                     $errorCode
-                ), $e->getCode());
+                ));
             }
         }
     }
@@ -130,6 +130,8 @@ class AzureBlobStorage implements Adapter,
 
             return stream_get_contents($blob->getContentStream());
         } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, sprintf('read key "%s"', $key));
+
             return false;
         }
     }
@@ -154,6 +156,8 @@ class AzureBlobStorage implements Adapter,
 
             return Util\Size::fromContent($content);
         } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, sprintf('write content for key "%s"', $key));
+
             return false;
         }
     }
@@ -170,6 +174,8 @@ class AzureBlobStorage implements Adapter,
 
             return true;
         } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, sprintf('check if key "%s" exists', $key));
+
             return false;
         }
     }
@@ -192,6 +198,7 @@ class AzureBlobStorage implements Adapter,
 
             return $keys;
         } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, 'retrieve keys');
             $errorCode = $this->getErrorCodeFromServiceException($e);
 
             throw new \RuntimeException(sprintf(
@@ -215,6 +222,8 @@ class AzureBlobStorage implements Adapter,
 
             return $properties->getProperties()->getLastModified()->getTimestamp();
         } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, sprintf('read mtime for key "%s"', $key));
+
             return false;
         }
     }
@@ -231,6 +240,8 @@ class AzureBlobStorage implements Adapter,
 
             return true;
         } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, sprintf('delete key "%s"', $key));
+
             return false;
         }
     }
@@ -248,6 +259,8 @@ class AzureBlobStorage implements Adapter,
 
             return true;
         } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, sprintf('rename key "%s"', $sourceKey));
+
             return false;
         }
     }
@@ -323,6 +336,26 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
+     * Throws a runtime exception if a give ServiceException derived from a "container not found" error
+     *
+     * @param  ServiceException  $exception
+     * @param  string            $action
+     * @throws \RuntimeException
+     */
+    protected function failIfContainerNotFound(ServiceException $exception, $action)
+    {
+        $errorCode = $this->getErrorCodeFromServiceException($exception);
+
+        if ($errorCode == self::ERROR_CONTAINER_NOT_FOUND) {
+            throw new \RuntimeException(sprintf(
+                'Failed to %s: container "%s" not found.',
+                $action,
+                $this->containerName
+            ), $exception->getCode());
+        }
+    }
+
+    /**
      * Extracts the error code from a service exception
      *
      * @param  ServiceException $exception
@@ -331,9 +364,10 @@ class AzureBlobStorage implements Adapter,
     protected function getErrorCodeFromServiceException(ServiceException $exception)
     {
         $xml = simplexml_load_string($exception->getErrorReason());
-        if(isset($xml->Code))
 
+        if (isset($xml->Code)) {
             return (string) $xml->Code;
+        }
 
         return $exception->getErrorReason();
     }
