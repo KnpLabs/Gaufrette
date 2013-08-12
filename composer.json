@@ -55,7 +55,7 @@
         "dropbox-php/dropbox-php": "*",
         "herzult/php-ssh": "*",
         "phpunit/phpunit": "3.7.*",
-        "microsoft/windowsazure": "*"
+        "microsoft/windowsazure": "dev-master"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",

@@ -189,14 +189,13 @@ class AzureBlobStorage implements Adapter,
 
         try {
             $blobList = $this->blobProxy->listBlobs($this->containerName);
-            $blobs = $blobList->getBlobs();
-            $keys = array();
 
-            foreach ($blobs as $blob) {
-                $keys[] = $blob->getName();
-            }
-
-            return $keys;
+            return array_map(
+                function($blob) {
+                    return $blob->getName();
+                },
+                $blobList->getBlobs()
+            );
         } catch (ServiceException $e) {
             $this->failIfContainerNotFound($e, 'retrieve keys');
             $errorCode = $this->getErrorCodeFromServiceException($e);
