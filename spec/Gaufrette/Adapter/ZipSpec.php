@@ -2,18 +2,17 @@
 
 namespace spec\Gaufrette\Adapter;
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
 
-class Zip extends ObjectBehavior
+class ZipSpec extends ObjectBehavior
 {
     function let()
     {
         $this->beConstructedWith('somefile');
     }
 
-    function it_should_be_initializable()
+    function it_is_adapter()
     {
-        $this->shouldHaveType('Gaufrette\Adapter\Zip');
         $this->shouldHaveType('Gaufrette\Adapter');
     }
 }

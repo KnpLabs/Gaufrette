@@ -2,9 +2,10 @@
 
 namespace spec\Gaufrette\Adapter;
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 
-class LazyRackspaceCloudfiles extends ObjectBehavior
+class LazyRackspaceCloudfilesSpec extends ObjectBehavior
 {
     /**
      * @param \Gaufrette\Adapter\RackspaceCloudfiles\ConnectionFactoryInterface $connectionFactory
@@ -16,9 +17,8 @@ class LazyRackspaceCloudfiles extends ObjectBehavior
         $this->beConstructedWith($connectionFactory, 'my_container');
     }
 
-    function it_should_be_initializable()
+    function it_is_rackspace_adapter()
     {
-        $this->shouldHaveType('\Gaufrette\Adapter\LazyRackspaceCloudfiles');
         $this->shouldHaveType('\Gaufrette\Adapter\RackspaceCloudfiles');
     }
 
@@ -26,18 +26,17 @@ class LazyRackspaceCloudfiles extends ObjectBehavior
      * @param \CF_Container $container
      * @param \CF_Object $object
      */
-    function it_should_lazily_fetch_container_before_read($connection, $container, $object)
+    function it_lazily_fetches_container_before_read($connection, $container, $object)
     {
-        $connection->get_container('my_container')->willReturn($container)->shouldBeCalled();
-        $connection->create_container(ANY_ARGUMENTS)->shouldNotBeCalled();
+        $connection->get_container('my_container')->willReturn($container)->shouldBeCalledTimes(1);
+        $connection->create_container(Argument::cetera())->shouldNotBeCalled();
         $object->read()->willReturn('some content');
         $container->get_object('filename')->willReturn($object);
         $container->get_object('filename1')->willReturn($object);
 
         $this->read('filename')->shouldReturn('some content');
 
-        //should not be called second time
-        $connection->get_container('my_container')->willReturn($container)->shouldNotBeCalled();
+        //get_container() should not be called second time
         $this->read('filename1')->shouldReturn('some content');
     }
 
@@ -45,11 +44,11 @@ class LazyRackspaceCloudfiles extends ObjectBehavior
      * @param \CF_Container $container
      * @param \CF_Object $object
      */
-    function it_should_lazily_create_container_before_read($connectionFactory, $connection, $container, $object)
+    function it_lazily_creates_container_before_read($connectionFactory, $connection, $container, $object)
     {
         $this->beConstructedWith($connectionFactory, 'my_container', true);
 
-        $connection->get_container(ANY_ARGUMENT)->shouldNotBeCalled();
+        $connection->get_container(Argument::any())->shouldNotBeCalled();
         $connection->create_container('my_container')->willReturn($container)->shouldBeCalled();
         $object->read()->willReturn('some content');
         $container->get_object('filename')->willReturn($object);
@@ -61,7 +60,7 @@ class LazyRackspaceCloudfiles extends ObjectBehavior
      * @param \CF_Container $container
      * @param \CF_Object $object
      */
-    function it_should_lazily_fetch_container_before_write($connection, $container, $object)
+    function it_lazily_fetches_container_before_write($connection, $container, $object)
     {
         $connection->get_container('my_container')->willReturn($container)->shouldBeCalled();
         $object
@@ -82,7 +81,7 @@ class LazyRackspaceCloudfiles extends ObjectBehavior
      * @param \CF_Container $container
      * @param \CF_Object $object
      */
-    function it_should_lazily_fetch_container_before_exists($connection, $container, $object)
+    function it_lazily_fetches_container_before_exists($connection, $container, $object)
     {
         $connection->get_container('my_container')->willReturn($container)->shouldBeCalled();
         $container
@@ -96,7 +95,7 @@ class LazyRackspaceCloudfiles extends ObjectBehavior
     /**
      * @param \CF_Container $container
      */
-    function it_should_lazily_fetch_container_before_keys($connection, $container)
+    function it_lazily_fetches_container_before_keys($connection, $container)
     {
         $connection->get_container('my_container')->willReturn($container)->shouldBeCalled();
         $container->list_objects(0, null, null)->willReturn(array('filename2', 'filename1'));
@@ -108,7 +107,7 @@ class LazyRackspaceCloudfiles extends ObjectBehavior
      * @param \CF_Container $container
      * @param \CF_Object $object
      */
-    function it_should_lazily_fetch_container_before_checksum($connection, $container, $object)
+    function it_lazily_fetches_container_before_checksum($connection, $container, $object)
     {
         $connection->get_container('my_container')->willReturn($container)->shouldBeCalled();
 
@@ -121,7 +120,7 @@ class LazyRackspaceCloudfiles extends ObjectBehavior
     /**
      * @param \CF_Container $container
      */
-    function it_should_lazily_fetch_container_before_delete($connection, $container)
+    function it_lazily_fetches_container_before_delete($connection, $container)
     {
         $connection->get_container('my_container')->willReturn($container)->shouldBeCalled();
         $container->delete_object('filename')->shouldBeCalled();
@@ -129,4 +128,3 @@ class LazyRackspaceCloudfiles extends ObjectBehavior
         $this->delete('filename')->shouldReturn(true);
     }
 }
-

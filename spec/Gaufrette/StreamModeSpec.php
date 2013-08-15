@@ -2,17 +2,17 @@
 
 namespace spec\Gaufrette;
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
 
-class StreamMode extends ObjectBehavior
+class StreamModeSpec extends ObjectBehavior
 {
-    function it_should_be_initializable()
+    function it_is_initializable()
     {
         $this->beConstructedWith('r');
         $this->shouldHaveType('Gaufrette\StreamMode');
     }
 
-    function it_should_gives_access_to_mode()
+    function it_gives_access_to_mode()
     {
         $this->beConstructedWith('r+');
         $this->getMode()->shouldReturn('r+');

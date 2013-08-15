@@ -2,9 +2,9 @@
 
 namespace spec\Gaufrette\Util;
 
-use PHPSpec2\ObjectBehavior;
+use PHPSpec\ObjectBehavior;
 
-class Checksum extends ObjectBehavior
+class ChecksumSpec extends ObjectBehavior
 {
     function let()
     {
@@ -12,12 +12,12 @@ class Checksum extends ObjectBehavior
         file_put_contents($path, 'some other content');
     }
 
-    function it_should_calculate_checksum_from_content()
+    function it_calculates_checksum_from_content()
     {
         $this->fromContent('some content')->shouldReturn(md5('some content'));
     }
 
-    function it_should_calculate_checksum_from_filepath()
+    function it_calculates_checksum_from_filepath()
     {
         $path = __DIR__.DIRECTORY_SEPARATOR.'testFile';
         $this->fromFile($path)->shouldReturn(md5('some other content'));

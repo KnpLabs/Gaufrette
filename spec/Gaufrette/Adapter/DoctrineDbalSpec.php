@@ -5,9 +5,10 @@ namespace spec\Gaufrette\Adapter;
 //hack - mock php built-in functions
 require_once 'functions.php';
 
-use PHPSpec2\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 
-class DoctrineDbal extends ObjectBehavior
+class DoctrineDbalSpec extends ObjectBehavior
 {
     /**
      * @param \Doctrine\DBAL\Connection $connection
@@ -17,14 +18,17 @@ class DoctrineDbal extends ObjectBehavior
         $this->beConstructedWith($connection, 'someTableName');
     }
 
-    function it_should_be_initializable()
+    function it_is_adapter()
     {
-        $this->shouldHaveType('Gaufrette\Adapter\DoctrineDbal');
         $this->shouldHaveType('Gaufrette\Adapter');
+    }
+
+    function it_is_checksum_calculator()
+    {
         $this->shouldHaveType('Gaufrette\Adapter\ChecksumCalculator');
     }
 
-    function it_should_not_handle_directories()
+    function it_does_not_handle_directories()
     {
         $this->isDirectory('filename')->shouldReturn(false);
     }
@@ -32,11 +36,11 @@ class DoctrineDbal extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_should_check_if_file_exists($connection)
+    function it_checks_if_file_exists($connection)
     {
         $connection
-            ->quoteIdentifier(ANY_ARGUMENT)
-            ->willReturnUsing(function ($argument) { return sprintf('"%s"', $argument); });
+            ->quoteIdentifier(Argument::any())
+            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
 
         $connection
             ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
@@ -52,11 +56,11 @@ class DoctrineDbal extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_should_write_file($connection)
+    function it_writes_to_new_file($connection)
     {
         $connection
-            ->quoteIdentifier(ANY_ARGUMENT)
-            ->willReturnUsing(function ($argument) { return sprintf('"%s"', $argument); });
+            ->quoteIdentifier(Argument::any())
+            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
         $connection
             ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
             ->willReturn(false);
@@ -77,11 +81,11 @@ class DoctrineDbal extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_should_update_file($connection)
+    function it_write_file($connection)
     {
         $connection
-            ->quoteIdentifier(ANY_ARGUMENT)
-            ->willReturnUsing(function ($argument) { return sprintf('"%s"', $argument); });
+            ->quoteIdentifier(Argument::any())
+            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
         $connection
             ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
             ->willReturn(true);
@@ -104,11 +108,11 @@ class DoctrineDbal extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_should_read_file($connection)
+    function it_reads_file($connection)
     {
         $connection
-            ->quoteIdentifier(ANY_ARGUMENT)
-            ->willReturnUsing(function ($argument) { return sprintf('"%s"', $argument); });
+            ->quoteIdentifier(Argument::any())
+            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
         $connection
             ->fetchColumn('SELECT "content" FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
             ->willReturn('some content');
@@ -119,11 +123,11 @@ class DoctrineDbal extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_should_calculate_checksum($connection)
+    function it_calculates_checksum($connection)
     {
         $connection
-            ->quoteIdentifier(ANY_ARGUMENT)
-            ->willReturnUsing(function ($argument) { return sprintf('"%s"', $argument); });
+            ->quoteIdentifier(Argument::any())
+            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
         $connection
             ->fetchColumn('SELECT "checksum" FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
             ->willReturn(1234);
@@ -134,11 +138,11 @@ class DoctrineDbal extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_should_get_mtime($connection)
+    function it_gets_mtime($connection)
     {
         $connection
-            ->quoteIdentifier(ANY_ARGUMENT)
-            ->willReturnUsing(function ($argument) { return sprintf('"%s"', $argument); });
+            ->quoteIdentifier(Argument::any())
+            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
         $connection
             ->fetchColumn('SELECT "mtime" FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
             ->willReturn(1234);
@@ -149,11 +153,11 @@ class DoctrineDbal extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_should_rename_file($connection)
+    function it_renames_file($connection)
     {
         $connection
-            ->quoteIdentifier(ANY_ARGUMENT)
-            ->willReturnUsing(function ($argument) { return sprintf('"%s"', $argument); });
+            ->quoteIdentifier(Argument::any())
+            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
         $connection
             ->update(
                 'someTableName',
@@ -173,12 +177,12 @@ class DoctrineDbal extends ObjectBehavior
      * @param \Doctrine\DBAL\Connection $connection
      * @param \Doctrine\DBAL\Statement $stmt
      */
-    function it_should_get_keys($connection, $stmt)
+    function it_get_keys($connection, $stmt)
     {
         $stmt->fetchAll(\PDO::FETCH_COLUMN)->willReturn(array('filename', 'filename1', 'filename2'));
         $connection
-            ->quoteIdentifier(ANY_ARGUMENT)
-            ->willReturnUsing(function ($argument) { return sprintf('"%s"', $argument); });
+            ->quoteIdentifier(Argument::any())
+            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
         $connection
             ->executeQuery('SELECT "key" FROM "someTableName"')
             ->willReturn($stmt);
@@ -189,11 +193,11 @@ class DoctrineDbal extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_should_delete_file($connection)
+    function it_deletes_file($connection)
     {
         $connection
-            ->quoteIdentifier(ANY_ARGUMENT)
-            ->willReturnUsing(function ($argument) { return sprintf('"%s"', $argument); });
+            ->quoteIdentifier(Argument::any())
+            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
         $connection
             ->delete('someTableName', array('"key"' => 'filename'))
             ->shouldBeCalled()
