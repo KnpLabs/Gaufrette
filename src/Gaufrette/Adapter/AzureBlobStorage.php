@@ -9,6 +9,7 @@ use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
 use WindowsAzure\Blob\Models\CreateBlobOptions;
 use WindowsAzure\Blob\Models\CreateContainerOptions;
 use WindowsAzure\Blob\Models\DeleteContainerOptions;
+use WindowsAzure\Blob\Models\ListBlobsOptions;
 use WindowsAzure\Common\ServiceException;
 
 /**
@@ -169,15 +170,18 @@ class AzureBlobStorage implements Adapter,
     {
         $this->init();
 
-        try {
-            $this->blobProxy->getBlob($this->containerName, $key);
+        $listBlobsOptions = new ListBlobsOptions();
+        $listBlobsOptions->setPrefix($key);
 
-            return true;
-        } catch (ServiceException $e) {
-            $this->failIfContainerNotFound($e, sprintf('check if key "%s" exists', $key));
+        $blobsList = $this->blobProxy->listBlobs($this->containerName, $listBlobsOptions);
 
-            return false;
+        foreach ($blobsList->getBlobs() as $blob) {
+            if ($key === $blob->getName()) {
+                return true;
+            }
         }
+
+        return false;
     }
 
     /**
