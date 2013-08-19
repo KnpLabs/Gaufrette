@@ -173,12 +173,25 @@ class AzureBlobStorage implements Adapter,
         $listBlobsOptions = new ListBlobsOptions();
         $listBlobsOptions->setPrefix($key);
 
-        $blobsList = $this->blobProxy->listBlobs($this->containerName, $listBlobsOptions);
+        try {
+            $blobsList = $this->blobProxy->listBlobs($this->containerName, $listBlobsOptions);
 
-        foreach ($blobsList->getBlobs() as $blob) {
-            if ($key === $blob->getName()) {
-                return true;
+            foreach ($blobsList->getBlobs() as $blob) {
+                if ($key === $blob->getName()) {
+                    return true;
+                }
             }
+        } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, 'check if key exists');
+            $errorCode = $this->getErrorCodeFromServiceException($e);
+
+            throw new \RuntimeException(sprintf(
+                'Failed to check if key "%s" exists in container "%s": %s (%s).',
+                $key,
+                $this->containerName,
+                $e->getErrorText(),
+                $errorCode
+            ), $e->getCode());
         }
 
         return false;
@@ -273,12 +286,7 @@ class AzureBlobStorage implements Adapter,
      */
     public function isDirectory($key)
     {
-        $this->init();
-
-        if ($this->exists($key.'/')) {
-            return true;
-        }
-
+        // Windows Azure Blob Storage does not support directories
         return false;
     }
 
