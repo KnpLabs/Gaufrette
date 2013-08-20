@@ -2,12 +2,15 @@
 
 namespace Gaufrette\Functional\Adapter;
 
-use Gaufrette\Adapter\AmazonS3;
+use Gaufrette\Adapter\AwsS3;
 use Aws\S3\S3Client;
 use Guzzle\Plugin\Mock\MockPlugin;
 use Guzzle\Http\Message\Response;
 
-class AmazonS3Test extends \PHPUnit_Framework_TestCase
+/**
+ * @todo move to phpspec
+ */
+class AwsS3Test extends \PHPUnit_Framework_TestCase
 {
     protected function getClient()
     {
@@ -26,7 +29,7 @@ class AmazonS3Test extends \PHPUnit_Framework_TestCase
         ));
         $client = $this->getClient();
         $client->addSubscriber($mock);
-        $adapter = new AmazonS3($client, 'bucket', array('create' => true));
+        $adapter = new AwsS3($client, 'bucket', array('create' => true));
         $this->assertEquals('foo', $adapter->read('foo'));
 
         $requests = $mock->getReceivedRequests();
@@ -44,14 +47,8 @@ class AmazonS3Test extends \PHPUnit_Framework_TestCase
         $mock = new MockPlugin(array(new Response(404)));
         $client = $this->getClient();
         $client->addSubscriber($mock);
-        $adapter = new AmazonS3($client, 'bucket');
+        $adapter = new AwsS3($client, 'bucket');
         $adapter->read('foo');
-    }
-
-    public function testDoesNotSupportDirectories()
-    {
-        $adapter = new AmazonS3($this->getClient(), 'bucket');
-        $this->assertFalse($adapter->isDirectory('foo'));
     }
 
     public function testWritesObjects()
@@ -62,7 +59,7 @@ class AmazonS3Test extends \PHPUnit_Framework_TestCase
         ));
         $client = $this->getClient();
         $client->addSubscriber($mock);
-        $adapter = new AmazonS3($client, 'bucket');
+        $adapter = new AwsS3($client, 'bucket');
         $this->assertEquals(7, $adapter->write('foo', 'testing'));
         $requests = $mock->getReceivedRequests();
         $this->assertEquals('bucket.s3.amazonaws.com', $requests[1]->getHost());
@@ -74,7 +71,7 @@ class AmazonS3Test extends \PHPUnit_Framework_TestCase
         $mock = new MockPlugin(array(new Response(200)));
         $client = $this->getClient();
         $client->addSubscriber($mock);
-        $adapter = new AmazonS3($client, 'bucket');
+        $adapter = new AwsS3($client, 'bucket');
         $this->assertTrue($adapter->exists('foo'));
         $requests = $mock->getReceivedRequests();
         $this->assertEquals('bucket.s3.amazonaws.com', $requests[0]->getHost());
@@ -85,7 +82,7 @@ class AmazonS3Test extends \PHPUnit_Framework_TestCase
     public function testGetsObjectUrls()
     {
         $client = $this->getClient();
-        $adapter = new AmazonS3($client, 'bucket');
+        $adapter = new AwsS3($client, 'bucket');
         $this->assertEquals('https://bucket.s3.amazonaws.com/foo', $adapter->getUrl('foo'));
     }
 }
