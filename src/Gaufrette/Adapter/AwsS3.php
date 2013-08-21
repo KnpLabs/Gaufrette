@@ -25,7 +25,7 @@ class AwsS3 implements Adapter,
     {
         $this->service = $service;
         $this->bucket = $bucket;
-        $this->options = array_replace(array('create' => false), $options);
+        $this->options = array_replace(array('create' => false, 'directory' => ''), $options);
     }
 
     /**
@@ -43,7 +43,7 @@ class AwsS3 implements Adapter,
     {
         return $this->service->getObjectUrl(
             $this->bucket,
-            $key,
+            $this->computePath($key),
             isset($options['expires']) ? $options['expires'] : null,
             $options
         );
@@ -86,7 +86,7 @@ class AwsS3 implements Adapter,
     public function rename($sourceKey, $targetKey)
     {
         $this->ensureBucketExists();
-        $options = $this->getOptions($targetKey, array('CopySource' => $sourceKey));
+        $options = $this->getOptions($targetKey, array('CopySource' => $this->computePath($sourceKey)));
 
         try {
             $this->service->copyObject($options);
@@ -117,7 +117,7 @@ class AwsS3 implements Adapter,
      */
     public function exists($key)
     {
-        return $this->service->doesObjectExist($this->bucket, $key);
+        return $this->service->doesObjectExist($this->bucket, $this->computePath($key));
     }
 
     /**
@@ -148,7 +148,9 @@ class AwsS3 implements Adapter,
     {
         $options = array('Bucket' => $this->bucket);
         if ((string) $prefix != '') {
-            $options['Prefix'] = $prefix;
+            $options['Prefix'] = $this->computePath($prefix);
+        } elseif (!empty($this->options['directory'])) {
+            $options['Prefix'] = $this->options['directory'];
         }
 
         $keys = array();
@@ -180,7 +182,7 @@ class AwsS3 implements Adapter,
     {
         $result = $this->service->listObjects(array(
             'Bucket'  => $this->bucket,
-            'Prefix'  => rtrim($key, '/') . '/',
+            'Prefix'  => rtrim($this->computePath($key), '/') . '/',
             'MaxKeys' => 1
         ));
 
@@ -227,8 +229,17 @@ class AwsS3 implements Adapter,
     private function getOptions($key, array $options = array())
     {
         $options['Bucket'] = $this->bucket;
-        $options['Key'] = $key;
+        $options['Key'] = $this->computePath($key);
 
         return $options + $this->getMetadata($key);
+    }
+
+    private function computePath($key)
+    {
+        if (empty($this->options['directory'])) {
+            return $key;
+        }
+
+        return sprintf('%s/%s', $this->options['directory'], $key);
     }
 }
