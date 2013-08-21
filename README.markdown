@@ -100,13 +100,18 @@ The third parameter of the cache adapter is the time to live of the cache.
 
 Using Amazon S3
 ---------------
-You will need to specify a CA certificate to be able to talk to Amazon servers
-in https. You can use the one which is shipped with the SDK by defining before
-creating the ``\AmazonS3`` object:
+When using the legacy Amazon S3 adapters, you will need to specify a CA
+certificate to be able to talk to Amazon servers in https. You can use
+the one which is shipped with the SDK by defining before creating the
+``\AmazonS3`` object:
 
 ```php
 define("AWS_CERTIFICATE_AUTHORITY", true);
 ```
+
+Specifying a custom CA certificate is not required when using the
+`Gaufrette\Adapter\AmazonS3` adapter because it uses the newest version of the
+AWS SDK for PHP.
 
 Using OpenCloud
 ---------------
@@ -149,6 +154,32 @@ $connection = new OpenCloud\Rackspace(
 
 ```
 
+Using AzureBlobStorage
+----------------------
+Azure Blob Storage is the storage service provided by Microsoft Windows Azure cloud environment. To use this adapter
+you need to install the [Azure SDK for php](http://www.windowsazure.com/en-us/develop/php/common-tasks/download-php-sdk/)
+into your project.
+
+To instantiate the `AzureBlobStorage` adapter you need a `BlobProxyFactoryInterface` instance (you can use the default
+`BlobProxyFactory` class) and a connection string. The connection string should follow this prototype:
+
+    BlobEndpoint=https://XXXXXXXXXX.blob.core.windows.net/;AccountName=XXXXXXXX;AccountKey=XXXXXXXXXXXXXXXXXXXX
+
+You should be able to find your **endpoint**, **account name** and **account key** in your
+[Windows Azure management console](https://manage.windowsazure.com).
+
+Thanks to the blob proxy factory, the adapter lazy loads the connection to the endpoint, so it will not create any
+connection until it's really needed (eg. when a read or write operation is issued).
+
+Follows a simple example on how to build the adapter:
+
+```php
+$connectionString = '...';
+$factory = new Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactory($connectionString);
+$adapter = new Gaufrette\Adapter\AzureBlobStorage($factory, 'my-container');
+$filesystem = new Gaufrette\Filesystem($adapter);
+```
+
 Using FTP adapters
 ---------------
 
@@ -183,21 +214,17 @@ In your Symfony2 project, add to ``deps``:
 
 # if you want to use Amazon S3
 [aws-sdk]
-    git=https://github.com/amazonwebservices/aws-sdk-for-php
-```
-
-and to ``app/autoload.php``, at the end:
-
-```php
-// AWS SDK needs a special autoloader
-require_once __DIR__.'/../vendor/aws-sdk/sdk.class.php';
+    git=https://github.com/aws/aws-sdk-php
 ```
 
 And then, you can simply add them as services of your dependency injection container.
 As an example, here is services declaration to use Amazon S3:
 
 ```xml
-<service id="acme.s3" class="AmazonS3">
+<service id="acme.s3"
+         class="Aws\\S3\\S3Client"
+         factory-class="Aws\\S3\\S3Client"
+         factory-method="factory">
     <argument type="collection">
         <argument key="key">%acme.aws_key%</argument>
         <argument key="secret">%acme.aws_secret_key%</argument>
@@ -212,14 +239,6 @@ As an example, here is services declaration to use Amazon S3:
 <service id="acme.fs" class="Gaufrette\Filesystem">
     <argument type="service" id="acme.s3.adapter"></argument>
 </service>
-```
-
-Don't forget to set the constant to tell the AWS SDK to use its CA cert (somewhere
-that will be executed before creating the ``\AmazonS3`` object):
-```php
-define("AWS_CERTIFICATE_AUTHORITY", true);
-$fs = $container->get('acme.fs');
-// use $fs
 ```
 
 Streaming Files
