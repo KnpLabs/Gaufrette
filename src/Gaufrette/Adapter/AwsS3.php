@@ -70,7 +70,7 @@ class AwsS3 implements Adapter,
      */
     public function read($key)
     {
-        $this->ensureBucketExists($key);
+        $this->ensureBucketExists();
         $options = $this->getOptions($key);
 
         try {
@@ -85,7 +85,7 @@ class AwsS3 implements Adapter,
      */
     public function rename($sourceKey, $targetKey)
     {
-        $this->ensureBucketExists($targetKey);
+        $this->ensureBucketExists();
         $options = $this->getOptions($targetKey, array('CopySource' => $sourceKey));
 
         try {
@@ -101,7 +101,7 @@ class AwsS3 implements Adapter,
      */
     public function write($key, $content)
     {
-        $this->ensureBucketExists($key);
+        $this->ensureBucketExists();
         $options = $this->getOptions($key, array('Body' => $content));
 
         try {
