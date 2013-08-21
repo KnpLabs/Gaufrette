@@ -31,13 +31,18 @@ class Local implements Adapter,
      * @throws RuntimeException if the specified directory does not exist and
      *                          could not be created
      */
-    public function __construct($directory, $create = false)
+    public function __construct($directory, $create = false, $options = array())
     {
         $this->directory = Util\Path::normalize($directory);
 
         if (is_link($this->directory)) {
             $this->directory = realpath($this->directory);
         }
+
+        $this->options = array_replace_recursive(
+            array('directory_levels' => 0),
+            $options
+        );
 
         $this->create = $create;
     }
@@ -195,6 +200,10 @@ class Local implements Adapter,
     protected function normalizePath($path)
     {
         $path = Util\Path::normalize($path);
+
+        if ($this->options['directory_levels'] > 0) {
+            $path = Util\Path::applyDirectoryLevels($path, $this->options['directory_levels']);
+        }
 
         if (0 !== strpos($path, $this->directory)) {
             throw new \OutOfBoundsException(sprintf('The path "%s" is out of the filesystem.', $path));

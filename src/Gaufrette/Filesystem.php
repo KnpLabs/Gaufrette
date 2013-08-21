@@ -187,7 +187,7 @@ class Filesystem
         $keys = array();
 
         foreach ($this->keys() as $key) {
-            if (empty($prefix) || false !== strpos($key, $prefix)) {
+            if (empty($prefix) || 0 === strpos($key, $prefix)) {
                 if ($this->adapter->isDirectory($key)) {
                     $dirs[] = $key;
                 } else {
@@ -259,12 +259,18 @@ class Filesystem
     }
 
     /**
-     * @param $key
-     * @throws Exception\FileNotFound
+     * Checks if matching file by given key exists in the filesystem
+     *
+     * Key must be non empty string, otherwise it will throw Exception\FileNotFound
+     * {@see http://php.net/manual/en/function.empty.php}
+     *
+     * @param string $key
+     *
+     * @throws Exception\FileNotFound   when sourceKey does not exist
      */
     private function assertHasFile($key)
     {
-        if (! $this->has($key)) {
+        if (! empty($key) && ! $this->has($key)) {
             throw new Exception\FileNotFound($key);
         }
     }
