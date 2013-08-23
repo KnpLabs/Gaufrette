@@ -374,9 +374,9 @@ class AzureBlobStorage implements Adapter,
      */
     protected function getErrorCodeFromServiceException(ServiceException $exception)
     {
-        $xml = simplexml_load_string($exception->getErrorReason());
+        $xml = @simplexml_load_string($exception->getErrorReason());
 
-        if (isset($xml->Code)) {
+        if ($xml && isset($xml->Code)) {
             return (string) $xml->Code;
         }
 
