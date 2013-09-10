@@ -85,4 +85,24 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         $adapter = new AwsS3($client, 'bucket');
         $this->assertEquals('https://bucket.s3.amazonaws.com/foo', $adapter->getUrl('foo'));
     }
+
+    public function testChecksForObjectExistenceWithDirectory()
+    {
+        $mock = new MockPlugin(array(new Response(200)));
+        $client = $this->getClient();
+        $client->addSubscriber($mock);
+        $adapter = new AwsS3($client, 'bucket', array('directory' => 'bar'));
+        $this->assertTrue($adapter->exists('foo'));
+        $requests = $mock->getReceivedRequests();
+        $this->assertEquals('bucket.s3.amazonaws.com', $requests[0]->getHost());
+        $this->assertEquals('HEAD', $requests[0]->getMethod());
+        $this->assertEquals('/bar/foo', $requests[0]->getResource());
+    }
+
+    public function testGetsObjectUrlsWithDirectory()
+    {
+        $client = $this->getClient();
+        $adapter = new AwsS3($client, 'bucket', array('directory' => 'bar'));
+        $this->assertEquals('https://bucket.s3.amazonaws.com/bar/foo', $adapter->getUrl('foo'));
+    }
 }
