@@ -3,7 +3,8 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-use OpenCloud\ObjectStore\Container;
+use OpenCloud\Common\Exceptions\DeleteError;
+use OpenCloud\ObjectStore\Resource\Container;
 use OpenCloud\ObjectStore\Service;
 use OpenCloud\Common\Exceptions\CreateUpdateError;
 use OpenCloud\Common\Exceptions\ObjFetchError;
@@ -71,7 +72,16 @@ class OpenCloud implements Adapter,
     public function read($key)
     {
         $this->initialize();
-        return $this->tryGetObject($key)->SaveToString();
+
+        // This method can return boolean or the object
+        // if there is a fetch error, tryGetObject returns false
+        // If it returns false, php throws a fatal error because boolean is a non-object.
+        $object = $this->tryGetObject($key);
+        if($object)
+        {
+            return $object->SaveToString();
+        }
+        return $object;
     }
 
     /**
@@ -148,7 +158,11 @@ class OpenCloud implements Adapter,
     public function mtime($key)
     {
         $this->initialize();
-        $lastModified = $this->tryGetObject($key)->last_modified;
+
+        $object = $this->tryGetObject($key);
+
+        $lastModified = $object?$object->last_modified:$object;
+
         return $lastModified;
     }
 
@@ -163,8 +177,14 @@ class OpenCloud implements Adapter,
     {
         $this->initialize();
         try{
-            $this->tryGetObject($key)->Delete();
-        }catch (ObjectStore\DeleteError $deleteError){
+            $object = $this->tryGetObject($key);
+            if($object){
+                $object->Delete();
+            } else {
+                return false;
+            }
+        }catch (DeleteError $deleteError){
+
             return false;
         }
         return true;
@@ -207,12 +227,16 @@ class OpenCloud implements Adapter,
     public function checksum($key)
     {
         $this->initialize();
-        return $this->tryGetObject($key)->getETag();
+        $object =      $this->tryGetObject($key);
+        if($object)
+            return $object->getETag();
+
+        return false;
     }
 
     /**
      * @param $key
-     * @return \OpenCloud\ObjectStore\DataObject
+     * @return \OpenCloud\ObjectStore\Resource\DataObject
      */
     protected function tryGetObject($key)
     {
