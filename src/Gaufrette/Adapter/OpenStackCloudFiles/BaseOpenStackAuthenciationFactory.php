@@ -1,24 +1,49 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: cwarner
- * Date: 10/1/13
- * Time: 5:00 PM
- */
 
 namespace Gaufrette\Adapter\OpenStackCloudFiles;
 
 
+use OpenCloud\OpenStack;
+use OpenCloud\Rackspace;
+
+/**
+ * Class BaseOpenStackAuthenticationFactory
+ * @package Gaufrette\Adapter\OpenStackCloudFiles
+ * @author Chris Warner <cdw.lighting@gmail.com>
+ */
 abstract class BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface {
-    protected  $authenciationService = null;
-    protected $url, $username, $tenant, $apikey, $region;
 
     /**
-     * @param $url
-     * @param $apikey
-     * @param $username
-     * @param $region
-     * @param null $tenant
+     * @var null|OpenStack|Rackspace
+     */
+    protected $authenciationService = null;
+    /**
+     * @var string
+     */
+    protected $url;
+    /**
+     * @var string
+     */
+    protected $username;
+    /**
+     * @var null|string
+     */
+    protected $tenant;
+    /**
+     * @var string
+     */
+    protected $apikey;
+    /**
+     * @var string
+     */
+    protected $region;
+
+    /**
+     * @param string $url
+     * @param string $apikey
+     * @param string $username
+     * @param string $region
+     * @param null|string $tenant
      */
     function __construct($url, $apikey, $username, $region, $tenant = null)
     {

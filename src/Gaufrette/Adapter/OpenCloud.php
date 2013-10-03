@@ -77,7 +77,7 @@ class OpenCloud implements Adapter,
         // if there is a fetch error, tryGetObject returns false
         // If it returns false, php throws a fatal error because boolean is a non-object.
         $object = $this->tryGetObject($key);
-        if($object)
+        if ($object)
         {
             return $object->SaveToString();
         }
@@ -98,7 +98,7 @@ class OpenCloud implements Adapter,
         $object = $this->tryGetObject($key);
 
         try{
-            if($object === false){
+            if ($object === false){
                 $object = $this->container->DataObject();
                 $object->SetData($content);
 
@@ -113,7 +113,7 @@ class OpenCloud implements Adapter,
                 $object->Create($data);
             }
             return $object->bytes;
-        }catch(CreateUpdateError $updateError){
+        } catch(CreateUpdateError $updateError) {
             return false;
         }
     }
@@ -141,7 +141,7 @@ class OpenCloud implements Adapter,
         $this->initialize();
         $objectList = $this->container->ObjectList();
         $keys = array();
-        while($object = $objectList->Next()) {
+        while ( $object = $objectList->Next() ) {
             $keys[] = $object->name;
         }
         sort($keys);
@@ -161,9 +161,11 @@ class OpenCloud implements Adapter,
 
         $object = $this->tryGetObject($key);
 
-        $lastModified = $object?$object->last_modified:$object;
+        if ($object) {
+            return $object->last_modified;
+        }
 
-        return $lastModified;
+        return false;
     }
 
     /**
@@ -178,12 +180,11 @@ class OpenCloud implements Adapter,
         $this->initialize();
         try{
             $object = $this->tryGetObject($key);
-            if($object){
-                $object->Delete();
-            } else {
+            if (!$object) {
                 return false;
             }
-        }catch (DeleteError $deleteError){
+            $object->Delete();
+        } catch (DeleteError $deleteError) {
 
             return false;
         }
@@ -228,7 +229,7 @@ class OpenCloud implements Adapter,
     {
         $this->initialize();
         $object =      $this->tryGetObject($key);
-        if($object)
+        if ($object)
             return $object->getETag();
 
         return false;
@@ -242,7 +243,7 @@ class OpenCloud implements Adapter,
     {
         try{
             return $this->container->DataObject($key);
-        }catch (ObjFetchError $objFetchError){
+        }catch (ObjFetchError $objFetchError) {
             return false;
         }
     }

@@ -14,20 +14,26 @@ use Gaufrette\Adapter\OpenStackCloudFiles\ConnectionFactoryInterface;
 use OpenCloud\Common\Base;
 use OpenCloud\Rackspace;
 
-class RackspaceAuthenticationConnectionFactory extends BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface {
+/**
+ * Class RackspaceAuthenticationConnectionFactory
+ * @package Gaufrette\Adapter\OpenStackCloudFiles
+ * @author Chris Warner <cdw.lighting@gmail.com>
+ */
+class RackspaceAuthenticationConnectionFactory extends BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface
+{
 
     /**
      * @return Rackspace
      */
     public function create()
     {
-        if(null === $this->authenciationService)
+        if (null === $this->authenciationService)
         {
             $this->authenciationService = new Rackspace($this->url, array($this->username, $this->apikey));
             $this->authenciationService->authenticate();
 
 
-        } elseif($this->authenciationService->expired()) {
+        } elseif ($this->authenciationService->expired()) {
             $this->authenciationService->authenticate();
         }
 
