@@ -1,20 +1,23 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: cwarner
- * Date: 10/1/13
- * Time: 5:02 PM
- */
 
 namespace Gaufrette\Adapter\OpenStackCloudFiles;
 
 
 use OpenCloud\OpenStack;
 
-class OpenStackAuthenticationFactory extends BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface {
+/**
+ * Class OpenStackAuthenticationFactory
+ * @package Gaufrette\Adapter\OpenStackCloudFiles
+ * @author Chris Warner <cdw.lighting@gmail.com>
+ */
+class OpenStackAuthenticationFactory extends BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface
+{
+    /**
+     * @return OpenStack
+     */
     public function create()
     {
-        if(null === $this->authenciationService)
+        if (null === $this->authenciationService)
         {
             $this->authenciationService = new OpenStack($this->url, array($this->username, $this->apikey));
             $this->authenciationService->authenticate();

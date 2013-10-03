@@ -64,12 +64,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "c5da9510480f719361e881a84bfc7ed06716b159"
+                "reference": "5ac62533b924b92eb7756df8c5f95a434eca7c9b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c5da9510480f719361e881a84bfc7ed06716b159",
-                "reference": "c5da9510480f719361e881a84bfc7ed06716b159",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5ac62533b924b92eb7756df8c5f95a434eca7c9b",
+                "reference": "5ac62533b924b92eb7756df8c5f95a434eca7c9b",
                 "shasum": ""
             },
             "require": {
@@ -122,7 +122,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2013-10-01 00:08:29"
+            "time": "2013-10-02 20:19:48"
         },
         {
             "name": "doctrine/annotations",
@@ -666,12 +666,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "e024996037f14d72ce963074edd21600827a55cc"
+                "reference": "b170b028c6bb5799640e46c8803015b0f9a45ed9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/e024996037f14d72ce963074edd21600827a55cc",
-                "reference": "e024996037f14d72ce963074edd21600827a55cc",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/b170b028c6bb5799640e46c8803015b0f9a45ed9",
+                "reference": "b170b028c6bb5799640e46c8803015b0f9a45ed9",
                 "shasum": ""
             },
             "require": {
@@ -750,7 +750,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2013-10-01 17:27:14"
+            "time": "2013-10-02 20:47:00"
         },
         {
             "name": "herzult/php-ssh",

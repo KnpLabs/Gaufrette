@@ -1,15 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: cwarner
- * Date: 10/1/13
- * Time: 4:27 PM
- */
 
 namespace Gaufrette\Adapter\OpenStackCloudFiles;
 
 
-interface ConnectionFactoryInterface {
+/**
+ * Interface ConnectionFactoryInterface
+ * @package Gaufrette\Adapter\OpenStackCloudFiles
+ * @author Chris Warner <cdw.lighting@gmail.com>
+ */
+interface ConnectionFactoryInterface
+{
 
          public function create();
 
