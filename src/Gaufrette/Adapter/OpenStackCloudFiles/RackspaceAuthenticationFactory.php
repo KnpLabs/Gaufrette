@@ -19,7 +19,7 @@ use OpenCloud\Rackspace;
  * @package Gaufrette\Adapter\OpenStackCloudFiles
  * @author Chris Warner <cdw.lighting@gmail.com>
  */
-class RackspaceAuthenticationConnectionFactory extends BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface
+class RackspaceAuthenticationFactory extends BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface
 {
 
     /**
