@@ -1,0 +1,231 @@
+<?php
+
+namespace spec\Gaufrette\Adapter;
+
+use OpenCloud\Common\Exceptions\CreateUpdateError;
+use OpenCloud\Common\Exceptions\DeleteError;
+use OpenCloud\Common\Exceptions\ObjFetchError;
+use PhpSpec\ObjectBehavior;
+
+/**
+ * Class OpenCloudSpec
+ * @package spec\Gaufrette\Adapter
+ * @author  Chris Warner <cdw.lighting@gmail.com>
+ */
+class OpenCloudSpec extends ObjectBehavior {
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     */
+    public function let($objectStore)
+    {
+        $this->beConstructedWith($objectStore, 'test', false, false);
+    }
+
+    public function it_is_adapter()
+    {
+        $this->shouldHaveType('Gaufrette\Adapter');
+    }
+
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     * @param OpenCloud\ObjectStore\Resource\DataObject $object
+     */
+    public function it_reads_file($objectStore, $container, $object)
+    {
+        $object->saveToString()->willReturn("Hello World");
+        $container->dataObject("test")->willReturn($object);
+        $objectStore->container("test")->willReturn($container);
+
+        $this->read('test')->shouldReturn('Hello World');
+    }
+
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     */
+    public function it_reads_file_on_error_returns_false($objectStore, $container)
+    {
+        $container->dataObject("test")->willThrow(new ObjFetchError());
+        $objectStore->container("test")->willReturn($container);
+
+        $this->read('test')->shouldReturn(false);
+    }
+
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     * @param OpenCloud\ObjectStore\Resource\DataObject $object
+     */
+    public function it_writes_file_key_doesnot_exist($objectStore, $container, $object)
+    {
+        $testData = "Hello World!";
+        $testDataSize = sizeof($testData);
+        $object->create(array('name'=>'test'))->willReturn(null);
+        $object->setData($testData)->willReturn(null);
+        $object->bytes = $testDataSize;
+        $container->dataObject('test')->willReturn(false);
+        $container->dataObject()->willReturn($object);
+        $objectStore->container("test")->willReturn($container);
+
+        $this->write('test', $testData)->shouldReturn($testDataSize);
+
+    }
+
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     * @param OpenCloud\ObjectStore\Resource\DataObject $object
+     */
+    public function it_writes_file_key_exists($objectStore, $container, $object)
+    {
+        $testData = "Hello World!";
+        $testDataSize = sizeof($testData);
+        $object->bytes = $testDataSize;
+        $container->dataObject('test')->willReturn($object);
+        $objectStore->container("test")->willReturn($container);
+
+        $this->write('test', $testData)->shouldReturn($testDataSize);
+
+    }
+
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     * @param OpenCloud\ObjectStore\Resource\DataObject $object
+     */
+    public function it_writes_file_write_fails($objectStore, $container, $object)
+    {
+        $testData = "Hello World!";
+//        $testDataSize = sizeof($testData);
+        $object->create(array('name'=>'test'))->willThrow(new CreateUpdateError());
+        $object->setData($testData)->willReturn(null);
+        $container->dataObject('test')->willReturn(false);
+        $container->dataObject()->willReturn($object);
+        $objectStore->container("test")->willReturn($container);
+
+        $this->write('test', $testData)->shouldReturn(false);
+
+    }
+
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     * @param OpenCloud\ObjectStore\Resource\DataObject $object
+     */
+    public function it_key_exists_true($objectStore, $container, $object)
+    {
+        $container->dataObject('test')->willReturn($object);
+        $objectStore->container("test")->willReturn($container);
+
+        $this->exists('test')->shouldReturn(true);
+
+    }
+
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     * @param OpenCloud\ObjectStore\Resource\DataObject $object
+     */
+    public function it_key_does_not_exist_false($objectStore, $container, $object)
+    {
+        $container->dataObject('test')->willReturn($object)->willThrow(new ObjFetchError());
+        $objectStore->container("test")->willReturn($container);
+
+        $this->exists('test')->shouldReturn(false);
+
+    }
+
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     * @param OpenCloud\ObjectStore\Resource\DataObject $object
+     */
+    public function it_deletes_file($objectStore, $container, $object)
+    {
+        $object->delete()->willReturn(null);
+        $container->dataObject("test")->willReturn($object);
+        $objectStore->container("test")->willReturn($container);
+
+        $this->delete('test')->shouldReturn(true);
+    }
+
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     * @param OpenCloud\ObjectStore\Resource\DataObject $object
+     */
+    public function it_deletes_file_fails($objectStore, $container, $object)
+    {
+        $object->delete()->willThrow(new DeleteError());
+        $container->dataObject("test")->willReturn($object);
+        $objectStore->container("test")->willReturn($container);
+
+        $this->delete('test')->shouldReturn(false);
+    }
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     */
+    public function it_deletes_file_does_not_exist_returns_false($objectStore, $container)
+    {
+        $container->dataObject("test")->willThrow(new ObjFetchError());
+        $objectStore->container("test")->willReturn($container);
+
+        $this->delete('test')->shouldReturn(false);
+    }
+
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     * @param OpenCloud\ObjectStore\Resource\DataObject $object
+     */
+    public function it_checksum_returns_string($objectStore, $container, $object)
+    {
+        $object->getETag()->willReturn("test String");
+        $container->dataObject("test")->willReturn($object);
+        $objectStore->container("test")->willReturn($container);
+
+        $this->checksum('test')->shouldReturn("test String");
+
+    }
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     */
+    public function it_checksum_file_does_not_exist_returns_false($objectStore, $container)
+    {
+        $container->dataObject("test")->willThrow(new ObjFetchError());
+        $objectStore->container("test")->willReturn($container);
+
+        $this->checksum('test')->shouldReturn(false);
+    }
+
+    /**
+     * @param OpenCloud\ObjectStore\Service $objectStore
+     * @param OpenCloud\ObjectStore\Resource\Container $container
+     * @param OpenCloud\Common\Collection $objectList
+     */
+    public function it_keys_returns_sorted_array($objectStore, $container, $objectList)
+    {
+        $inputArray = array('key5', 'key2', 'key1');
+        $outputArray = $inputArray;
+        sort($outputArray);
+        $index = 0;
+
+        $objectList->next()->will(function() use($inputArray, &$index){
+            if ($index < count($inputArray)) {
+                $objectItem = new \stdClass();
+                $objectItem->name = $inputArray[$index];
+                $index++;
+                return $objectItem;
+            }
+        })->shouldBeCalledTimes(count($inputArray)+1);
+
+        $container->objectList()->willReturn($objectList);
+        $objectStore->container("test")->willReturn($container);
+
+        $this->keys()->shouldReturn($outputArray);
+    }
+
+} 
