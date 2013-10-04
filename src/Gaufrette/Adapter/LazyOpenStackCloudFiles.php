@@ -1,5 +1,4 @@
 <?php
-
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter\OpenStackCloudFiles\ConnectionFactoryInterface;
@@ -8,9 +7,10 @@ use OpenCloud\OpenStack;
 /**
  * Class LazyOpenStackCloudFiles
  * @package Gaufrette\Adapter
- * @author Chris Warner <cdw.lighting@gmail.com>
+ * @author  Chris Warner <cdw.lighting@gmail.com>
  */
-class LazyOpenStackCloudFiles extends OpenCloud {
+class LazyOpenStackCloudFiles extends OpenCloud
+{
 
     /**
      * @var ConnectionFactoryInterface
@@ -24,15 +24,15 @@ class LazyOpenStackCloudFiles extends OpenCloud {
 
     /**
      * @param ConnectionFactoryInterface $connectionFactory
-     * @param string $containerName
-     * @param bool $createContainer
-     * @param bool $detectContentType
+     * @param string                     $containerName
+     * @param bool                       $createContainer
+     * @param bool                       $detectContentType
      */
     public function __construct($connectionFactory, $containerName, $createContainer = false, $detectContentType = true)
     {
         $this->connectionFactory = $connectionFactory;
-        $this->containerName = $containerName;
-        $this->createContainer = $createContainer;
+        $this->containerName     = $containerName;
+        $this->createContainer   = $createContainer;
         $this->detectContentType = $detectContentType;
     }
 
@@ -42,6 +42,7 @@ class LazyOpenStackCloudFiles extends OpenCloud {
     public function read($key)
     {
         $this->connect();
+
         return parent::read($key);
     }
 
@@ -51,6 +52,7 @@ class LazyOpenStackCloudFiles extends OpenCloud {
     public function write($key, $content)
     {
         $this->connect();
+
         return parent::write($key, $content);
     }
 
@@ -60,6 +62,7 @@ class LazyOpenStackCloudFiles extends OpenCloud {
     public function exists($key)
     {
         $this->connect();
+
         return parent::exists($key);
     }
 
@@ -69,6 +72,7 @@ class LazyOpenStackCloudFiles extends OpenCloud {
     public function keys()
     {
         $this->connect();
+
         return parent::keys();
     }
 
@@ -78,6 +82,7 @@ class LazyOpenStackCloudFiles extends OpenCloud {
     public function delete($key)
     {
         $this->connect();
+
         return parent::delete($key);
     }
 
@@ -87,6 +92,7 @@ class LazyOpenStackCloudFiles extends OpenCloud {
     public function rename($sourceKey, $targetKey)
     {
         $this->connect();
+
         parent::rename($sourceKey, $targetKey);
     }
 
@@ -96,6 +102,7 @@ class LazyOpenStackCloudFiles extends OpenCloud {
     public function isDirectory($key)
     {
         $this->connect();
+
         return parent::isDirectory($key);
     }
 
@@ -105,6 +112,7 @@ class LazyOpenStackCloudFiles extends OpenCloud {
     public function checksum($key)
     {
         $this->connect();
+
         return parent::checksum($key);
     }
 
@@ -114,17 +122,17 @@ class LazyOpenStackCloudFiles extends OpenCloud {
     public function mtime($key)
     {
         $this->connect();
+
         return parent::mtime($key);
     }
 
     protected function connect()
     {
-        if(!$this->connected){
+        if (!$this->connected) {
             /** @var OpenStack $connection */
             $connection = $this->connectionFactory->create();
 
             $this->objectStore = $connection->objectStore();
         }
     }
-
-} 
+}

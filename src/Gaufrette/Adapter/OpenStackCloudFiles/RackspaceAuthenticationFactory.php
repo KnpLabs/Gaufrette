@@ -9,7 +9,7 @@ use OpenCloud\Rackspace;
 /**
  * Class RackspaceAuthenticationConnectionFactory
  * @package Gaufrette\Adapter\OpenStackCloudFiles
- * @author Chris Warner <cdw.lighting@gmail.com>
+ * @author  Chris Warner <cdw.lighting@gmail.com>
  */
 class RackspaceAuthenticationFactory extends BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface
 {
@@ -19,17 +19,13 @@ class RackspaceAuthenticationFactory extends BaseOpenStackAuthenticationFactory 
      */
     public function create()
     {
-        if (null === $this->authenciationService)
-        {
-            $this->authenciationService = new Rackspace($this->url, array($this->username, $this->apikey));
+        if (null === $this->authenciationService) {
+            $this->authenciationService = new Rackspace($this->url, array ($this->username, $this->apikey));
             $this->authenciationService->authenticate();
-
-
         } elseif ($this->authenciationService->expired()) {
             $this->authenciationService->authenticate();
         }
 
         return $this->authenciationService;
     }
-
-} 
+}
