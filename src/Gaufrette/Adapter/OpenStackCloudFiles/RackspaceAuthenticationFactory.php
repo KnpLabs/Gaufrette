@@ -1,13 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: cwarner
- * Date: 10/1/13
- * Time: 4:28 PM
- */
-
 namespace Gaufrette\Adapter\OpenStackCloudFiles;
-
 
 use OpenCloud\OpenStack;
 use Gaufrette\Adapter\OpenStackCloudFiles\ConnectionFactoryInterface;
