@@ -9,9 +9,10 @@ use OpenCloud\Rackspace;
 /**
  * Class BaseOpenStackAuthenticationFactory
  * @package Gaufrette\Adapter\OpenStackCloudFiles
- * @author Chris Warner <cdw.lighting@gmail.com>
+ * @author  Chris Warner <cdw.lighting@gmail.com>
  */
-abstract class BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface {
+abstract class BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface
+{
 
     /**
      * @var null|OpenStack|Rackspace
@@ -39,19 +40,18 @@ abstract class BaseOpenStackAuthenticationFactory implements ConnectionFactoryIn
     protected $region;
 
     /**
-     * @param string $url
-     * @param string $apikey
-     * @param string $username
-     * @param string $region
+     * @param string      $url
+     * @param string      $apikey
+     * @param string      $username
+     * @param string      $region
      * @param null|string $tenant
      */
     function __construct($url, $apikey, $username, $region, $tenant = null)
     {
-        $this->apikey = $apikey;
-        $this->region = $region;
-        $this->tenant = $tenant;
-        $this->url = $url;
+        $this->apikey   = $apikey;
+        $this->region   = $region;
+        $this->tenant   = $tenant;
+        $this->url      = $url;
         $this->username = $username;
     }
-
-} 
+}
