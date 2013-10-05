@@ -165,7 +165,7 @@ class Dropbox implements Adapter
     private function getDropboxMetadata($key)
     {
         try {
-            $metadata = $this->client->getMetaData($key, true);
+            $metadata = $this->client->getMetaData($key);
         } catch (DropboxNotFoundException $e) {
             throw new Exception\FileNotFound($key, 0, $e);
         }
