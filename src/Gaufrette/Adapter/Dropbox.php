@@ -166,7 +166,7 @@ class Dropbox implements Adapter
     {
         try {
             $metadata = $this->client->getMetaData($key, true);
-        } catch (\Dropbox_Exception_NotFound $e) {
+        } catch (DropboxNotFoundException $e) {
             throw new Exception\FileNotFound($key, 0, $e);
         }
 
