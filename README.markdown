@@ -154,6 +154,28 @@ $connection = new OpenCloud\Rackspace(
 
 ```
 
+### LazyOpenCloud
+
+```php
+$factory = new Gaufrette\Adapter\OpenStackAuthenticationFactory(
+    $url,  // connection URL from cloud Vendor
+    $apikey, // password
+    $username, //username
+    $region, // region
+    $tenant) // tenant
+$adapter = new Gaufrette\Adapter\LazyOpenStackCloudFiles($factory, 'container-name');
+```
+
+### LazyOpenCloud on Rackspace
+```php
+$factory = new Gaufrette\Adapter\RackspaceAuthenticationFactory(
+    $url,  // connection URL from cloud Vendor
+    $apikey, // password
+    $username, //username
+    $region, // region
+    $tenant) // tenant
+```
+
 Using AzureBlobStorage
 ----------------------
 Azure Blob Storage is the storage service provided by Microsoft Windows Azure cloud environment. To use this adapter
