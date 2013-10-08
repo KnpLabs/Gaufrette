@@ -58,7 +58,7 @@ class DropboxSpec extends ObjectBehavior
     function it_checks_if_file_exists($dropbox)
     {
         $dropbox
-            ->getMetaData('filename', false)
+            ->getMetaData('filename', true)
             ->willReturn(array(
                 "size"         => "225.4KB",
                 "rev"          => "35e97029684fe",
