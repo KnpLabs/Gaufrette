@@ -218,6 +218,6 @@ class Sftp implements Adapter,
      */
     protected function createDirectory($directory)
     {
-        return mkdir($this->sftp->getUrl($directory), 0777, true);
+        return $this->sftp->mkdir($directory, 0777, true);
     }
 }
