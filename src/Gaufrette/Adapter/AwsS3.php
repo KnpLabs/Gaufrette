@@ -231,7 +231,13 @@ class AwsS3 implements Adapter,
         $options['Bucket'] = $this->bucket;
         $options['Key'] = $this->computePath($key);
 
-        return $options + $this->getMetadata($key);
+        /**
+         * Merge global options for adapter, which are set in the constructor, with metadata.
+         * Metadata will override global options.
+         */
+        $options = array_merge($this->options, $options, $this->getMetadata($key));
+
+        return $options;
     }
 
     private function computePath($key)
