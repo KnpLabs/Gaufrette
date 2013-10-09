@@ -198,7 +198,7 @@ class AwsS3 implements Adapter,
      * @throws \RuntimeException if the bucket does not exists or could not be
      *                          created
      */
-    private function ensureBucketExists()
+    protected function ensureBucketExists()
     {
         if ($this->bucketExists) {
             return true;
@@ -226,7 +226,7 @@ class AwsS3 implements Adapter,
         return true;
     }
 
-    private function getOptions($key, array $options = array())
+    protected function getOptions($key, array $options = array())
     {
         $options['Bucket'] = $this->bucket;
         $options['Key'] = $this->computePath($key);
@@ -234,7 +234,7 @@ class AwsS3 implements Adapter,
         return $options + $this->getMetadata($key);
     }
 
-    private function computePath($key)
+    protected function computePath($key)
     {
         if (empty($this->options['directory'])) {
             return $key;
