@@ -497,7 +497,11 @@ class Ftp implements Adapter,
         if (!$this->ssl) {
             $this->connection = ftp_connect($this->host, $this->port);
         } else {
-            $this->connection = ftp_ssl_connect($this->host, $this->port);        
+            if(function_exists('ftp_ssl_connect')) {
+                $this->connection = ftp_ssl_connect($this->host, $this->port);        
+            } else {
+                throw new \RuntimeException('This Server Has No SSL-FTP Available.');
+            }
         }
         if (!$this->connection) {
             throw new \RuntimeException(sprintf('Could not connect to \'%s\' (port: %s).', $this->host, $this->port));
