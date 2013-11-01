@@ -25,7 +25,13 @@ class AwsS3 implements Adapter,
     {
         $this->service = $service;
         $this->bucket = $bucket;
-        $this->options = array_replace(array('create' => false, 'directory' => ''), $options);
+        $this->options = array_replace(
+            array(
+                'create' => false,
+                'directory' => '',
+                'acl' => 'private',
+            ), $options
+        );
     }
 
     /**
@@ -54,6 +60,12 @@ class AwsS3 implements Adapter,
      */
     public function setMetadata($key, $metadata)
     {
+        // BC with AmazonS3 adapter
+        if (isset($metadata['contentType'])) {
+            $metadata['ContentType'] = $metadata['contentType'];
+            unset($metadata['contentType']);
+        }
+
         $this->metadata[$key] = $metadata;
     }
 
@@ -228,6 +240,7 @@ class AwsS3 implements Adapter,
 
     protected function getOptions($key, array $options = array())
     {
+        $options['ACL'] = $this->options['acl'];
         $options['Bucket'] = $this->bucket;
         $options['Key'] = $this->computePath($key);
 
