@@ -36,7 +36,7 @@ use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local as LocalAdapter;
 
 $adapter = new LocalAdapter('/var/media');
-$filesystem = new Filesystem($adapter)
+$filesystem = new Filesystem($adapter);
 ```
 
 ### Use the filesystem
