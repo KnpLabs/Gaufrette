@@ -13,6 +13,7 @@ use OpenCloud\Rackspace;
  */
 class RackspaceAuthenticationFactory extends BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface
 {
+    const CATALOG_NAME = 'cloudFiles';
 
     /**
      * @return Rackspace
@@ -27,5 +28,11 @@ class RackspaceAuthenticationFactory extends BaseOpenStackAuthenticationFactory 
         }
 
         return $this->authenciationService;
+    }
+
+    public
+    function getCatalogName()
+    {
+        return self::CATALOG_NAME;
     }
 }

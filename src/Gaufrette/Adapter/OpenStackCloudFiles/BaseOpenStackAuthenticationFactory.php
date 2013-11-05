@@ -54,4 +54,14 @@ abstract class BaseOpenStackAuthenticationFactory implements ConnectionFactoryIn
         $this->url      = $url;
         $this->username = $username;
     }
+
+    /**
+     * @return string
+     */
+    public function getRegion()
+    {
+        return $this->region;
+    }
+
+
 }

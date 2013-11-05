@@ -12,6 +12,7 @@ use OpenCloud\OpenStack;
  */
 class OpenStackAuthenticationFactory extends BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface
 {
+    const CATALOG_NAME = 'cloudFiles';
     /**
      * @return OpenStack
      */
@@ -27,5 +28,11 @@ class OpenStackAuthenticationFactory extends BaseOpenStackAuthenticationFactory 
         }
 
         return $this->authenciationService;
+    }
+
+    public
+    function getCatalogName()
+    {
+        return self::CATALOG_NAME;
     }
 }

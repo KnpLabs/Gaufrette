@@ -131,8 +131,9 @@ class LazyOpenStackCloudFiles extends OpenCloud
         if (!$this->connected) {
             /** @var OpenStack $connection */
             $connection = $this->connectionFactory->create();
-
-            $this->objectStore = $connection->objectStore();
+            $region = $this->connectionFactory->getRegion();
+            $name = $this->connectionFactory->getCatalogName();
+            $this->objectStore = $connection->objectStoreService($name, $region);
         }
     }
 }
