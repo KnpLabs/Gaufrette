@@ -239,7 +239,9 @@ class Local implements Adapter,
         umask($umask);
 
         if (!$created) {
-            throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
+            if (!is_dir($directory)) {
+                throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
+            }
         }
     }
 }
