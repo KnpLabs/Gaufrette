@@ -26,6 +26,7 @@ class Ftp implements Adapter,
     protected $passive;
     protected $create;
     protected $mode;
+    protected $ssl;
     protected $fileData = array();
 
     /**
@@ -45,6 +46,7 @@ class Ftp implements Adapter,
         $this->passive   = isset($options['passive']) ? $options['passive'] : false;
         $this->create    = isset($options['create']) ? $options['create'] : false;
         $this->mode      = isset($options['mode']) ? $options['mode'] : FTP_BINARY;
+        $this->ssl       = isset($options['ssl']) ? $options['ssl'] : false;
     }
 
     /**
@@ -492,7 +494,15 @@ class Ftp implements Adapter,
     private function connect()
     {
         // open ftp connection
-        $this->connection = ftp_connect($this->host, $this->port);
+        if (!$this->ssl) {
+            $this->connection = ftp_connect($this->host, $this->port);
+        } else {
+            if(function_exists('ftp_ssl_connect')) {
+                $this->connection = ftp_ssl_connect($this->host, $this->port);        
+            } else {
+                throw new \RuntimeException('This Server Has No SSL-FTP Available.');
+            }
+        }
         if (!$this->connection) {
             throw new \RuntimeException(sprintf('Could not connect to \'%s\' (port: %s).', $this->host, $this->port));
         }
