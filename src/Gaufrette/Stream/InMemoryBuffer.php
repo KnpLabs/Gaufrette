@@ -44,17 +44,18 @@ class InMemoryBuffer implements Stream
         }
 
         if ($mode->impliesExistingContentDeletion()) {
-            $this->content = $this->writeContent('');
+            $this->content = '';
+            $this->synchronized = false;
         } elseif (!$exists && $mode->allowsNewFileOpening()) {
-            $this->content = $this->writeContent('');
+            $this->content = '';
+            $this->synchronized = false;
         } else {
             $this->content = $this->filesystem->read($this->key);
+            $this->synchronized = true;
         }
 
         $this->numBytes = Util\Size::fromContent($this->content);
         $this->position = $mode->impliesPositioningCursorAtTheEnd() ? $this->numBytes : 0;
-
-        $this->synchronized = true;
 
         return true;
     }
