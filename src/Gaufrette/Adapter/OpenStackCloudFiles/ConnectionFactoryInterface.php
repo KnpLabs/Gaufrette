@@ -11,4 +11,8 @@ namespace Gaufrette\Adapter\OpenStackCloudFiles;
 interface ConnectionFactoryInterface
 {
     public function create();
+
+    public function getRegion();
+
+    public function getCatalogName();
 }

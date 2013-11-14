@@ -3,6 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Guzzle\Http\Exception\RequestException;
 use OpenCloud\Common\Exceptions\DeleteError;
 use OpenCloud\ObjectStore\Resource\Container;
 use OpenCloud\ObjectStore\Service;
@@ -53,11 +54,9 @@ class OpenCloud implements Adapter,
         if (!$this->container instanceof Container) {
 
             if ($this->createContainer) {
-                $container       = $this->objectStore->Container();
-                $container->name = $this->containerName;
-                $container->Create();
+                $container       = $this->objectStore->createContainer($this->containerName);
             } else {
-                $container = $this->objectStore->Container($this->containerName);
+                $container = $this->objectStore->getContainer($this->containerName);
             }
             $this->container = $container;
         }
@@ -79,7 +78,7 @@ class OpenCloud implements Adapter,
         // If it returns false, php throws a fatal error because boolean is a non-object.
         $object = $this->tryGetObject($key);
         if ($object) {
-            return $object->SaveToString();
+            return $object->getContent();
         }
 
         return $object;
@@ -100,23 +99,12 @@ class OpenCloud implements Adapter,
 
         try {
             if ($object === false) {
-                $object = $this->container->DataObject();
-                $object->SetData($content);
-
-                $data = array ('name' => $key);
-
-                if ($this->detectContentType) {
-                    $fileInfo             = new \finfo(FILEINFO_MIME_TYPE);
-                    $contentType          = $fileInfo->buffer($content);
-                    $data['content_type'] = $contentType;
-                }
-
-                $object->Create($data);
+                $object = $this->container->uploadObject($key, $content);
             }
 
-            return $object->bytes;
+            return $object->getContentLength();
         }
-        catch (CreateUpdateError $updateError) {
+        catch (RequestException $updateError) {
             return false;
         }
     }
@@ -250,7 +238,7 @@ class OpenCloud implements Adapter,
     protected function tryGetObject($key)
     {
         try {
-            return $this->container->DataObject($key);
+            return $this->container->dataObject($key);
         }
         catch (ObjFetchError $objFetchError) {
             return false;
