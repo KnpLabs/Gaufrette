@@ -25,6 +25,19 @@ solution.
 Try it!
 -------
 
+### Installation
+
+Development version:
+
+```bash
+php composer.phar require knplabs/gaufrette:0.2.*@dev
+```
+Stable version:
+
+```bash
+php composer.phar require knplabs/gaufrette:0.1.*
+```
+
 ### Setup your filesystem
 
 Following an example with the local filesystem adapter. To setup other adapters, look up the [testcases](https://github.com/KnpLabs/Gaufrette/tree/master/tests/Gaufrette/Functional/adapters).
