@@ -65,7 +65,6 @@
         "phpseclib/phpseclib": "to user PhpseclibSftp adapter",
         "aws/aws-sdk-php": "to use the Amazon S3 adapter",
         "amazonwebservices/aws-sdk-for-php": "to use the legacy Amazon S3 adapters",
-        "phpseclib/phpseclib": "to use the SFTP",
         "doctrine/dbal": "to use the Doctrine DBAL adapter",
         "microsoft/windowsazure": "to use Microsoft Azure Blob Storage adapter",
         "ext-zip": "to use the Zip adapter",
