@@ -61,6 +61,8 @@
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",
         "dropbox-php/dropbox-php": "to use the Dropbox adapter",
         "rackspace/php-opencloud"  : "to use Opencloud adapter",
+        "herzult/php-ssh": "to use SFtp adapter",
+        "phpseclib/phpseclib": "to user PhpseclibSftp adapter",
         "aws/aws-sdk-php": "to use the Amazon S3 adapter",
         "amazonwebservices/aws-sdk-for-php": "to use the legacy Amazon S3 adapters",
         "phpseclib/phpseclib": "to use the SFTP",
