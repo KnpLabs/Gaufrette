@@ -222,37 +222,21 @@ function ftp_login($connection, $username, $password)
     return true;
 }
 
-function file_get_contents($path)
-{
-    return sprintf('%s content', $path);
-}
-
 function time()
 {
     return \strtotime('2012-10-10 23:10:10');
 }
 
-function file_put_contents($path, $content)
-{
-    return strlen($content);
-}
-
-function rename($from, $to)
-{
-    return $from.' to '.$to;
-}
-
 function file_exists($path)
 {
-    return in_array($path, array('/home/l3l0/filename', '/home/somedir/filename', 'ssh+ssl://localhost/home/l3l0/filename')) ? true : false;
+    //fake it for ssh+ssl: protocol for SFTP testing, otherwise delegate to global
+    if (strpos($path, 'ssh+ssl:') === 0) {
+        return in_array($path, array('/home/l3l0/filename', '/home/somedir/filename', 'ssh+ssl://localhost/home/l3l0/filename')) ? true : false;
+    }
+
+    return \file_exists($path);
 }
 
-function iterator_to_array($iterator)
-{
-    global $iteratorToArray;
-
-    return $iteratorToArray;
-}
 function extension_loaded($name)
 {
     global $extensionLoaded;
@@ -267,36 +251,6 @@ function extension_loaded($name)
 function opendir($url)
 {
     return true;
-}
-
-function filemtime($key)
-{
-    return 12345;
-}
-
-function unlink($key)
-{
-    return in_array($key, array('/home/l3l0/filename', '/home/somedir/filename')) ? true : false;
-}
-
-function is_dir($key)
-{
-    return (in_array($key, array('/home/l3l0', '/home/l3l0/dir', '/home/somedir', '/home/somedir/dir', '/home/l3l1'))) ? true : false;
-}
-
-function realpath($link)
-{
-    return ('symbolicLink' === $link) ? '/home/somedir' : $link;
-}
-
-function is_link($link)
-{
-    return ('symbolicLink' === $link) ? true : false;
-}
-
-function mkdir($directory, $mode, $recursive)
-{
-    return (in_array($directory, array('/home/other', '/home/somedir/aaa'))) ? true : false;
 }
 
 function apc_fetch($path)
