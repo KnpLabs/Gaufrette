@@ -65,7 +65,7 @@ class Path
      */
     public static function getAbsolutePrefix($path)
     {
-        preg_match('|^(?P<prefix>([a-zA-Z]:)?/)|', $path, $matches);
+        preg_match('|^(?P<prefix>([a-zA-Z]+:)?//?)|', $path, $matches);
 
         if (empty($matches['prefix'])) {
             return '';

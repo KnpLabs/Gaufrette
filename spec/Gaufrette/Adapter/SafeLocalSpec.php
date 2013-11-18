@@ -2,16 +2,16 @@
 
 namespace spec\Gaufrette\Adapter;
 
-//hack - mock php built-in functions
-require_once 'functions.php';
-
+use org\bovigo\vfs\vfsStream;
 use PhpSpec\ObjectBehavior;
 
 class SafeLocalSpec extends ObjectBehavior
 {
     function let()
     {
-        $this->beConstructedWith('/home/l3l0');
+        vfsStream::setup('test');
+        vfsStream::copyFromFileSystem(__DIR__.'/MockFilesystem');
+        $this->beConstructedWith(vfsStream::url('test'));
     }
 
     function it_is_local_adapter()
@@ -21,14 +21,12 @@ class SafeLocalSpec extends ObjectBehavior
 
     function it_computes_path_using_base64()
     {
-        $this->read('filename')->shouldReturn('/home/l3l0/'.base64_encode('filename').' content');
+        rename(vfsStream::url('test/filename'), vfsStream::url('test/'.base64_encode('filename')));
+        $this->read('filename')->shouldReturn("content\n");
     }
 
     function it_computes_key_back_using_base64()
     {
-        global $iteratorToArray;
-        $iteratorToArray = array('/home/l3l0/'.base64_encode('filename'), '/home/l3l0/'.base64_encode('filename1'), '/home/l3l0/'.base64_encode('aaa/filename'));
-
-        $this->keys()->shouldReturn(array('aaa', 'aaa/filename', 'filename', 'filename1'));
+        $this->keys()->shouldReturn(array(base64_decode('dir/file'), base64_decode('filename')));
     }
 }
