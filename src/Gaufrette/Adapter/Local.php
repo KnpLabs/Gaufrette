@@ -88,16 +88,15 @@ class Local implements Adapter,
         $this->ensureDirectoryExists($this->directory, $this->create);
 
         try {
-            $iterator = new \RecursiveIteratorIterator(
+            $files = new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator(
                     $this->directory,
                     \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
                 )
             );
         } catch (\Exception $e) {
-            $iterator = new \EmptyIterator;
+            $files = new \EmptyIterator;
         }
-        $files = iterator_to_array($iterator);
 
         $keys = array();
         foreach ($files as $file) {
@@ -239,7 +238,9 @@ class Local implements Adapter,
         umask($umask);
 
         if (!$created) {
-            throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
+            if (!is_dir($directory)) {
+                throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
+            }
         }
     }
 }
