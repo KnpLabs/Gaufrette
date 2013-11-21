@@ -20,12 +20,14 @@ class AwsS3 implements Adapter,
     protected $options;
     protected $bucketExists;
     protected $metadata = array();
+    protected $detectContentType;
 
-    public function __construct(S3Client $service, $bucket, array $options = array())
+    public function __construct(S3Client $service, $bucket, array $options = array(), $detectContentType = true)
     {
         $this->service = $service;
         $this->bucket = $bucket;
         $this->options = array_replace(array('create' => false, 'directory' => ''), $options);
+        $this->detectContentType = $detectContentType;
     }
 
     /**
@@ -108,7 +110,7 @@ class AwsS3 implements Adapter,
          * If the ContentType was not already set in the metadata, then we autodetect
          * it to prevent everything being served up as binary/octet-stream.
          */
-        if (!isset($options['ContentType'])) {
+        if (!isset($options['ContentType']) && $this->detectContentType) {
             $finfo = new \finfo(FILEINFO_MIME_TYPE);
             $mimeType = $finfo->buffer($content);
 
