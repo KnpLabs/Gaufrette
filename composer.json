@@ -73,7 +73,7 @@
         "ext-curl": "*",
         "ext-mbstring": "*",
         "ext-mongo": "*",
-        "ext-fileinfo": "*"
+        "ext-fileinfo": "This extension is used to automatically detect the content-type of a file in the AwsS3, OpenCloud, and AzureBlogStorage adapters"
     },
     "autoload": {
         "psr-0": { "Gaufrette": "src/" }
