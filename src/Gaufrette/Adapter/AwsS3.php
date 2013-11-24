@@ -22,7 +22,7 @@ class AwsS3 implements Adapter,
     protected $metadata = array();
     protected $detectContentType;
 
-    public function __construct(S3Client $service, $bucket, array $options = array(), $detectContentType = true)
+    public function __construct(S3Client $service, $bucket, array $options = array(), $detectContentType = false)
     {
         $this->service = $service;
         $this->bucket = $bucket;
