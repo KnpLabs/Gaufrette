@@ -125,9 +125,9 @@ class FileSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_calculates_size_from_content($filesystem)
+    function it_calculates_size_from_filesystem($filesystem)
     {
-        $filesystem->read('filename')->shouldBeCalled()->willReturn('some content');
+        $filesystem->size('filename')->shouldBeCalled()->willReturn(12);
 
         $this->getSize()->shouldReturn(12);
     }
@@ -148,7 +148,7 @@ class FileSpec extends ObjectBehavior
      */
     function it_gets_zero_size_when_file_not_found($filesystem)
     {
-        $filesystem->read('filename')->willThrow(new \Gaufrette\Exception\FileNotFound('filename'));
+        $filesystem->size('filename')->willThrow(new \Gaufrette\Exception\FileNotFound('filename'));
 
         $this->getSize()->shouldReturn(0);
     }
