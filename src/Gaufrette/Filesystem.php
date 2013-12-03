@@ -250,6 +250,24 @@ class Filesystem
     }
 
     /**
+     * Returns the size of the specified file's content
+     *
+     * @param string $key
+     *
+     * @return integer File size in Bytes
+     */
+    public function size($key)
+    {
+        $this->assertHasFile($key);
+
+        if ($this->adapter instanceof Adapter\SizeCalculator) {
+            return $this->adapter->size($key);
+        }
+
+        return Util\Checksum::fromContent($this->read($key));
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function createStream($key)
