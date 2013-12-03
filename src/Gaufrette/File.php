@@ -3,6 +3,7 @@
 namespace Gaufrette;
 
 use Gaufrette\Adapter\MetadataSupporter;
+use Gaufrette\Adapter\SizeCalculator;
 use Gaufrette\Exception\FileNotFound;
 
 /**
@@ -103,7 +104,7 @@ class File
         }
 
         try {
-            return $this->size = Util\Size::fromContent($this->getContent());
+            return $this->size = $this->filesystem->size($this->getKey());
         } catch (FileNotFound $exception) {
         }
 

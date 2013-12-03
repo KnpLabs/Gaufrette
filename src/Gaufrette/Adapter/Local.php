@@ -16,7 +16,8 @@ use Gaufrette\Exception;
  */
 class Local implements Adapter,
                        StreamFactory,
-                       ChecksumCalculator
+                       ChecksumCalculator,
+                       SizeCalculator
 {
     protected $directory;
     private $create;
@@ -150,6 +151,11 @@ class Local implements Adapter,
     public function checksum($key)
     {
         return Util\Checksum::fromFile($this->computePath($key));
+    }
+
+    public function size($key)
+    {
+        return Util\Size::fromFile($this->computePath($key));
     }
 
     /**
