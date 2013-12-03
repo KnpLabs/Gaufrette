@@ -233,9 +233,7 @@ class Local implements Adapter,
      */
     protected function createDirectory($directory)
     {
-        $umask = umask(0);
         $created = mkdir($directory, 0777, true);
-        umask($umask);
 
         if (!$created) {
             if (!is_dir($directory)) {
