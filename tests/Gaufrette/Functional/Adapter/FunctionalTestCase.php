@@ -223,5 +223,7 @@ EOF
         $FileObjectB->setContent('DEF');
         
         $this->assertEquals('DEF', $FileObjectB->getContent());
+        
+        $this->filesystem->delete('somefile');
     }
 }
