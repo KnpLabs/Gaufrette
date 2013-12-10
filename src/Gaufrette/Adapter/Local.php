@@ -21,6 +21,7 @@ class Local implements Adapter,
 {
     protected $directory;
     private $create;
+    private $mode;
 
     /**
      * Constructor
@@ -28,11 +29,12 @@ class Local implements Adapter,
      * @param string  $directory Directory where the filesystem is located
      * @param boolean $create    Whether to create the directory if it does not
      *                            exist (default FALSE)
+     * @param integer $mode      Mode for mkdir
      *
      * @throws RuntimeException if the specified directory does not exist and
      *                          could not be created
      */
-    public function __construct($directory, $create = false)
+    public function __construct($directory, $create = false, $mode = 0777)
     {
         $this->directory = Util\Path::normalize($directory);
 
@@ -41,6 +43,7 @@ class Local implements Adapter,
         }
 
         $this->create = $create;
+        $this->mode = $mode;
     }
 
     /**
@@ -239,7 +242,7 @@ class Local implements Adapter,
      */
     protected function createDirectory($directory)
     {
-        $created = mkdir($directory, 0777, true);
+        $created = mkdir($directory, $this->mode, true);
 
         if (!$created) {
             if (!is_dir($directory)) {
