@@ -76,7 +76,7 @@ class Filesystem
             throw new \RuntimeException(sprintf('Could not rename the "%s" key to "%s".', $sourceKey, $targetKey));
         }
         
-        if(array_key_exists($sourceKey, $this->fileRegister)) {
+        if($this->isFileInRegister($sourceKey)) {
             $this->fileRegister[$targetKey] = $this->fileRegister[$sourceKey];
             unset($this->fileRegister[$sourceKey]);
         }
@@ -163,7 +163,7 @@ class Filesystem
         $this->assertHasFile($key);
 
         if ($this->adapter->delete($key)) {
-            if(array_key_exists($key, $this->fileRegister)) {
+            if($this->isFileInRegister($key)) {
                 unset($this->fileRegister[$key]);
             }
             return true;
@@ -266,7 +266,7 @@ class Filesystem
      */
     public function createFile($key)
     {
-        if(false === array_key_exists($key, $this->fileRegister)) {
+        if(false === $this->isFileInRegister($key)) {
             if ($this->adapter instanceof Adapter\FileFactory) {
                 $this->fileRegister[$key] = $this->adapter->createFile($key, $this);
             } else {
@@ -292,5 +292,17 @@ class Filesystem
         if (! empty($key) && ! $this->has($key)) {
             throw new Exception\FileNotFound($key);
         }
+    }
+    
+    /**
+     * Checks if matching File object by given key exists in the fileRegister
+     * 
+     * @param string $key
+     * 
+     * @return bool
+     */
+    private function isFileInRegister($key)
+    {
+        return array_key_exists($key, $this->fileRegister);
     }
 }
