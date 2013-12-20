@@ -354,4 +354,11 @@ class MogileFS implements Adapter
 
         return true;
     }
+
+    /**
+     * Closes the underlying connection
+     */
+    public function __destruct() {
+      $this->close();
+    }
 }
