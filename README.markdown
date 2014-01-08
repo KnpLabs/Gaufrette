@@ -126,6 +126,14 @@ Specifying a custom CA certificate is not required when using the
 `Gaufrette\Adapter\AmazonS3` adapter because it uses the newest version of the
 AWS SDK for PHP.
 
+If you use the newer adapter ``\AwsS3`` you will need to use the S3Client factory method, and the plug that into the Adapter.
+
+```php
+$service = S3Client::factory(array('key' => 'your_key_here', 'secret' => 'your_secret' ));
+$client  = new AwsS3($service,'your-bucket-name');
+```
+
+
 Using OpenCloud
 ---------------
 To use the OpenCloud adapter you will need to create a connection using the [OpenCloud SDK](https://github.com/rackspace/php-opencloud).
