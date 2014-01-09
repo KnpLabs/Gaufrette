@@ -103,4 +103,54 @@ class LocalTest extends FunctionalTestCase
         @unlink($this->directory.DIRECTORY_SEPARATOR.'aaa.txt');
         @rmdir($dirname);
     }
+
+    /**
+     * @test
+     */
+    public function shouldListKeys()
+    {
+        $this->filesystem->write('foo2/foobar/bar.txt', 'data');
+        $this->filesystem->write('foo2/bar/buzz.txt', 'data');
+        $this->filesystem->write('foo2barbuz.txt', 'data');
+        $this->filesystem->write('foo3', 'data');
+
+        $allKeys = $this->filesystem->listKeys('');
+        //empty pattern results in ->keys call
+        $this->assertEquals(
+            array('foo2/bar/buzz.txt', 'foo2/foobar/bar.txt', 'foo2barbuz.txt', 'foo3'),
+            $allKeys['keys']
+        );
+
+        //these values are canonicalized to avoid wrong order or keys issue
+
+        $keys = $this->filesystem->listKeys('foo2');
+        $this->assertEquals(
+            array('foo2/bar/buzz.txt', 'foo2/foobar/bar.txt', 'foo2barbuz.txt'),
+            $keys['keys'],
+            '', 0, 10, true);
+
+        $keys = $this->filesystem->listKeys('foo2/foob');
+        $this->assertEquals(
+            array('foo2/foobar/bar.txt'),
+            $keys['keys'],
+            '', 0, 10, true);
+
+        $keys = $this->filesystem->listKeys('foo2/');
+        $this->assertEquals(
+            array('foo2/foobar/bar.txt', 'foo2/bar/buzz.txt'),
+            $keys['keys'],
+            '', 0, 10, true);
+
+        $keys = $this->filesystem->listKeys('foo2');
+        $this->assertEquals(
+            array('foo2/bar/buzz.txt', 'foo2/foobar/bar.txt', 'foo2barbuz.txt'),
+            $keys['keys'],
+            '', 0, 10, true);
+
+        $keys = $this->filesystem->listKeys('fooz');
+        $this->assertEquals(
+            array(),
+            $keys['keys'],
+            '', 0, 10, true);
+    }
 }

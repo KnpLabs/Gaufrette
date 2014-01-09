@@ -17,7 +17,8 @@ use Gaufrette\Exception;
 class Local implements Adapter,
                        StreamFactory,
                        ChecksumCalculator,
-                       SizeCalculator
+                       SizeCalculator,
+                       ListKeysAware
 {
     protected $directory;
     private $create;
@@ -173,6 +174,25 @@ class Local implements Adapter,
         $path = $this->normalizePath($path);
 
         return ltrim(substr($path, strlen($this->directory)), '/');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function listKeys($prefix = '')
+    {
+        $dir = dirname($this->directory . '/' . $prefix. ' ');
+        $base = trim(basename($prefix . ' '));
+        $return = array('keys' => array(), 'dirs' => array());
+
+        foreach (new Util\ListKeysFilterIterator(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS), \RecursiveIteratorIterator::CHILD_FIRST), $this->directory . '/' . $prefix) as $path) {
+            array_push($return[$path->isFile() ? 'keys' : 'dirs'], substr($path->getPathname(), strlen($this->directory) + 1));
+        }
+        // avoid inconsistencies in order
+        sort($return['keys']);
+        sort($return['dirs']);
+
+        return $return;
     }
 
     /**

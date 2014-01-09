@@ -57,6 +57,12 @@ class LocalSpec extends ObjectBehavior
         $this->keys()->shouldReturn($expectedKeys);
     }
 
+    function it_lists_keys()
+    {
+        $expectedKeys = array('keys' => array('dir/file', 'filename'), 'dirs' => array('dir'));
+        $this->listKeys()->shouldReturn($expectedKeys);
+    }
+
     function it_fetches_mtime()
     {
         $mtime = filemtime(vfsStream::url('test/filename'));
