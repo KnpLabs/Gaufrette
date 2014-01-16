@@ -249,7 +249,7 @@ class Filesystem
             return $this->adapter->size($key);
         }
 
-        return Util\Checksum::fromContent($this->read($key));
+        return Util\Size::fromContent($this->read($key));
     }
 
     /**
