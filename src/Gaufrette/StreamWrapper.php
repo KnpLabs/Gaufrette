@@ -69,7 +69,9 @@ class StreamWrapper
      */
     protected static function streamWrapperUnregister($scheme)
     {
-        return @stream_wrapper_unregister($scheme);
+        if (in_array($scheme, stream_get_wrappers())) {
+            return stream_wrapper_unregister($scheme);
+        }
     }
 
     /**
