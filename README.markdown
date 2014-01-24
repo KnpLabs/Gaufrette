@@ -226,7 +226,7 @@ $filesystem = new Gaufrette\Filesystem($adapter);
 Using FTP adapters
 ---------------
 
-Some FTP servers need valid configuration so Gaufrette can working with them as expected.
+Some FTP servers need valid configuration so Gaufrette can work with them as expected.
 
 ### Pure Ftpd
 
