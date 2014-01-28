@@ -102,7 +102,12 @@ class AwsS3 implements Adapter,
     public function rename($sourceKey, $targetKey)
     {
         $this->ensureBucketExists();
-        $options = $this->getOptions($targetKey, array('CopySource' => $this->computePath($sourceKey)));
+        $options = $this->getOptions(
+            $targetKey,
+            array(
+                'CopySource' => $this->bucket.'/'.$this->computePath($sourceKey),
+            )
+        );
 
         try {
             $this->service->copyObject($options);
