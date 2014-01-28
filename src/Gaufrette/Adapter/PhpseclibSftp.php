@@ -185,12 +185,12 @@ class PhpseclibSftp implements Adapter,
         $this->initialized = true;
     }
 
-    protected function ensureDirectoryExists($directory, $create = false)
+    protected function ensureDirectoryExists($directory, $create)
     {
         $pwd = $this->sftp->pwd();
         if ($this->sftp->chdir($directory)) {
             $this->sftp->chdir($pwd);
-        } elseif ($this->create) {
+        } elseif ($create) {
             if (!$this->sftp->mkdir($directory, 0777, true)) {
                 throw new \RuntimeException(sprintf('The directory \'%s\' does not exist and could not be created (%s).', $this->directory, $this->sftp->getLastSFTPError()));
             }
