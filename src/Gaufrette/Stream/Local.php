@@ -4,7 +4,6 @@ namespace Gaufrette\Stream;
 
 use Gaufrette\Stream;
 use Gaufrette\StreamMode;
-use PhpSpec\Exception\Exception;
 
 /**
  * Local stream
