@@ -4,6 +4,7 @@ namespace Gaufrette\Stream;
 
 use Gaufrette\Stream;
 use Gaufrette\StreamMode;
+use PhpSpec\Exception\Exception;
 
 /**
  * Local stream
@@ -31,7 +32,11 @@ class Local implements Stream
      */
     public function open(StreamMode $mode)
     {
-        $fileHandle = @fopen($this->path, $mode->getMode());
+        try {
+            $fileHandle = @fopen($this->path, $mode->getMode());
+        } catch (\Exception $e) {
+            $fileHandle = false;
+        }
 
         if (false === $fileHandle) {
             throw new \RuntimeException(sprintf('File "%s" cannot be opened', $this->path));
