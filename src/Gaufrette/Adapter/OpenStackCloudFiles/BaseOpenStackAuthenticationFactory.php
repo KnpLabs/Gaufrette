@@ -10,6 +10,7 @@ use OpenCloud\Rackspace;
  * Class BaseOpenStackAuthenticationFactory
  * @package Gaufrette\Adapter\OpenStackCloudFiles
  * @author  Chris Warner <cdw.lighting@gmail.com>
+ * @deprecated in favor of ObjectStoreFactory
  */
 abstract class BaseOpenStackAuthenticationFactory implements ConnectionFactoryInterface
 {

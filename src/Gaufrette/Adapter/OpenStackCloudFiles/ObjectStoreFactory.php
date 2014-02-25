@@ -4,7 +4,12 @@ namespace Gaufrette\Adapter\OpenStackCloudFiles;
 
 use OpenCloud\OpenStack;
 
-class OpenStackObjectStoreFactory implements ObjectStoreFactoryInterface
+/**
+ * ObjectStoreFactory
+ *
+ * @author Daniel Richter <nexyz9@gmail.com>
+ */
+class ObjectStoreFactory implements ObjectStoreFactoryInterface
 {
     /**
      * @var OpenStack
