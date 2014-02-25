@@ -57,7 +57,7 @@ class OpenCloud implements Adapter,
     /**
      * Returns an initialized container
      *
-     * @throws \Exception
+     * @throws \RuntimeException
      * @return Container
      */
     protected function getContainer()
@@ -70,12 +70,12 @@ class OpenCloud implements Adapter,
             return $this->container = $this->objectStore->getContainer($this->containerName);
         } catch (BadResponseException $e) { //OpenCloud lib does not wrap this exception
             if (!$this->createContainer) {
-                throw new \RuntimeException(sprintf('Container %s does not exist.', $this->containerName));
+                throw new \RuntimeException(sprintf('Container "%s" does not exist.', $this->containerName));
             }
         }
 
         if (!$container = $this->objectStore->createContainer($this->containerName)) {
-            throw new \RuntimeException(sprintf('Container %s could not be created.', $this->containerName));
+            throw new \RuntimeException(sprintf('Container "%s" could not be created.', $this->containerName));
         }
 
         return $this->container = $container;

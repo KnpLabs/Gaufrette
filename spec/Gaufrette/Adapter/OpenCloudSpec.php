@@ -19,12 +19,12 @@ class OpenCloudSpec extends ObjectBehavior
 {
     /**
      * @param OpenCloud\ObjectStore\Service $objectStore
-     * @param OpenCloud\ObjectStore\Resource\Container  $container
+     * @param OpenCloud\ObjectStore\Resource\Container $container
      */
     function let($objectStore, $container)
     {
         $objectStore->getContainer("test")->willReturn($container);
-        $this->beConstructedWith($objectStore, 'test', false, false);
+        $this->beConstructedWith($objectStore, 'test', false);
     }
 
     function it_is_adapter()
