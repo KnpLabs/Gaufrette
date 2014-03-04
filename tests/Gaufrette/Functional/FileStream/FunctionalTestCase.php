@@ -153,6 +153,19 @@ class FunctionalTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function shouldHandlesSubDir()
+    {
+        file_put_contents('gaufrette://filestream/subdir/test.txt', 'test content');
+
+        $this->assertTrue(is_file('gaufrette://filestream/subdir/test.txt'));
+
+        $this->filesystem->delete('subdir/test.txt');
+        $this->assertFalse(is_file('gaufrette://filestream/subdir/test.txt'));
+    }
+
+    /**
+     * @test
+     */
     public function shouldUnlinkFile()
     {
         $this->filesystem->write('test.txt', 'some content');
