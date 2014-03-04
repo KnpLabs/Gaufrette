@@ -3,64 +3,82 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Guzzle\Http\Exception\BadResponseException;
 use OpenCloud\Common\Exceptions\DeleteError;
 use OpenCloud\ObjectStore\Resource\Container;
 use OpenCloud\ObjectStore\Service;
 use OpenCloud\Common\Exceptions\CreateUpdateError;
-use OpenCloud\Common\Exceptions\ObjFetchError;
+use OpenCloud\ObjectStore\Exception\ObjectNotFoundException;
 
 /**
  * OpenCloud adapter
  *
  * @package Gaufrette
  * @author  James Watson <james@sitepulse.org>
+ * @author  Daniel Richter <nexyz9@gmail.com>
  */
 class OpenCloud implements Adapter,
                            ChecksumCalculator
 {
     /**
-     * @var ObjectStore
+     * @var Service
      */
     protected $objectStore;
+
     /**
      * @var string
      */
     protected $containerName;
+
     /**
      * @var bool
      */
     protected $createContainer;
-    /**
-     * @var bool
-     */
-    protected $detectContentType;
+
     /**
      * @var Container
      */
     protected $container;
 
-    public function __construct(
-        Service $objectStore, $containerName, $createContainer = false, $detectContentType = true
-    ) {
-        $this->objectStore       = $objectStore;
-        $this->containerName     = $containerName;
-        $this->createContainer   = $createContainer;
-        $this->detectContentType = $detectContentType;
+    /**
+     * Constructor
+     *
+     * @param Service $objectStore
+     * @param string  $containerName   The name of the container
+     * @param bool    $createContainer Whether to create the container if it does not exist
+     */
+    public function __construct(Service $objectStore, $containerName, $createContainer = false)
+    {
+        $this->objectStore     = $objectStore;
+        $this->containerName   = $containerName;
+        $this->createContainer = $createContainer;
     }
 
-    private function initialize()
+    /**
+     * Returns an initialized container
+     *
+     * @throws \RuntimeException
+     * @return Container
+     */
+    protected function getContainer()
     {
-        if (!$this->container instanceof Container) {
-
-            if ($this->createContainer) {
-                $container       = $this->objectStore->Container();
-                $container->name = $this->containerName;
-                $container->Create();
-            } else {
-                $container = $this->objectStore->Container($this->containerName);
-            }
-            $this->container = $container;
+        if ($this->container) {
+            return $this->container;
         }
+
+        try {
+            return $this->container = $this->objectStore->getContainer($this->containerName);
+        } catch (BadResponseException $e) { //OpenCloud lib does not wrap this exception
+            if (!$this->createContainer) {
+                throw new \RuntimeException(sprintf('Container "%s" does not exist.', $this->containerName));
+            }
+        }
+
+        if (!$container = $this->objectStore->createContainer($this->containerName)) {
+            throw new \RuntimeException(sprintf('Container "%s" could not be created.', $this->containerName));
+        }
+
+        return $this->container = $container;
     }
 
     /**
@@ -72,17 +90,11 @@ class OpenCloud implements Adapter,
      */
     public function read($key)
     {
-        $this->initialize();
-
-        // This method can return boolean or the object
-        // if there is a fetch error, tryGetObject returns false
-        // If it returns false, php throws a fatal error because boolean is a non-object.
-        $object = $this->tryGetObject($key);
-        if ($object) {
-            return $object->SaveToString();
+        if ($object = $this->tryGetObject($key)) {
+            return $object->getContent();
         }
 
-        return $object;
+        return false;
     }
 
     /**
@@ -95,30 +107,14 @@ class OpenCloud implements Adapter,
      */
     public function write($key, $content)
     {
-        $this->initialize();
-        $object = $this->tryGetObject($key);
-
         try {
-            if ($object === false) {
-                $object = $this->container->DataObject();
-                $object->SetData($content);
-
-                $data = array ('name' => $key);
-
-                if ($this->detectContentType) {
-                    $fileInfo             = new \finfo(FILEINFO_MIME_TYPE);
-                    $contentType          = $fileInfo->buffer($content);
-                    $data['content_type'] = $contentType;
-                }
-
-                $object->Create($data);
-            }
-
-            return $object->bytes;
+            $object = $this->getContainer()->uploadObject($key, $content);
         }
         catch (CreateUpdateError $updateError) {
             return false;
         }
+
+        return $object->getContentLength();
     }
 
     /**
@@ -130,9 +126,7 @@ class OpenCloud implements Adapter,
      */
     public function exists($key)
     {
-        $this->initialize();
-
-        return ($this->tryGetObject($key) !== false);
+        return $this->tryGetObject($key) !== false;
     }
 
     /**
@@ -142,12 +136,13 @@ class OpenCloud implements Adapter,
      */
     public function keys()
     {
-        $this->initialize();
-        $objectList = $this->container->ObjectList();
-        $keys       = array ();
-        while ($object = $objectList->Next()) {
-            $keys[] = $object->name;
+        $objectList = $this->getContainer()->objectList();
+        $keys = array ();
+
+        while ($object = $objectList->next()) {
+            $keys[] = $object->getName();
         }
+
         sort($keys);
 
         return $keys;
@@ -162,12 +157,8 @@ class OpenCloud implements Adapter,
      */
     public function mtime($key)
     {
-        $this->initialize();
-
-        $object = $this->tryGetObject($key);
-
-        if ($object) {
-            return $object->last_modified;
+        if ($object = $this->tryGetObject($key)) {
+            return $object->getLastModified();
         }
 
         return false;
@@ -182,16 +173,14 @@ class OpenCloud implements Adapter,
      */
     public function delete($key)
     {
-        $this->initialize();
+        if (!$object = $this->tryGetObject($key)) {
+            return false;
+        }
+
         try {
-            $object = $this->tryGetObject($key);
-            if (!$object) {
-                return false;
-            }
-            $object->Delete();
+            $object->delete();
         }
         catch (DeleteError $deleteError) {
-
             return false;
         }
 
@@ -208,9 +197,13 @@ class OpenCloud implements Adapter,
      */
     public function rename($sourceKey, $targetKey)
     {
-        $this->initialize();
-        $this->write($targetKey, $this->read($sourceKey));
-        $this->delete($sourceKey);
+        if (false !== $this->write($targetKey, $this->read($sourceKey))) {
+            $this->delete($sourceKey);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -234,9 +227,7 @@ class OpenCloud implements Adapter,
      */
     public function checksum($key)
     {
-        $this->initialize();
-        $object = $this->tryGetObject($key);
-        if ($object) {
+        if ($object = $this->tryGetObject($key)) {
             return $object->getETag();
         }
 
@@ -244,15 +235,16 @@ class OpenCloud implements Adapter,
     }
 
     /**
-     * @param $key
-     * @return \OpenCloud\ObjectStore\Resource\DataObject
+     * @param string $key
+     *
+     * @return \OpenCloud\ObjectStore\Resource\DataObject|false
      */
     protected function tryGetObject($key)
     {
         try {
-            return $this->container->DataObject($key);
+            return $this->getContainer()->getObject($key);
         }
-        catch (ObjFetchError $objFetchError) {
+        catch (ObjectNotFoundException $objFetchError) {
             return false;
         }
     }
