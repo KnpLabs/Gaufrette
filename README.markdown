@@ -150,7 +150,7 @@ $connection = new OpenCloud\OpenStack(
         'tenantName' => 'your tenant (project) name'
     ));
 
-$objectStore = $connection->ObjectStore('cloudFiles', 'LON', 'publicURL');
+$objectStore = $connection->objectStoreService('cloudFiles', 'LON', 'publicURL');
 
 $adapter = new Gaufrette\Adapter\OpenCloud(
     $objectStore,
@@ -177,24 +177,17 @@ $connection = new OpenCloud\Rackspace(
 
 ### LazyOpenCloud
 
-```php
-$factory = new Gaufrette\Adapter\OpenStackAuthenticationFactory(
-    $url,  // connection URL from cloud Vendor
-    $apikey, // password
-    $username, //username
-    $region, // region
-    $tenant) // tenant
-$adapter = new Gaufrette\Adapter\LazyOpenStackCloudFiles($factory, 'container-name');
-```
+Instantiating the OpenCloud object store service has some overhead because it issues an authentication request,
+even if you end up not using the filesystem. For better performance you can use a lazy-loading adapter which only authenticates when needed.
 
-### LazyOpenCloud on Rackspace
 ```php
-$factory = new Gaufrette\Adapter\RackspaceAuthenticationFactory(
-    $url,  // connection URL from cloud Vendor
-    $apikey, // password
-    $username, //username
-    $region, // region
-    $tenant) // tenant
+// ... $connection from previous step, either OpenCloud\OpenStack or OpenCloud\Rackspace instance
+
+$factory = new Gaufrette\Adapter\OpenStackCloudFiles\ObjectStoreFactory($connection);
+$adapter = new Gaufrette\Adapter\LazyOpenCloud($factory, 'container-name');
+
+$filesystem = new Filesystem($adapter);
+
 ```
 
 Using AzureBlobStorage
