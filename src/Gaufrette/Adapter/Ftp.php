@@ -77,7 +77,7 @@ class Ftp implements Adapter,
         $this->ensureDirectoryExists($this->directory, $this->create);
 
         $path = $this->computePath($key);
-        $directory = dirname($path);
+        $directory = str_replace('\\', '/', dirname($path));
 
         $this->ensureDirectoryExists($directory, true);
 
@@ -106,7 +106,7 @@ class Ftp implements Adapter,
         $sourcePath = $this->computePath($sourceKey);
         $targetPath = $this->computePath($targetKey);
 
-        $this->ensureDirectoryExists(dirname($targetPath), true);
+        $this->ensureDirectoryExists(str_replace('\\', '/', dirname($targetPath)), true);
 
         return ftp_rename($this->getConnection(), $sourcePath, $targetPath);
     }
@@ -119,7 +119,7 @@ class Ftp implements Adapter,
         $this->ensureDirectoryExists($this->directory, $this->create);
 
         $file  = $this->computePath($key);
-        $lines = ftp_rawlist($this->getConnection(), '-al ' . dirname($file));
+        $lines = ftp_rawlist($this->getConnection(), '-al ' . str_replace('\\', '/', dirname($file)));
 
         if (false === $lines) {
             return false;
@@ -274,7 +274,7 @@ class Ftp implements Adapter,
         $file = new File($key, $filesystem);
 
         if (!array_key_exists($key, $this->fileData)) {
-            $directory = dirname($key) == '.' ? '' : dirname($key);
+            $directory = dirname($key) == '.' ? '' : str_replace('\\', '/', dirname($key));
             $this->listDirectory($directory);
         }
 
@@ -320,7 +320,7 @@ class Ftp implements Adapter,
     protected function createDirectory($directory)
     {
         // create parent directory if needed
-        $parent = dirname($directory);
+        $parent = str_replace('\\', '/', dirname($directory));
         if (!$this->isDir($parent)) {
             $this->createDirectory($parent);
         }
