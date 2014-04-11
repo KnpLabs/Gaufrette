@@ -135,6 +135,14 @@ class Local implements Adapter,
     }
 
     /**
+     * @return string
+     */
+    public function getDirectory()
+    {
+        return $this->directory;
+    }
+
+    /**
      * @param  string  $key
      * @return boolean
      */
