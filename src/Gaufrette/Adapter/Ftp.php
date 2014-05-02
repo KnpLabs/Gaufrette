@@ -359,7 +359,7 @@ class Ftp implements Adapter,
         $lines = ftp_rawlist($this->getConnection(), '-alR '. $this->directory . $directory);
 
         if (false === $lines) {
-            return array();
+            return array('keys' => array(), 'dirs' => array());
         }
 
         $regexDir = '/'.preg_quote($this->directory . $directory, '/').'\/?(.+):$/u';
