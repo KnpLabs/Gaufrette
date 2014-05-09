@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "25a293184541f0f60c2bce5160b4eefb",
+    "hash": "10b2de03bec6de438a3cc332c34d93c6",
     "packages": [
 
     ],
@@ -765,6 +765,124 @@
             "time": "2014-02-20 17:01:46"
         },
         {
+            "name": "guzzlehttp/guzzle",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/guzzle.git",
+                "reference": "b2edcf2dc1b37623f648f181d729ecac0ce0c930"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/b2edcf2dc1b37623f648f181d729ecac0ce0c930",
+                "reference": "b2edcf2dc1b37623f648f181d729ecac0ce0c930",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/streams": "~1.0",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "ext-curl": "*",
+                "phpunit/phpunit": "~4.0",
+                "psr/log": "~1.0"
+            },
+            "suggest": {
+                "ext-curl": "Guzzle will use specific adapters if cURL is present"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Guzzle is a PHP HTTP client library and framework for building RESTful web service clients",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "client",
+                "curl",
+                "framework",
+                "http",
+                "http client",
+                "rest",
+                "web service"
+            ],
+            "time": "2014-05-04 22:41:11"
+        },
+        {
+            "name": "guzzlehttp/streams",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/streams.git",
+                "reference": "cf0c8c33ca95cc147efba4c714f630ee44767180"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/streams/zipball/cf0c8c33ca95cc147efba4c714f630ee44767180",
+                "reference": "cf0c8c33ca95cc147efba4c714f630ee44767180",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Stream\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Provides a simple abstraction over streams of data (Guzzle 4+)",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "Guzzle",
+                "stream"
+            ],
+            "time": "2014-04-03 04:48:24"
+        },
+        {
             "name": "herzult/php-ssh",
             "version": "dev-master",
             "source": {
@@ -885,6 +1003,43 @@
             ],
             "homepage": "http://vfs.bovigo.org/",
             "time": "2013-04-01 10:41:02"
+        },
+        {
+            "name": "openstack/openstack-sdk-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git://git.openstack.org/stackforge/openstack-sdk-php",
+                "reference": "7035fa4adebae6433c5f863ecd690bfe3c8acaa6"
+            },
+            "require": {
+                "guzzlehttp/guzzle": "4.*",
+                "guzzlehttp/streams": "1.*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "OpenStack\\": "src/OpenStack",
+                    "OpenStack\\Tests\\": "tests/Tests"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Access OpenStack services in PHP.",
+            "keywords": [
+                "Openstack",
+                "cloud",
+                "keystone",
+                "nova",
+                "swift"
+            ],
+            "time": "2014-05-08 13:50:48"
         },
         {
             "name": "pear-pear.php.net/Archive_Tar",
@@ -1312,16 +1467,16 @@
         },
         {
             "name": "phpspec/phpspec",
-            "version": "dev-master",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/phpspec.git",
-                "reference": "c41c96dcadf2bcaacaa342a84e794254c5bb763a"
+                "reference": "886a8c1f0a212d631942b5527691fadcd2aa8eb7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/phpspec/zipball/c41c96dcadf2bcaacaa342a84e794254c5bb763a",
-                "reference": "c41c96dcadf2bcaacaa342a84e794254c5bb763a",
+                "url": "https://api.github.com/repos/phpspec/phpspec/zipball/886a8c1f0a212d631942b5527691fadcd2aa8eb7",
+                "reference": "886a8c1f0a212d631942b5527691fadcd2aa8eb7",
                 "shasum": ""
             },
             "require": {
@@ -1335,7 +1490,8 @@
             },
             "require-dev": {
                 "behat/behat": "~2.5",
-                "bossa/phpspec2-expect": "dev-master"
+                "bossa/phpspec2-expect": "dev-master",
+                "symfony/filesystem": "~2.1"
             },
             "suggest": {
                 "phpspec/nyan-formatters": "~1.0 – Adds Nyan formatters"
@@ -1346,7 +1502,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0.x-dev"
+                    "dev-develop": "2.1.x-dev",
+                    "dev-master": "2.1.x-dev"
                 }
             },
             "autoload": {
@@ -1380,7 +1537,7 @@
                 "testing",
                 "tests"
             ],
-            "time": "2014-02-23 20:29:41"
+            "time": "2014-05-09 09:04:39"
         },
         {
             "name": "phpspec/prophecy",
@@ -2112,7 +2269,8 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "phpseclib/phpseclib": 20,
-        "microsoft/windowsazure": 20
+        "microsoft/windowsazure": 20,
+        "openstack/openstack-sdk-php": 20
     },
     "platform": {
         "php": ">=5.3.2"
