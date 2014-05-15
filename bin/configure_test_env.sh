@@ -2,7 +2,7 @@
 
 sudo apt-get update -qq
 sudo apt-get install -qq libssh2-1-dev libssh2-php
-pecl install -f mongo
+echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 touch .interactive
 (pecl install -f ssh2 < .interactive)
 
