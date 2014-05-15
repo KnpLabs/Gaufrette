@@ -9,7 +9,7 @@ php:
 before_script:
   - ./bin/configure_test_env.sh
   - composer self-update && composer install --dev --prefer-source --no-interaction
-
+  - phpenv config-add tests/myconfig.ini
 script:
   - php bin/phpspec run -fpretty --verbose
   - bin/phpunit
