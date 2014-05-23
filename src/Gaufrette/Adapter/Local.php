@@ -17,7 +17,8 @@ use Gaufrette\Exception;
 class Local implements Adapter,
                        StreamFactory,
                        ChecksumCalculator,
-                       SizeCalculator
+                       SizeCalculator,
+                       MimeTypeProvider
 {
     protected $directory;
     private $create;
@@ -151,14 +152,30 @@ class Local implements Adapter,
         return new Stream\Local($this->computePath($key));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function checksum($key)
     {
         return Util\Checksum::fromFile($this->computePath($key));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function size($key)
     {
         return Util\Size::fromFile($this->computePath($key));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function mimeType($key)
+    {
+        $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
+
+        return $fileInfo->file($this->computePath($key));
     }
 
     /**

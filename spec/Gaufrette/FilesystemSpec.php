@@ -400,11 +400,32 @@ class FilesystemSpec extends ObjectBehavior
 
         $this->checksum('filename')->shouldReturn(12);
     }
+
+    /**
+     * @param \spec\Gaufrette\Adapter $extendedAdapter
+     */
+    function it_delegates_mime_type_resolution_to_adapter_when_adapter_is_mime_type_provider($extendedAdapter)
+    {
+        $this->beConstructedWith($extendedAdapter);
+        $extendedAdapter->exists('filename')->willReturn(true);
+        $extendedAdapter->mimeType('filename')->willReturn('text/plain');
+
+        $this->mimeType('filename')->shouldReturn('text/plain');
+    }
+
+    function it_cannot_resolve_mime_type_if_the_adapter_cannot_provide_it($adapter)
+    {
+        $adapter->exists('filename')->willReturn(true);
+        $this
+            ->shouldThrow(new \LogicException(sprintf('Adapter "%s" cannot provide MIME type', get_class($adapter->getWrappedObject()))))
+            ->duringMimeType('filename');
+    }
 }
 
 interface Adapter extends \Gaufrette\Adapter,
                           \Gaufrette\Adapter\FileFactory,
                           \Gaufrette\Adapter\StreamFactory,
                           \Gaufrette\Adapter\ChecksumCalculator,
-                          \Gaufrette\Adapter\MetadataSupporter
+                          \Gaufrette\Adapter\MetadataSupporter,
+                          \Gaufrette\Adapter\MimeTypeProvider
 {}
