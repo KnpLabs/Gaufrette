@@ -277,6 +277,27 @@ class Filesystem
     }
 
     /**
+     * Get the mime type of the provided key
+     *
+     * @param string $key
+     *
+     * @return string
+     */
+    public function mimeType($key)
+    {
+        $this->assertHasFile($key);
+
+        if ($this->adapter instanceof Adapter\MimeTypeProvider) {
+            return $this->adapter->mimeType($key);
+        }
+
+        throw new \LogicException(sprintf(
+            'Adapter "%s" cannot provide MIME type',
+            get_class($this->adapter)
+        ));
+    }
+
+    /**
      * Checks if matching file by given key exists in the filesystem
      *
      * Key must be non empty string, otherwise it will throw Exception\FileNotFound
