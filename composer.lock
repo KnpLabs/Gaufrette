@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "25a293184541f0f60c2bce5160b4eefb",
+    "hash": "0ee4a7fa8b599a2c767f6bc4c38392d3",
     "packages": [
 
     ],
@@ -1446,12 +1446,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "e8ffe3fd66479fe502c4a566e9828075f3fffaec"
+                "reference": "69e55e68481cf708a6db43aff0b504e31402fe27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/e8ffe3fd66479fe502c4a566e9828075f3fffaec",
-                "reference": "e8ffe3fd66479fe502c4a566e9828075f3fffaec",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/69e55e68481cf708a6db43aff0b504e31402fe27",
+                "reference": "69e55e68481cf708a6db43aff0b504e31402fe27",
                 "shasum": ""
             },
             "require": {
@@ -1499,7 +1499,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-02-24 18:18:21"
+            "time": "2014-02-25 03:34:05"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -1690,12 +1690,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "5728eadfb7859241d7aafd26592cee0ad1876d2d"
+                "reference": "2752cbb9ea5bd84c2811b34b6953f76965ec7a2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/5728eadfb7859241d7aafd26592cee0ad1876d2d",
-                "reference": "5728eadfb7859241d7aafd26592cee0ad1876d2d",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2752cbb9ea5bd84c2811b34b6953f76965ec7a2f",
+                "reference": "2752cbb9ea5bd84c2811b34b6953f76965ec7a2f",
                 "shasum": ""
             },
             "require": {
@@ -1712,7 +1712,7 @@
                 "symfony/yaml": "~2.0"
             },
             "require-dev": {
-                "pear-pear/pear": "1.9.4"
+                "pear-pear.php.net/pear": "1.9.4"
             },
             "suggest": {
                 "ext-json": "*",
@@ -1756,7 +1756,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-02-15 22:46:11"
+            "time": "2014-02-25 03:47:29"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -1814,28 +1814,6 @@
                 "xunit"
             ],
             "time": "2014-02-16 12:43:56"
-        },
-        {
-            "name": "rackspace/php-cloudfiles",
-            "version": "master",
-            "source": {
-                "type": "git",
-                "url": "git://github.com/rackerlabs/php-cloudfiles.git",
-                "reference": "master"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/rackerlabs/php-cloudfiles/zipball/master",
-                "reference": null,
-                "shasum": null
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "cloudfiles.php"
-                ]
-            },
-            "time": "2014-01-07 21:27:14"
         },
         {
             "name": "rackspace/php-opencloud",
