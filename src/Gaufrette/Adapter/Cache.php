@@ -95,9 +95,7 @@ class Cache implements Adapter,
      */
     public function rename($key, $new)
     {
-        $this->source->rename($key, $new);
-
-        return $this->cache->rename($key, $new);
+        return $this->source->rename($key, $new) && $this->cache->rename($key, $new);
     }
 
     /**
@@ -105,9 +103,19 @@ class Cache implements Adapter,
      */
     public function write($key, $content, array $metadata = null)
     {
-        $this->source->write($key, $content);
+        $bytesSource = $this->source->write($key, $content);
 
-        return $this->cache->write($key, $content);
+        if (false === $bytesSource) {
+            return false;
+        }
+
+        $bytesCache = $this->cache->write($key, $content);
+
+        if ($bytesSource !== $bytesCache) {
+            return false;
+        }
+
+        return $bytesSource;
     }
 
     /**

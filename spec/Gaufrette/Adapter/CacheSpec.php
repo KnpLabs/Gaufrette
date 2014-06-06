@@ -87,7 +87,7 @@ class CacheSpec extends ObjectBehavior
      */
     function it_rename_file_in_source_and_cache($source, $cache)
     {
-        $source->rename('filename', 'filename2')->shouldBeCalled();
+        $source->rename('filename', 'filename2')->shouldBeCalled()->willReturn(true);
         $cache->rename('filename', 'filename2')->shouldBeCalled()->willReturn(true);
 
         $this->rename('filename', 'filename2')->shouldReturn(true);
@@ -99,7 +99,7 @@ class CacheSpec extends ObjectBehavior
      */
     function it_writes_file_to_source_and_cache($source, $cache)
     {
-        $source->write('filename', 'some content')->shouldBeCalled();
+        $source->write('filename', 'some content')->shouldBeCalled()->willReturn(12);
         $cache->write('filename', 'some content')->shouldBeCalled()->willReturn(12);
 
         $this->write('filename', 'some content')->shouldReturn(12);
