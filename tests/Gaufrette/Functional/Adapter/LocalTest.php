@@ -103,4 +103,14 @@ class LocalTest extends FunctionalTestCase
         @unlink($this->directory.DIRECTORY_SEPARATOR.'aaa.txt');
         @rmdir($dirname);
     }
+
+    /**
+     * @test
+     */
+    public function shouldReturnDirectory()
+    {
+        $adapter = new Local($this->directory);
+
+        $this->assertEquals($this->directory, $adapter->getDirectory());
+    }
 }
