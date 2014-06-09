@@ -359,7 +359,7 @@ class Ftp implements Adapter,
         $lines = ftp_rawlist($this->getConnection(), '-alR '. $this->directory . $directory);
 
         if (false === $lines) {
-            return array();
+            return array('keys' => array(), 'dirs' => array());
         }
 
         $regexDir = '/'.preg_quote($this->directory . $directory, '/').'\/?(.+):$/u';
@@ -511,7 +511,7 @@ class Ftp implements Adapter,
         $password = $this->password ? : '';
 
         // login ftp user
-        if (!ftp_login($this->connection, $username, $password)) {
+        if (!@ftp_login($this->connection, $username, $password)) {
             $this->close();
             throw new \RuntimeException(sprintf('Could not login as %s.', $username));
         }

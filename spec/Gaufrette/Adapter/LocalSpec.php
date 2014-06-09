@@ -24,6 +24,16 @@ class LocalSpec extends ObjectBehavior
         $this->shouldHaveType('Gaufrette\Adapter\ChecksumCalculator');
     }
 
+    function it_is_a_mime_type_provider()
+    {
+        $this->shouldHaveType('Gaufrette\Adapter\MimeTypeProvider');
+    }
+
+    function it_gets_the_file_mime_type()
+    {
+        $this->mimeType('filename')->shouldReturn('text/plain');
+    }
+
     function it_is_stream_factory()
     {
         $this->shouldHaveType('Gaufrette\Adapter\StreamFactory');
@@ -135,6 +145,10 @@ class LocalSpec extends ObjectBehavior
         $this
             ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
             ->duringChecksum('filename')
+        ;
+        $this
+            ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
+            ->duringMimeType('filename')
         ;
     }
 
