@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/knplabs/gaufrette.png?label=ready&title=Ready)](https://waffle.io/knplabs/gaufrette)
 Gaufrette
 =========
 
