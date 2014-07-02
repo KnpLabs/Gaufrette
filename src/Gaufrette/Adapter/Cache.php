@@ -125,9 +125,8 @@ class Cache implements Adapter,
     {
         if ($this->needsReload($key)) {
             return $this->source->exists($key);
-        } else {
-            return $this->cache->exists($key);
         }
+        return $this->cache->exists($key);
     }
 
     /**
