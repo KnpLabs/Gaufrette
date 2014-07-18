@@ -76,7 +76,7 @@ function ftp_mkdir($connection, $dirname)
     return false;
 }
 
-function ftp_connect($host, $password)
+function ftp_connect($host, $port = 21, $timeout = 90)
 {
     if ('localhost' !== $host) {
         return false;
