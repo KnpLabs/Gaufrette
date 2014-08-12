@@ -200,6 +200,10 @@ class AwsS3 implements Adapter,
              */
             $key = substr($file['Key'], strlen($prefix));
 
+            if ($key === '') {
+                continue;
+            }
+
             if (substr($key, -1, 1) === '/') {
                 $dirName = $key;
             } else {
@@ -208,11 +212,25 @@ class AwsS3 implements Adapter,
                 $dirName = $pathInfo['dirname'];
             }
 
-            $dirName = ltrim(rtrim($dirName, '/'), '/');
+            $dirName = ltrim(rtrim($dirName, '/'), './');
             $key = ltrim(rtrim($key, '/'), '/');
 
-            if ($dirName != '' && !isset($dirs[$dirName])) {
-                $dirs[$dirName] = $dirName;
+            if ($dirName != '') {
+                if (!isset($dirs[$dirName])) {
+                    $dirNameParts = explode(DIRECTORY_SEPARATOR, $dirName);
+
+                    $path = '';
+
+                    foreach ($dirNameParts as $dirNamePart) {
+                        $path .= $dirNamePart;
+
+                        if (!isset($dirs[$path])) {
+                            $dirs[$path] = $path;
+                        }
+
+                        $path .= DIRECTORY_SEPARATOR;
+                    }
+                }
             }
 
             if ($key !== $dirName) {
