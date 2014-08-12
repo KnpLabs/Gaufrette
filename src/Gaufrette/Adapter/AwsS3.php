@@ -178,20 +178,70 @@ class AwsS3 implements Adapter,
      */
     public function listKeys($prefix = '')
     {
-        $options = array('Bucket' => $this->bucket);
         if ((string) $prefix != '') {
-            $options['Prefix'] = $this->computePath($prefix);
+            $prefix = $this->computePath($prefix);
         } elseif (!empty($this->options['directory'])) {
-            $options['Prefix'] = $this->options['directory'];
+            $prefix = $this->options['directory'];
         }
+
+        $options = array(
+            'Bucket' => $this->bucket,
+            'Prefix' => $prefix
+        );
 
         $keys = array();
-        $iter = $this->service->getIterator('ListObjects', $options);
-        foreach ($iter as $file) {
-            $keys[] = $file['Key'];
+        $dirs = array();
+
+        $iterator = $this->service->getIterator('ListObjects', $options);
+
+        foreach ($iterator as $file) {
+            /**
+             * Strip prefix from beginning of key
+             */
+            $key = substr($file['Key'], strlen($prefix));
+
+            if ($key === '') {
+                continue;
+            }
+
+            if (substr($key, -1, 1) === '/') {
+                $dirName = $key;
+            } else {
+                $pathInfo = pathinfo($key);
+
+                $dirName = $pathInfo['dirname'];
+            }
+
+            $dirName = ltrim(rtrim($dirName, '/'), './');
+            $key = ltrim(rtrim($key, '/'), '/');
+
+            if ($dirName != '') {
+                if (!isset($dirs[$dirName])) {
+                    $dirNameParts = explode(DIRECTORY_SEPARATOR, $dirName);
+
+                    $path = '';
+
+                    foreach ($dirNameParts as $dirNamePart) {
+                        $path .= $dirNamePart;
+
+                        if (!isset($dirs[$path])) {
+                            $dirs[$path] = $path;
+                        }
+
+                        $path .= DIRECTORY_SEPARATOR;
+                    }
+                }
+            }
+
+            if ($key !== $dirName) {
+                $keys[] = $key;
+            }
         }
 
-        return $keys;
+        return array(
+            'keys' => $keys,
+            'dirs' => array_keys($dirs)
+        );
     }
 
     /**
