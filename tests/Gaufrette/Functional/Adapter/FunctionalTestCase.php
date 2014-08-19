@@ -197,4 +197,33 @@ EOF
         $this->filesystem->delete('.foo');
         $this->assertFalse($this->filesystem->has('.foo'));
     }
+    
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldKeepFileObjectInRegister()
+    {
+        $FileObjectA = $this->filesystem->createFile('somefile');        
+        $FileObjectB = $this->filesystem->createFile('somefile');
+        
+        $this->assertTrue($FileObjectA === $FileObjectB);
+    }
+    
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldWrtieToSameFile()
+    {
+        $FileObjectA = $this->filesystem->createFile('somefile');
+        $FileObjectA->setContent('ABC');
+        
+        $FileObjectB = $this->filesystem->createFile('somefile');
+        $FileObjectB->setContent('DEF');
+        
+        $this->assertEquals('DEF', $FileObjectB->getContent());
+        
+        $this->filesystem->delete('somefile');
+    }
 }

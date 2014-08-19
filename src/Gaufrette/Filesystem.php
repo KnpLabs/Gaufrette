@@ -13,6 +13,13 @@ use Gaufrette\Adapter\ListKeysAware;
 class Filesystem
 {
     protected $adapter;
+    
+    /**
+     * Contains File objects created with $this->createFile() method
+     * 
+     * @var array 
+     */
+    protected $fileRegister = array();
 
     /**
      * Constructor
@@ -67,6 +74,11 @@ class Filesystem
 
         if (! $this->adapter->rename($sourceKey, $targetKey)) {
             throw new \RuntimeException(sprintf('Could not rename the "%s" key to "%s".', $sourceKey, $targetKey));
+        }
+        
+        if($this->isFileInRegister($sourceKey)) {
+            $this->fileRegister[$targetKey] = $this->fileRegister[$sourceKey];
+            unset($this->fileRegister[$sourceKey]);
         }
 
         return true;
@@ -151,6 +163,9 @@ class Filesystem
         $this->assertHasFile($key);
 
         if ($this->adapter->delete($key)) {
+            if($this->isFileInRegister($key)) {
+                unset($this->fileRegister[$key]);
+            }
             return true;
         }
 
@@ -269,11 +284,15 @@ class Filesystem
      */
     public function createFile($key)
     {
-        if ($this->adapter instanceof Adapter\FileFactory) {
-            return $this->adapter->createFile($key, $this);
+        if(false === $this->isFileInRegister($key)) {
+            if ($this->adapter instanceof Adapter\FileFactory) {
+                $this->fileRegister[$key] = $this->adapter->createFile($key, $this);
+            } else {
+                $this->fileRegister[$key] = new File($key, $this);
+            }
         }
 
-        return new File($key, $this);
+        return $this->fileRegister[$key];
     }
 
     /**
@@ -312,5 +331,17 @@ class Filesystem
         if (! empty($key) && ! $this->has($key)) {
             throw new Exception\FileNotFound($key);
         }
+    }
+    
+    /**
+     * Checks if matching File object by given key exists in the fileRegister
+     * 
+     * @param string $key
+     * 
+     * @return bool
+     */
+    private function isFileInRegister($key)
+    {
+        return array_key_exists($key, $this->fileRegister);
     }
 }
