@@ -251,7 +251,7 @@ In your Symfony2 project, add to ``deps``:
 
 # if you want to use Amazon S3
 [aws-sdk]
-    git=https://github.com/aws/aws-sdk-php
+    git=https://github.com/aws/aws-sdk-php.git
 ```
 
 And then, you can simply add them as services of your dependency injection container.
