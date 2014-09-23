@@ -316,9 +316,11 @@ It will avoid skip a lot of tests.
 In the Gaufrette root directory:
 
 To check if classes specification pass:
+
     $ php bin/phpspec run
 
 To check basic functionality of the adapters (adapters should be configured you will see many skipped tests):
+
     $ phpunit
 
 Is it green?
