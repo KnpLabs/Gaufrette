@@ -181,10 +181,10 @@ class FilesystemSpec extends ObjectBehavior
     function it_fails_when_write_is_not_successful($adapter)
     {
         $adapter->exists('filename')->willReturn(false);
-        $adapter->write('filename', 'some content to write')->shouldBeCalled()->willReturn(false);
+        $adapter->write('filename', 'some content to write')->shouldBeCalled()->willThrow(new \RuntimeException());
 
         $this
-            ->shouldThrow(new \RuntimeException('Could not write the "filename" key content.'))
+            ->shouldThrow(new \RuntimeException())
             ->duringWrite('filename', 'some content to write')
         ;
     }

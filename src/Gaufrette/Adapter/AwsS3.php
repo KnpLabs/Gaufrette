@@ -140,7 +140,7 @@ class AwsS3 implements Adapter,
             $this->service->putObject($options);
             return strlen($content);
         } catch (\Exception $e) {
-            return false;
+            throw new \RuntimeException('Could not put object on S3.', 0, $e);
         }
     }
 

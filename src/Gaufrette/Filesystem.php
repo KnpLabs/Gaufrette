@@ -121,10 +121,6 @@ class Filesystem
 
         $numBytes = $this->adapter->write($key, $content);
 
-        if (false === $numBytes) {
-            throw new \RuntimeException(sprintf('Could not write the "%s" key content.', $key));
-        }
-
         return $numBytes;
     }
 
