@@ -28,7 +28,7 @@ class AmazonS3 implements Adapter,
         $this->service = $service;
         $this->bucket  = $bucket;
         $this->options = array_replace_recursive(
-            array('directory' => '', 'create' => false, 'region' => AmazonClient::REGION_US_E1, 'acl' => AmazonClient::ACL_PUBLIC),
+            array('directory' => '', 'create' => false, 'region' => $service->hostname, 'acl' => AmazonClient::ACL_PUBLIC),
             $options
         );
     }
