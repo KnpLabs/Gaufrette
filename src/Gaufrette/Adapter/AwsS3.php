@@ -110,7 +110,7 @@ class AwsS3 implements Adapter,
         );
 
         try {
-            $this->service->copyObject($options);
+            $this->service->copyObject(array_merge($options, $this->getMetadata($targetKey)));
             return $this->delete($sourceKey);
         } catch (\Exception $e) {
             return false;
