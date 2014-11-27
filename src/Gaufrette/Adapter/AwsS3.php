@@ -111,7 +111,7 @@ class AwsS3 implements Adapter,
 
         try {
             $this->service->copyObject($options);
-            return true;
+            return $this->delete($sourceKey);
         } catch (\Exception $e) {
             return false;
         }
