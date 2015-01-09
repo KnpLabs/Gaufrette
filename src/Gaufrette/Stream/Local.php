@@ -15,13 +15,16 @@ class Local implements Stream
     private $path;
     private $mode;
     private $fileHandle;
+    private $mkdirMode;
 
     /**
      * @param string $path
+     * @param int    $mkdirMode
      */
-    public function __construct($path)
+    public function __construct($path, $mkdirMode = 0755)
     {
         $this->path = $path;
+        $this->mkdirMode = $mkdirMode;
     }
 
     /**
@@ -31,7 +34,7 @@ class Local implements Stream
     {
         $baseDirPath = \Gaufrette\Util\Path::dirname($this->path);
         if ($mode->allowsWrite() && !is_dir($baseDirPath)) {
-            @mkdir($baseDirPath, 0755, true);
+            @mkdir($baseDirPath, $this->mkdirMode, true);
         }
         try {
             $fileHandle = @fopen($this->path, $mode->getMode());

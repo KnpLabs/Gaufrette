@@ -145,7 +145,7 @@ class Local implements Adapter,
      */
     public function createStream($key)
     {
-        return new Stream\Local($this->computePath($key));
+        return new Stream\Local($this->computePath($key), $this->mode);
     }
 
     /**
