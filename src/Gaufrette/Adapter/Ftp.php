@@ -436,7 +436,7 @@ class Ftp implements Adapter,
                         'name'  => $infos[8]
                     );
                 }
-            } else {
+            } elseif (count($infos) >= 4) {
                 $isDir = (boolean) ('<dir>' === $infos[2]);
                 $parsed[] = array(
                     'perms' => $isDir ? 'd' : '-',
