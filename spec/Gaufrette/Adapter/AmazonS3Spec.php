@@ -51,7 +51,6 @@ class AmazonS3Spec extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(new \CFResponse('header', 'some content', 200))
         ;
-        $service->set_region(Argument::any())->shouldBeCalled();
 
         $this->setMetadata('filename', $options);
         $this->read('filename')->shouldReturn('some content');
@@ -76,7 +75,6 @@ class AmazonS3Spec extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(new \CFResponse('header', 'some content', 500))
         ;
-        $service->set_region(Argument::any())->shouldBeCalled();
 
         $this->read('filename')->shouldReturn(false);
     }
@@ -99,7 +97,6 @@ class AmazonS3Spec extends ObjectBehavior
             )
             ->willThrow(new \RuntimeException('read'))
         ;
-        $service->set_region(Argument::any())->shouldBeCalled();
 
         $this->shouldThrow(new \RuntimeException('read'))->duringRead('filename');
     }
@@ -114,7 +111,6 @@ class AmazonS3Spec extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(true)
         ;
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->copy_object(
                 array(
@@ -149,7 +145,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_is_verbose_and_throws_exceptions_when_rename($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -168,7 +163,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_returns_false_when_cannot_rename($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -198,7 +192,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_should_write_file($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -226,7 +219,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_returns_false_when_cannot_write($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -253,7 +245,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_is_verbose_and_throws_exceptions_when_write($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -272,7 +263,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_should_check_if_file_exists($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -291,7 +281,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_is_verbose_and_throws_exceptions_when_file_exists($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -310,7 +299,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_should_get_file_mtime($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $metadata = array('acl' => \AmazonS3::ACL_PUBLIC);
         $service
             ->if_bucket_exists('bucketName')
@@ -337,7 +325,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_returns_false_when_cannot_fetch_mtime($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -362,7 +349,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_is_verbose_and_throws_exceptions_when_fetch_mtime($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -383,7 +369,6 @@ class AmazonS3Spec extends ObjectBehavior
     {
         $metadata = array('acl' => \AmazonS3::ACL_PRIVATE);
 
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -407,7 +392,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_is_verbose_and_throws_exceptions_when_fetch_delete($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->willReturn(true)
@@ -429,7 +413,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_returns_false_when_cannot_delete($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -452,7 +435,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_should_get_keys($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -472,7 +454,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_is_verbose_and_throws_exceptions_when_fetch_keys($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->willReturn(true)
@@ -490,7 +471,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_should_handle_dirs($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->willReturn(true)
@@ -518,7 +498,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_should_fail_when_bucket_does_not_exist($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->willReturn(false)
@@ -563,6 +542,7 @@ class AmazonS3Spec extends ObjectBehavior
             ->if_bucket_exists('bucketName')
             ->willReturn(false)
         ;
+		$service->hostname = \AmazonS3::REGION_US_E1;
         $service
             ->create_bucket('bucketName', \AmazonS3::REGION_US_E1)
             ->shouldBeCalled()
@@ -582,13 +562,12 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_fails_when_cannot_create_bucket($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->willReturn(false)
         ;
         $service
-            ->create_bucket('bucketName', \AmazonS3::REGION_US_E1)
+            ->create_bucket('bucketName', Argument::any())
             ->shouldBeCalled()
             ->willReturn(new \CFResponse(array(), 'created', 500))
         ;
@@ -605,7 +584,6 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_allows_to_configure_reqion($service)
     {
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->willReturn(true)
@@ -653,7 +631,6 @@ class AmazonS3Spec extends ObjectBehavior
     function it_allows_to_configure_acl($service)
     {
         $this->setAcl('123abc');
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -682,7 +659,6 @@ class AmazonS3Spec extends ObjectBehavior
     function its_file_metadata_acl_are_more_important_than_global_acl_config($service)
     {
         $this->setAcl('123abc');
-        $service->set_region(Argument::any())->shouldBeCalled();
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
