@@ -251,7 +251,7 @@ In your Symfony2 project, add to ``deps``:
 
 # if you want to use Amazon S3
 [aws-sdk]
-    git=https://github.com/aws/aws-sdk-php
+    git=https://github.com/aws/aws-sdk-php.git
 ```
 
 And then, you can simply add them as services of your dependency injection container.
@@ -316,9 +316,11 @@ It will avoid skip a lot of tests.
 In the Gaufrette root directory:
 
 To check if classes specification pass:
+
     $ php bin/phpspec run
 
 To check basic functionality of the adapters (adapters should be configured you will see many skipped tests):
+
     $ phpunit
 
 Is it green?
