@@ -29,6 +29,7 @@
         "aws/aws-sdk-php": "~2",
         "amazonwebservices/aws-sdk-for-php": "1.5.*",
         "rackspace/php-opencloud"  : "1.9.*",
+        "google/apiclient": "~1.1",
         "phpspec/phpspec": "2.0.*",
         "phpseclib/phpseclib": "dev-master",
         "doctrine/dbal": ">=2.3",
@@ -42,6 +43,7 @@
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",
         "dropbox-php/dropbox-php": "to use the Dropbox adapter",
         "rackspace/php-opencloud"  : "to use Opencloud adapter",
+        "google/apiclient": "to use GoogleCloudStorage adapter",
         "herzult/php-ssh": "to use SFtp adapter",
         "phpseclib/phpseclib": "to use PhpseclibSftp adapter",
         "aws/aws-sdk-php": "to use the Amazon S3 adapter",
@@ -53,7 +55,7 @@
         "ext-curl": "*",
         "ext-mbstring": "*",
         "ext-mongo": "*",
-        "ext-fileinfo": "This extension is used to automatically detect the content-type of a file in the AwsS3, OpenCloud, and AzureBlogStorage adapters"
+        "ext-fileinfo": "This extension is used to automatically detect the content-type of a file in the AwsS3, OpenCloud, AzureBlogStorage and GoogleCloudStorage adapters"
     },
     "autoload": {
         "psr-0": { "Gaufrette": "src/" }
