@@ -344,4 +344,24 @@ class Filesystem
     {
         return array_key_exists($key, $this->fileRegister);
     }
+
+    /**
+     * Clear files register
+     */
+    public function clearCache()
+    {
+        $this->fileRegister = array();
+    }
+
+    /**
+     * Removes File object from register
+     *
+     * @param string $key
+     */
+    public function detach($key)
+    {
+        if ($this->isFileInRegister($key)) {
+            unset($this->fileRegister[$key]);
+        }
+    }
 }
