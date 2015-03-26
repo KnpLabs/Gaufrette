@@ -88,10 +88,15 @@ class Local implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function keys()
+    public function keys($prefix = null)
     {
-        $this->ensureDirectoryExists($this->directory, $this->create);
-
+        if($prefix){
+            $this->directory = $this->computePath(Util\Path::normalize($prefix));
+            $this->ensureDirectoryExists($this->directory, true);
+        }else{                   
+            $this->ensureDirectoryExists($this->directory, $this->create);
+        }
+        
         try {
             $files = new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator(
