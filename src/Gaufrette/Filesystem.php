@@ -163,7 +163,7 @@ class Filesystem
         $this->assertHasFile($key);
 
         if ($this->adapter->delete($key)) {
-            $this->detach($key);
+            $this->removeFromRegister($key);
             return true;
         }
 
@@ -346,7 +346,7 @@ class Filesystem
     /**
      * Clear files register
      */
-    public function clearCache()
+    public function clearFileRegister()
     {
         $this->fileRegister = array();
     }
@@ -356,7 +356,7 @@ class Filesystem
      *
      * @param string $key
      */
-    public function detach($key)
+    public function removeFromRegister($key)
     {
         if ($this->isFileInRegister($key)) {
             unset($this->fileRegister[$key]);
