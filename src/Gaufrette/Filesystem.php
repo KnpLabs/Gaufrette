@@ -90,7 +90,7 @@ class Filesystem
      * @param string  $key    Key of the file
      * @param boolean $create Whether to create the file if it does not exist
      *
-     * @throws Gaufrette\Exception\FileNotFound
+     * @throws Exception\FileNotFound
      * @return File
      */
     public function get($key, $create = false)
