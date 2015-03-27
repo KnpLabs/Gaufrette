@@ -103,4 +103,44 @@ class LocalTest extends FunctionalTestCase
         @unlink($this->directory.DIRECTORY_SEPARATOR.'aaa.txt');
         @rmdir($dirname);
     }
+
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldBeAbleToClearCache()
+    {
+        $dirname = sprintf(
+            '%s/adapters/bbb',
+            dirname(__DIR__)
+        );
+
+        @mkdir($dirname);
+
+        $this->filesystem = new Filesystem(new Local($dirname));
+
+        $this->filesystem->get('test.txt', true);
+        $this->filesystem->write('test.txt', '123', true);
+
+        $this->filesystem->get('test2.txt', true);
+        $this->filesystem->write('test2.txt', '123', true);
+
+        $fsReflection = new \ReflectionClass($this->filesystem);
+
+        $fsIsFileInRegister = $fsReflection->getMethod('isFileInRegister');
+        $fsIsFileInRegister->setAccessible(true);
+
+        $this->assertTrue($fsIsFileInRegister->invoke($this->filesystem, 'test.txt'));
+        $this->filesystem->detach('test.txt');
+        $this->assertFalse($fsIsFileInRegister->invoke($this->filesystem, 'test.txt'));
+
+        $this->filesystem->clearCache();
+        $fsRegister = $fsReflection->getProperty('fileRegister');
+        $fsRegister->setAccessible(true);
+        $this->assertEquals(0, count($fsRegister->getValue($this->filesystem)));
+
+        $this->filesystem->delete('test.txt');
+        $this->filesystem->delete('test2.txt');
+        @rmdir($dirname);
+    }
 }
