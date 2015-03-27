@@ -163,9 +163,7 @@ class Filesystem
         $this->assertHasFile($key);
 
         if ($this->adapter->delete($key)) {
-            if($this->isFileInRegister($key)) {
-                unset($this->fileRegister[$key]);
-            }
+            $this->detach($key);
             return true;
         }
 
