@@ -90,7 +90,7 @@ class Filesystem
      * @param string  $key    Key of the file
      * @param boolean $create Whether to create the file if it does not exist
      *
-     * @throws Gaufrette\Exception\FileNotFound
+     * @throws Exception\FileNotFound
      * @return File
      */
     public function get($key, $create = false)
@@ -163,9 +163,7 @@ class Filesystem
         $this->assertHasFile($key);
 
         if ($this->adapter->delete($key)) {
-            if($this->isFileInRegister($key)) {
-                unset($this->fileRegister[$key]);
-            }
+            $this->removeFromRegister($key);
             return true;
         }
 
@@ -343,5 +341,25 @@ class Filesystem
     private function isFileInRegister($key)
     {
         return array_key_exists($key, $this->fileRegister);
+    }
+
+    /**
+     * Clear files register
+     */
+    public function clearFileRegister()
+    {
+        $this->fileRegister = array();
+    }
+
+    /**
+     * Removes File object from register
+     *
+     * @param string $key
+     */
+    public function removeFromRegister($key)
+    {
+        if ($this->isFileInRegister($key)) {
+            unset($this->fileRegister[$key]);
+        }
     }
 }
