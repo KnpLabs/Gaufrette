@@ -12,9 +12,9 @@ use Gaufrette\StreamMode;
  */
 class Local implements Stream
 {
-    private $path;
-    private $mode;
-    private $fileHandle;
+    protected $path;
+    protected $mode;
+    protected $fileHandle;
 
     /**
      * Constructor
