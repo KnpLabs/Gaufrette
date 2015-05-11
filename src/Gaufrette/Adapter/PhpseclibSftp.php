@@ -215,7 +215,7 @@ class PhpseclibSftp implements Adapter,
             }
 
             $path = ltrim($directory . '/' . $filename, '/');
-            if ($stat['type'] === NET_SFTP_TYPE_DIRECTORY) {
+            if (isset($stat['type']) && $stat['type'] === NET_SFTP_TYPE_DIRECTORY) {
                 $keys['dirs'][] = $path;
             } else {
                 $keys['keys'][] = $path;
