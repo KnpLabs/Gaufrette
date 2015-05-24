@@ -251,7 +251,15 @@ if ($client->getAuth()->isAccessTokenExpired()) {
 }
 
 $service = new \Google_Service_Storage($client);
-$adapter = new GoogleCloudStorage($service, $bucket_name, array(), true);
+$adapter = new GoogleCloudStorage(
+    $service,
+    $bucket_name,
+    array(
+        'p12KeyPath' => $key_file_location,
+        'accountName' => $service_account_name
+    ),
+    true
+);
 
 $filesystem = new Filesystem($adapter);
 ```

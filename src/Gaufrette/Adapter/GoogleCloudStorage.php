@@ -20,6 +20,7 @@ class GoogleCloudStorage implements Adapter,
     protected $bucketExists;
     protected $metadata = array();
     protected $detectContentType;
+    protected $hostUrl;
 
     /**
      * @param \Google_Service_Storage $service           The storage service class with authenticated
@@ -36,10 +37,20 @@ class GoogleCloudStorage implements Adapter,
     ) {
         $this->service = $service;
         $this->bucket = $bucket;
+        if (isset($options['host'])) {
+            $this->hostUrl = $options['host'];
+        } else {
+            $this->hostUrl = sprintf(
+                "https://%s.storage.googleapis.com/",
+                $this->bucket
+            );
+        }
         $this->options = array_replace(
             array(
                 'directory' => '',
                 'acl' => 'private',
+                'accountName' => '',
+                'p12KeyPath' => ''
             ),
             $options
         );
@@ -339,7 +350,7 @@ class GoogleCloudStorage implements Adapter,
 
     /**
      * @param string $path
-     * @param array  $options
+     * @param array $options
      *
      * @return bool|\Google_Service_Storage_StorageObject
      */
@@ -350,5 +361,31 @@ class GoogleCloudStorage implements Adapter,
         } catch (\Google_Service_Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * @param $filename
+     * @param null $expires
+     * @return string
+     * @throws \Google_Auth_Exception
+     */
+    public function getUrl($filename, $expires = null)
+    {
+        $expiresTime = time() + $expires;
+        $to_sign = ("GET\n\n\n" . $expiresTime . "\n/" . $this->bucket . '/' . $filename);
+        $fp = file_get_contents($this->options['p12KeyPath']);
+        $googleSigner = new \Google_Signer_P12($fp, 'notasecret');
+        $signature = urlencode(base64_encode($googleSigner->sign($to_sign)));
+        $fileUrl = $this->hostUrl . $filename;
+        if ($expires) {
+            $queryString = array(
+                'GoogleAccessId' => $this->options['accountName'],
+                'Expires' => $expiresTime,
+                'Signature' => $signature
+            );
+            $fileUrl .= '?' . http_build_query($queryString);
+        }
+
+        return $fileUrl;
     }
 }
