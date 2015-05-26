@@ -372,10 +372,10 @@ class GoogleCloudStorage implements Adapter,
     public function getUrl($filename, $expires = null)
     {
         $expiresTime = time() + $expires;
-        $to_sign = ("GET\n\n\n" . $expiresTime . "\n/" . $this->bucket . '/' . $filename);
+        $toSign = ("GET\n\n\n" . $expiresTime . "\n/" . $this->bucket . '/' . $filename);
         $fp = file_get_contents($this->options['p12KeyPath']);
         $googleSigner = new \Google_Signer_P12($fp, 'notasecret');
-        $signature = urlencode(base64_encode($googleSigner->sign($to_sign)));
+        $signature = urlencode(base64_encode($googleSigner->sign($toSign)));
         $fileUrl = $this->hostUrl . $filename;
         if ($expires) {
             $queryString = array(
