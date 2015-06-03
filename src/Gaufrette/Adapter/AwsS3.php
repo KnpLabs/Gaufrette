@@ -63,6 +63,40 @@ class AwsS3 implements Adapter,
     }
 
     /**
+     * Gets the pre-authorized URL of an Amazon S3 object
+     *
+     * @param string $key     Object key
+     * @param int|string|\DateTime $expires The time at which the URL should
+     *     expire. This can be a Unix timestamp, a PHP DateTime object, or a
+     *     string that can be evaluated by strtotime.
+     *
+     * @return string
+     */
+    public function getAuthUrl($key, $expires = null)
+    {
+        $cmd = $this
+            ->service
+            ->getCommand(
+                'GetObject',
+                array(
+                    'Bucket' => $this->bucket,
+                    'Key'    => $this->computePath($key)
+                )
+            );
+
+        $request = $this
+            ->service
+            ->createPresignedRequest(
+                $cmd,
+                $expires
+            );
+
+        $presignedUrl = (string) $request->getUri();
+
+        return $presignedUrl;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setMetadata($key, $metadata)
