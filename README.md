@@ -132,7 +132,12 @@ If you use the newer adapter ``\AwsS3`` you will need to use the S3Client factor
 ```php
 use Aws\S3\S3Client;
 
-$service = new S3Client(array('key' => 'your_key_here', 'secret' => 'your_secret'));
+$service = new S3Client(array(
+    'key'     => 'your_key_here',
+    'secret'  => 'your_secret',
+    'version' => 'latest',
+    'region'  => 'eu-west-1',
+));
 $client  = new AwsS3($service,'your-bucket-name');
 ```
 
