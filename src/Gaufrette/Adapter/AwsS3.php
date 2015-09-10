@@ -291,6 +291,6 @@ class AwsS3 implements Adapter,
      */
     protected function computeKey($path)
     {
-        return ltrim(substr($path, strlen($this->options['directory']), '/'));
+        return ltrim(substr($path, strlen($this->options['directory'])), '/');
     }
 }
