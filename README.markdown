@@ -307,7 +307,7 @@ As an example, here is services declaration to use Amazon S3:
     </argument>
 </service>
 
-<service id="acme.s3.adapter" class="Gaufrette\Adapter\AmazonS3">
+<service id="acme.s3.adapter" class="Gaufrette\Adapter\AwsS3">
     <argument type="service" id="acme.s3"></argument>
     <argument>%acme.s3.bucket_name%</argument>
 </service>
