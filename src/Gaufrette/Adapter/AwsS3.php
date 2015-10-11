@@ -13,7 +13,8 @@ use Aws\S3\S3Client;
  */
 class AwsS3 implements Adapter,
                        MetadataSupporter,
-                       ListKeysAware
+                       ListKeysAware,
+                       SizeCalculator
 {
     protected $service;
     protected $bucket;
@@ -160,6 +161,19 @@ class AwsS3 implements Adapter,
         try {
             $result = $this->service->headObject($this->getOptions($key));
             return strtotime($result['LastModified']);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function size($key)
+    {
+        try {
+            $result = $this->service->headObject($this->getOptions($key));
+            return $result['ContentLength'];
         } catch (\Exception $e) {
             return false;
         }
