@@ -1,0 +1,9 @@
+<?php
+
+$account_id = 'xxxxxxxxxxxxxxx';
+$account_key = 'xxxxxxxxxxxxxxx_xxxxxxxxxx_xxxxxxxxxxxxxxx_xxx';
+$key_file_location = 'key.p12';
+$bucket_id = 'xxxxxxxxxxxx';
+
+$service = new \B2Backblaze\B2Service($account_id,$account_key);
+return new Gaufrette\Adapter\BackblazeB2Storage($service, $bucket_id, array());
