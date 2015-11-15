@@ -23,8 +23,7 @@
     }
   ],
   "require": {
-    "php": ">=5.3.2",
-    "kamilz/b2backblaze": "dev-master"
+    "php": ">=5.3.2"
   },
   "require-dev": {
     "aws/aws-sdk-php": "~2",
@@ -38,7 +37,8 @@
     "herzult/php-ssh": "*",
     "phpunit/phpunit": "3.7.*",
     "microsoft/windowsazure": "dev-master",
-    "mikey179/vfsStream": "~1.2.0"
+    "mikey179/vfsStream": "~1.2.0",
+    "kamilz/b2backblaze": "dev-master"
   },
   "suggest": {
     "knplabs/knp-gaufrette-bundle": "to use with Symfony2",

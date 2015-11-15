@@ -4,120 +4,9 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9448f1f9d43244400ac94e42c3677af6",
-    "content-hash": "47c67fd0a1f6c0af5ca2f979ab712b62",
-    "packages": [
-        {
-            "name": "kamilz/b2backblaze",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/kamilZ/B2Backblaze.git",
-                "reference": "f2dcd8223ff548f4a64ea2289b6fe2746dd88d58"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/kamilZ/B2Backblaze/zipball/f2dcd8223ff548f4a64ea2289b6fe2746dd88d58",
-                "reference": "f2dcd8223ff548f4a64ea2289b6fe2746dd88d58",
-                "shasum": ""
-            },
-            "require": {
-                "kriswallsmith/buzz": ">= 0.15",
-                "php": ">=5.3.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "4.8.*"
-            },
-            "suggest": {
-                "ext-curl": "*",
-                "kamilz/b2backblaze-bundle": "to use with Symfony2"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.1-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "B2Backblaze": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kamil Zabdyr",
-                    "email": "kamilzabdyr@gmail.com",
-                    "homepage": "https://github.com/kamilZ"
-                },
-                {
-                    "name": "The contributors",
-                    "homepage": "http://github.com/kamilZ/B2Backblaze/contributors"
-                }
-            ],
-            "description": "PHP5 library that provides an API for B2 Cloud Storage",
-            "homepage": "https://github.com/kamilZ",
-            "keywords": [
-                "api",
-                "b2",
-                "file",
-                "php",
-                "storage"
-            ],
-            "time": "2015-11-15 17:39:07"
-        },
-        {
-            "name": "kriswallsmith/buzz",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/kriswallsmith/Buzz.git",
-                "reference": "d4041666c3ffb379af02a92dabe81c904b35fab8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/Buzz/zipball/d4041666c3ffb379af02a92dabe81c904b35fab8",
-                "reference": "d4041666c3ffb379af02a92dabe81c904b35fab8",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*"
-            },
-            "suggest": {
-                "ext-curl": "*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Buzz": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kris Wallsmith",
-                    "email": "kris.wallsmith@gmail.com",
-                    "homepage": "http://kriswallsmith.net/"
-                }
-            ],
-            "description": "Lightweight HTTP client",
-            "homepage": "https://github.com/kriswallsmith/Buzz",
-            "keywords": [
-                "curl",
-                "http client"
-            ],
-            "time": "2015-06-25 17:26:56"
-        }
-    ],
+    "hash": "5924afe1dec87b4b4a478f8316e02b61",
+    "content-hash": "bfb6dae5a24ad13fb8cea16a2dcfb1cf",
+    "packages": [],
     "packages-dev": [
         {
             "name": "amazonwebservices/aws-sdk-for-php",
@@ -965,6 +854,116 @@
                 "ssh2"
             ],
             "time": "2013-11-21 17:54:47"
+        },
+        {
+            "name": "kamilz/b2backblaze",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kamilZ/B2Backblaze.git",
+                "reference": "f2dcd8223ff548f4a64ea2289b6fe2746dd88d58"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kamilZ/B2Backblaze/zipball/f2dcd8223ff548f4a64ea2289b6fe2746dd88d58",
+                "reference": "f2dcd8223ff548f4a64ea2289b6fe2746dd88d58",
+                "shasum": ""
+            },
+            "require": {
+                "kriswallsmith/buzz": ">= 0.15",
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.8.*"
+            },
+            "suggest": {
+                "ext-curl": "*",
+                "kamilz/b2backblaze-bundle": "to use with Symfony2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "B2Backblaze": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kamil Zabdyr",
+                    "email": "kamilzabdyr@gmail.com",
+                    "homepage": "https://github.com/kamilZ"
+                },
+                {
+                    "name": "The contributors",
+                    "homepage": "http://github.com/kamilZ/B2Backblaze/contributors"
+                }
+            ],
+            "description": "PHP5 library that provides an API for B2 Cloud Storage",
+            "homepage": "https://github.com/kamilZ",
+            "keywords": [
+                "api",
+                "b2",
+                "file",
+                "php",
+                "storage"
+            ],
+            "time": "2015-11-15 17:39:07"
+        },
+        {
+            "name": "kriswallsmith/buzz",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kriswallsmith/Buzz.git",
+                "reference": "d4041666c3ffb379af02a92dabe81c904b35fab8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kriswallsmith/Buzz/zipball/d4041666c3ffb379af02a92dabe81c904b35fab8",
+                "reference": "d4041666c3ffb379af02a92dabe81c904b35fab8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "suggest": {
+                "ext-curl": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Buzz": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kris Wallsmith",
+                    "email": "kris.wallsmith@gmail.com",
+                    "homepage": "http://kriswallsmith.net/"
+                }
+            ],
+            "description": "Lightweight HTTP client",
+            "homepage": "https://github.com/kriswallsmith/Buzz",
+            "keywords": [
+                "curl",
+                "http client"
+            ],
+            "time": "2015-06-25 17:26:56"
         },
         {
             "name": "microsoft/windowsazure",
@@ -2240,9 +2239,9 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "kamilz/b2backblaze": 20,
         "phpseclib/phpseclib": 20,
-        "microsoft/windowsazure": 20
+        "microsoft/windowsazure": 20,
+        "kamilz/b2backblaze": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
