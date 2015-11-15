@@ -155,7 +155,7 @@ class BackblazeB2Storage implements Adapter
         $this->ensureBucketExists();
 
         try {
-            return $this->service->delete($this->bucketName,  $this->computePath($key));
+            return $this->service->delete($this->bucketName,  $this->computePath($key), $this->options["private"]);
         } catch (B2Exception $e) {
             return false;
         }

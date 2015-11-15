@@ -898,12 +898,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kamilZ/B2Backblaze.git",
-                "reference": "3913f87d145cb05f3a9342458e12506cf961656e"
+                "reference": "507732ca170f23aa83c80ed81c4f3e642c15957b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kamilZ/B2Backblaze/zipball/3913f87d145cb05f3a9342458e12506cf961656e",
-                "reference": "3913f87d145cb05f3a9342458e12506cf961656e",
+                "url": "https://api.github.com/repos/kamilZ/B2Backblaze/zipball/507732ca170f23aa83c80ed81c4f3e642c15957b",
+                "reference": "507732ca170f23aa83c80ed81c4f3e642c15957b",
                 "shasum": ""
             },
             "require": {
@@ -915,7 +915,7 @@
             },
             "suggest": {
                 "ext-curl": "*",
-                "kamilZ/B2Backblaze": "to use with Symfony2"
+                "kamilz/b2backblaze-bundle": "to use with Symfony2"
             },
             "type": "library",
             "extra": {
@@ -952,7 +952,7 @@
                 "php",
                 "storage"
             ],
-            "time": "2015-11-14 13:26:49"
+            "time": "2015-11-15 16:46:00"
         },
         {
             "name": "kriswallsmith/buzz",
