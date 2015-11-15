@@ -174,7 +174,8 @@ class BackblazeB2Storage implements Adapter
                 $this->bucketName,
                 $this->computePath($sourceKey),
                 $this->bucketName,
-                $this->computePath($targetKey));
+                $this->computePath($targetKey),
+                $this->options["private"]);
         } catch (B2Exception $e) {
             return false;
         }
