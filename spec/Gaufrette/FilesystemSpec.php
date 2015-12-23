@@ -240,14 +240,11 @@ class FilesystemSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Adapter $adapter
      */
-    function it_does_not_delete_file_which_does_not_exist($adapter)
+    function it_should_consider_a_non_existent_file_as_deleted($adapter)
     {
         $adapter->exists('filename')->willReturn(false);
 
-        $this
-            ->shouldThrow(new \Gaufrette\Exception\FileNotFound('filename'))
-            ->duringDelete('filename')
-        ;
+        $this->delete('filename')->shouldReturn(true);
     }
 
     /**
