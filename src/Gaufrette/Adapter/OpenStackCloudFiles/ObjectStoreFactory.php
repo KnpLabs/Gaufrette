@@ -37,7 +37,7 @@ class ObjectStoreFactory implements ObjectStoreFactoryInterface
      * @param OpenStack $connection
      * @param string $region
      * @param string $urlType
-     & @param string $objectStoreType
+     * @param string $objectStoreType
      */
     public function __construct(OpenStack $connection, $region, $urlType, $objectStoreType = 'cloudFiles')
     {
