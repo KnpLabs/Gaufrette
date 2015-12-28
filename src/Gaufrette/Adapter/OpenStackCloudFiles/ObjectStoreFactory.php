@@ -41,7 +41,7 @@ class ObjectStoreFactory implements ObjectStoreFactoryInterface
      */
     public function __construct(OpenStack $connection, $region, $urlType, $objectStoreType = 'cloudFiles')
     {
-	$this->objectStoreType = $objectStoreType;
+        $this->objectStoreType = $objectStoreType;
         $this->connection = $connection;
         $this->region = $region;
         $this->urlType = $urlType;
