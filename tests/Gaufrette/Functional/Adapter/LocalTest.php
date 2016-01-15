@@ -74,6 +74,7 @@ class LocalTest extends FunctionalTestCase
     /**
      * @test
      * @covers Gaufrette\Adapter\Local
+     * @group functional
      */
     public function shouldListingOnlyGivenDirectory()
     {
@@ -108,6 +109,7 @@ class LocalTest extends FunctionalTestCase
     /**
      * @test
      * @covers Gaufrette\Adapter\Local
+     * @group functional
      */
     public function shouldListingAllKeys()
     {
