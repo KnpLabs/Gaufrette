@@ -1,10 +1,10 @@
 #!/bin/bash
 
 sudo apt-get update -qq
-sudo apt-get install -qq libssh2-1-dev libssh2-php
+sudo apt-get install -y -qq libssh2-1-dev libssh2-php
 echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 touch .interactive
-(pecl install -f ssh2 < .interactive)
+(pecl install -f ssh2-beta < .interactive)
 
 if grep -Fxq "ssh2" ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 then

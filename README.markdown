@@ -256,6 +256,24 @@ $adapter = new GoogleCloudStorage($service, $bucket_name, array(), true);
 $filesystem = new Filesystem($adapter);
 ```
 
+Using BackblazeB2Storage
+------------------------
+
+[B2 Cloud Storage](https://www.backblaze.com/b2/cloud-storage.html) is a cloud service for storing files in the cloud.
+
+```php
+<?php
+
+$account_id  = 'xxxxxxxxxxxxxxx';
+$account_key = 'xxxxxxxxxxxxxxx_xxxxxxxxxx_xxxxxxxxxxxxxxx_xxx';
+$bucket_id   = 'xxxxxxxxxxxx';
+
+$service = new \B2Backblaze\B2Service($account_id,$account_key);
+$adapter = new Gaufrette\Adapter\BackblazeB2Storage($service, $bucket_id, array("directory"=>"", "private"=> false));
+
+$filesystem = new Filesystem($adapter);
+```
+
 Using FTP adapters
 ---------------
 
