@@ -13,7 +13,8 @@ use Aws\S3\S3Client;
  */
 class AwsS3 implements Adapter,
                        MetadataSupporter,
-                       ListKeysAware
+                       ListKeysAware,
+                       MimeTypeProvider
 {
     protected $service;
     protected $bucket;
@@ -280,5 +281,15 @@ class AwsS3 implements Adapter,
         }
 
         return sprintf('%s/%s', $this->options['directory'], $key);
+    }
+
+    public function mimeType($key)
+    {
+        try {
+            $result = $this->service->headObject($this->getOptions($key));
+            return ($result['ContentType']);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }
