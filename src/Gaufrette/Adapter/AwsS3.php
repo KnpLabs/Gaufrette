@@ -188,7 +188,7 @@ class AwsS3 implements Adapter,
         $keys = array();
         $iter = $this->service->getIterator('ListObjects', $options);
         foreach ($iter as $file) {
-            $keys[] = $file['Key'];
+            $keys[] = $this->computeKey($file['Key']);
         }
 
         return $keys;
@@ -280,5 +280,17 @@ class AwsS3 implements Adapter,
         }
 
         return sprintf('%s/%s', $this->options['directory'], $key);
+    }
+
+    /**
+     * Computes the key from the specified path
+     *
+     * @param string $path
+     *
+     * return string
+     */
+    protected function computeKey($path)
+    {
+        return ltrim(substr($path, strlen($this->options['directory'])), '/');
     }
 }
