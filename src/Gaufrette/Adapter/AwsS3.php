@@ -13,6 +13,7 @@ use Aws\S3\S3Client;
  */
 class AwsS3 implements Adapter,
                        MetadataSupporter,
+                       MimeTypeProvider,
                        ListKeysAware
 {
     protected $service;
@@ -160,6 +161,21 @@ class AwsS3 implements Adapter,
         try {
             $result = $this->service->headObject($this->getOptions($key));
             return strtotime($result['LastModified']);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function mimeType($key)
+    {
+        $this->ensureBucketExists();
+        $options = $this->getOptions($key);
+
+        try {
+            return (string) $this->service->getObject($options)->get('ContentType');
         } catch (\Exception $e) {
             return false;
         }
