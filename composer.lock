@@ -1,13 +1,12 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a1b734d6a5d534d72d1036a8eda13c01",
-    "packages": [
-
-    ],
+    "hash": "af28c7783567f619fce38698e40145eb",
+    "content-hash": "0d811df7595ebba4b57ef1deeebb94f8",
+    "packages": [],
     "packages-dev": [
         {
             "name": "amazonwebservices/aws-sdk-for-php",
@@ -137,7 +136,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/annotations/zipball/088ea3b5dfbe52adf7b12623caa897e9ee1d795e",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/f25c8aab83e0c3e976fd7d19875f198ccf2f7535",
                 "reference": "088ea3b5dfbe52adf7b12623caa897e9ee1d795e",
                 "shasum": ""
             },
@@ -209,7 +208,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/cache/zipball/36c4eee5051629524389da376ba270f15765e49f",
+                "url": "https://api.github.com/repos/doctrine/cache/zipball/dd47003641aa5425820c0ec8a6f4a85e7412ffcd",
                 "reference": "36c4eee5051629524389da376ba270f15765e49f",
                 "shasum": ""
             },
@@ -283,7 +282,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/collections/zipball/b99c5c46c87126201899afe88ec490a25eedd6a2",
+                "url": "https://api.github.com/repos/doctrine/collections/zipball/866e100a425b8b73d15393fd081c6bf067f05bf9",
                 "reference": "b99c5c46c87126201899afe88ec490a25eedd6a2",
                 "shasum": ""
             },
@@ -351,7 +350,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/common/zipball/9a7e20e779360f3b8a02c27a89d47d5a6fdce8d1",
+                "url": "https://api.github.com/repos/doctrine/common/zipball/1b0f957ae7facde8a48500894f5c20bce352b9f3",
                 "reference": "9a7e20e779360f3b8a02c27a89d47d5a6fdce8d1",
                 "shasum": ""
             },
@@ -426,7 +425,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/646edacd87d5b9d201bf19aaf55ee0e4d5e470c2",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/f44782e91c8c910736272986f543989d214daf1c",
                 "reference": "646edacd87d5b9d201bf19aaf55ee0e4d5e470c2",
                 "shasum": ""
             },
@@ -497,7 +496,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/a81c334f2764b09e2f13a55cfd8fe3233946f728",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/3a422c73f7bc556d39571f436b61fd58ccae0eb0",
                 "reference": "a81c334f2764b09e2f13a55cfd8fe3233946f728",
                 "shasum": ""
             },
@@ -566,7 +565,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/lexer/zipball/f12a5f74e5f4a9e3f558f3288504e121edfad891",
+                "url": "https://api.github.com/repos/doctrine/lexer/zipball/83893c552fd2045dd78aef794c31e694c37c0b8c",
                 "reference": "f12a5f74e5f4a9e3f558f3288504e121edfad891",
                 "shasum": ""
             },
@@ -623,7 +622,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Dropbox-PHP/dropbox-php/zipball/5d05e32f825fa98182c98a93f46a176868e314c6",
+                "url": "https://api.github.com/repos/Dropbox-PHP/dropbox-php/zipball/de6495d56d91e96f4ff9ff61302f3cca3cefa7b6",
                 "reference": "5d05e32f825fa98182c98a93f46a176868e314c6",
                 "shasum": ""
             },
@@ -679,19 +678,20 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client.git",
-                "reference": "4793f71912b5ef6cdbc8dfc24ff27c1ae39b3ccf"
+                "reference": "2bc00ec4e8fa1a5eec793d800fac339f30b730db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/4793f71912b5ef6cdbc8dfc24ff27c1ae39b3ccf",
-                "reference": "4793f71912b5ef6cdbc8dfc24ff27c1ae39b3ccf",
+                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/2bc00ec4e8fa1a5eec793d800fac339f30b730db",
+                "reference": "2bc00ec4e8fa1a5eec793d800fac339f30b730db",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "3.7.*"
+                "phpunit/phpunit": "3.7.*",
+                "squizlabs/php_codesniffer": "~2.3"
             },
             "type": "library",
             "extra": {
@@ -713,19 +713,19 @@
             "keywords": [
                 "google"
             ],
-            "time": "2014-10-29 09:47:08"
+            "time": "2015-09-23 04:19:33"
         },
         {
             "name": "guzzle/guzzle",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "8d39ffa70ac1aecd297e93d4185092f51877edb4"
+                "url": "https://github.com/guzzle/guzzle3.git",
+                "reference": "b3f5050cb6270c7a728a0b74ac2de50a262b3e02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/8d39ffa70ac1aecd297e93d4185092f51877edb4",
+                "url": "https://api.github.com/repos/guzzle/guzzle3/zipball/b3f5050cb6270c7a728a0b74ac2de50a262b3e02",
                 "reference": "8d39ffa70ac1aecd297e93d4185092f51877edb4",
                 "shasum": ""
             },
@@ -817,7 +817,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Herzult/php-ssh/zipball/bea40b828ef2de2f9161255ce42256f26cd8a5b8",
+                "url": "https://api.github.com/repos/Herzult/php-ssh/zipball/d569d15483a5f9218700313cd21c50090aa93351",
                 "reference": "bea40b828ef2de2f9161255ce42256f26cd8a5b8",
                 "shasum": ""
             },
@@ -861,12 +861,12 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/WindowsAzure/azure-sdk-for-php.git",
-                "reference": "61d4e12495358491f62cc5bd8716335b0b313488"
+                "url": "https://github.com/Azure/azure-sdk-for-php.git",
+                "reference": "d91dd566c6f78f68850a8545826bf98d015718f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WindowsAzure/azure-sdk-for-php/zipball/61d4e12495358491f62cc5bd8716335b0b313488",
+                "url": "https://api.github.com/repos/Azure/azure-sdk-for-php/zipball/d91dd566c6f78f68850a8545826bf98d015718f1",
                 "reference": "61d4e12495358491f62cc5bd8716335b0b313488",
                 "shasum": ""
             },
@@ -897,7 +897,7 @@
                 "php",
                 "sdk"
             ],
-            "time": "2014-01-23 05:45:10"
+            "time": "2015-09-22 21:34:15"
         },
         {
             "name": "mikey179/vfsStream",
@@ -1236,7 +1236,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/76c9692908a6c25601df2db373043fcbb335332e",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/70f55bd1565402e5605ee5c6cde7dda0fd3aba45",
                 "reference": "76c9692908a6c25601df2db373043fcbb335332e",
                 "shasum": ""
             },
@@ -1435,7 +1435,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/6bd3659919ae6472454aea07482200077293e75f",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/4f9b1eaf0a7da77c362f8d91cbc68ab1f4718d62",
                 "reference": "6bd3659919ae6472454aea07482200077293e75f",
                 "shasum": ""
             },
@@ -1493,7 +1493,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/69e55e68481cf708a6db43aff0b504e31402fe27",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/fe2466802556d3fe4e4d1d58ffd3ccfd0a19be0b",
                 "reference": "69e55e68481cf708a6db43aff0b504e31402fe27",
                 "shasum": ""
             },
@@ -1554,7 +1554,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/acd690379117b042d1c8af1fafd61bde001bf6bb",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/6150bf2c35d3fc379e50c7602b75caceaa39dbf0",
                 "reference": "acd690379117b042d1c8af1fafd61bde001bf6bb",
                 "shasum": ""
             },
@@ -1599,7 +1599,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-text-template/zipball/206dfefc0ffe9cebf65c413e3d0e809c82fbf00a",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-text-template/zipball/f87a4b06e9124e7ad58572ff5f481d79423d51e0",
                 "reference": "206dfefc0ffe9cebf65c413e3d0e809c82fbf00a",
                 "shasum": ""
             },
@@ -1643,7 +1643,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/19689d4354b295ee3d8c54b4f42c3efb69cbc17c",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/3e82f4e9fc92665fafd9157568e4dcb01d014e5b",
                 "reference": "19689d4354b295ee3d8c54b4f42c3efb69cbc17c",
                 "shasum": ""
             },
@@ -1687,7 +1687,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/292f4d5772dad5a12775be69f4a8dd663b20f103",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/cab6c6fefee93d7b7c3a01292a0fe0884ea66644",
                 "reference": "292f4d5772dad5a12775be69f4a8dd663b20f103",
                 "shasum": ""
             },
@@ -1737,7 +1737,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2752cbb9ea5bd84c2811b34b6953f76965ec7a2f",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/38709dc22d519a3d1be46849868aa2ddf822bcf6",
                 "reference": "2752cbb9ea5bd84c2811b34b6953f76965ec7a2f",
                 "shasum": ""
             },
@@ -1976,12 +1976,12 @@
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/EventDispatcher.git",
-                "reference": "8b345992d9e850798f46a6c68804ac9e4965e91a"
+                "url": "https://github.com/symfony/event-dispatcher.git",
+                "reference": "a593aeccba98b024e3480fea5a30b900542784dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/8b345992d9e850798f46a6c68804ac9e4965e91a",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/a593aeccba98b024e3480fea5a30b900542784dd",
                 "reference": "8b345992d9e850798f46a6c68804ac9e4965e91a",
                 "shasum": ""
             },
@@ -2026,7 +2026,7 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "http://symfony.com",
-            "time": "2014-02-11 13:52:21"
+            "time": "2015-09-22 14:11:08"
         },
         {
             "name": "symfony/finder",
@@ -2083,12 +2083,12 @@
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/Yaml.git",
-                "reference": "e49a47d60348665261f6e279ba383241deb73cab"
+                "url": "https://github.com/symfony/yaml.git",
+                "reference": "6fa3d4a79022c9a02de17f210683516e92024f76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/e49a47d60348665261f6e279ba383241deb73cab",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/6fa3d4a79022c9a02de17f210683516e92024f76",
                 "reference": "e49a47d60348665261f6e279ba383241deb73cab",
                 "shasum": ""
             },
@@ -2124,22 +2124,19 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2014-02-24 16:21:51"
+            "time": "2015-09-28 12:06:46"
         }
     ],
-    "aliases": [
-
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
         "phpseclib/phpseclib": 20,
         "microsoft/windowsazure": 20
     },
     "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": {
         "php": ">=5.3.2"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }
