@@ -31,12 +31,12 @@ Try it!
 Development version:
 
 ```bash
-php composer.phar require knplabs/gaufrette:0.2.*@dev
+php composer.phar require knplabs/gaufrette:0.3.*@dev
 ```
 Stable version:
 
 ```bash
-php composer.phar require knplabs/gaufrette:0.1.*
+php composer.phar require knplabs/gaufrette:~0.2
 ```
 
 ### Setup your filesystem
