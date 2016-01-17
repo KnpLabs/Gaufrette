@@ -145,6 +145,10 @@ class Sftp implements Adapter,
     {
         $this->initialize();
 
+        if ($this->isDirectory($key)) {
+            return rmdir($this->sftp->getUrl($this->computePath($key)));
+        }
+
         return unlink($this->sftp->getUrl($this->computePath($key)));
     }
 
