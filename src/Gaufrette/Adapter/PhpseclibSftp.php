@@ -19,14 +19,17 @@ class PhpseclibSftp implements Adapter,
     /**
      * Constructor.
      *
-     * @param SFTP   $sftp      An Sftp instance
-     * @param string $directory The distant directory
-     * @param bool   $create    Whether to create the remote directory if it
-     *                          does not exist
+     * @param SFTP        $sftp      An Sftp instance
+     * @param string      $directory The distant directory
+     * @param bool        $create    Whether to create the remote directory if it
+     *                               does not exist
+     * @param string|null $username  SFTP user name
+     * @param string|null $password  SFTP user password
      */
-    public function __construct(SFTP $sftp, $directory = null, $create = false)
+    public function __construct(SFTP $sftp, $directory = null, $create = false, $username = null, $password = null)
     {
         $this->sftp = $sftp;
+        $this->sftp->login($username, $password);
         $this->directory = $directory;
         $this->create = $create;
     }
