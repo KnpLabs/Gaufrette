@@ -1,23 +1,23 @@
-Phpseclib SFTP
-==============
+### Documentation for Gaufrette phpseclib adapter
 
-Example
--------
+*N.B.* It is recommended to use this adapter over [SFTP](doc/adapters/sftp.md).
 
-The first argument should be an instance of `\Net_SFTP`. Please refer to 
-[`phpseclib/phpseclib`](https://github.com/phpseclib/phpseclib) documentation to know how to build it.
+#### Prerequisites
 
-The second argument is the base directory you want to use.
+* [phpseclib](https://github.com/phpseclib/phpseclib)
 
-The third one indicates whether you want to automatically create directories if they does not exists 
-(i.e. when you create a file in a directory that does not exist yet).
+You can install it via:
+
+```bash
+composer require phpseclib/phpseclib:^2.0
+```
+
+#### Configuration
 
 ```php
-<?php
 
-use Gaufrette\Adapter\Sftp as SftpAdapter;
-use Gaufrette\Filesystem;
+$sftp = new phpseclib\Net\SFTP($host = 'localhost', $port = 22);
 
-$adapter = new SftpAdapter($sftpClient, '/media', true);
-$filesystem = new Filesystem($adapter);
+$adapter = new Gaufrette\Adapter\PhpseclibSftp($sftp, $distantDirectory = null, $createDirectoryIfDoesntExist = false, $username = 'gaufrette', $password = 'gaufrette');
+$filesystem = new Gaufrette\Filesystem($adapter);
 ```
