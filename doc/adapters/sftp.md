@@ -1,8 +1,24 @@
 SFTP
 ====
 
+*N.B.* SFTP adapter is not recommended to use due to https://bugs.php.net/bug.php?id=64169. It is recommended to use
+[PHPSeclibSFTP adapter](phpseclib_sftp.md) instead.
+
 This adapter is based on the `ssh2` extension. If you don't have this extension available and you can't install it,
 the [`PhpseclibSftp`](phpseclibSftp.md) adapter is based on a full-php ssh client.
+
+Prerequisites
+-------------
+
+* [PHP-SSH](https://github.com/Herzult/php-ssh)
+* [SSH2 extension](http://www.php.net/manual/en/book.ssh2.php)
+
+You can install it via:
+
+```bash
+composer require herzult/php-ssh:^1.1
+pecl install ssh2-beta
+```
 
 Example
 -------
