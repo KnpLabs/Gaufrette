@@ -10,6 +10,7 @@ if (!defined('NET_SFTP_TYPE_DIRECTORY')) {
     define('NET_SFTP_TYPE_DIRECTORY', 2);
 }
 
+use phpseclib\Net\SFTP as Base;
 use PhpSpec\ObjectBehavior;
 
 class PhpseclibSftpSpec extends ObjectBehavior
@@ -141,7 +142,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     }
 }
 
-class Net_SFTP extends \Net_SFTP
+class Net_SFTP extends Base
 {
     public function __construct()
     {
