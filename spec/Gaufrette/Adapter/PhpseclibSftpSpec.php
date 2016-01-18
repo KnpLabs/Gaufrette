@@ -16,11 +16,12 @@ use PhpSpec\ObjectBehavior;
 class PhpseclibSftpSpec extends ObjectBehavior
 {
     /**
-     * @param \spec\Gaufrette\Adapter\Net_SFTP $sftp
+     * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
     function let($sftp)
     {
-        $this->beConstructedWith($sftp, '/home/l3l0');
+        $this->beConstructedWith($sftp, '/home/l3l0', false, 'l3lo', 'password');
+        $sftp->login('l3lo', 'password')->shouldBeCalled();
     }
 
     function it_is_adapter()
@@ -39,9 +40,9 @@ class PhpseclibSftpSpec extends ObjectBehavior
     }
 
     /**
-     * @param \spec\Gaufrette\Adapter\Net_SFTP $sftp
+     * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
-    function it_fetchs_keys($sftp)
+    function it_fetches_keys($sftp)
     {
         $sftp
             ->rawlist('/home/l3l0/')
@@ -60,7 +61,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     }
 
     /**
-     * @param \spec\Gaufrette\Adapter\Net_SFTP $sftp
+     * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
     function it_reads_file($sftp)
     {
@@ -70,7 +71,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     }
 
     /**
-     * @param \spec\Gaufrette\Adapter\Net_SFTP $sftp
+     * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
     function it_creates_and_writes_file($sftp)
     {
@@ -83,7 +84,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     }
 
     /**
-     * @param \spec\Gaufrette\Adapter\Net_SFTP $sftp
+     * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
     function it_renames_file($sftp)
     {
@@ -98,7 +99,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     }
 
     /**
-     * @param \spec\Gaufrette\Adapter\Net_SFTP $sftp
+     * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
     function it_should_check_if_file_exists($sftp)
     {
@@ -114,7 +115,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     }
 
     /**
-     * @param \spec\Gaufrette\Adapter\Net_SFTP $sftp
+     * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
     function it_should_check_is_directory($sftp)
     {
@@ -128,7 +129,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     }
 
     /**
-     * @param \spec\Gaufrette\Adapter\Net_SFTP $sftp
+     * @param \spec\Gaufrette\Adapter\SFTP $sftp
      * @param \Gaufrette\Filesystem $filesystem
      */
     function it_should_create_file($sftp, $filesystem)
@@ -142,7 +143,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     }
 }
 
-class Net_SFTP extends Base
+class SFTP extends Base
 {
     public function __construct()
     {
