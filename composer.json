@@ -31,7 +31,7 @@
         "rackspace/php-opencloud"  : "1.9.*",
         "google/apiclient": "~1.1.3",
         "phpspec/phpspec": "2.0.*",
-        "phpseclib/phpseclib": "dev-master",
+        "phpseclib/phpseclib": "^2.0",
         "doctrine/dbal": ">=2.3",
         "dropbox-php/dropbox-php": "*",
         "herzult/php-ssh": "*",
