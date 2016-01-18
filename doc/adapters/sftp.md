@@ -2,7 +2,7 @@ SFTP
 ====
 
 *N.B.* SFTP adapter is not recommended to use due to https://bugs.php.net/bug.php?id=64169. It is recommended to use
-[PHPSeclibSFTP adapter](phpseclib_sftp.md) instead.
+[phpseclib SFTP adapter](phpseclib_sftp.md) instead.
 
 This adapter is based on the `ssh2` extension. If you don't have this extension available and you can't install it,
 the [`PhpseclibSftp`](phpseclibSftp.md) adapter is based on a full-php ssh client.
