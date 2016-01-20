@@ -186,10 +186,6 @@ class BackblazeB2Storage implements Adapter
      */
     public function isDirectory($key)
     {
-        if ($this->exists($key . '/')) {
-            return true;
-        }
-
         return false;
     }
 
