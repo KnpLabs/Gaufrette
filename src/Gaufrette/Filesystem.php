@@ -368,4 +368,14 @@ class Filesystem
             unset($this->fileRegister[$key]);
         }
     }
+
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function isDirectory($key)
+    {
+        return $this->adapter->isDirectory($key);
+    }
 }
