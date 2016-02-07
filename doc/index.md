@@ -13,7 +13,7 @@ Adapters
   * [Dropbox](adapters/dropbox.md): TBW
   * [Ftp](adapters/ftp.md)
   * [Google Cloud Storage](adapters/googleCloudStorage.md)
-  * [GridFs](adapters/gridFs.md): TBW
+  * [GridFS](adapters/gridFs.md)
   * [InMemory](adapters/inMemory.md)
   * [Local & SafeLocal](adapters/local.md)
   * [MogileFS](adapters/mogileFS.md): TBW
