@@ -11,7 +11,7 @@ This project does not have any stable release yet but we do not want to break BC
 
 Symfony integration is available here: [KnpLabs/KnpGaufretteBundle](https://github.com/KnpLabs/KnpGaufretteBundle).
 
-Documentation is available [here](doc).
+Documentation is available [here](doc/index.md).
 
 Why use Gaufrette?
 ------------------
