@@ -24,6 +24,6 @@ $s3client = S3Client::factory(array(
     'version' => 'latest',
     'region'  => 'eu-west-1',
 ));
-$adapter = new AwsS3Adapter($s3client,'your-bucket-name');
+$adapter = new AwsS3($s3client,'your-bucket-name');
 $filesystem = new Filesystem($adapter);
 ```
