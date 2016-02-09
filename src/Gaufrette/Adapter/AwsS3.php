@@ -121,10 +121,27 @@ class AwsS3 implements Adapter,
     /**
      * {@inheritDoc}
      */
-    public function write($key, $content)
-    {
+    public function write($key, $content) {
         $this->ensureBucketExists();
-        $options = $this->getOptions($key, array('Body' => $content));
+
+        $params = array();
+
+        switch (true) {
+            case is_file($content):
+                if ($content instanceof \SplFileInfo) {
+                    $content = (string)$content; //cast to string will return the "pathname"
+                }
+                $params['SourceFile'] = $content;
+                break;
+            case is_resource($content):
+                $params['Body'] = $content;
+                break;
+            default:
+                $params['Body'] = (string)$content;
+                break;
+        }
+
+        $options = $this->getOptions($key, $params);
 
         /**
          * If the ContentType was not already set in the metadata, then we autodetect
@@ -132,14 +149,17 @@ class AwsS3 implements Adapter,
          */
         if (!isset($options['ContentType']) && $this->detectContentType) {
             $finfo = new \finfo(FILEINFO_MIME_TYPE);
-            $mimeType = $finfo->buffer($content);
-
+            if (isset($params['SourceFile'])) {
+                $mimeType = $finfo->file($params['SourceFile']);
+            } else {
+                $mimeType = $finfo->buffer($params['Body']);
+            }
             $options['ContentType'] = $mimeType;
         }
 
         try {
             $this->service->putObject($options);
-            return strlen($content);
+            return isset($params['SourceFile']) ? filesize($params['SourceFile']) : strlen($params['Body']);
         } catch (\Exception $e) {
             return false;
         }
