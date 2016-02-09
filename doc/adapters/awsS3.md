@@ -17,8 +17,10 @@ use Gaufrette\Adapter\AwsS3 as AwsS3Adapter;
 use Gaufrette\Filesystem;
 
 $s3client = S3Client::factory(array(
-    'key'     => 'your_key_here',
-    'secret'  => 'your_secret',
+    'credentials' => array(
+        'key'     => 'your_key_here',
+        'secret'  => 'your_secret',
+    ),
     'version' => 'latest',
     'region'  => 'eu-west-1',
 ));
