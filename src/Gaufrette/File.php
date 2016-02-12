@@ -141,8 +141,10 @@ class File
     {
         $this->content = $content;
         $this->setMetadata($metadata);
+        $this->size = $this->filesystem->write($this->key, $this->content, true);
 
-        return $this->size = $this->filesystem->write($this->key, $this->content, true);
+        $this->content = null;
+        return $this->size;
     }
 
     /**
