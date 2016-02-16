@@ -28,6 +28,8 @@ class Ftp implements Adapter,
     protected $mode;
     protected $ssl;
     protected $fileData = array();
+    protected $lastConnection;
+    protected $checkTimeout;
 
     /**
      * Constructor
@@ -51,6 +53,7 @@ class Ftp implements Adapter,
         $this->create    = isset($options['create']) ? $options['create'] : false;
         $this->mode      = isset($options['mode']) ? $options['mode'] : FTP_BINARY;
         $this->ssl       = isset($options['ssl']) ? $options['ssl'] : false;
+        $this->checkTimeout = isset($options['check_timeout']) ? (int) $options['check_timeout'] : 10;
     }
 
     /**
@@ -472,7 +475,18 @@ class Ftp implements Adapter,
      */
     private function isConnected()
     {
-        return is_resource($this->connection);
+        if(!is_resource($this->connection)) {
+            return false;
+        }
+        if($this->checkTimeout > 0 && $this->lastConnection < (time() - $this->checkTimeout)) {
+            $this->lastConnection = time();
+            // If ftp_nlist return false, we are disconnected
+            if(false === ftp_nlist($this->connection, '.')) {
+                ftp_close($this->connection);
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
