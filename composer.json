@@ -1,7 +1,7 @@
 {
-    "name":         "knplabs/gaufrette",
+    "name":         "FaustineLarmagna/gaufrette",
     "type":         "library",
-    "description":  "PHP5 library that provides a filesystem abstraction layer",
+    "description":  "Fork of knplabs/gaufrette library: PHP5 library that provides a filesystem abstraction layer",
     "keywords":     ["file", "filesystem", "media", "abstraction"],
     "minimum-stability": "dev",
     "homepage":     "http://knplabs.com",
