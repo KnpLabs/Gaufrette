@@ -14,6 +14,10 @@
         {
             "name":     "The contributors",
             "homepage": "http://github.com/knplabs/Gaufrette/contributors"
+        },
+        {
+            "name":     "Faustine Larmagna",
+            "homepage": "http://github.com/FausineLarmagna"
         }
     ],
     "repositories": [
