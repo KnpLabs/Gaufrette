@@ -14,9 +14,9 @@ use Gaufrette\Exception;
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  * @author <f.larmagna@gmail.com>
  */
-class FtpAdapter implements Adapter,
-                            FileFactory,
-                            ListKeysAware
+class Ftp implements Adapter,
+                     FileFactory,
+                     ListKeysAware
 {
     protected $connection = null;
     protected $directory;
