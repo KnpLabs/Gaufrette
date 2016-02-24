@@ -12,10 +12,11 @@ use Gaufrette\Exception;
  *
  * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
+ * @author <f.larmagna@gmail.com>
  */
-class Ftp implements Adapter,
-                     FileFactory,
-                     ListKeysAware
+class FtpAdapter implements Adapter,
+                            FileFactory,
+                            ListKeysAware
 {
     protected $connection = null;
     protected $directory;
@@ -54,7 +55,8 @@ class Ftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $key
+     * @return bool|string
      */
     public function read($key)
     {
@@ -74,34 +76,39 @@ class Ftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $key
+     * @param string $content
+     * @return bool|int
      */
     public function write($key, $content)
     {
-        $this->ensureDirectoryExists($this->directory, $this->create);
-
-        $path = $this->computePath($key);
-        $directory = dirname($path);
-
-        $this->ensureDirectoryExists($directory, true);
+        //change to the directory that will contain the written file
+        $this->moveToTargetDirectory($key);
+        $file = basename($key);
 
         $temp = fopen('php://temp', 'r+');
         $size = fwrite($temp, $content);
         rewind($temp);
 
-        if (!ftp_fput($this->getConnection(), $path, $temp, $this->mode)) {
+        if (!ftp_fput($this->getConnection(), $file, $temp, $this->mode)) {
+            //change back to ftp root directory
+            $this->changeDirectory($this->directory);
             fclose($temp);
 
             return false;
         }
 
+        //change back to ftp root directory
+        $this->changeDirectory($this->directory);
         fclose($temp);
 
         return $size;
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $sourceKey
+     * @param string $targetKey
+     * @return bool
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -116,7 +123,8 @@ class Ftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $key
+     * @return bool
      */
     public function exists($key)
     {
@@ -140,7 +148,7 @@ class Ftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * @return mixed
      */
     public function keys()
     {
@@ -152,7 +160,8 @@ class Ftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $prefix
+     * @return array
      */
     public function listKeys($prefix = '')
     {
@@ -181,13 +190,19 @@ class Ftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $key
+     * @return int
+     * @throws \RuntimeException
      */
     public function mtime($key)
     {
-        $this->ensureDirectoryExists($this->directory, $this->create);
+        //change directory to avoid truncation of too long paths
+        $this->moveToTargetDirectory($key);
+        $file = basename($key);
 
-        $mtime = ftp_mdtm($this->getConnection(), $this->computePath($key));
+        $mtime = ftp_mdtm($this->getConnection(), $file);
+        //change back to ftp root directory
+        $this->changeDirectory($this->directory);
 
         // the server does not support this function
         if (-1 === $mtime) {
@@ -198,7 +213,8 @@ class Ftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $key
+     * @return bool
      */
     public function delete($key)
     {
@@ -212,7 +228,8 @@ class Ftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $key
+     * @return bool
      */
     public function isDirectory($key)
     {
@@ -263,13 +280,15 @@ class Ftp implements Adapter,
         $this->fileData = array_merge($fileData, $this->fileData);
 
         return array(
-           'keys'   => array_keys($fileData),
-           'dirs'   => $dirs
+            'keys'   => array_keys($fileData),
+            'dirs'   => $dirs
         );
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $key
+     * @param Filesystem $filesystem
+     * @return File
      */
     public function createFile($key, Filesystem $filesystem)
     {
@@ -356,6 +375,11 @@ class Ftp implements Adapter,
         return true;
     }
 
+    /**
+     * @param string $directory
+     * @param bool|true $onlyKeys
+     * @return array
+     */
     private function fetchKeys($directory = '', $onlyKeys = true)
     {
         $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
@@ -458,7 +482,8 @@ class Ftp implements Adapter,
     /**
      * Computes the path for the given key
      *
-     * @param string $key
+     * @param $key
+     * @return string
      */
     private function computePath($key)
     {
@@ -502,7 +527,7 @@ class Ftp implements Adapter,
             $this->connection = ftp_connect($this->host, $this->port);
         } else {
             if(function_exists('ftp_ssl_connect')) {
-                $this->connection = ftp_ssl_connect($this->host, $this->port);        
+                $this->connection = ftp_ssl_connect($this->host, $this->port);
             } else {
                 throw new \RuntimeException('This Server Has No SSL-FTP Available.');
             }
@@ -553,8 +578,48 @@ class Ftp implements Adapter,
         }
     }
 
+    /**
+     * @param $info
+     * @return bool
+     */
     private function isLinuxListing($info)
     {
         return count($info) >= 9;
+    }
+
+    /**
+     * Change current directory to the specified directory
+     *
+     * @param string $directory
+     * @throws \RuntimeException
+     * @return bool
+     */
+    protected function changeDirectory($directory)
+    {
+        $moved = ftp_chdir($this->getConnection(), $directory);
+
+        if (false === $moved) {
+            throw new \RuntimeException(sprintf('Could not move to the \'%s\' directory.', $directory));
+        }
+    }
+
+    /**
+     * Change current directory to the directory of
+     * the $key filepath.
+     * This allows to avoid truncation of too long file paths
+     * or failure of ftp_mdtm function due to too long file paths
+     *
+     * @param string $key
+     */
+    protected function moveToTargetDirectory($key)
+    {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
+        $path = $this->computePath($key);
+        $directory = dirname($path);
+
+        $this->ensureDirectoryExists($directory, true);
+
+        $this->changeDirectory($directory);
     }
 }
