@@ -60,16 +60,22 @@ class Ftp implements Adapter,
      */
     public function read($key)
     {
-        $this->ensureDirectoryExists($this->directory, $this->create);
+        //change to the directory that contain the file
+        $this->moveToTargetDirectory($key);
+        $file = basename($key);
 
         $temp = fopen('php://temp', 'r+');
 
-        if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), $this->mode)) {
+        if (!ftp_fget($this->getConnection(), $temp, $file, $this->mode)) {
+            //change back to ftp root directory
+            $this->changeDirectory($this->directory);
             return false;
         }
 
         rewind($temp);
         $contents = stream_get_contents($temp);
+        //change back to ftp root directory
+        $this->changeDirectory($this->directory);
         fclose($temp);
 
         return $contents;
@@ -112,14 +118,26 @@ class Ftp implements Adapter,
      */
     public function rename($sourceKey, $targetKey)
     {
-        $this->ensureDirectoryExists($this->directory, $this->create);
-
         $sourcePath = $this->computePath($sourceKey);
         $targetPath = $this->computePath($targetKey);
+        $targetDirectory = dirname($targetPath);
 
-        $this->ensureDirectoryExists(dirname($targetPath), true);
+        $this->ensureDirectoryExists($targetDirectory, true);
 
-        return ftp_rename($this->getConnection(), $sourcePath, $targetPath);
+        if (dirname($sourcePath) == $targetDirectory) {
+            //change to the directory that contains the file to rename
+            $this->changeDirectory($targetDirectory);
+
+            $result = ftp_rename($this->getConnection(), basename($sourceKey), basename($targetKey));
+
+            //change back to ftp root directory
+            $this->changeDirectory($this->directory);
+        } else {
+            // don't change current ftp directory. May fail if paths are too long
+            $result = ftp_rename($this->getConnection(), $sourcePath, $targetPath);
+        }
+
+        return $result;
     }
 
     /**
@@ -128,22 +146,26 @@ class Ftp implements Adapter,
      */
     public function exists($key)
     {
-        $this->ensureDirectoryExists($this->directory, $this->create);
+        //change to the directory that contain the source file
+        $this->moveToTargetDirectory($key);
 
-        $file  = $this->computePath($key);
-        $lines = ftp_rawlist($this->getConnection(), '-al ' . dirname($file));
+        $lines = ftp_rawlist($this->getConnection(), '-al ' . '.');
 
         if (false === $lines) {
             return false;
         }
 
-        $pattern = '{(?<!->) '.preg_quote(basename($file)).'( -> |$)}m';
+        $pattern = '{(?<!->) '.preg_quote(basename($key)).'( -> |$)}m';
         foreach ($lines as $line) {
             if (preg_match($pattern, $line)) {
+                //change back to ftp root directory
+                $this->changeDirectory($this->directory);
                 return true;
             }
         }
 
+        //change back to ftp root directory
+        $this->changeDirectory($this->directory);
         return false;
     }
 
@@ -201,6 +223,7 @@ class Ftp implements Adapter,
         $file = basename($key);
 
         $mtime = ftp_mdtm($this->getConnection(), $file);
+
         //change back to ftp root directory
         $this->changeDirectory($this->directory);
 
@@ -218,13 +241,20 @@ class Ftp implements Adapter,
      */
     public function delete($key)
     {
-        $this->ensureDirectoryExists($this->directory, $this->create);
+        //change to directory containing the $key to delete
+        $this->moveToTargetDirectory($key);
+        $keyName = basename($key);
 
         if ($this->isDirectory($key)) {
-            return ftp_rmdir($this->getConnection(), $this->computePath($key));
+            $result = ftp_rmdir($this->getConnection(), $keyName);
+        } else {
+            $result = ftp_delete($this->getConnection(), $keyName);
         }
 
-        return ftp_delete($this->getConnection(), $this->computePath($key));
+        //move back to ftp root directory
+        $this->changeDirectory($this->directory);
+
+        return $result;
     }
 
     /**
@@ -605,9 +635,9 @@ class Ftp implements Adapter,
 
     /**
      * Change current directory to the directory of
-     * the $key filepath.
+     * the $key file path.
      * This allows to avoid truncation of too long file paths
-     * or failure of ftp_mdtm function due to too long file paths
+     * or failure of ftp php functions due to too long file paths
      *
      * @param string $key
      */
