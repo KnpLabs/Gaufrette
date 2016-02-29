@@ -391,6 +391,8 @@ class Ftp implements Adapter,
      */
     private function isDir($directory)
     {
+        $currentPath = ftp_pwd($this->getConnection());
+
         if ('/' === $directory) {
             return true;
         }
@@ -399,8 +401,8 @@ class Ftp implements Adapter,
             return false;
         }
 
-        // change directory again to return in the base directory
-        ftp_chdir($this->getConnection(), $this->directory);
+        // change directory again to return to where we were
+        ftp_chdir($this->getConnection(), $currentPath);
 
         return true;
     }
