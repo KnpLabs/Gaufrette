@@ -1,5 +1,7 @@
 language: php
 
+sudo: false
+
 php:
   - 5.3
   - 5.4
@@ -12,8 +14,9 @@ matrix:
         - php: hhvm
 
 before_script:
-  - ./bin/configure_test_env.sh
-  - composer self-update && composer install --dev --prefer-source --no-interaction
+  - echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - cp tests/Gaufrette/Functional/adapters/DoctrineDbal.php.dist tests/Gaufrette/Functional/adapters/DoctrineDbal.php -f
+  - composer self-update && composer install --dev --prefer-source --no-interaction --ignore-platform-reqs
 
 script:
   - php bin/phpspec run -fpretty --verbose
