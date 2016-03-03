@@ -1,13 +1,11 @@
-GoogleCloudStorage
-==================
+# GoogleCloudStorage
 
 To use the GoogleCloudStorage adapter you will need to create a connection using the [Google APIs Client Library for PHP]
 (https://github.com/google/google-api-php-client) and create a Client ID/Service Account in your [Developers Console]
 (https://console.developers.google.com/). You can then create the `\Google_Service_Storage` which is required for the
 GoogleCloudStorage adapter.
 
-Example
--------
+## Example
 
 ```php
 <?php
