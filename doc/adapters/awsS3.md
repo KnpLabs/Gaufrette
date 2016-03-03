@@ -5,8 +5,7 @@ First, you will need to install AWS SDK for PHP:
 composer require aws/aws-sdk-php
 ```
 
-Example
--------
+## Example
 
 ```php
 <?php
