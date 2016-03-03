@@ -29,7 +29,7 @@ menu:
             name: Adapters
             items:
                 amazonS3:
-                    text: AmazonS3
+                    text: Amazon S3
                     relativeUrl: adapters/amazon-s3.html
                 apc:
                     text: Apc
@@ -38,7 +38,7 @@ menu:
                     text: AWS S3
                     relativeUrl: adapters/aws-s3.html
                 azureBlobStorage:
-                    text: AzureBlobStorage
+                    text: Azure Blob Storage
                     relativeUrl: adapters/azure-blob-storage.html
                 gtp:
                     text: Ftp
@@ -53,10 +53,10 @@ menu:
                     text: InMemory
                     relativeUrl: adapters/in-memory.html
                 local:
-                    text: Local & SafeLocal
+                    text: Local
                     relativeUrl: adapters/local.html
                 openCloud:
-                    text: OpenCloud & LazyOpenCloud
+                    text: OpenCloud
                     relativeUrl: adapters/open-cloud.html
                 phpseclibSftp:
                     text: PhpseclibSftp
