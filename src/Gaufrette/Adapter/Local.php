@@ -5,7 +5,6 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Adapter;
 use Gaufrette\Stream;
-use Gaufrette\Adapter\StreamFactory;
 use Gaufrette\Exception;
 
 /**
@@ -28,12 +27,10 @@ class Local implements Adapter,
      * Constructor
      *
      * @param string  $directory Directory where the filesystem is located
-     * @param boolean $create    Whether to create the directory if it does not
-     *                            exist (default FALSE)
+     * @param boolean $create    Whether to create the directory if it does not exist (default FALSE)
      * @param integer $mode      Mode for mkdir
      *
-     * @throws RuntimeException if the specified directory does not exist and
-     *                          could not be created
+     * @throws \RuntimeException If the specified directory does not exist and could not be created
      */
     public function __construct($directory, $create = false, $mode = 0777)
     {
@@ -134,7 +131,8 @@ class Local implements Adapter,
     }
 
     /**
-     * @param  string  $key
+     * @param string $key
+     *
      * @return boolean
      */
     public function isDirectory($key)
@@ -181,7 +179,7 @@ class Local implements Adapter,
      *
      * @param string $path
      *
-     * return string
+     * @return string
      */
     public function computeKey($path)
     {
@@ -197,9 +195,8 @@ class Local implements Adapter,
      *
      * @return string A path
      *
-     * @throws OutOfBoundsException If the computed path is out of the
-     *                              directory
-     * @throws RuntimeException If directory does not exists and cannot be created
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \RuntimeException     If directory does not exists and cannot be created
      */
     protected function computePath($key)
     {
@@ -214,6 +211,8 @@ class Local implements Adapter,
      * @param string $path
      *
      * @return string
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
      */
     protected function normalizePath($path)
     {
@@ -230,11 +229,9 @@ class Local implements Adapter,
      * Ensures the specified directory exists, creates it if it does not
      *
      * @param string  $directory Path of the directory to test
-     * @param boolean $create    Whether to create the directory if it does
-     *                            not exist
+     * @param boolean $create    Whether to create the directory if it does not exist
      *
-     * @throws RuntimeException if the directory does not exists and could not
-     *                          be created
+     * @throws \RuntimeException If the directory does not exists and could not be created
      */
     protected function ensureDirectoryExists($directory, $create = false)
     {
@@ -252,8 +249,7 @@ class Local implements Adapter,
      *
      * @param string $directory Path of the directory to create
      *
-     * @throws InvalidArgumentException if the directory already exists
-     * @throws RuntimeException         if the directory could not be created
+     * @throws \RuntimeException If the directory could not be created
      */
     protected function createDirectory($directory)
     {
