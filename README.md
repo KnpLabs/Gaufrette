@@ -3,13 +3,9 @@ Gaufrette
 
 Gaufrette provides a filesystem abstraction layer.
 
-This project does not have any stable release yet but we do not want to break BC now.
-
 [![Build Status](https://secure.travis-ci.org/KnpLabs/Gaufrette.png)](http://travis-ci.org/KnpLabs/Gaufrette)
 [![Join the chat at https://gitter.im/KnpLabs/Gaufrette](https://badges.gitter.im/KnpLabs/Gaufrette.svg)](https://gitter.im/KnpLabs/Gaufrette)
 [![Stories in Ready](https://badge.waffle.io/knplabs/gaufrette.png?label=ready&title=Ready)](https://waffle.io/knplabs/gaufrette)
-
-Symfony integration is available here: [KnpLabs/KnpGaufretteBundle](https://github.com/KnpLabs/KnpGaufretteBundle).
 
 Documentation is available [here](doc/index.md).
 
@@ -58,6 +54,10 @@ $file = $filesystem->get('myFile');
 echo sprintf('%s (modified %s): %s', $file->getKey(), date('d/m/Y, H:i:s', $file->getMtime()), $file->getContent());
 ```
 
+### Symfony integration
+
+Symfony integration is available through [KnpLabs/KnpGaufretteBundle](https://github.com/KnpLabs/KnpGaufretteBundle).
+
 ### Setup the vendor libraries
 
 As some filesystem adapters use vendor libraries, you should install the vendors:
@@ -81,3 +81,7 @@ To check basic functionality of the adapters (adapters should be configured you 
     $ bin/phpunit
 
 Is it green?
+
+### Note
+
+This project does not have any stable release yet but we do not want to break BC now.
