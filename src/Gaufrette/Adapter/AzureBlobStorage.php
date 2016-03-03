@@ -48,8 +48,6 @@ class AzureBlobStorage implements Adapter,
     protected $blobProxy;
 
     /**
-     * Constructor
-     *
      * @param AzureBlobStorage\BlobProxyFactoryInterface $blobProxyFactory
      * @param string                                     $containerName
      * @param bool                                       $create

@@ -30,8 +30,6 @@ class Ftp implements Adapter,
     protected $fileData = array();
 
     /**
-     * Constructor
-     *
      * @param string $directory The directory to use in the ftp server
      * @param string $host      The host of the ftp server
      * @param array  $options   The options like port, username, password, passive, create, mode
@@ -502,7 +500,7 @@ class Ftp implements Adapter,
             $this->connection = ftp_connect($this->host, $this->port);
         } else {
             if(function_exists('ftp_ssl_connect')) {
-                $this->connection = ftp_ssl_connect($this->host, $this->port);        
+                $this->connection = ftp_ssl_connect($this->host, $this->port);
             } else {
                 throw new \RuntimeException('This Server Has No SSL-FTP Available.');
             }

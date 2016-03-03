@@ -18,8 +18,6 @@ class Apc implements Adapter
     protected $ttl;
 
     /**
-     * Constructor
-     *
      * @throws \RuntimeException
      * @param  string            $prefix to avoid conflicts between filesystems
      * @param  int               $ttl    time to live, default is 0

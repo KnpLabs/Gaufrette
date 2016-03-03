@@ -22,8 +22,6 @@ class Filesystem
     protected $fileRegister = array();
 
     /**
-     * Constructor
-     *
      * @param Adapter $adapter A configured Adapter instance
      */
     public function __construct(Adapter $adapter)

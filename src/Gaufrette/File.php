@@ -45,8 +45,6 @@ class File
     protected $mtime = null;
 
     /**
-     * Constructor
-     *
      * @param string     $key
      * @param Filesystem $filesystem
      */
@@ -114,7 +112,7 @@ class File
      * Returns the file modified time
      *
      * @return int
-     */    
+     */
     public function getMtime()
     {
         return $this->mtime = $this->filesystem->mtime($this->key);

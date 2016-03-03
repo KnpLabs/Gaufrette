@@ -32,8 +32,6 @@ class ObjectStoreFactory implements ObjectStoreFactoryInterface
     protected $objectStoreType;
 
     /**
-     * Constructor
-     *
      * @param OpenStack $connection
      * @param string $region
      * @param string $urlType

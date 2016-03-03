@@ -27,8 +27,6 @@ class MogileFS implements Adapter
     protected $socket;
 
     /**
-     * Constructor
-     *
      * @param domain MogileFS domain
      * @param hosts  Array of MogileFS trackers
      */

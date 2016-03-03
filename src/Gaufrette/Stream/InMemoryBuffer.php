@@ -18,8 +18,6 @@ class InMemoryBuffer implements Stream
     private $synchronized;
 
     /**
-     * Constructor
-     *
      * @param Filesystem $filesystem The filesystem managing the file to stream
      * @param string     $key        The file key
      */

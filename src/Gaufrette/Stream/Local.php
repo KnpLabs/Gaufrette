@@ -17,8 +17,6 @@ class Local implements Stream
     private $fileHandle;
 
     /**
-     * Constructor
-     *
      * @param string $path
      */
     public function __construct($path)

@@ -41,8 +41,6 @@ class OpenCloud implements Adapter,
     protected $container;
 
     /**
-     * Constructor
-     *
      * @param Service $objectStore
      * @param string  $containerName   The name of the container
      * @param bool    $createContainer Whether to create the container if it does not exist

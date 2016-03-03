@@ -18,8 +18,6 @@ class InMemory implements Adapter
     protected $files = array();
 
     /**
-     * Constructor
-     *
      * @param array $files An array of files
      */
     public function __construct(array $files = array())

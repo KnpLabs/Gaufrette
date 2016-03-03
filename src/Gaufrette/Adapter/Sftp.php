@@ -14,8 +14,6 @@ class Sftp implements Adapter,
     protected $initialized = false;
 
     /**
-     * Constructor
-     *
      * @param \Ssh\Sftp $sftp      An Sftp instance
      * @param string    $directory The distant directory
      * @param boolean   $create    Whether to create the remote directory if it
@@ -208,7 +206,7 @@ class Sftp implements Adapter,
         if (false === $resource && (!$create || !$this->createDirectory($directory))) {
             throw new \RuntimeException(sprintf('The directory \'%s\' does not exist and could not be created.', $directory));
         }
-        
+
         // make sure we don't leak the resource
         if (is_resource($resource)) {
             closedir($resource);
