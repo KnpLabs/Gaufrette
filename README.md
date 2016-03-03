@@ -7,8 +7,6 @@ Gaufrette provides a filesystem abstraction layer.
 [![Join the chat at https://gitter.im/KnpLabs/Gaufrette](https://badges.gitter.im/KnpLabs/Gaufrette.svg)](https://gitter.im/KnpLabs/Gaufrette)
 [![Stories in Ready](https://badge.waffle.io/knplabs/gaufrette.png?label=ready&title=Ready)](https://waffle.io/knplabs/gaufrette)
 
-Documentation is available [here](doc/index.md).
-
 Why use Gaufrette?
 ------------------
 
@@ -53,6 +51,10 @@ $file = $filesystem->get('myFile');
 // Will print something like: "myFile (modified 17/01/2016 18:40:36): Hello world!"
 echo sprintf('%s (modified %s): %s', $file->getKey(), date('d/m/Y, H:i:s', $file->getMtime()), $file->getContent());
 ```
+
+### Documentation
+
+Read the official [Gaufrette documentation](doc/index.md).
 
 ### Symfony integration
 
