@@ -29,7 +29,6 @@ class PhpseclibSftp implements Adapter,
     public function __construct(SFTP $sftp, $directory = null, $create = false, $username = null, $password = null)
     {
         $this->sftp = $sftp;
-        $this->sftp->login($username, $password);
         $this->directory = $directory;
         $this->create = $create;
     }
