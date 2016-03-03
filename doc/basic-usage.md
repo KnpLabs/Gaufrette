@@ -4,7 +4,7 @@ currentMenu: basic-usage
 
 # Basic Usage
 
-Following an example with the local filesystem adapter. To setup other adapters, look up [their respective documentation](https://github.com/KnpLabs/Gaufrette/tree/master/doc/#adapters).
+Following an example with the local filesystem adapter. To setup other adapters, look up their respective documentation.
 
 ```php
 <?php
