@@ -1,0 +1,27 @@
+template:
+    directory: .
+
+github:
+    user: CouscousPHP
+    repo: Template-Dark
+
+title: Couscous template
+subTitle: The dark template for Couscous.
+
+# The left menu bar
+menu:
+    sections:
+        main:
+            name: Main documentation
+            items:
+                home:
+                    text: Home page
+                    # You can use relative urls
+                    relativeUrl: doc/faq.html
+                foo:
+                    text: Another link
+                    # Or absolute urls
+                    absoluteUrl: https://example.com
+        other:
+            name: Other topics
+            items:
