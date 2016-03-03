@@ -1,0 +1,20 @@
+build: false
+platform: 'x86'
+clone_folder: C:\projects\gaufrette
+branches:
+  except:
+    - gh-pages
+
+install:
+  - cinst -y php
+  - cd c:\tools\php
+  - echo date.timezone="UTC" >> php.ini
+  - SET PATH=C:\tools\php;%PATH%
+  - cd C:\projects\gaufrette
+  - php -r "readfile('http://getcomposer.org/installer');" | php
+  - php composer.phar install --prefer-source --no-interaction
+
+test_script:
+  - cd C:\projects\gaufrette
+  - php bin\phpspec.bat run -fpretty --verbose
+  - php bin\phpunit.bat
