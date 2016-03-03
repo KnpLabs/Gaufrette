@@ -1,8 +1,8 @@
-### Documentation for Gaufrette phpseclib adapter
+# phpseclib adapter
 
 *N.B.* It is recommended to use this adapter over [SFTP](doc/adapters/sftp.md).
 
-#### Prerequisites
+## Prerequisites
 
 * [phpseclib](https://github.com/phpseclib/phpseclib)
 
@@ -12,7 +12,7 @@ You can install it via:
 composer require phpseclib/phpseclib:^2.0
 ```
 
-#### Configuration
+## Configuration
 
 ```php
 

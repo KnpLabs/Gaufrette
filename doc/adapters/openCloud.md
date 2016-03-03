@@ -1,11 +1,9 @@
-OpenCloud & LazyOpenCloud
-=========================
+# OpenCloud & LazyOpenCloud
 
 To use the OpenCloud adapter you will need to create a connection using the [OpenCloud SDK](https://github.com/rackspace/php-opencloud).
 You can then fetch the ObjectStore which is required for the OpenCloud adapter.
 
-OpenCloud Example
------------------
+## OpenCloud Example
 
 ```php
 <?php
@@ -30,7 +28,7 @@ $adapter = new OpenCloudAdapter(
 $filesystem = new Filesystem($adapter);
 ```
 
-### Rackspace
+## Rackspace Example
 
 Rackspace uses a difference connection class
 
@@ -57,8 +55,7 @@ $adapter = new OpenCloudAdapter(
 $filesystem = new Filesystem($adapter);
 ```
 
-LazyOpenCloud Example
----------------------
+## LazyOpenCloud Example
 
 Instantiating the OpenCloud object store service has some overhead because it issues an authentication request,
 even if you end up not using the filesystem. For better performance you can use a lazy-loading adapter which only authenticates when needed.
