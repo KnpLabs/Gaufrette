@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Gaufrette</title>
+
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/css/highlight.tomorrow-night.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+
+        <header class="navbar navbar-default navbar-fixed-top">
+
+            <a class="navbar-brand" href="/">
+                Gaufrette
+                <small class="hidden-xs hidden-sm">
+                    Filesystem abstraction layer
+                </small>
+            </a>
+
+                            <a href="https://github.com/KnpLabs/Gaufrette">
+                    <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png">
+                </a>
+            
+        </header>
+
+        <main class="container-fluid">
+            <div class="row">
+
+                
+                    <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
+
+                                                    <p class="text-muted">
+                                Table of Contents
+                            </p>
+
+                            <ul class="nav nav-pills nav-stacked">
+                                                                    <li class="">
+                                        <a href="/">
+                                            Introduction
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/installation.html">
+                                            Installation
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/basic-usage.html">
+                                            Basic Usage
+                                        </a>
+                                    </li>
+                                                                    <li class="active">
+                                        <a href="/caching.html">
+                                            Caching
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/streaming.html">
+                                            Streaming
+                                        </a>
+                                    </li>
+                                                            </ul>
+                                                    <p class="text-muted">
+                                Adapters
+                            </p>
+
+                            <ul class="nav nav-pills nav-stacked">
+                                                                    <li class="">
+                                        <a href="/adapters/amazon-s3.html">
+                                            Amazon S3
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/adapters/apc.html">
+                                            Apc
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/adapters/aws-s3.html">
+                                            AWS S3
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/adapters/azure-blob-storage.html">
+                                            Azure Blob Storage
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/adapters/ftp.html">
+                                            Ftp
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/adapters/google-cloud-storage.html">
+                                            Google Cloud Storage
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/adapters/grid-fs.html">
+                                            GridFS
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/adapters/in-memory.html">
+                                            InMemory
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/adapters/local.html">
+                                            Local
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/adapters/open-cloud.html">
+                                            OpenCloud
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/adapters/phpseclib-sftp.html">
+                                            PhpseclibSftp
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/adapters/sftp.html">
+                                            Sftp
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="/adapters/zip.html">
+                                            Zip
+                                        </a>
+                                    </li>
+                                                            </ul>
+                        
+                    </nav>
+
+                
+                <section class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
+                    <h1 id="caching">Caching</h1>
+<p>If you have to deal with a slow filesystem, it is out of question to use it directly.
+So, you need a cache! Happily, Gaufrette offers a cache system ready for use.
+It consist of an adapter decorator itself composed of two adapters:</p>
+<pre><code>* The *source* adapter that should be cached
+* The *cache* adapter that is used to cache</code></pre>
+<p>Here is an example of how to cache an ftp filesystem:</p>
+<pre><code class="language-php">&lt;?php
+
+use Gaufrette\Filesystem;
+use Gaufrette\Adapter\Ftp as FtpAdapter;
+use Gaufrette\Adapter\Local as LocalAdapter;
+use Gaufrette\Adapter\Cache as CacheAdapter;
+
+// Locale Cache-Directory (e.g. '%kernel.root_dir%/cache/%kernel.environment%/filesystem') with create = true
+$local = new LocalAdapter($cacheDirectory, true);
+// FTP Adapter with a defined root-path
+$ftp = new FtpAdapter($path, $host, $username, $password, $port);
+
+// Cached Adapter with 3600 seconds time to live
+$cachedFtp = new CacheAdapter($ftp, $local, 3600);
+
+$filesystem = new Filesystem($cachedFtp);</code></pre>
+<p>The third parameter of the cache adapter is the time to live of the cache.</p>
+                </section>
+
+            </div>
+        </main>
+
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script src="//yandex.st/highlightjs/7.5/highlight.min.js"></script>
+
+        <script>
+            $(function() {
+                $("section>h1").wrap('<div class="page-header" />');
+                // Syntax highlighting
+                hljs.initHighlightingOnLoad();
+            });
+        </script>
+
+    </body>
+</html>
