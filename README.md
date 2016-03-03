@@ -22,31 +22,6 @@ In example, if your project grows up very fast and if your server reaches its
 limits, you can easily move your medias in an Amazon S3 server or any other
 solution.
 
-Try it!
--------
-
-Following an example with the local filesystem adapter. To setup other adapters, look up [their respective documentation](https://github.com/KnpLabs/Gaufrette/tree/master/doc/#adapters).
-
-```php
-<?php
-
-use Gaufrette\Filesystem;
-use Gaufrette\Adapter\Local as LocalAdapter;
-
-// First, you need a filesystem adapter
-$adapter = new LocalAdapter('/var/media');
-$filesystem = new Filesystem($adapter);
-
-// Then, you can access your filesystem directly
-var_dump($filesystem->read('myFile')); // bool(false)
-$filesystem->write('myFile', 'Hello world!');
-
-// Or use File objects
-$file = $filesystem->get('myFile');
-echo sprintf('%s (modified %s): %s', $file->getKey(), date('d/m/Y, H:i:s', $file->getMtime()), $file->getContent());
-// Will print something like: "myFile (modified 17/01/2016 18:40:36): Hello world!"
-```
-
 ### Documentation
 
 Read the official [Gaufrette documentation](doc/index.md).
