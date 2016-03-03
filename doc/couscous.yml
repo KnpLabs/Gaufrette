@@ -1,5 +1,8 @@
 title: Gaufrette
 subTitle: Filesystem abstraction layer
+github:
+    user: KnpLabs
+    repo: Gaufrette
 template:
     url: https://github.com/CouscousPHP/Template-Dark
     index: introduction.md
@@ -22,3 +25,45 @@ menu:
                 streaming:
                     text: Streaming
                     relativeUrl: streaming.html
+        adapters:
+            name: Adapters
+            items:
+                amazonS3:
+                    text: AmazonS3
+                    relativeUrl: adapters/amazon-s3.html
+                apc:
+                    text: Apc
+                    relativeUrl: adapters/apc.html
+                awss3:
+                    text: AWS S3
+                    relativeUrl: adapters/awss3.html
+                azureBlobStorage:
+                    text: AzureBlobStorage
+                    relativeUrl: adapters/azureBlobStorage.html
+                gtp:
+                    text: Ftp
+                    relativeUrl: adapters/ftp.html
+                googleCloudStorage:
+                    text: Google Cloud Storage
+                    relativeUrl: adapters/googleCloudStorage.html
+                gridFs:
+                    text: GridFS
+                    relativeUrl: adapters/gridFs.html
+                InMemory:
+                    text: InMemory
+                    relativeUrl: adapters/inMemory.html
+                local:
+                    text: Local & SafeLocal
+                    relativeUrl: adapters/local.html
+                openCloud:
+                    text: OpenCloud & LazyOpenCloud
+                    relativeUrl: adapters/openCloud.html
+                phpseclibSftp:
+                    text: PhpseclibSftp
+                    relativeUrl: adapters/phpseclibSftp.html
+                sftp:
+                    text: Sftp
+                    relativeUrl: adapters/sftp.html
+                zip:
+                    text: Zip
+                    relativeUrl: adapters/zip.html

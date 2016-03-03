@@ -1,5 +1,4 @@
-Amazon S3 & AclAwareAmazonS3
-============================
+# AmazonS3 & AclAwareAmazonS3
 
 When using the legacy Amazon S3 adapters (aws-sdk-php < 2), you will need to specify a CA
 certificate to be able to talk to Amazon servers in https. You can use
