@@ -3,7 +3,7 @@
 namespace Gaufrette;
 
 /**
- * Associates filesystem instances to domains
+ * Associates filesystem instances to domains.
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
@@ -13,7 +13,7 @@ class FilesystemMap
 
     /**
      * Returns an array of all the registered filesystems where the key is the
-     * domain and the value the filesystem
+     * domain and the value the filesystem.
      *
      * @return array
      */
@@ -23,7 +23,7 @@ class FilesystemMap
     }
 
     /**
-     * Register the given filesystem for the specified domain
+     * Register the given filesystem for the specified domain.
      *
      * @param string     $domain
      * @param Filesystem $filesystem
@@ -33,7 +33,7 @@ class FilesystemMap
      */
     public function set($domain, Filesystem $filesystem)
     {
-        if (! preg_match('/^[-_a-zA-Z0-9]+$/', $domain)) {
+        if (!preg_match('/^[-_a-zA-Z0-9]+$/', $domain)) {
             throw new \InvalidArgumentException(sprintf(
                 'The specified domain "%s" is not a valid domain.',
                 $domain
@@ -45,11 +45,11 @@ class FilesystemMap
 
     /**
      * Indicates whether there is a filesystem registered for the specified
-     * domain
+     * domain.
      *
      * @param string $domain
      *
-     * @return Boolean
+     * @return bool
      */
     public function has($domain)
     {
@@ -57,7 +57,7 @@ class FilesystemMap
     }
 
     /**
-     * Returns the filesystem registered for the specified domain
+     * Returns the filesystem registered for the specified domain.
      *
      * @param string $domain
      *
@@ -68,7 +68,7 @@ class FilesystemMap
      */
     public function get($domain)
     {
-        if (! $this->has($domain)) {
+        if (!$this->has($domain)) {
             throw new \InvalidArgumentException(sprintf(
                 'There is no filesystem defined for the "%s" domain.',
                 $domain
@@ -79,15 +79,13 @@ class FilesystemMap
     }
 
     /**
-     * Removes the filesystem registered for the specified domain
+     * Removes the filesystem registered for the specified domain.
      *
      * @param string $domain
-     *
-     * @return void
      */
     public function remove($domain)
     {
-        if (! $this->has($domain)) {
+        if (!$this->has($domain)) {
             throw new \InvalidArgumentException(sprintf(
                 'Cannot remove the "%s" filesystem as it is not defined.',
                 $domain
@@ -98,9 +96,7 @@ class FilesystemMap
     }
 
     /**
-     * Clears all the registered filesystems
-     *
-     * @return void
+     * Clears all the registered filesystems.
      */
     public function clear()
     {

@@ -6,7 +6,7 @@ use Gaufrette\Stream;
 use Gaufrette\StreamMode;
 
 /**
- * Local stream
+ * Local stream.
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
@@ -25,7 +25,7 @@ class Local implements Stream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function open(StreamMode $mode)
     {
@@ -50,11 +50,11 @@ class Local implements Stream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($count)
     {
-        if (! $this->fileHandle) {
+        if (!$this->fileHandle) {
             return false;
         }
 
@@ -66,11 +66,11 @@ class Local implements Stream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($data)
     {
-        if (! $this->fileHandle) {
+        if (!$this->fileHandle) {
             return false;
         }
 
@@ -82,11 +82,11 @@ class Local implements Stream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function close()
     {
-        if (! $this->fileHandle) {
+        if (!$this->fileHandle) {
             return false;
         }
 
@@ -101,7 +101,7 @@ class Local implements Stream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function flush()
     {
@@ -113,7 +113,7 @@ class Local implements Stream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function seek($offset, $whence = SEEK_SET)
     {
@@ -125,7 +125,7 @@ class Local implements Stream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function tell()
     {
@@ -137,7 +137,7 @@ class Local implements Stream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function eof()
     {
@@ -149,7 +149,7 @@ class Local implements Stream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function stat()
     {
@@ -163,7 +163,7 @@ class Local implements Stream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function cast($castAs)
     {
@@ -175,7 +175,7 @@ class Local implements Stream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function unlink()
     {

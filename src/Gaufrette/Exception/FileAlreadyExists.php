@@ -5,7 +5,7 @@ namespace Gaufrette\Exception;
 use Gaufrette\Exception;
 
 /**
- * Exception to be thrown when a file already exists
+ * Exception to be thrown when a file already exists.
  *
  * @author Benjamin Dulau <benjamin.dulau@gmail.com>
  */

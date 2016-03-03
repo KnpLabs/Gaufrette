@@ -5,9 +5,8 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 
 /**
- * Google Cloud Storage adapter using the Google APIs Client Library for PHP
+ * Google Cloud Storage adapter using the Google APIs Client Library for PHP.
  *
- * @package Gaufrette
  * @author  Patrik Karisch <patrik@karisch.guru>
  */
 class GoogleCloudStorage implements Adapter,
@@ -119,10 +118,10 @@ class GoogleCloudStorage implements Adapter,
         $metadata = $this->getMetadata($key);
         $options = array(
             'uploadType' => 'multipart',
-            'data' => $content
+            'data' => $content,
         );
 
-        /**
+        /*
          * If the ContentType was not already set in the metadata, then we autodetect
          * it to prevent everything being served up as application/octet-stream.
          */
@@ -165,8 +164,8 @@ class GoogleCloudStorage implements Adapter,
 
             if ($this->options['acl'] == 'public') {
                 $acl = new \Google_Service_Storage_ObjectAccessControl();
-                $acl->setEntity("allUsers");
-                $acl->setRole("READER");
+                $acl->setEntity('allUsers');
+                $acl->setRole('READER');
 
                 $this->service->objectAccessControls->insert($this->bucket, $path, $acl);
             }
@@ -261,7 +260,7 @@ class GoogleCloudStorage implements Adapter,
      */
     public function isDirectory($key)
     {
-        if ($this->exists($key . '/')) {
+        if ($this->exists($key.'/')) {
             return true;
         }
 
@@ -276,7 +275,7 @@ class GoogleCloudStorage implements Adapter,
         $this->ensureBucketExists();
 
         $options = array();
-        if ((string)$prefix != '') {
+        if ((string) $prefix != '') {
             $options['prefix'] = $this->computePath($prefix);
         } elseif (!empty($this->options['directory'])) {
             $options['prefix'] = $this->options['directory'];

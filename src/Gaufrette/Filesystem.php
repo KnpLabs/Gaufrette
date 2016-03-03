@@ -5,7 +5,7 @@ namespace Gaufrette;
 use Gaufrette\Adapter\ListKeysAware;
 
 /**
- * A filesystem is used to store and retrieve files
+ * A filesystem is used to store and retrieve files.
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
@@ -15,7 +15,7 @@ class Filesystem
     protected $adapter;
 
     /**
-     * Contains File objects created with $this->createFile() method
+     * Contains File objects created with $this->createFile() method.
      *
      * @var array
      */
@@ -30,7 +30,7 @@ class Filesystem
     }
 
     /**
-     * Returns the adapter
+     * Returns the adapter.
      *
      * @return Adapter
      */
@@ -40,11 +40,11 @@ class Filesystem
     }
 
     /**
-     * Indicates whether the file matching the specified key exists
+     * Indicates whether the file matching the specified key exists.
      *
      * @param string $key
      *
-     * @return boolean TRUE if the file exists, FALSE otherwise
+     * @return bool TRUE if the file exists, FALSE otherwise
      */
     public function has($key)
     {
@@ -52,12 +52,13 @@ class Filesystem
     }
 
     /**
-     * Renames a file
+     * Renames a file.
      *
      * @param string $sourceKey
      * @param string $targetKey
      *
-     * @return boolean                  TRUE if the rename was successful
+     * @return bool TRUE if the rename was successful
+     *
      * @throws Exception\FileNotFound   when sourceKey does not exist
      * @throws Exception\UnexpectedFile when targetKey exists
      * @throws \RuntimeException        when cannot rename
@@ -70,11 +71,11 @@ class Filesystem
             throw new Exception\UnexpectedFile($targetKey);
         }
 
-        if (! $this->adapter->rename($sourceKey, $targetKey)) {
+        if (!$this->adapter->rename($sourceKey, $targetKey)) {
             throw new \RuntimeException(sprintf('Could not rename the "%s" key to "%s".', $sourceKey, $targetKey));
         }
 
-        if($this->isFileInRegister($sourceKey)) {
+        if ($this->isFileInRegister($sourceKey)) {
             $this->fileRegister[$targetKey] = $this->fileRegister[$sourceKey];
             unset($this->fileRegister[$sourceKey]);
         }
@@ -83,12 +84,13 @@ class Filesystem
     }
 
     /**
-     * Returns the file matching the specified key
+     * Returns the file matching the specified key.
      *
-     * @param string  $key    Key of the file
-     * @param boolean $create Whether to create the file if it does not exist
+     * @param string $key    Key of the file
+     * @param bool   $create Whether to create the file if it does not exist
      *
      * @throws Exception\FileNotFound
+     *
      * @return File
      */
     public function get($key, $create = false)
@@ -101,15 +103,16 @@ class Filesystem
     }
 
     /**
-     * Writes the given content into the file
+     * Writes the given content into the file.
      *
-     * @param string  $key                 Key of the file
-     * @param string  $content             Content to write in the file
-     * @param boolean $overwrite           Whether to overwrite the file if exists
+     * @param string $key       Key of the file
+     * @param string $content   Content to write in the file
+     * @param bool   $overwrite Whether to overwrite the file if exists
+     *
      * @throws Exception\FileAlreadyExists When file already exists and overwrite is false
      * @throws \RuntimeException           When for any reason content could not be written
      *
-     * @return integer The number of bytes that were written into the file
+     * @return int The number of bytes that were written into the file
      */
     public function write($key, $content, $overwrite = false)
     {
@@ -127,9 +130,10 @@ class Filesystem
     }
 
     /**
-     * Reads the content from the file
+     * Reads the content from the file.
      *
-     * @param  string                 $key Key of the file
+     * @param string $key Key of the file
+     *
      * @throws Exception\FileNotFound when file does not exist
      * @throws \RuntimeException      when cannot read file
      *
@@ -149,12 +153,13 @@ class Filesystem
     }
 
     /**
-     * Deletes the file matching the specified key
+     * Deletes the file matching the specified key.
      *
      * @param string $key
+     *
      * @throws \RuntimeException when cannot read file
      *
-     * @return boolean
+     * @return bool
      */
     public function delete($key)
     {
@@ -162,6 +167,7 @@ class Filesystem
 
         if ($this->adapter->delete($key)) {
             $this->removeFromRegister($key);
+
             return true;
         }
 
@@ -169,7 +175,7 @@ class Filesystem
     }
 
     /**
-     * Returns an array of all keys
+     * Returns an array of all keys.
      *
      * @return array
      */
@@ -180,12 +186,13 @@ class Filesystem
 
     /**
      * Lists keys beginning with given prefix
-     * (no wildcard / regex matching)
+     * (no wildcard / regex matching).
      *
      * if adapter implements ListKeysAware interface, adapter's implementation will be used,
      * in not, ALL keys will be requested and iterated through.
      *
-     * @param  string $prefix
+     * @param string $prefix
+     *
      * @return array
      */
     public function listKeys($prefix = '')
@@ -209,16 +216,16 @@ class Filesystem
 
         return array(
             'keys' => $keys,
-            'dirs' => $dirs
+            'dirs' => $dirs,
         );
     }
 
     /**
-     * Returns the last modified time of the specified file
+     * Returns the last modified time of the specified file.
      *
      * @param string $key
      *
-     * @return integer An UNIX like timestamp
+     * @return int An UNIX like timestamp
      */
     public function mtime($key)
     {
@@ -228,7 +235,7 @@ class Filesystem
     }
 
     /**
-     * Returns the checksum of the specified file's content
+     * Returns the checksum of the specified file's content.
      *
      * @param string $key
      *
@@ -246,11 +253,11 @@ class Filesystem
     }
 
     /**
-     * Returns the size of the specified file's content
+     * Returns the size of the specified file's content.
      *
      * @param string $key
      *
-     * @return integer File size in Bytes
+     * @return int File size in Bytes
      */
     public function size($key)
     {
@@ -267,6 +274,7 @@ class Filesystem
      * Gets a new stream instance of the specified file.
      *
      * @param $key
+     *
      * @return Stream|Stream\InMemoryBuffer
      */
     public function createStream($key)
@@ -282,11 +290,12 @@ class Filesystem
      * Creates a new file in a filesystem.
      *
      * @param $key
+     *
      * @return File
      */
     public function createFile($key)
     {
-        if(false === $this->isFileInRegister($key)) {
+        if (false === $this->isFileInRegister($key)) {
             if ($this->adapter instanceof Adapter\FileFactory) {
                 $this->fileRegister[$key] = $this->adapter->createFile($key, $this);
             } else {
@@ -298,7 +307,7 @@ class Filesystem
     }
 
     /**
-     * Get the mime type of the provided key
+     * Get the mime type of the provided key.
      *
      * @param string $key
      *
@@ -319,24 +328,24 @@ class Filesystem
     }
 
     /**
-     * Checks if matching file by given key exists in the filesystem
+     * Checks if matching file by given key exists in the filesystem.
      *
      * Key must be non empty string, otherwise it will throw Exception\FileNotFound
      * {@see http://php.net/manual/en/function.empty.php}
      *
      * @param string $key
      *
-     * @throws Exception\FileNotFound   when sourceKey does not exist
+     * @throws Exception\FileNotFound when sourceKey does not exist
      */
     private function assertHasFile($key)
     {
-        if (! empty($key) && ! $this->has($key)) {
+        if (!empty($key) && !$this->has($key)) {
             throw new Exception\FileNotFound($key);
         }
     }
 
     /**
-     * Checks if matching File object by given key exists in the fileRegister
+     * Checks if matching File object by given key exists in the fileRegister.
      *
      * @param string $key
      *
@@ -348,7 +357,7 @@ class Filesystem
     }
 
     /**
-     * Clear files register
+     * Clear files register.
      */
     public function clearFileRegister()
     {
@@ -356,7 +365,7 @@ class Filesystem
     }
 
     /**
-     * Removes File object from register
+     * Removes File object from register.
      *
      * @param string $key
      */

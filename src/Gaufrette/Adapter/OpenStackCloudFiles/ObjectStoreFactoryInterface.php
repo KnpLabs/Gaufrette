@@ -5,7 +5,7 @@ namespace Gaufrette\Adapter\OpenStackCloudFiles;
 use OpenCloud\ObjectStore\Service;
 
 /**
- * ObjectStoreFactoryInterface
+ * ObjectStoreFactoryInterface.
  *
  * @author Daniel Richter <nexyz9@gmail.com>
  */

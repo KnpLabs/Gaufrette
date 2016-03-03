@@ -4,15 +4,14 @@ namespace Gaufrette\Adapter;
 
 /**
  * Safe local adapter that encodes key to avoid the use of the directories
- * structure
+ * structure.
  *
- * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
 class SafeLocal extends Local
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function computeKey($path)
     {
@@ -20,7 +19,7 @@ class SafeLocal extends Local
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function computePath($key)
     {

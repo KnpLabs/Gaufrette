@@ -5,7 +5,7 @@ namespace Gaufrette\Exception;
 use Gaufrette\Exception;
 
 /**
- * Exception to be thrown when an unexpected file exists
+ * Exception to be thrown when an unexpected file exists.
  *
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */

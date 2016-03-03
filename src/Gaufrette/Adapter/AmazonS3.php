@@ -2,7 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
-use \AmazonS3 as AmazonClient;
+use AmazonS3 as AmazonClient;
 use Gaufrette\Adapter;
 
 /**
@@ -10,7 +10,6 @@ use Gaufrette\Adapter;
  *
  * See the AwsS3 adapter for using the AWS SDK for PHP v2.x.
  *
- * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  * @author  Leszek Prabucki <leszek.prabucki@gmail.com>
  */
@@ -26,7 +25,7 @@ class AmazonS3 implements Adapter,
     public function __construct(AmazonClient $service, $bucket, $options = array())
     {
         $this->service = $service;
-        $this->bucket  = $bucket;
+        $this->bucket = $bucket;
         $this->options = array_replace_recursive(
             array('directory' => '', 'create' => false, 'region' => $service->hostname, 'acl' => AmazonClient::ACL_PUBLIC),
             $options
@@ -34,7 +33,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * Set the acl used when writing files
+     * Set the acl used when writing files.
      *
      * @param string $acl
      */
@@ -44,7 +43,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * Get the acl used when writing files
+     * Get the acl used when writing files.
      *
      * @return string
      */
@@ -54,7 +53,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * Set the base directory the user will have access to
+     * Set the base directory the user will have access to.
      *
      * @param string $directory
      */
@@ -64,7 +63,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * Get the directory the user has access to
+     * Get the directory the user has access to.
      *
      * @return string
      */
@@ -74,7 +73,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setMetadata($key, $metadata)
     {
@@ -84,7 +83,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getMetadata($key)
     {
@@ -94,7 +93,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($key)
     {
@@ -114,7 +113,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -122,12 +121,12 @@ class AmazonS3 implements Adapter,
 
         $response = $this->service->copy_object(
             array( // source
-                'bucket'   => $this->bucket,
-                'filename' => $this->computePath($sourceKey)
+                'bucket' => $this->bucket,
+                'filename' => $this->computePath($sourceKey),
             ),
             array( // target
-                'bucket'   => $this->bucket,
-                'filename' => $this->computePath($targetKey)
+                'bucket' => $this->bucket,
+                'filename' => $this->computePath($targetKey),
             ),
             $this->getMetadata($sourceKey)
         );
@@ -136,14 +135,14 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($key, $content)
     {
         $this->ensureBucketExists();
 
         $opt = array_replace_recursive(
-            array('acl'  => $this->options['acl']),
+            array('acl' => $this->options['acl']),
             $this->getMetadata($key),
             array('body' => $content)
         );
@@ -158,11 +157,11 @@ class AmazonS3 implements Adapter,
             return false;
         };
 
-        return intval($response->header["x-aws-requestheaders"]["Content-Length"]);
+        return intval($response->header['x-aws-requestheaders']['Content-Length']);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function exists($key)
     {
@@ -175,7 +174,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
@@ -191,7 +190,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function keys()
     {
@@ -212,7 +211,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -228,7 +227,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isDirectory($key)
     {
@@ -242,10 +241,10 @@ class AmazonS3 implements Adapter,
     /**
      * Ensures the specified bucket exists. If the bucket does not exists
      * and the create parameter is set to true, it will try to create the
-     * bucket
+     * bucket.
      *
      * @throws \RuntimeException if the bucket does not exists or could not be
-     *                          created
+     *                           created
      */
     private function ensureBucketExists()
     {
@@ -286,7 +285,7 @@ class AmazonS3 implements Adapter,
     }
 
     /**
-     * Computes the path for the specified key taking the bucket in account
+     * Computes the path for the specified key taking the bucket in account.
      *
      * @param string $key The key for which to compute the path
      *

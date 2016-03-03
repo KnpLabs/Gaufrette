@@ -6,7 +6,7 @@ use Gaufrette\Adapter\MetadataSupporter;
 use Gaufrette\Exception\FileNotFound;
 
 /**
- * Points to a file in a filesystem
+ * Points to a file in a filesystem.
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
@@ -16,7 +16,8 @@ class File
     protected $filesystem;
 
     /**
-     * Content variable is lazy. It will not be read from filesystem until it's requested first time
+     * Content variable is lazy. It will not be read from filesystem until it's requested first time.
+     *
      * @var mixed content
      */
     protected $content = null;
@@ -27,19 +28,22 @@ class File
     protected $metadata = null;
 
     /**
-     * Human readable filename (usually the end of the key)
+     * Human readable filename (usually the end of the key).
+     *
      * @var string name
      */
     protected $name = null;
 
     /**
-     * File size in bytes
+     * File size in bytes.
+     *
      * @var int size
      */
     protected $size = 0;
 
     /**
-     * File date modified
+     * File date modified.
+     *
      * @var int mtime
      */
     protected $mtime = null;
@@ -56,7 +60,7 @@ class File
     }
 
     /**
-     * Returns the key
+     * Returns the key.
      *
      * @return string
      */
@@ -66,11 +70,12 @@ class File
     }
 
     /**
-     * Returns the content
+     * Returns the content.
      *
      * @throws FileNotFound
      *
-     * @param  array  $metadata optional metadata which should be send when read
+     * @param array $metadata optional metadata which should be send when read
+     *
      * @return string
      */
     public function getContent($metadata = array())
@@ -109,7 +114,7 @@ class File
     }
 
     /**
-     * Returns the file modified time
+     * Returns the file modified time.
      *
      * @return int
      */
@@ -127,13 +132,13 @@ class File
     }
 
     /**
-     * Sets the content
+     * Sets the content.
      *
      * @param string $content
      * @param array  $metadata optional metadata which should be send when write
      *
-     * @return integer The number of bytes that were written into the file, or
-     *                 FALSE on failure
+     * @return int The number of bytes that were written into the file, or
+     *             FALSE on failure
      */
     public function setContent($content, $metadata = array())
     {
@@ -152,9 +157,9 @@ class File
     }
 
     /**
-     * Indicates whether the file exists in the filesystem
+     * Indicates whether the file exists in the filesystem.
      *
-     * @return boolean
+     * @return bool
      */
     public function exists()
     {
@@ -162,12 +167,14 @@ class File
     }
 
     /**
-     * Deletes the file from the filesystem
+     * Deletes the file from the filesystem.
      *
      * @throws FileNotFound
-     * @throws \RuntimeException                when cannot delete file
-     * @param  array                            $metadata optional metadata which should be send when write
-     * @return boolean                          TRUE on success
+     * @throws \RuntimeException when cannot delete file
+     *
+     * @param array $metadata optional metadata which should be send when write
+     *
+     * @return bool TRUE on success
      */
     public function delete($metadata = array())
     {
@@ -177,7 +184,7 @@ class File
     }
 
     /**
-     * Creates a new file stream instance of the file
+     * Creates a new file stream instance of the file.
      *
      * @return Stream
      */
@@ -187,10 +194,11 @@ class File
     }
 
     /**
-     * Sets the metadata array to be stored in adapters that can support it
+     * Sets the metadata array to be stored in adapters that can support it.
      *
-     * @param  array   $metadata
-     * @return boolean
+     * @param array $metadata
+     *
+     * @return bool
      */
     protected function setMetadata(array $metadata)
     {
@@ -204,7 +212,7 @@ class File
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     private function supportsMetadata()
     {

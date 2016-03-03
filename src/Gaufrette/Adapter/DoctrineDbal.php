@@ -4,11 +4,10 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\Util;
-
 use Doctrine\DBAL\Connection;
 
 /**
- * Doctrine DBAL adapter
+ * Doctrine DBAL adapter.
  *
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  * @author Antoine Hérault <antoine.herault@gmail.com>
@@ -21,9 +20,9 @@ class DoctrineDbal implements Adapter,
     protected $connection;
     protected $table;
     protected $columns = array(
-        'key'      => 'key',
-        'content'  => 'content',
-        'mtime'    => 'mtime',
+        'key' => 'key',
+        'content' => 'content',
+        'mtime' => 'mtime',
         'checksum' => 'checksum',
     );
 
@@ -35,12 +34,12 @@ class DoctrineDbal implements Adapter,
     public function __construct(Connection $connection, $table, array $columns = array())
     {
         $this->connection = $connection;
-        $this->table      = $table;
-        $this->columns    = array_replace($this->columns, $columns);
+        $this->table = $table;
+        $this->columns = array_replace($this->columns, $columns);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function keys()
     {
@@ -55,7 +54,7 @@ class DoctrineDbal implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -67,7 +66,7 @@ class DoctrineDbal implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
@@ -75,7 +74,7 @@ class DoctrineDbal implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function checksum($key)
     {
@@ -83,7 +82,7 @@ class DoctrineDbal implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function exists($key)
     {
@@ -99,7 +98,7 @@ class DoctrineDbal implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($key)
     {
@@ -107,7 +106,7 @@ class DoctrineDbal implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -118,13 +117,13 @@ class DoctrineDbal implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($key, $content)
     {
         $values = array(
-            $this->getQuotedColumn('content')  => $content,
-            $this->getQuotedColumn('mtime')    => time(),
+            $this->getQuotedColumn('content') => $content,
+            $this->getQuotedColumn('mtime') => time(),
             $this->getQuotedColumn('checksum') => Util\Checksum::fromContent($content),
         );
 
@@ -143,7 +142,7 @@ class DoctrineDbal implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isDirectory($key)
     {
@@ -166,7 +165,7 @@ class DoctrineDbal implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function listKeys($prefix = '')
     {
@@ -187,7 +186,7 @@ class DoctrineDbal implements Adapter,
             'keys' => array_map(function ($value) {
                     return $value['_key'];
                 },
-                $keys)
+                $keys),
         );
     }
 
