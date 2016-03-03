@@ -17,8 +17,6 @@ class PhpseclibSftp implements Adapter,
     protected $initialized = false;
 
     /**
-     * Constructor.
-     *
      * @param SFTP        $sftp      An Sftp instance
      * @param string      $directory The distant directory
      * @param bool        $create    Whether to create the remote directory if it

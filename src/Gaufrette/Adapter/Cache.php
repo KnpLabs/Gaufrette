@@ -36,8 +36,6 @@ class Cache implements Adapter,
     protected $serializeCache;
 
     /**
-     * Constructor
-     *
      * @param Adapter $source         The source adapter that must be cached
      * @param Adapter $cache          The adapter used to cache the source
      * @param integer $ttl            Time to live of a cached file

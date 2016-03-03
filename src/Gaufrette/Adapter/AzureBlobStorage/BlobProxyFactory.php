@@ -17,8 +17,6 @@ class BlobProxyFactory implements BlobProxyFactoryInterface
     protected $connectionString;
 
     /**
-     * Constructor
-     *
      * @param string $connectionString
      */
     public function __construct($connectionString)

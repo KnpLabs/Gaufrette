@@ -25,8 +25,6 @@ class Local implements Adapter,
     private $mode;
 
     /**
-     * Constructor
-     *
      * @param string  $directory Directory where the filesystem is located
      * @param boolean $create    Whether to create the directory if it does not
      *                            exist (default FALSE)

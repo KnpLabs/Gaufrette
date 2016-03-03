@@ -22,8 +22,6 @@ class GridFS implements Adapter,
     protected $gridFS = null;
 
     /**
-     * Constructor
-     *
      * @param \MongoGridFS $gridFS
      */
     public function __construct(MongoGridFs $gridFS)

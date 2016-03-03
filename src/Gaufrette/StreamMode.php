@@ -15,8 +15,6 @@ class StreamMode
     private $flag;
 
     /**
-     * Constructor
-     *
      * @param string $mode A stream mode as for the use of fopen()
      */
     public function __construct($mode)

@@ -20,8 +20,6 @@ class Dropbox implements Adapter
     protected $client;
 
     /**
-     * Constructor
-     *
      * @param \Dropbox_API $client The Dropbox API client
      */
     public function __construct(DropboxApi $client)

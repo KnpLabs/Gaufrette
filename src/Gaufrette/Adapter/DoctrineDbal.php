@@ -28,8 +28,6 @@ class DoctrineDbal implements Adapter,
     );
 
     /**
-     * Constructor
-     *
      * @param Connection $connection The DBAL connection
      * @param string     $table      The files table
      * @param array      $columns    The column names
