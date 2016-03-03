@@ -5,3 +5,4 @@ tests/adapters/*
 !tests/adapters/*.dist
 bin/*
 !bin/configure_test_env.sh
+.couscous
