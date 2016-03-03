@@ -1,6 +1,3 @@
-Gaufrette Documentation
-=============
-
 Adapters
 --------
 
@@ -58,7 +55,7 @@ The third parameter of the cache adapter is the time to live of the cache.
 Streaming Files
 ---------------
 
-Sometimes, you don't have the choice, you must get a streamable file URL (i.e to use native file functions). 
+Sometimes, you don't have the choice, you must get a streamable file URL (i.e to use native file functions).
 Let's take a look at the following example:
 
 ```php

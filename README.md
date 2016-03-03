@@ -25,11 +25,6 @@ solution.
 Try it!
 -------
 
-```bash
-php composer.phar require knplabs/gaufrette:~0.2 # Stable version
-php composer.phar require knplabs/gaufrette:0.4.*@dev # Development version
-```
-
 Following an example with the local filesystem adapter. To setup other adapters, look up [their respective documentation](https://github.com/KnpLabs/Gaufrette/tree/master/doc/#adapters).
 
 ```php
