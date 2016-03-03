@@ -1,7 +1,7 @@
 Gaufrette
 =========
 
-Gaufrette is a PHP5 library that provides a filesystem abstraction layer.
+Gaufrette provides a filesystem abstraction layer.
 
 This project does not have any stable release yet but we do not want to break BC now.
 
@@ -31,7 +31,6 @@ solution.
 Try it!
 -------
 
-
 ```bash
 php composer.phar require knplabs/gaufrette:~0.2 # Stable version
 php composer.phar require knplabs/gaufrette:0.4.*@dev # Development version
@@ -58,11 +57,6 @@ $file = $filesystem->get('myFile');
 // Will print something like: "myFile (modified 17/01/2016 18:40:36): Hello world!"
 echo sprintf('%s (modified %s): %s', $file->getKey(), date('d/m/Y, H:i:s', $file->getMtime()), $file->getContent());
 ```
-
-Running the Tests
------------------
-
-The tests use phpspec2 and PHPUnit.
 
 ### Setup the vendor libraries
 
