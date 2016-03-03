@@ -16,3 +16,9 @@ menu:
                 basic-usage:
                     text: Basic Usage
                     relativeUrl: basic-usage.html
+                caching:
+                    text: Caching
+                    relativeUrl: caching.html
+                streaming:
+                    text: Streaming
+                    relativeUrl: streaming.html
