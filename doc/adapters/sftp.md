@@ -1,3 +1,7 @@
+---
+currentMenu: sftp
+---
+
 # SFTP
 
 *N.B.* SFTP adapter is not recommended to use due to https://bugs.php.net/bug.php?id=64169. It is recommended to use

@@ -1,3 +1,7 @@
+---
+currentMenu: google-cloud-storage
+---
+
 # GoogleCloudStorage
 
 To use the GoogleCloudStorage adapter you will need to create a connection using the [Google APIs Client Library for PHP]

@@ -1,3 +1,7 @@
+---
+currentMenu: apc
+---
+
 # APC
 
 `apc` extension should be enabled in order to use this adapter.

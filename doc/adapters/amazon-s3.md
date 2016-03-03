@@ -1,3 +1,7 @@
+---
+currentMenu: amazon-s3
+---
+
 # AmazonS3 & AclAwareAmazonS3
 
 When using the legacy Amazon S3 adapters (aws-sdk-php < 2), you will need to specify a CA

@@ -1,3 +1,7 @@
+---
+currentMenu: aws-s3
+---
+
 # AWS S3
 
 First, you will need to install AWS SDK for PHP:

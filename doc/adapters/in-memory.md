@@ -1,3 +1,7 @@
+---
+currentMenu: in-memory
+---
+
 # InMemory
 
 This adapter is useful in test environments where you don't want to depend on external filesystems.
