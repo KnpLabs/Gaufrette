@@ -3,6 +3,7 @@ subTitle: Filesystem abstraction layer
 github:
     user: KnpLabs
     repo: Gaufrette
+baseUrl: http://knplabs.github.io/Gaufrette
 template:
     # url: https://github.com/CouscousPHP/Template-Dark
     index: introduction.md
