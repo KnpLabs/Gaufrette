@@ -1,0 +1,18 @@
+title: Gaufrette
+subTitle: Filesystem abstraction layer
+template:
+    url: https://github.com/CouscousPHP/Template-Dark
+    index: introduction.md
+menu:
+    sections:
+        main:
+            name: Table of Contents
+            items:
+                introduction:
+                    text: Introduction
+                installation:
+                    text: Installation
+                    relativeUrl: installation.html
+                basic-usage:
+                    text: Basic Usage
+                    relativeUrl: basic-usage.html
