@@ -28,37 +28,37 @@ menu:
         adapters:
             name: Adapters
             items:
-                amazonS3:
+                amazon-s3:
                     text: Amazon S3
                     relativeUrl: adapters/amazon-s3.html
                 apc:
                     text: Apc
                     relativeUrl: adapters/apc.html
-                awss3:
+                aws-s3:
                     text: AWS S3
                     relativeUrl: adapters/aws-s3.html
-                azureBlobStorage:
+                azure-blob-storage:
                     text: Azure Blob Storage
                     relativeUrl: adapters/azure-blob-storage.html
-                gtp:
+                ftp:
                     text: Ftp
                     relativeUrl: adapters/ftp.html
-                googleCloudStorage:
+                google-cloud-storage:
                     text: Google Cloud Storage
                     relativeUrl: adapters/google-cloud-storage.html
-                gridFs:
+                grid-fs:
                     text: GridFS
                     relativeUrl: adapters/grid-fs.html
-                InMemory:
+                in-memory:
                     text: InMemory
                     relativeUrl: adapters/in-memory.html
                 local:
                     text: Local
                     relativeUrl: adapters/local.html
-                openCloud:
+                open-cloud:
                     text: OpenCloud
                     relativeUrl: adapters/open-cloud.html
-                phpseclibSftp:
+                phpseclib-sftp:
                     text: PhpseclibSftp
                     relativeUrl: adapters/phpseclib-sftp.html
                 sftp:

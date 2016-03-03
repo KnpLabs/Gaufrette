@@ -1,3 +1,7 @@
+---
+currentMenu: open-cloud
+---
+
 # OpenCloud & LazyOpenCloud
 
 To use the OpenCloud adapter you will need to create a connection using the [OpenCloud SDK](https://github.com/rackspace/php-opencloud).

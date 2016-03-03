@@ -1,3 +1,7 @@
+---
+currentMenu: ftp
+---
+
 # FTP
 
 `ftp` extension should be enabled in order to use this adapter.

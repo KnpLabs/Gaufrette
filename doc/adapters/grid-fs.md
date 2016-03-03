@@ -1,3 +1,7 @@
+---
+currentMenu: grid-fs
+---
+
 # GridFS
 
 ## Prerequisites

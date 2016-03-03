@@ -1,3 +1,7 @@
+---
+currentMenu: phpseclib-sftp
+---
+
 # phpseclib adapter
 
 *N.B.* It is recommended to use this adapter over [SFTP](doc/adapters/sftp.md).

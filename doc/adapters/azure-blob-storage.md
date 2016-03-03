@@ -1,3 +1,7 @@
+---
+currentMenu: azure-blob-storage
+---
+
 # AzureBlobStorage
 
 Azure Blob Storage is the storage service provided by Microsoft Windows Azure cloud environment. To use this adapter

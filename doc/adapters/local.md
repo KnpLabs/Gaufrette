@@ -1,3 +1,7 @@
+---
+currentMenu: local
+---
+
 # Local & SafeLocal
 
 Those two adapters aims to use local filesystem. The second one will encode in base64 the filename before storing/retrieving.
