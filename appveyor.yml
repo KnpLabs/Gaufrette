@@ -6,8 +6,10 @@ branches:
     - gh-pages
 
 install:
-  - cinst -y php
+  - cinst -y OpenSSL.Light
+  - cinst -y php -version 5.6.18
   - cd c:\tools\php
+  - echo extension=php_openssl.dll >> php.ini
   - echo date.timezone="UTC" >> php.ini
   - SET PATH=C:\tools\php;%PATH%
   - cd C:\projects\gaufrette
