@@ -5,7 +5,6 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
-
 use WindowsAzure\Blob\Models\CreateBlobOptions;
 use WindowsAzure\Blob\Models\CreateContainerOptions;
 use WindowsAzure\Blob\Models\DeleteContainerOptions;
@@ -13,7 +12,7 @@ use WindowsAzure\Blob\Models\ListBlobsOptions;
 use WindowsAzure\Common\ServiceException;
 
 /**
- * Microsoft Azure Blob Storage adapter
+ * Microsoft Azure Blob Storage adapter.
  *
  * @author Luciano Mammino <lmammino@oryzone.com>
  * @author Paweł Czyżewski <pawel.czyzewski@enginewerk.com>
@@ -22,28 +21,28 @@ class AzureBlobStorage implements Adapter,
                                   MetadataSupporter
 {
     /**
-     * Error constants
+     * Error constants.
      */
     const ERROR_CONTAINER_ALREADY_EXISTS = 'ContainerAlreadyExists';
     const ERROR_CONTAINER_NOT_FOUND = 'ContainerNotFound';
 
     /**
-     * @var AzureBlobStorage\BlobProxyFactoryInterface $blobProxyFactory
+     * @var AzureBlobStorage\BlobProxyFactoryInterface
      */
     protected $blobProxyFactory;
 
     /**
-     * @var string $containerName
+     * @var string
      */
     protected $containerName;
 
     /**
-     * @var bool $detectContentType
+     * @var bool
      */
     protected $detectContentType;
 
     /**
-     * @var \WindowsAzure\Blob\Internal\IBlob $blobProxy
+     * @var \WindowsAzure\Blob\Internal\IBlob
      */
     protected $blobProxy;
 
@@ -64,11 +63,12 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * Creates a new container
+     * Creates a new container.
      *
-     * @param  string                                           $containerName
-     * @param  \WindowsAzure\Blob\Models\CreateContainerOptions $options
-     * @throws \RuntimeException                                if cannot create the container
+     * @param string                                           $containerName
+     * @param \WindowsAzure\Blob\Models\CreateContainerOptions $options
+     *
+     * @throws \RuntimeException if cannot create the container
      */
     public function createContainer($containerName, CreateContainerOptions $options = null)
     {
@@ -91,11 +91,12 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * Deletes a container
+     * Deletes a container.
      *
-     * @param  string                 $containerName
-     * @param  DeleteContainerOptions $options
-     * @throws \RuntimeException      if cannot delete the container
+     * @param string                 $containerName
+     * @param DeleteContainerOptions $options
+     *
+     * @throws \RuntimeException if cannot delete the container
      */
     public function deleteContainer($containerName, DeleteContainerOptions $options = null)
     {
@@ -118,7 +119,7 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($key)
     {
@@ -136,7 +137,7 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($key, $content)
     {
@@ -162,7 +163,7 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function exists($key)
     {
@@ -196,7 +197,7 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function keys()
     {
@@ -206,7 +207,7 @@ class AzureBlobStorage implements Adapter,
             $blobList = $this->blobProxy->listBlobs($this->containerName);
 
             return array_map(
-                function($blob) {
+                function ($blob) {
                     return $blob->getName();
                 },
                 $blobList->getBlobs()
@@ -225,7 +226,7 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
@@ -243,7 +244,7 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -261,7 +262,7 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -280,7 +281,7 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isDirectory($key)
     {
@@ -289,7 +290,7 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setMetadata($key, $content)
     {
@@ -311,7 +312,7 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getMetadata($key)
     {
@@ -335,7 +336,7 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * Lazy initialization, automatically called when some method is called after construction
+     * Lazy initialization, automatically called when some method is called after construction.
      */
     protected function init()
     {
@@ -345,10 +346,11 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * Throws a runtime exception if a give ServiceException derived from a "container not found" error
+     * Throws a runtime exception if a give ServiceException derived from a "container not found" error.
      *
-     * @param  ServiceException  $exception
-     * @param  string            $action
+     * @param ServiceException $exception
+     * @param string           $action
+     *
      * @throws \RuntimeException
      */
     protected function failIfContainerNotFound(ServiceException $exception, $action)
@@ -365,9 +367,10 @@ class AzureBlobStorage implements Adapter,
     }
 
     /**
-     * Extracts the error code from a service exception
+     * Extracts the error code from a service exception.
      *
-     * @param  ServiceException $exception
+     * @param ServiceException $exception
+     *
      * @return string
      */
     protected function getErrorCodeFromServiceException(ServiceException $exception)

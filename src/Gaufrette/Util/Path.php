@@ -3,15 +3,14 @@
 namespace Gaufrette\Util;
 
 /**
- * Path utils
+ * Path utils.
  *
- * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
 class Path
 {
     /**
-     * Normalizes the given path
+     * Normalizes the given path.
      *
      * @param string $path
      *
@@ -19,10 +18,10 @@ class Path
      */
     public static function normalize($path)
     {
-        $path   = str_replace('\\', '/', $path);
+        $path = str_replace('\\', '/', $path);
         $prefix = static::getAbsolutePrefix($path);
-        $path   = substr($path, strlen($prefix));
-        $parts  = array_filter(explode('/', $path), 'strlen');
+        $path = substr($path, strlen($prefix));
+        $parts = array_filter(explode('/', $path), 'strlen');
         $tokens = array();
 
         foreach ($parts as $part) {
@@ -41,15 +40,15 @@ class Path
             }
         }
 
-        return $prefix . implode('/', $tokens);
+        return $prefix.implode('/', $tokens);
     }
 
     /**
-     * Indicates whether the given path is absolute or not
+     * Indicates whether the given path is absolute or not.
      *
      * @param string $path A normalized path
      *
-     * @return boolean
+     * @return bool
      */
     public static function isAbsolute($path)
     {
@@ -57,7 +56,7 @@ class Path
     }
 
     /**
-     * Returns the absolute prefix of the given path
+     * Returns the absolute prefix of the given path.
      *
      * @param string $path A normalized path
      *

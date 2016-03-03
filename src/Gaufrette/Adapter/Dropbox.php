@@ -5,11 +5,11 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Exception;
-use \Dropbox_API as DropboxApi;
-use \Dropbox_Exception_NotFound as DropboxNotFoundException;
+use Dropbox_API as DropboxApi;
+use Dropbox_Exception_NotFound as DropboxNotFoundException;
 
 /**
- * Dropbox adapter
+ * Dropbox adapter.
  *
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  * @author Antoine Hérault <antoine.herault@gmail.com>
@@ -28,7 +28,7 @@ class Dropbox implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @throws \Dropbox_Exception_Forbidden
      * @throws \Dropbox_Exception_OverQuota
@@ -44,7 +44,7 @@ class Dropbox implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isDirectory($key)
     {
@@ -58,7 +58,7 @@ class Dropbox implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @throws \Dropbox_Exception
      */
@@ -82,7 +82,7 @@ class Dropbox implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -96,7 +96,7 @@ class Dropbox implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -110,7 +110,7 @@ class Dropbox implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
@@ -124,12 +124,12 @@ class Dropbox implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function keys()
     {
         $metadata = $this->client->getMetaData('/', true);
-        if (! isset($metadata['contents'])) {
+        if (!isset($metadata['contents'])) {
             return array();
         }
 
@@ -147,7 +147,7 @@ class Dropbox implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function exists($key)
     {

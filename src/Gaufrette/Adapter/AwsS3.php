@@ -6,9 +6,8 @@ use Gaufrette\Adapter;
 use Aws\S3\S3Client;
 
 /**
- * Amazon S3 adapter using the AWS SDK for PHP v2.x
+ * Amazon S3 adapter using the AWS SDK for PHP v2.x.
  *
- * @package Gaufrette
  * @author  Michael Dowling <mtdowling@gmail.com>
  */
 class AwsS3 implements Adapter,
@@ -40,14 +39,15 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * Gets the publicly accessible URL of an Amazon S3 object
+     * Gets the publicly accessible URL of an Amazon S3 object.
      *
      * @param string $key     Object key
      * @param array  $options Associative array of options used to buld the URL
-     *                       - expires: The time at which the URL should expire
-     *                           represented as a UNIX timestamp
-     *                       - Any options available in the Amazon S3 GetObject
-     *                           operation may be specified.
+     *                        - expires: The time at which the URL should expire
+     *                        represented as a UNIX timestamp
+     *                        - Any options available in the Amazon S3 GetObject
+     *                        operation may be specified.
+     *
      * @return string
      */
     public function getUrl($key, array $options = array())
@@ -61,7 +61,7 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setMetadata($key, $metadata)
     {
@@ -75,7 +75,7 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getMetadata($key)
     {
@@ -83,7 +83,7 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($key)
     {
@@ -98,7 +98,7 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -112,6 +112,7 @@ class AwsS3 implements Adapter,
 
         try {
             $this->service->copyObject(array_merge($options, $this->getMetadata($targetKey)));
+
             return $this->delete($sourceKey);
         } catch (\Exception $e) {
             return false;
@@ -119,14 +120,14 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($key, $content)
     {
         $this->ensureBucketExists();
         $options = $this->getOptions($key, array('Body' => $content));
 
-        /**
+        /*
          * If the ContentType was not already set in the metadata, then we autodetect
          * it to prevent everything being served up as binary/octet-stream.
          */
@@ -139,6 +140,7 @@ class AwsS3 implements Adapter,
 
         try {
             $this->service->putObject($options);
+
             return strlen($content);
         } catch (\Exception $e) {
             return false;
@@ -146,7 +148,7 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function exists($key)
     {
@@ -154,12 +156,13 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
         try {
             $result = $this->service->headObject($this->getOptions($key));
+
             return strtotime($result['LastModified']);
         } catch (\Exception $e) {
             return false;
@@ -167,12 +170,13 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function size($key)
     {
         try {
             $result = $this->service->headObject($this->getOptions($key));
+
             return $result['ContentLength'];
         } catch (\Exception $e) {
             return false;
@@ -180,7 +184,7 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function keys()
     {
@@ -209,12 +213,13 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($key)
     {
         try {
             $this->service->deleteObject($this->getOptions($key));
+
             return true;
         } catch (\Exception $e) {
             return false;
@@ -222,14 +227,14 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isDirectory($key)
     {
         $result = $this->service->listObjects(array(
-            'Bucket'  => $this->bucket,
-            'Prefix'  => rtrim($this->computePath($key), '/') . '/',
-            'MaxKeys' => 1
+            'Bucket' => $this->bucket,
+            'Prefix' => rtrim($this->computePath($key), '/').'/',
+            'MaxKeys' => 1,
         ));
 
         return count($result['Contents']) > 0;
@@ -242,7 +247,7 @@ class AwsS3 implements Adapter,
      * client object.
      *
      * @throws \RuntimeException if the bucket does not exists or could not be
-     *                          created
+     *                           created
      */
     protected function ensureBucketExists()
     {
@@ -278,7 +283,7 @@ class AwsS3 implements Adapter,
         $options['Bucket'] = $this->bucket;
         $options['Key'] = $this->computePath($key);
 
-        /**
+        /*
          * Merge global options for adapter, which are set in the constructor, with metadata.
          * Metadata will override global options.
          */
@@ -297,7 +302,7 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * Computes the key from the specified path
+     * Computes the key from the specified path.
      *
      * @param string $path
      *

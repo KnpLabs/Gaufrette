@@ -5,14 +5,14 @@ namespace Gaufrette\Adapter\AzureBlobStorage;
 use WindowsAzure\Common\ServicesBuilder;
 
 /**
- * Basic implementation for a Blob proxy factory
+ * Basic implementation for a Blob proxy factory.
  *
  * @author Luciano Mammino <lmammino@oryzone.com>
  */
 class BlobProxyFactory implements BlobProxyFactoryInterface
 {
     /**
-     * @var string $connectionString
+     * @var string
      */
     protected $connectionString;
 
@@ -25,7 +25,7 @@ class BlobProxyFactory implements BlobProxyFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function create()
     {

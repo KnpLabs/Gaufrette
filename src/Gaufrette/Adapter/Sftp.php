@@ -16,18 +16,18 @@ class Sftp implements Adapter,
     /**
      * @param \Ssh\Sftp $sftp      An Sftp instance
      * @param string    $directory The distant directory
-     * @param boolean   $create    Whether to create the remote directory if it
+     * @param bool      $create    Whether to create the remote directory if it
      *                             does not exist
      */
     public function __construct(SftpClient $sftp, $directory = null, $create = false)
     {
-        $this->sftp      = $sftp;
+        $this->sftp = $sftp;
         $this->directory = $directory;
-        $this->create    = $create;
+        $this->create = $create;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($key)
     {
@@ -39,7 +39,7 @@ class Sftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -52,7 +52,7 @@ class Sftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($key, $content)
     {
@@ -66,7 +66,7 @@ class Sftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function exists($key)
     {
@@ -79,7 +79,7 @@ class Sftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isDirectory($key)
     {
@@ -91,7 +91,7 @@ class Sftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function keys()
     {
@@ -113,7 +113,7 @@ class Sftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
@@ -123,7 +123,7 @@ class Sftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function checksum($key)
     {
@@ -137,7 +137,7 @@ class Sftp implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -147,7 +147,7 @@ class Sftp implements Adapter,
     }
 
     /**
-     * Computes the key from the specified path
+     * Computes the key from the specified path.
      *
      * @param string $path
      *
@@ -163,7 +163,7 @@ class Sftp implements Adapter,
     }
 
     /**
-     * Computes the path for the specified key
+     * Computes the path for the specified key.
      *
      * @param string $key
      *
@@ -171,11 +171,11 @@ class Sftp implements Adapter,
      */
     protected function computePath($key)
     {
-        return $this->directory . '/' . ltrim($key, '/');
+        return $this->directory.'/'.ltrim($key, '/');
     }
 
     /**
-     * Performs the adapter's initialization
+     * Performs the adapter's initialization.
      *
      * It will ensure the root directory exists
      */
@@ -190,10 +190,10 @@ class Sftp implements Adapter,
     }
 
     /**
-     * Ensures the specified directory exists
+     * Ensures the specified directory exists.
      *
-     * @param string  $directory The directory that we ensure the existence
-     * @param boolean $create    Whether to create it if it does not exist
+     * @param string $directory The directory that we ensure the existence
+     * @param bool   $create    Whether to create it if it does not exist
      *
      * @throws RuntimeException if the specified directory does not exist and
      *                          could not be created
@@ -214,11 +214,11 @@ class Sftp implements Adapter,
     }
 
     /**
-     * Creates the specified directory and its parents
+     * Creates the specified directory and its parents.
      *
      * @param string $directory The directory to create
      *
-     * @return boolean TRUE on success, or FALSE on failure
+     * @return bool TRUE on success, or FALSE on failure
      */
     protected function createDirectory($directory)
     {

@@ -5,10 +5,9 @@ namespace Gaufrette\Adapter;
 use ZipArchive;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
-use Gaufrette\Exception;
 
 /**
- * ZIP Archive adapter
+ * ZIP Archive adapter.
  *
  * @author Boris Guéry <guery.b@gmail.com>
  * @author Antoine Hérault <antoine.herault@gmail.com>
@@ -39,7 +38,7 @@ class Zip implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($key)
     {
@@ -51,7 +50,7 @@ class Zip implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($key, $content)
     {
@@ -67,7 +66,7 @@ class Zip implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function exists($key)
     {
@@ -75,7 +74,7 @@ class Zip implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function keys()
     {
@@ -91,7 +90,7 @@ class Zip implements Adapter
     /**
      * @todo implement
      *
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isDirectory($key)
     {
@@ -99,7 +98,7 @@ class Zip implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
@@ -109,7 +108,7 @@ class Zip implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -121,7 +120,7 @@ class Zip implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -134,9 +133,10 @@ class Zip implements Adapter
 
     /**
      * Returns the stat of a file in the zip archive
-     *  (name, index, crc, mtime, compression size, compression method, filesize)
+     *  (name, index, crc, mtime, compression size, compression method, filesize).
      *
      * @param $key
+     *
      * @return array|bool
      */
     public function getStat($key)
@@ -155,7 +155,6 @@ class Zip implements Adapter
             try {
                 $this->zipArchive->close();
             } catch (\Exception $e) {
-
             }
             unset($this->zipArchive);
         }
@@ -206,7 +205,7 @@ class Zip implements Adapter
     }
 
     /**
-     * Saves archive modifications and updates current ZipArchive instance
+     * Saves archive modifications and updates current ZipArchive instance.
      *
      * @throws \RuntimeException If file could not be saved
      */

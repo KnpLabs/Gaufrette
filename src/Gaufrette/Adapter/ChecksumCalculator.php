@@ -3,14 +3,14 @@
 namespace Gaufrette\Adapter;
 
 /**
- * Interface which add checksum calculation support to adapter
+ * Interface which add checksum calculation support to adapter.
  *
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
 interface ChecksumCalculator
 {
     /**
-     * Returns the checksum of the specified key
+     * Returns the checksum of the specified key.
      *
      * @param string $key
      *
