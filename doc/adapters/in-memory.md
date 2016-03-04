@@ -1,10 +1,12 @@
-InMemory
-========
+---
+currentMenu: in-memory
+---
+
+# InMemory
 
 This adapter is useful in test environments where you don't want to depend on external filesystems.
 
-Example
--------
+## Example
 
 `InMemory` adapter only takes an array of available files as argument.
 

@@ -1,13 +1,15 @@
-Amazon S3
-=========
+---
+currentMenu: aws-s3
+---
+
+# AWS S3
 
 First, you will need to install AWS SDK for PHP:
 ```bash
 composer require aws/aws-sdk-php
 ```
 
-Example
--------
+## Example
 
 ```php
 <?php

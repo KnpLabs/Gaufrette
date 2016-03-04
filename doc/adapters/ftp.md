@@ -1,11 +1,13 @@
-FTP
-===
+---
+currentMenu: ftp
+---
+
+# FTP
 
 `ftp` extension should be enabled in order to use this adapter.
 Also, some FTP servers need valid configuration so Gaufrette can work with them as expected.
 
-Server configuration
---------------------
+## Server configuration
 
 Some FTP servers does not show hidden files by default. You will probably need to tweak your server configuration.
 
@@ -23,10 +25,9 @@ We need to change `ListOptions` in proftpd configuration (at debian system `/etc
 ListOptions  "-la"
 ```
 
-Example
--------
+### Example
 
-The third argument of the `Ftp` adapter is not mandatory, however you can use it to pass configuration options 
+The third argument of the `Ftp` adapter is not mandatory, however you can use it to pass configuration options
 (port, username, password, etc.):
 
 ```php

@@ -1,17 +1,11 @@
 Gaufrette
 =========
 
-Gaufrette is a PHP5 library that provides a filesystem abstraction layer.
-
-This project does not have any stable release yet but we do not want to break BC now.
+Gaufrette provides a filesystem abstraction layer.
 
 [![Build Status](https://secure.travis-ci.org/KnpLabs/Gaufrette.png)](http://travis-ci.org/KnpLabs/Gaufrette)
 [![Join the chat at https://gitter.im/KnpLabs/Gaufrette](https://badges.gitter.im/KnpLabs/Gaufrette.svg)](https://gitter.im/KnpLabs/Gaufrette)
 [![Stories in Ready](https://badge.waffle.io/knplabs/gaufrette.png?label=ready&title=Ready)](https://waffle.io/knplabs/gaufrette)
-
-Symfony integration is available here: [KnpLabs/KnpGaufretteBundle](https://github.com/KnpLabs/KnpGaufretteBundle).
-
-Documentation is available [here](doc/index.md).
 
 Why use Gaufrette?
 ------------------
@@ -28,41 +22,13 @@ In example, if your project grows up very fast and if your server reaches its
 limits, you can easily move your medias in an Amazon S3 server or any other
 solution.
 
-Try it!
--------
+### Documentation
 
+Read the official [Gaufrette documentation](doc/index.md).
 
-```bash
-php composer.phar require knplabs/gaufrette:~0.2 # Stable version
-php composer.phar require knplabs/gaufrette:0.4.*@dev # Development version
-```
+### Symfony integration
 
-Following an example with the local filesystem adapter. To setup other adapters, look up [their respective documentation](https://github.com/KnpLabs/Gaufrette/tree/master/doc/#adapters).
-
-```php
-<?php
-
-use Gaufrette\Filesystem;
-use Gaufrette\Adapter\Local as LocalAdapter;
-
-// First, you need a filesystem adapter
-$adapter = new LocalAdapter('/var/media');
-$filesystem = new Filesystem($adapter);
-
-// Then, you can access your filesystem directly
-var_dump($filesystem->read('myFile')); // bool(false)
-$filesystem->write('myFile', 'Hello world!');
-
-// Or use File objects
-$file = $filesystem->get('myFile');
-// Will print something like: "myFile (modified 17/01/2016 18:40:36): Hello world!"
-echo sprintf('%s (modified %s): %s', $file->getKey(), date('d/m/Y, H:i:s', $file->getMtime()), $file->getContent());
-```
-
-Running the Tests
------------------
-
-The tests use phpspec2 and PHPUnit.
+Symfony integration is available through [KnpLabs/KnpGaufretteBundle](https://github.com/KnpLabs/KnpGaufretteBundle).
 
 ### Setup the vendor libraries
 
@@ -87,3 +53,7 @@ To check basic functionality of the adapters (adapters should be configured you 
     $ bin/phpunit
 
 Is it green?
+
+### Note
+
+This project does not have any stable release yet but we do not want to break BC now.

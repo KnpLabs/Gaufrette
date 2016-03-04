@@ -1,10 +1,12 @@
-ZIP
-===
+---
+currentMenu: zip
+---
+
+# ZIP
 
 If you want to use this `Adapter`, first you should be sure `zip` extension is installed.
 
-Example
--------
+## Example
 
 ```php
 <?php

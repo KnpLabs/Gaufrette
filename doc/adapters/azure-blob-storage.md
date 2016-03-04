@@ -1,5 +1,8 @@
-AzureBlobStorage
-==================
+---
+currentMenu: azure-blob-storage
+---
+
+# AzureBlobStorage
 
 Azure Blob Storage is the storage service provided by Microsoft Windows Azure cloud environment. To use this adapter
 you need to install the [Azure SDK for php](http://www.windowsazure.com/en-us/develop/php/common-tasks/download-php-sdk/)
@@ -16,8 +19,7 @@ You should be able to find your **endpoint**, **account name** and **account key
 Thanks to the blob proxy factory, the adapter lazy loads the connection to the endpoint, so it will not create any
 connection until it's really needed (eg. when a read or write operation is issued).
 
-Example
--------
+## Example
 
 ```php
 <?php

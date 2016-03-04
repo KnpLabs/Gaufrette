@@ -1,10 +1,12 @@
-APC
-===
+---
+currentMenu: apc
+---
+
+# APC
 
 `apc` extension should be enabled in order to use this adapter.
 
-Example
--------
+## Example
 
 `Apc` adpater takes only two arguments :
   * the first, mandatory, is a prefix to avoid conflicts between filesystems

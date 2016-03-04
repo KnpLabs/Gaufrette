@@ -1,0 +1,70 @@
+title: Gaufrette
+subTitle: Filesystem abstraction layer
+github:
+    user: KnpLabs
+    repo: Gaufrette
+baseUrl: https://knplabs.github.io/Gaufrette
+template:
+    # url: https://github.com/CouscousPHP/Template-Dark
+    index: introduction.md
+menu:
+    sections:
+        main:
+            name: Table of Contents
+            items:
+                introduction:
+                    text: Introduction
+                installation:
+                    text: Installation
+                    relativeUrl: installation.html
+                basic-usage:
+                    text: Basic Usage
+                    relativeUrl: basic-usage.html
+                caching:
+                    text: Caching
+                    relativeUrl: caching.html
+                streaming:
+                    text: Streaming
+                    relativeUrl: streaming.html
+        adapters:
+            name: Adapters
+            items:
+                amazon-s3:
+                    text: Amazon S3
+                    relativeUrl: adapters/amazon-s3.html
+                apc:
+                    text: Apc
+                    relativeUrl: adapters/apc.html
+                aws-s3:
+                    text: AWS S3
+                    relativeUrl: adapters/aws-s3.html
+                azure-blob-storage:
+                    text: Azure Blob Storage
+                    relativeUrl: adapters/azure-blob-storage.html
+                ftp:
+                    text: Ftp
+                    relativeUrl: adapters/ftp.html
+                google-cloud-storage:
+                    text: Google Cloud Storage
+                    relativeUrl: adapters/google-cloud-storage.html
+                grid-fs:
+                    text: GridFS
+                    relativeUrl: adapters/grid-fs.html
+                in-memory:
+                    text: InMemory
+                    relativeUrl: adapters/in-memory.html
+                local:
+                    text: Local
+                    relativeUrl: adapters/local.html
+                open-cloud:
+                    text: OpenCloud
+                    relativeUrl: adapters/open-cloud.html
+                phpseclib-sftp:
+                    text: PhpseclibSftp
+                    relativeUrl: adapters/phpseclib-sftp.html
+                sftp:
+                    text: Sftp
+                    relativeUrl: adapters/sftp.html
+                zip:
+                    text: Zip
+                    relativeUrl: adapters/zip.html
