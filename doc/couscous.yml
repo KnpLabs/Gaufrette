@@ -26,6 +26,9 @@ menu:
                 streaming:
                     text: Streaming
                     relativeUrl: streaming.html
+                implementing-new-adapter:
+                    text: Implementing new Adapter
+                    relativeUrl: implementing-new-adapter.html
         adapters:
             name: Adapters
             items:
