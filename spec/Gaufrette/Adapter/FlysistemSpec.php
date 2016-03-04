@@ -1,0 +1,70 @@
+<?php
+
+namespace spec\Gaufrette\Adapter;
+
+use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
+use League\Flysystem\AdapterInterface;
+use League\Flysystem\Config;
+
+class FlysistemSpec extends ObjectBehavior
+{
+    function let(AdapterInterface $adapter, Config $config)
+    {
+        $this->beConstructedWith($adapter, $config);
+    }
+
+    function it_is_adapter()
+    {
+        $this->shouldImplement('Gaufrette\Adapter');
+    }
+
+    function it_reads_file(AdapterInterface $adapter)
+    {
+        $adapter->read('filename')->willReturn('Hello.');
+
+        $this->read('filename')->shouldReturn('Hello.');
+    }
+
+    function it_writes_file(AdapterInterface $adapter, Config $config)
+    {
+        $adapter->write('filename', 'Hello.', $config)->willReturn(array());
+
+        $this->write('filename', 'Hello.')->shouldReturn(array());
+    }
+
+    function it_checks_if_file_exists(AdapterInterface $adapter)
+    {
+        $adapter->has('filename')->willReturn(true);
+
+        $this->exists('filename')->shouldReturn(true);
+    }
+
+    function it_fetches_keys(AdapterInterface $adapter)
+    {
+        $adapter->listContents()->willReturn(array());
+
+        $this->keys()->shouldReturn(array());
+    }
+
+    function it_fetches_mtime(AdapterInterface $adapter)
+    {
+        $adapter->getTimestamp('filename')->willReturn(1457104978);
+
+        $this->mtime('filename')->shouldReturn(1457104978);
+    }
+
+    function it_deletes_file(AdapterInterface $adapter)
+    {
+        $adapter->delete('filename')->willReturn(true);
+
+        $this->delete('filename')->shouldReturn(true);
+    }
+
+    function it_renames_file(AdapterInterface $adapter)
+    {
+        $adapter->rename('oldfilename', 'newfilename')->willReturn(true);
+
+        $this->rename('oldfilename', 'newfilename')->shouldReturn(true);
+    }
+}
