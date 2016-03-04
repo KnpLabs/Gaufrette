@@ -48,7 +48,7 @@ You can continue to play with PHPSpec, read more on [PHPSpec website](http://php
 
 ## Implementing adapter interface
 
-Now all we need to do is to make `Gaufrette\Adapter\KnpStorage` implement all `Gaufrette\Adapter` interface methods.
+Now all we need to do is to make `Gaufrette\Adapter\KnpStorage` implements all `Gaufrette\Adapter` interface methods.
 
 ## Contibute it
 
