@@ -37,7 +37,8 @@
         "herzult/php-ssh": "*",
         "phpunit/phpunit": "3.7.*",
         "microsoft/windowsazure": "dev-master",
-        "mikey179/vfsStream": "~1.2.0"
+        "mikey179/vfsStream": "~1.2.0",
+        "league/flysystem": "~1.0"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",
@@ -50,6 +51,7 @@
         "amazonwebservices/aws-sdk-for-php": "to use the legacy Amazon S3 adapters",
         "doctrine/dbal": "to use the Doctrine DBAL adapter",
         "microsoft/windowsazure": "to use Microsoft Azure Blob Storage adapter",
+        "league/flysystem": "to use Flysystem adapters",
         "ext-zip": "to use the Zip adapter",
         "ext-apc": "to use the APC adapter",
         "ext-curl": "*",
