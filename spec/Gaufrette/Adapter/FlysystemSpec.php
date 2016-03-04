@@ -7,7 +7,7 @@ use Prophecy\Argument;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 
-class FlysistemSpec extends ObjectBehavior
+class FlysystemSpec extends ObjectBehavior
 {
     function let(AdapterInterface $adapter, Config $config)
     {

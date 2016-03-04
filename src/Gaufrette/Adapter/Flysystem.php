@@ -6,7 +6,7 @@ use Gaufrette\Adapter;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Util;
 
-class Flysistem implements Adapter
+class Flysystem implements Adapter
 {
     private $adapter;
     private $config;
