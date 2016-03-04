@@ -24,7 +24,7 @@ solution.
 
 ### Documentation
 
-Read the official [Gaufrette documentation](doc/index.md).
+Read the official [Gaufrette documentation](http://knplabs.github.io/Gaufrette/).
 
 ### Symfony integration
 
