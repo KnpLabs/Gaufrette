@@ -66,6 +66,7 @@ class StreamWrapper
 
     /**
      * @param string $scheme - protocol scheme
+     * @return bool
      */
     protected static function streamWrapperUnregister($scheme)
     {

@@ -198,6 +198,8 @@ class Cache implements Adapter,
      * Indicates whether the cache for the specified key needs to be reloaded.
      *
      * @param string $key
+
+     * @return bool
      */
     public function needsReload($key)
     {
@@ -223,6 +225,8 @@ class Cache implements Adapter,
      * Indicates whether the serialized cache file needs to be rebuild.
      *
      * @param string $cacheFile
+     *
+     * @return bool
      */
     public function needsRebuild($cacheFile)
     {

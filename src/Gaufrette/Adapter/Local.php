@@ -5,7 +5,7 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Adapter;
 use Gaufrette\Stream;
-
+use Gaufrette\Exception;
 
 /**
  * Adapter for the local filesystem.
@@ -29,8 +29,8 @@ class Local implements Adapter,
      *                          exist (default FALSE)
      * @param int    $mode      Mode for mkdir
      *
-     * @throws RuntimeException if the specified directory does not exist and
-     *                          could not be created
+     * @throws Exception\DirectoryNotFound if the specified directory does not exist and
+     *                                     could not be created
      */
     public function __construct($directory, $create = false, $mode = 0777)
     {
@@ -42,6 +42,8 @@ class Local implements Adapter,
 
         $this->create = $create;
         $this->mode = $mode;
+
+        $this->ensureDirectoryExists($directory);
     }
 
     /**
@@ -49,7 +51,12 @@ class Local implements Adapter,
      */
     public function read($key)
     {
-        return file_get_contents($this->computePath($key));
+        $content = @file_get_contents($this->computePath($key));
+        if (false === $content) {
+            throw new Exception\CannotRead($key);
+        }
+
+        return $content;
     }
 
     /**
@@ -179,7 +186,7 @@ class Local implements Adapter,
      *
      * @param string $path
      *
-     * return string
+     * @return string
      */
     public function computeKey($path)
     {
@@ -195,9 +202,9 @@ class Local implements Adapter,
      *
      * @return string A path
      *
-     * @throws OutOfBoundsException If the computed path is out of the
-     *                              directory
-     * @throws RuntimeException     If directory does not exists and cannot be created
+     * @throws Exception\OutOfBounds       If the computed path is out of the
+     *                                     directory
+     * @throws Exception\DirectoryNotFound If directory does not exist and cannot be created
      */
     protected function computePath($key)
     {
@@ -212,13 +219,15 @@ class Local implements Adapter,
      * @param string $path
      *
      * @return string
+     *
+     * @throws Exception\OutOfBounds if the poth is out of the fs.
      */
     protected function normalizePath($path)
     {
         $path = Util\Path::normalize($path);
 
         if (0 !== strpos($path, $this->directory)) {
-            throw new \OutOfBoundsException(sprintf('The path "%s" is out of the filesystem.', $path));
+            throw new Exception\OutOfBounds($path);
         }
 
         return $path;
@@ -231,14 +240,14 @@ class Local implements Adapter,
      * @param bool   $create    Whether to create the directory if it does
      *                          not exist
      *
-     * @throws RuntimeException if the directory does not exists and could not
-     *                          be created
+     * @throws Exception\DirectoryNotFound if the directory does not exists and could not
+     *                                     be created
      */
     protected function ensureDirectoryExists($directory, $create = false)
     {
         if (!is_dir($directory)) {
             if (!$create) {
-                throw new \RuntimeException(sprintf('The directory "%s" does not exist.', $directory));
+                throw new Exception\DirectoryNotFound(sprintf('The directory "%s" does not exist.', $directory));
             }
 
             $this->createDirectory($directory);
@@ -250,8 +259,7 @@ class Local implements Adapter,
      *
      * @param string $directory Path of the directory to create
      *
-     * @throws InvalidArgumentException if the directory already exists
-     * @throws RuntimeException         if the directory could not be created
+     * @throws Exception\DirectoryWasNotCreated if the directory could not be created
      */
     protected function createDirectory($directory)
     {
@@ -259,7 +267,7 @@ class Local implements Adapter,
 
         if (!$created) {
             if (!is_dir($directory)) {
-                throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
+                throw new Exception\DirectoryWasNotCreated($directory);
             }
         }
     }

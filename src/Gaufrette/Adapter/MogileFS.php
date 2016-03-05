@@ -27,8 +27,10 @@ class MogileFS implements Adapter
     protected $socket;
 
     /**
-     * @param domain MogileFS domain
-     * @param hosts  Array of MogileFS trackers
+     * Constructor.
+     *
+     * @param string $domain MogileFS domain
+     * @param array  $hosts  Array of MogileFS trackers
      */
     public function __construct($domain, array $hosts)
     {
@@ -250,10 +252,10 @@ class MogileFS implements Adapter
     /**
      * Makes request to MogileFS tracker.
      *
-     * @param cmd Command
-     * @param args Array of arguments
+     * @param string $cmd  Command
+     * @param array  $args Array of arguments
      *
-     * @return mixed Array on success, false on failure
+     * @return array|false Array on success, false on failure
      */
     private function doRequest($cmd, $args = array())
     {

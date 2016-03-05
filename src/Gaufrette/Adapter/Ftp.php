@@ -455,6 +455,7 @@ class Ftp implements Adapter,
      * Computes the path for the given key.
      *
      * @param string $key
+     * @return string
      */
     private function computePath($key)
     {

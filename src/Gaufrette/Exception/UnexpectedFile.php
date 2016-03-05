@@ -9,10 +9,8 @@ use Gaufrette\Exception;
  *
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
-class UnexpectedFile extends \RuntimeException implements Exception
+class UnexpectedFile extends Base
 {
-    private $key;
-
     public function __construct($key, $code = 0, \Exception $previous = null)
     {
         $this->key = $key;
@@ -22,10 +20,5 @@ class UnexpectedFile extends \RuntimeException implements Exception
             $code,
             $previous
         );
-    }
-
-    public function getKey()
-    {
-        return $this->key;
     }
 }

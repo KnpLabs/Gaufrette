@@ -1,6 +1,7 @@
 <?php
 
 namespace Gaufrette;
+use Gaufrette\Exception\CannotRead;
 
 /**
  * Interface for the filesystem adapters.
@@ -15,70 +16,70 @@ interface Adapter
      *
      * @param string $key
      *
-     * @return string|bool if cannot read content
+     * @return string|boolean if cannot read content
      */
     public function read($key);
 
     /**
-     * Writes the given content into the file.
+     * Writes the given content into the file
      *
      * @param string $key
      * @param string $content
      *
-     * @return int|bool The number of bytes that were written into the file
+     * @return integer The number of bytes that were written into the file
      */
     public function write($key, $content);
 
     /**
-     * Indicates whether the file exists.
+     * Indicates whether the file exists
      *
      * @param string $key
      *
-     * @return bool
+     * @return boolean
      */
     public function exists($key);
 
     /**
-     * Returns an array of all keys (files and directories).
+     * Returns an array of all keys (files and directories)
      *
      * @return array
      */
     public function keys();
 
     /**
-     * Returns the last modified time.
+     * Returns the last modified time
      *
      * @param string $key
      *
-     * @return int|bool An UNIX like timestamp or false
+     * @return integer|boolean An UNIX like timestamp or false
      */
     public function mtime($key);
 
     /**
-     * Deletes the file.
+     * Deletes the file
      *
      * @param string $key
      *
-     * @return bool
+     * @return boolean
      */
     public function delete($key);
 
     /**
-     * Renames a file.
+     * Renames a file
      *
      * @param string $sourceKey
      * @param string $targetKey
      *
-     * @return bool
+     * @return boolean
      */
     public function rename($sourceKey, $targetKey);
 
     /**
-     * Check if key is directory.
+     * Check if key is directory
      *
      * @param string $key
      *
-     * @return bool
+     * @return boolean
      */
     public function isDirectory($key);
 }

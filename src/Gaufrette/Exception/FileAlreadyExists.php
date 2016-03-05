@@ -9,10 +9,8 @@ use Gaufrette\Exception;
  *
  * @author Benjamin Dulau <benjamin.dulau@gmail.com>
  */
-class FileAlreadyExists extends \RuntimeException implements Exception
+class FileAlreadyExists extends Base
 {
-    private $key;
-
     public function __construct($key, $code = 0, \Exception $previous = null)
     {
         $this->key = $key;
@@ -22,10 +20,5 @@ class FileAlreadyExists extends \RuntimeException implements Exception
             $code,
             $previous
         );
-    }
-
-    public function getKey()
-    {
-        return $this->key;
     }
 }

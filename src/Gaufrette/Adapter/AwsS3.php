@@ -306,7 +306,7 @@ class AwsS3 implements Adapter,
      *
      * @param string $path
      *
-     * return string
+     * @return string
      */
     protected function computeKey($path)
     {
