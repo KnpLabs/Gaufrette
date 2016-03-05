@@ -51,7 +51,9 @@ class Flysystem implements Adapter
      */
     public function keys()
     {
-        return $this->adapter->listContents();
+        return array_map(function($content) {
+            return $content['path'];
+        }, $this->adapter->listContents());
     }
 
     /**

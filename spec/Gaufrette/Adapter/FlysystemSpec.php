@@ -42,9 +42,14 @@ class FlysystemSpec extends ObjectBehavior
 
     function it_fetches_keys(AdapterInterface $adapter)
     {
-        $adapter->listContents()->willReturn(array());
+        $adapter->listContents()->willReturn([[
+            'path' => 'folder',
+            'timestamp' => 1457104978,
+            'size' => 22,
+            'type' => 'dir',
+        ]]);
 
-        $this->keys()->shouldReturn(array());
+        $this->keys()->shouldReturn(['folder']);
     }
 
     function it_fetches_mtime(AdapterInterface $adapter)
