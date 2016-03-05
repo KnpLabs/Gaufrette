@@ -3,7 +3,6 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-use Gaufrette\Adapter\ListKeysAware;
 use Gaufrette\Exception\UnsupportedAdapterMethodException;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Util;
@@ -52,7 +51,7 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function keys()
     {
-        return array_map(function($content) {
+        return array_map(function ($content) {
             return $content['path'];
         }, $this->adapter->listContents());
     }
@@ -77,7 +76,7 @@ class Flysystem implements Adapter, ListKeysAware
 
         return [
             'keys' => $keys,
-            'dirs' => $dirs
+            'dirs' => $dirs,
         ];
     }
 
