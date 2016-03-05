@@ -4,7 +4,7 @@ currentMenu: doctrine-dbal
 
 # Doctrine DBAL
 
-If you aren't already using Doctrine, you should install DBAL via
+If you aren't already using Doctrine, you should install DBAL through:
 
 ```bash
 composer require doctrine/dbal
