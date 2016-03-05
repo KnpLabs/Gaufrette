@@ -4,6 +4,7 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\Adapter\ListKeysAware;
+use Gaufrette\Exception\UnsupportedAdapterMethodException;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Util;
 
@@ -110,7 +111,6 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function isDirectory($key)
     {
-        // TODO: create proper exception class if Flysistem does not support isDirectory()
-        throw new \BadMethodCallException('isDirectory is not supported by this adapter.');
+        throw new UnsupportedAdapterMethodException('isDirectory is not supported by this adapter.');
     }
 }
