@@ -26,7 +26,6 @@ In order to use the adapter, you will need to prepare the table with the followi
   * the second, mandatory, is a table name where the files will be stored
   * the third one is optional array of columns, which allows you to override the default column names
 
-
 ```php
 <?php
 
