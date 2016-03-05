@@ -41,6 +41,9 @@ menu:
                 azure-blob-storage:
                     text: Azure Blob Storage
                     relativeUrl: adapters/azure-blob-storage.html
+                doctrine-dbal:
+                    text: Doctrine DBAL
+                    relativeUrl: adapters/doctrine-dbal.html
                 ftp:
                     text: Ftp
                     relativeUrl: adapters/ftp.html
