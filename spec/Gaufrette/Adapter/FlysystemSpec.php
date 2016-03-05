@@ -19,6 +19,11 @@ class FlysystemSpec extends ObjectBehavior
         $this->shouldImplement('Gaufrette\Adapter');
     }
 
+    function it_is_list_keys_aware()
+    {
+        $this->shouldImplement('Gaufrette\Adapter\ListKeysAware');
+    }
+
     function it_reads_file(AdapterInterface $adapter)
     {
         $adapter->read('filename')->willReturn(['contents' => 'Hello.']);
@@ -50,6 +55,21 @@ class FlysystemSpec extends ObjectBehavior
         ]]);
 
         $this->keys()->shouldReturn(['folder']);
+    }
+
+    function it_lists_keys(AdapterInterface $adapter)
+    {
+        $adapter->listContents()->willReturn([[
+            'path' => 'folder',
+            'timestamp' => 1457104978,
+            'size' => 22,
+            'type' => 'dir',
+        ]]);
+
+        $this->listKeys()->shouldReturn([
+            'keys' => [],
+            'dirs' => ['folder'],
+        ]);
     }
 
     function it_fetches_mtime(AdapterInterface $adapter)
