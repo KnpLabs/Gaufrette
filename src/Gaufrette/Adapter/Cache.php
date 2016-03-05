@@ -7,9 +7,8 @@ use Gaufrette\Adapter;
 use Gaufrette\Adapter\InMemory as InMemoryAdapter;
 
 /**
- * Cache adapter
+ * Cache adapter.
  *
- * @package Gaufrette
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
 class Cache implements Adapter,
@@ -26,7 +25,7 @@ class Cache implements Adapter,
     protected $cache;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $ttl;
 
@@ -36,11 +35,9 @@ class Cache implements Adapter,
     protected $serializeCache;
 
     /**
-     * Constructor
-     *
      * @param Adapter $source         The source adapter that must be cached
      * @param Adapter $cache          The adapter used to cache the source
-     * @param integer $ttl            Time to live of a cached file
+     * @param int     $ttl            Time to live of a cached file
      * @param Adapter $serializeCache The adapter used to cache serializations
      */
     public function __construct(Adapter $source, Adapter $cache, $ttl = 0, Adapter $serializeCache = null)
@@ -56,9 +53,9 @@ class Cache implements Adapter,
     }
 
     /**
-     * Returns the time to live of the cache
+     * Returns the time to live of the cache.
      *
-     * @return integer $ttl
+     * @return int $ttl
      */
     public function getTtl()
     {
@@ -66,9 +63,9 @@ class Cache implements Adapter,
     }
 
     /**
-     * Defines the time to live of the cache
+     * Defines the time to live of the cache.
      *
-     * @param integer $ttl
+     * @param int $ttl
      */
     public function setTtl($ttl)
     {
@@ -76,7 +73,7 @@ class Cache implements Adapter,
     }
 
     /**
-     * {@InheritDoc}
+     * {@inheritdoc}
      */
     public function read($key)
     {
@@ -91,7 +88,7 @@ class Cache implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rename($key, $new)
     {
@@ -99,7 +96,7 @@ class Cache implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($key, $content, array $metadata = null)
     {
@@ -119,18 +116,19 @@ class Cache implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function exists($key)
     {
         if ($this->needsReload($key)) {
             return $this->source->exists($key);
         }
+
         return $this->cache->exists($key);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
@@ -138,7 +136,7 @@ class Cache implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function keys()
     {
@@ -155,7 +153,7 @@ class Cache implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -163,7 +161,7 @@ class Cache implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isDirectory($key)
     {
@@ -171,7 +169,7 @@ class Cache implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setMetadata($key, $metadata)
     {
@@ -185,7 +183,7 @@ class Cache implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getMetadata($key)
     {
@@ -197,7 +195,7 @@ class Cache implements Adapter,
     }
 
     /**
-     * Indicates whether the cache for the specified key needs to be reloaded
+     * Indicates whether the cache for the specified key needs to be reloaded.
      *
      * @param string $key
      */
@@ -214,14 +212,15 @@ class Cache implements Adapter,
                     $dateSource = $this->source->mtime($key);
                     $needsReload = $dateCache < $dateSource;
                 }
-            } catch (\RuntimeException $e) { }
+            } catch (\RuntimeException $e) {
+            }
         }
 
         return $needsReload;
     }
 
     /**
-     * Indicates whether the serialized cache file needs to be rebuild
+     * Indicates whether the serialized cache file needs to be rebuild.
      *
      * @param string $cacheFile
      */
@@ -232,7 +231,8 @@ class Cache implements Adapter,
         if ($this->serializeCache->exists($cacheFile)) {
             try {
                 $needsRebuild = time() - $this->ttl >= $this->serializeCache->mtime($cacheFile);
-            } catch (\RuntimeException $e) { }
+            } catch (\RuntimeException $e) {
+            }
         }
 
         return $needsRebuild;

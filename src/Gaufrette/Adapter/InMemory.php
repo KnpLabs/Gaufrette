@@ -6,11 +6,10 @@ use Gaufrette\Adapter;
 use Gaufrette\Util;
 
 /**
- * In memory adapter
+ * In memory adapter.
  *
  * Stores some files in memory for test purposes
  *
- * @package Gaufrette
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
 class InMemory implements Adapter
@@ -18,8 +17,6 @@ class InMemory implements Adapter
     protected $files = array();
 
     /**
-     * Constructor
-     *
      * @param array $files An array of files
      */
     public function __construct(array $files = array())
@@ -28,7 +25,7 @@ class InMemory implements Adapter
     }
 
     /**
-     * Defines the files
+     * Defines the files.
      *
      * @param array $files An array of files
      */
@@ -41,8 +38,8 @@ class InMemory implements Adapter
             }
 
             $file = array_merge(array(
-                'content'   => null,
-                'mtime'     => null,
+                'content' => null,
+                'mtime' => null,
             ), $file);
 
             $this->setFile($key, $file['content'], $file['mtime']);
@@ -50,11 +47,11 @@ class InMemory implements Adapter
     }
 
     /**
-     * Defines a file
+     * Defines a file.
      *
-     * @param string  $key     The key
-     * @param string  $content The content
-     * @param integer $mtime   The last modified time (automatically set to now if NULL)
+     * @param string $key     The key
+     * @param string $content The content
+     * @param int    $mtime   The last modified time (automatically set to now if NULL)
      */
     public function setFile($key, $content = null, $mtime = null)
     {
@@ -63,13 +60,13 @@ class InMemory implements Adapter
         }
 
         $this->files[$key] = array(
-            'content'   => (string) $content,
-            'mtime'     => (integer) $mtime
+            'content' => (string) $content,
+            'mtime' => (integer) $mtime,
         );
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($key)
     {
@@ -77,7 +74,7 @@ class InMemory implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -88,18 +85,18 @@ class InMemory implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($key, $content, array $metadata = null)
     {
-        $this->files[$key]['content']  = $content;
-        $this->files[$key]['mtime']    = time();
+        $this->files[$key]['content'] = $content;
+        $this->files[$key]['mtime'] = time();
 
         return Util\Size::fromContent($content);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function exists($key)
     {
@@ -107,7 +104,7 @@ class InMemory implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function keys()
     {
@@ -115,7 +112,7 @@ class InMemory implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
@@ -123,7 +120,7 @@ class InMemory implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -134,7 +131,7 @@ class InMemory implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isDirectory($path)
     {

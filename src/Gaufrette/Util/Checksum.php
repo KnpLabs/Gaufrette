@@ -3,14 +3,14 @@
 namespace Gaufrette\Util;
 
 /**
- * Checksum utils
+ * Checksum utils.
  *
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
 class Checksum
 {
     /**
-     * Returns the checksum of the given content
+     * Returns the checksum of the given content.
      *
      * @param string $content
      *
@@ -22,7 +22,7 @@ class Checksum
     }
 
     /**
-     * Returns the checksum of the specified file
+     * Returns the checksum of the specified file.
      *
      * @param string $filename
      *

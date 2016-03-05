@@ -5,7 +5,7 @@ namespace Gaufrette\Exception;
 use Gaufrette\Exception;
 
 /**
- * Exception to be thrown when a file was not found
+ * Exception to be thrown when a file was not found.
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */

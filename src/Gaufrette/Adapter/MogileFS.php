@@ -16,19 +16,17 @@ use Gaufrette\Util;
  */
 class MogileFS implements Adapter
 {
-    const ERR_OTHER       = 0;
+    const ERR_OTHER = 0;
     const ERR_UNKNOWN_KEY = 1;
-    const ERR_EMPTY_FILE  = 2;
-    const ERR_NONE_MATCH  = 3;
-    const ERR_KEY_EXISTS  = 4;
+    const ERR_EMPTY_FILE = 2;
+    const ERR_NONE_MATCH = 3;
+    const ERR_KEY_EXISTS = 4;
 
     protected $domain;
     protected $hosts;
     protected $socket;
 
     /**
-     * Constructor
-     *
      * @param domain MogileFS domain
      * @param hosts  Array of MogileFS trackers
      */
@@ -39,11 +37,11 @@ class MogileFS implements Adapter
         }
 
         $this->domain = $domain;
-        $this->hosts  = $hosts;
+        $this->hosts = $hosts;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($key)
     {
@@ -73,14 +71,14 @@ class MogileFS implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($key, $content, array $metadata = null)
     {
         $closeres = false;
 
         if (mb_strlen($content) > 0) {
-            $res = $this->doRequest("CREATE_OPEN", array("key" => $key, "class" => $metadata['mogile_class']));
+            $res = $this->doRequest('CREATE_OPEN', array('key' => $key, 'class' => $metadata['mogile_class']));
 
             if ($res && preg_match('/^http:\/\/([a-z0-9.-]*):([0-9]*)\/(.*)$/', $res['path'], $matches)) {
                 $host = $matches[1];
@@ -90,9 +88,9 @@ class MogileFS implements Adapter
                 $status = $this->putFile($res['path'], $content);
 
                 if ($status) {
-                    $params = array("key" => $key, "class" => $metadata['mogile_class'], "devid" => $res['devid'],
-                                    "fid" => $res['fid'], "path" => urldecode($res['path']));
-                    $closeres = $this->doRequest("CREATE_CLOSE", $params);
+                    $params = array('key' => $key, 'class' => $metadata['mogile_class'], 'devid' => $res['devid'],
+                                    'fid' => $res['fid'], 'path' => urldecode($res['path']), );
+                    $closeres = $this->doRequest('CREATE_CLOSE', $params);
                 }
             }
         }
@@ -105,7 +103,7 @@ class MogileFS implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -115,20 +113,20 @@ class MogileFS implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
         $this->doRequest('RENAME', array(
-            'from_key'  => $sourceKey,
-            'to_key'    => $targetKey
+            'from_key' => $sourceKey,
+            'to_key' => $targetKey,
         ));
 
         return true;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function exists($key)
     {
@@ -142,7 +140,7 @@ class MogileFS implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function keys()
     {
@@ -162,7 +160,7 @@ class MogileFS implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
@@ -170,7 +168,7 @@ class MogileFS implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isDirectory($key)
     {
@@ -178,7 +176,7 @@ class MogileFS implements Adapter
     }
 
     /**
-     * Get available domains and classes from tracker
+     * Get available domains and classes from tracker.
      *
      * @return mixed Array on success, false on failure
      */
@@ -191,13 +189,13 @@ class MogileFS implements Adapter
 
         $domains = array();
 
-        for ($i = 1; $i <= $res['domains']; $i++) {
-            $dom = 'domain' . $i;
+        for ($i = 1; $i <= $res['domains']; ++$i) {
+            $dom = 'domain'.$i;
             $classes = array();
 
             // Associate classes to current domain (class name => mindevcount)
-            for ($j = 1; $j <= $res[$dom.'classes']; $j++) {
-                $classes[$res[$dom . 'class' . $j . 'name']] = $res[$dom . 'class' . $j . 'mindevcount'];
+            for ($j = 1; $j <= $res[$dom.'classes']; ++$j) {
+                $classes[$res[$dom.'class'.$j.'name']] = $res[$dom.'class'.$j.'mindevcount'];
             }
 
             $domains[] = array('name' => $res[$dom], 'classes' => $classes);
@@ -207,7 +205,7 @@ class MogileFS implements Adapter
     }
 
     /**
-     * Tries to connect MogileFS tracker
+     * Tries to connect MogileFS tracker.
      *
      * @return Socket
      */
@@ -236,9 +234,9 @@ class MogileFS implements Adapter
     }
 
     /**
-     * Close connection to MogileFS tracker
+     * Close connection to MogileFS tracker.
      *
-     * @return boolean
+     * @return bool
      */
     private function close()
     {
@@ -250,10 +248,11 @@ class MogileFS implements Adapter
     }
 
     /**
-     * Makes request to MogileFS tracker
+     * Makes request to MogileFS tracker.
      *
      * @param cmd Command
      * @param args Array of arguments
+     *
      * @return mixed Array on success, false on failure
      */
     private function doRequest($cmd, $args = array())
@@ -301,25 +300,27 @@ class MogileFS implements Adapter
     }
 
     /**
-     * Get file location at server from MogileFS tracker
+     * Get file location at server from MogileFS tracker.
      *
      * @param key File key
+     *
      * @return mixed Array on success, false on failure
      */
     private function getPaths($key)
     {
-        $res = $this->doRequest("GET_PATHS", array("key" => $key));
+        $res = $this->doRequest('GET_PATHS', array('key' => $key));
         unset($res['paths']);
 
         return $res;
     }
 
     /**
-     * Sends file to MogileFS tracker
+     * Sends file to MogileFS tracker.
      *
      * @param path Save path at server
      * @param data Data to save
-     * @return boolean
+     *
+     * @return bool
      */
     private function putFile($path, $data)
     {
@@ -337,11 +338,11 @@ class MogileFS implements Adapter
         stream_set_blocking($fp, true);
         stream_set_timeout($fp, 30, 200000);
 
-        $out  = "PUT ". $url['path']. " HTTP/1.1". $b;
-        $out .= "Host: ". $url['host']. $b;
-        $out .= "Content-Length: ". Util\Size::fromContent($data). $b. $b;
+        $out = 'PUT '.$url['path'].' HTTP/1.1'.$b;
+        $out .= 'Host: '.$url['host'].$b;
+        $out .= 'Content-Length: '.Util\Size::fromContent($data).$b.$b;
         $out .= $data;
-        $out .= $b. $b;
+        $out .= $b.$b;
         fwrite($fp, $out);
         fflush($fp);
 
@@ -358,9 +359,10 @@ class MogileFS implements Adapter
     }
 
     /**
-     * Closes the underlying connection
+     * Closes the underlying connection.
      */
-    public function __destruct() {
-      $this->close();
+    public function __destruct()
+    {
+        $this->close();
     }
 }

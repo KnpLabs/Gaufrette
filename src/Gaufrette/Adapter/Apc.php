@@ -6,7 +6,7 @@ use Gaufrette\Adapter;
 use Gaufrette\Util;
 
 /**
- * Apc adapter, a non-persistent adapter for when this sort of thing is appropriate
+ * Apc adapter, a non-persistent adapter for when this sort of thing is appropriate.
  *
  * @author Alexander Deruwe <alexander.deruwe@gmail.com>
  * @author Antoine Hérault <antoine.herault@gmail.com>
@@ -18,11 +18,10 @@ class Apc implements Adapter
     protected $ttl;
 
     /**
-     * Constructor
-     *
      * @throws \RuntimeException
-     * @param  string            $prefix to avoid conflicts between filesystems
-     * @param  int               $ttl    time to live, default is 0
+     *
+     * @param string $prefix to avoid conflicts between filesystems
+     * @param int    $ttl    time to live, default is 0
      */
     public function __construct($prefix, $ttl = 0)
     {
@@ -35,7 +34,7 @@ class Apc implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($key)
     {
@@ -43,7 +42,7 @@ class Apc implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($key, $content, array $metadata = null)
     {
@@ -57,7 +56,7 @@ class Apc implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function exists($key)
     {
@@ -65,7 +64,7 @@ class Apc implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function keys()
     {
@@ -86,7 +85,7 @@ class Apc implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
@@ -96,7 +95,7 @@ class Apc implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -104,19 +103,19 @@ class Apc implements Adapter
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
         // TODO: this probably allows for race conditions...
-        $written  = $this->write($targetKey, $this->read($sourceKey));
+        $written = $this->write($targetKey, $this->read($sourceKey));
         $deleted = $this->delete($sourceKey);
 
         return $written && $deleted;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isDirectory($key)
     {
@@ -124,21 +123,22 @@ class Apc implements Adapter
     }
 
     /**
-     * Computes the path for the given key
+     * Computes the path for the given key.
      *
-     * @param  string $key
+     * @param string $key
+     *
      * @return string
      */
     public function computePath($key)
     {
-        return $this->prefix . $key;
+        return $this->prefix.$key;
     }
 
     /**
-     * @param  string       $key    - by default ''
-     * @param  integer      $format - by default APC_ITER_NONE
-     * @return \APCIterator
+     * @param string $key    - by default ''
+     * @param int    $format - by default APC_ITER_NONE
      *
+     * @return \APCIterator
      */
     protected function getCachedKeysIterator($key = '', $format = APC_ITER_NONE)
     {

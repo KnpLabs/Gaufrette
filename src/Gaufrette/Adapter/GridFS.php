@@ -3,11 +3,11 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-use \MongoGridFS as MongoGridFs;
-use \MongoDate;
+use MongoGridFS as MongoGridFs;
+use MongoDate;
 
 /**
- * Adapter for the GridFS filesystem on MongoDB database
+ * Adapter for the GridFS filesystem on MongoDB database.
  *
  * @author Tomi Saarinen <tomi.saarinen@rohea.com>
  * @author Antoine Hérault <antoine.herault@gmail.com>
@@ -22,8 +22,6 @@ class GridFS implements Adapter,
     protected $gridFS = null;
 
     /**
-     * Constructor
-     *
      * @param \MongoGridFS $gridFS
      */
     public function __construct(MongoGridFs $gridFS)
@@ -32,7 +30,7 @@ class GridFS implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read($key)
     {
@@ -42,7 +40,7 @@ class GridFS implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function write($key, $content)
     {
@@ -51,14 +49,14 @@ class GridFS implements Adapter,
         }
 
         $metadata = array_replace_recursive(array('date' => new MongoDate()), $this->getMetadata($key), array('filename' => $key));
-        $id   = $this->gridFS->storeBytes($content, $metadata);
+        $id = $this->gridFS->storeBytes($content, $metadata);
         $file = $this->gridFS->findOne(array('_id' => $id));
 
         return $file->getSize();
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isDirectory($key)
     {
@@ -66,7 +64,7 @@ class GridFS implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -77,7 +75,7 @@ class GridFS implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function exists($key)
     {
@@ -85,11 +83,11 @@ class GridFS implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function keys()
     {
-        $keys   = array();
+        $keys = array();
         $cursor = $this->gridFS->find(array(), array('filename'));
 
         foreach ($cursor as $file) {
@@ -100,7 +98,7 @@ class GridFS implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
@@ -110,7 +108,7 @@ class GridFS implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function checksum($key)
     {
@@ -120,7 +118,7 @@ class GridFS implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -130,7 +128,7 @@ class GridFS implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setMetadata($key, $metadata)
     {
@@ -138,7 +136,7 @@ class GridFS implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getMetadata($key)
     {
@@ -151,7 +149,7 @@ class GridFS implements Adapter,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function listKeys($prefix = '')
     {
@@ -160,17 +158,17 @@ class GridFS implements Adapter,
         if ('' == $prefix) {
             return array(
                 'dirs' => array(),
-                'keys' => $this->keys()
+                'keys' => $this->keys(),
             );
         }
 
         $result = array(
             'dirs' => array(),
-            'keys' => array()
+            'keys' => array(),
         );
 
         $gridFiles = $this->gridFS->find(array(
-            'filename' => new \MongoRegex(sprintf('/^%s/', $prefix))
+            'filename' => new \MongoRegex(sprintf('/^%s/', $prefix)),
         ));
 
         foreach ($gridFiles as $file) {

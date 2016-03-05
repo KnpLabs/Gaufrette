@@ -11,9 +11,8 @@ use OpenCloud\Common\Exceptions\CreateUpdateError;
 use OpenCloud\ObjectStore\Exception\ObjectNotFoundException;
 
 /**
- * OpenCloud adapter
+ * OpenCloud adapter.
  *
- * @package Gaufrette
  * @author  James Watson <james@sitepulse.org>
  * @author  Daniel Richter <nexyz9@gmail.com>
  */
@@ -41,23 +40,22 @@ class OpenCloud implements Adapter,
     protected $container;
 
     /**
-     * Constructor
-     *
      * @param Service $objectStore
      * @param string  $containerName   The name of the container
      * @param bool    $createContainer Whether to create the container if it does not exist
      */
     public function __construct(Service $objectStore, $containerName, $createContainer = false)
     {
-        $this->objectStore     = $objectStore;
-        $this->containerName   = $containerName;
+        $this->objectStore = $objectStore;
+        $this->containerName = $containerName;
         $this->createContainer = $createContainer;
     }
 
     /**
-     * Returns an initialized container
+     * Returns an initialized container.
      *
      * @throws \RuntimeException
+     *
      * @return Container
      */
     protected function getContainer()
@@ -82,11 +80,11 @@ class OpenCloud implements Adapter,
     }
 
     /**
-     * Reads the content of the file
+     * Reads the content of the file.
      *
      * @param string $key
      *
-     * @return string|boolean if cannot read content
+     * @return string|bool if cannot read content
      */
     public function read($key)
     {
@@ -98,19 +96,18 @@ class OpenCloud implements Adapter,
     }
 
     /**
-     * Writes the given content into the file
+     * Writes the given content into the file.
      *
      * @param string $key
      * @param string $content
      *
-     * @return integer|boolean The number of bytes that were written into the file
+     * @return int|bool The number of bytes that were written into the file
      */
     public function write($key, $content)
     {
         try {
             $object = $this->getContainer()->uploadObject($key, $content);
-        }
-        catch (CreateUpdateError $updateError) {
+        } catch (CreateUpdateError $updateError) {
             return false;
         }
 
@@ -118,11 +115,11 @@ class OpenCloud implements Adapter,
     }
 
     /**
-     * Indicates whether the file exists
+     * Indicates whether the file exists.
      *
      * @param string $key
      *
-     * @return boolean
+     * @return bool
      */
     public function exists($key)
     {
@@ -136,14 +133,14 @@ class OpenCloud implements Adapter,
     }
 
     /**
-     * Returns an array of all keys (files and directories)
+     * Returns an array of all keys (files and directories).
      *
      * @return array
      */
     public function keys()
     {
         $objectList = $this->getContainer()->objectList();
-        $keys = array ();
+        $keys = array();
 
         while ($object = $objectList->next()) {
             $keys[] = $object->getName();
@@ -155,11 +152,11 @@ class OpenCloud implements Adapter,
     }
 
     /**
-     * Returns the last modified time
+     * Returns the last modified time.
      *
      * @param string $key
      *
-     * @return integer|boolean An UNIX like timestamp or false
+     * @return int|bool An UNIX like timestamp or false
      */
     public function mtime($key)
     {
@@ -171,11 +168,11 @@ class OpenCloud implements Adapter,
     }
 
     /**
-     * Deletes the file
+     * Deletes the file.
      *
      * @param string $key
      *
-     * @return boolean
+     * @return bool
      */
     public function delete($key)
     {
@@ -185,8 +182,7 @@ class OpenCloud implements Adapter,
 
         try {
             $object->delete();
-        }
-        catch (DeleteError $deleteError) {
+        } catch (DeleteError $deleteError) {
             return false;
         }
 
@@ -194,12 +190,12 @@ class OpenCloud implements Adapter,
     }
 
     /**
-     * Renames a file
+     * Renames a file.
      *
      * @param string $sourceKey
      * @param string $targetKey
      *
-     * @return boolean
+     * @return bool
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -213,11 +209,11 @@ class OpenCloud implements Adapter,
     }
 
     /**
-     * Check if key is directory
+     * Check if key is directory.
      *
      * @param string $key
      *
-     * @return boolean
+     * @return bool
      */
     public function isDirectory($key)
     {
@@ -225,7 +221,7 @@ class OpenCloud implements Adapter,
     }
 
     /**
-     * Returns the checksum of the specified key
+     * Returns the checksum of the specified key.
      *
      * @param string $key
      *
@@ -249,8 +245,7 @@ class OpenCloud implements Adapter,
     {
         try {
             return $this->getContainer()->getObject($key);
-        }
-        catch (ObjectNotFoundException $objFetchError) {
+        } catch (ObjectNotFoundException $objFetchError) {
             return false;
         }
     }
