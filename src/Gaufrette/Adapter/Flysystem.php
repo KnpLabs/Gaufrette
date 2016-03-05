@@ -26,7 +26,8 @@ class Flysystem implements Adapter
      */
     public function read($key)
     {
-        return $this->adapter->read($key);
+        // TODO: handle false returned
+        return $this->adapter->read($key)['contents'];
     }
 
     /**

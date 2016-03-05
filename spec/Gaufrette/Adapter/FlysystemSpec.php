@@ -21,7 +21,7 @@ class FlysystemSpec extends ObjectBehavior
 
     function it_reads_file(AdapterInterface $adapter)
     {
-        $adapter->read('filename')->willReturn('Hello.');
+        $adapter->read('filename')->willReturn(['contents' => 'Hello.']);
 
         $this->read('filename')->shouldReturn('Hello.');
     }
