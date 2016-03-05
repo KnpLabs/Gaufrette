@@ -28,7 +28,6 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function read($key)
     {
-        // TODO: handle false returned
         return $this->adapter->read($key)['contents'];
     }
 
