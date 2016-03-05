@@ -3,10 +3,11 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Gaufrette\Adapter\ListKeysAware;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Util;
 
-class Flysystem implements Adapter
+class Flysystem implements Adapter, ListKeysAware
 {
     private $adapter;
     private $config;
@@ -54,6 +55,30 @@ class Flysystem implements Adapter
         return array_map(function($content) {
             return $content['path'];
         }, $this->adapter->listContents());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function listKeys($prefix = '')
+    {
+        $dirs = [];
+        $keys = [];
+
+        foreach ($this->adapter->listContents() as $content) {
+            if (empty($prefix) || 0 === strpos($content['path'], $prefix)) {
+                if ('dir' === $content['type']) {
+                    $dirs[] = $content['path'];
+                } else {
+                    $keys[] = $content['path'];
+                }
+            }
+        }
+
+        return [
+            'keys' => $keys,
+            'dirs' => $dirs
+        ];
     }
 
     /**
