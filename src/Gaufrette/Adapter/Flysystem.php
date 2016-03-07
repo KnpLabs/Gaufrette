@@ -9,7 +9,14 @@ use League\Flysystem\Util;
 
 class Flysystem implements Adapter, ListKeysAware
 {
+    /**
+     * @var AdapterInterface
+     */
     private $adapter;
+
+    /**
+     * @var Config
+     */
     private $config;
 
     /**
