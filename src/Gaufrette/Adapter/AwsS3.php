@@ -143,7 +143,7 @@ class AwsS3 implements Adapter,
 
             return strlen($content);
         } catch (\Exception $e) {
-            return false;
+            throw new \RuntimeException(sprintf('Could not write the "%s" key content S3.', $e));
         }
     }
 
