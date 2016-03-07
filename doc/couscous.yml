@@ -26,6 +26,9 @@ menu:
                 streaming:
                     text: Streaming
                     relativeUrl: streaming.html
+                implementing-new-adapter:
+                    text: Implementing new Adapter
+                    relativeUrl: implementing-new-adapter.html
         adapters:
             name: Adapters
             items:
@@ -44,6 +47,9 @@ menu:
                 doctrine-dbal:
                     text: Doctrine DBAL
                     relativeUrl: adapters/doctrine-dbal.html
+                flysystem:
+                    text: Flysystem
+                    relativeUrl: adapters/flysystem.html
                 ftp:
                     text: Ftp
                     relativeUrl: adapters/ftp.html
