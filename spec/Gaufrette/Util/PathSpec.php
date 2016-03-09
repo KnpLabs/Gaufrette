@@ -23,4 +23,9 @@ class PathSpec extends ObjectBehavior
         $this->normalize('/home/other/./new')->shouldReturn('/home/other/new');
         $this->normalize('protocol://home/other.txt')->shouldReturn('protocol://home/other.txt');
     }
+
+    function it_returns_unix_style_dirname()
+    {
+        $this->dirname('a/test/path')->shouldReturn('a/test');
+    }
 }

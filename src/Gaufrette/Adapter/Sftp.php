@@ -46,7 +46,7 @@ class Sftp implements Adapter,
         $sourcePath = $this->computePath($sourceKey);
         $targetPath = $this->computePath($targetKey);
 
-        $this->ensureDirectoryExists(dirname($targetPath), true);
+        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath), true);
 
         return $this->sftp->rename($sourcePath, $targetPath);
     }
@@ -59,7 +59,7 @@ class Sftp implements Adapter,
         $this->initialize();
 
         $path = $this->computePath($key);
-        $this->ensureDirectoryExists(dirname($path), true);
+        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($path), true);
         $numBytes = $this->sftp->write($path, $content);
 
         return $numBytes;
@@ -101,8 +101,8 @@ class Sftp implements Adapter,
 
         $dirs = array();
         foreach ($files as $file) {
-            if ('.' !== dirname($file)) {
-                $dirs[] = dirname($file);
+            if ('.' !== \Gaufrette\Util\Path::dirname($file)) {
+                $dirs[] = \Gaufrette\Util\Path::dirname($file);
             }
         }
 

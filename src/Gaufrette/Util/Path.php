@@ -72,4 +72,18 @@ class Path
 
         return strtolower($matches['prefix']);
     }
+
+    /**
+     * Wrap native dirname function in order to handle only UNIX-style paths
+     *
+     * @param string $path
+     *
+     * @return string
+     *
+     * @see http://php.net/manual/en/function.dirname.php
+     */
+    public static function dirname($path)
+    {
+        return str_replace('\\', '/', \dirname($path));
+    }
 }

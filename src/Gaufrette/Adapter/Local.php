@@ -58,7 +58,7 @@ class Local implements Adapter,
     public function write($key, $content)
     {
         $path = $this->computePath($key);
-        $this->ensureDirectoryExists(dirname($path), true);
+        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($path), true);
 
         return file_put_contents($path, $content);
     }
@@ -69,7 +69,7 @@ class Local implements Adapter,
     public function rename($sourceKey, $targetKey)
     {
         $targetPath = $this->computePath($targetKey);
-        $this->ensureDirectoryExists(dirname($targetPath), true);
+        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath), true);
 
         return rename($this->computePath($sourceKey), $targetPath);
     }
