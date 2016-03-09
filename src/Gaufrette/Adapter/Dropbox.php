@@ -137,8 +137,8 @@ class Dropbox implements Adapter
         foreach ($metadata['contents'] as $value) {
             $file = ltrim($value['path'], '/');
             $keys[] = $file;
-            if ('.' !== dirname($file)) {
-                $keys[] = dirname($file);
+            if ('.' !== \Gaufrette\Util\Path::dirname($file)) {
+                $keys[] = \Gaufrette\Util\Path::dirname($file);
             }
         }
         sort($keys);

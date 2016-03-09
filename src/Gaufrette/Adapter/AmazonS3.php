@@ -200,8 +200,8 @@ class AmazonS3 implements Adapter,
 
         $keys = array();
         foreach ($list as $file) {
-            if ('.' !== dirname($file)) {
-                $keys[] = dirname($file);
+            if ('.' !== \Gaufrette\Util\Path::dirname($file)) {
+                $keys[] = \Gaufrette\Util\Path::dirname($file);
             }
             $keys[] = $file;
         }
