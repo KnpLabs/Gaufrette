@@ -148,7 +148,11 @@ class AzureBlobStorage implements Adapter,
 
             if ($this->detectContentType) {
                 $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
-                $contentType = $fileInfo->buffer($content);
+                if (is_resource($content)) {
+                    $contentType = $fileInfo->file(stream_get_meta_data($content)['uri']);
+                } else {
+                    $contentType = $fileInfo->buffer($content);
+                }
                 $options->setContentType($contentType);
             }
 
