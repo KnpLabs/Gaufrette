@@ -3,7 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-use phpseclib\Net\SFTP;
+use phpseclib\Net\SFTP as SecLibSFTP;
 use Gaufrette\Filesystem;
 use Gaufrette\File;
 
@@ -17,14 +17,14 @@ class PhpseclibSftp implements Adapter,
     protected $initialized = false;
 
     /**
-     * @param SFTP        $sftp      An Sftp instance
+     * @param SecLibSFTP  $sftp      An Sftp instance
      * @param string      $directory The distant directory
      * @param bool        $create    Whether to create the remote directory if it
      *                               does not exist
      * @param string|null $username  SFTP user name
      * @param string|null $password  SFTP user password
      */
-    public function __construct(SFTP $sftp, $directory = null, $create = false, $username = null, $password = null)
+    public function __construct(SecLibSFTP $sftp, $directory = null, $create = false, $username = null, $password = null)
     {
         $this->sftp = $sftp;
         $this->directory = $directory;
