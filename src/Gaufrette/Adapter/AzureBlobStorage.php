@@ -158,7 +158,11 @@ class AzureBlobStorage implements Adapter,
 
             $this->blobProxy->createBlockBlob($this->containerName, $key, $content, $options);
 
-            return Util\Size::fromContent($content);
+            if (is_resource($content)) {
+                return Util\Size::fromResource($content);
+            } else {
+                return Util\Size::fromContent($content);
+            }
         } catch (ServiceException $e) {
             $this->failIfContainerNotFound($e, sprintf('write content for key "%s"', $key));
 

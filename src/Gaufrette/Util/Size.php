@@ -30,10 +30,24 @@ class Size
      *
      * @param string $filename
      *
-     * @return string
+     * @return int
      */
     public static function fromFile($filename)
     {
         return filesize($filename);
+    }
+
+    /**
+     * Returns the size in bytes from the given resource.
+     *
+     * @param resource $handle
+     *
+     * @return string
+     */
+    public static function fromResource($handle)
+    {
+        $cStat = fstat($handle);
+        // if the resource is a remote file, $cStat will be false
+        return $cStat ? $cStat['size'] : 0;
     }
 }
