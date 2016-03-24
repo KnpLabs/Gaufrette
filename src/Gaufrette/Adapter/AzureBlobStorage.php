@@ -153,7 +153,7 @@ class AzureBlobStorage implements Adapter,
                 } else {
                     $contentType = $fileInfo->buffer($content);
                 }
-                $options->setContentType($contentType);
+                $options->setBlobContentType($contentType);
             }
 
             $this->blobProxy->createBlockBlob($this->containerName, $key, $content, $options);
