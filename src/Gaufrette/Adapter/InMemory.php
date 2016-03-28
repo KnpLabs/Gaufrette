@@ -12,7 +12,8 @@ use Gaufrette\Util;
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class InMemory implements Adapter
+class InMemory implements Adapter,
+                          MimeTypeProvider
 {
     protected $files = array();
 
@@ -136,5 +137,15 @@ class InMemory implements Adapter
     public function isDirectory($path)
     {
         return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function mimeType($key)
+    {
+        $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
+
+        return $fileInfo->buffer($this->files[$key]['content']);
     }
 }
