@@ -196,14 +196,28 @@ class AmazonS3 implements Adapter,
     {
         $this->ensureBucketExists();
 
-        $list = $this->service->get_object_list($this->bucket);
+        $rootdir = $this->getDirectory().'/';
+        if ($rootdir !== '/') {
+            $list = $this->service->get_object_list($this->bucket, array('prefix' => $this->getDirectory()));
+        } else {
+            $list = $this->service->get_object_list($this->bucket);
+        }
 
         $keys = array();
-        foreach ($list as $file) {
-            if ('.' !== dirname($file)) {
-                $keys[] = dirname($file);
+        foreach ($list as $fullpath) {
+            if ($fullpath === $rootdir) {
+                continue;
+            } elseif ($rootdir !== '/') {
+                $file = substr($fullpath, strlen($rootdir));
+            } else {
+                $file = $fullpath;
             }
-            $keys[] = $file;
+
+            if (strrpos($file, '/') === strlen($file) - 1) {
+                $keys[] = substr($file, 0, -1);
+            } else {
+                $keys[] = $file;
+            }
         }
         sort($keys);
 

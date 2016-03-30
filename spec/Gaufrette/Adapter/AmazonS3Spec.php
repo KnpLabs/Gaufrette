@@ -443,7 +443,7 @@ class AmazonS3Spec extends ObjectBehavior
         $service
             ->get_object_list('bucketName')
             ->shouldBeCalled()
-            ->willReturn(array('filename2', 'aaa/filename', 'filename1'))
+            ->willReturn(array('filename2', 'aaa/', 'aaa/filename', 'filename1'))
         ;
 
         $this->keys()->shouldReturn(array('aaa', 'aaa/filename', 'filename1', 'filename2'));
