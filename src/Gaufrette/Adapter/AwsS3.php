@@ -4,6 +4,7 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Aws\S3\S3Client;
+use Gaufrette\Stream\Http;
 
 /**
  * Amazon S3 adapter using the AWS SDK for PHP v2.x.
@@ -238,6 +239,20 @@ class AwsS3 implements Adapter,
         ));
 
         return count($result['Contents']) > 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function createStream($key) {
+        $context = stream_context_create(array(
+            's3' => array(
+                'seekable' => true
+            )
+        ));
+
+        $this->service->registerStreamWrapper();
+        return new Http("s3://$this->bucket/$key", $context);
     }
 
     /**
