@@ -21,10 +21,8 @@ class PhpseclibSftp implements Adapter,
      * @param string      $directory The distant directory
      * @param bool        $create    Whether to create the remote directory if it
      *                               does not exist
-     * @param string|null $username  SFTP user name
-     * @param string|null $password  SFTP user password
      */
-    public function __construct(SecLibSFTP $sftp, $directory = null, $create = false, $username = null, $password = null)
+    public function __construct(SecLibSFTP $sftp, $directory = null, $create = false)
     {
         $this->sftp = $sftp;
         $this->directory = $directory;

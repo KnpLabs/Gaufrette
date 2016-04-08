@@ -22,6 +22,9 @@ composer require phpseclib/phpseclib:^2.0
 
 $sftp = new phpseclib\Net\SFTP($host = 'localhost', $port = 22);
 
-$adapter = new Gaufrette\Adapter\PhpseclibSftp($sftp, $distantDirectory = null, $createDirectoryIfDoesntExist = false, $username = 'gaufrette', $password = 'gaufrette');
+//now you need to login manually with the lib
+$sftp->login('foo', 'bar');
+
+$adapter = new Gaufrette\Adapter\PhpseclibSftp($sftp, $distantDirectory = null, $createDirectoryIfDoesntExist = false);
 $filesystem = new Gaufrette\Filesystem($adapter);
 ```
