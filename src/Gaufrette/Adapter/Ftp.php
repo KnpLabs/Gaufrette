@@ -26,6 +26,7 @@ class Ftp implements Adapter,
     protected $mode;
     protected $ssl;
     protected $fileData = array();
+    protected $utf8;
 
     /**
      * @param string $directory The directory to use in the ftp server
@@ -47,6 +48,7 @@ class Ftp implements Adapter,
         $this->create = isset($options['create']) ? $options['create'] : false;
         $this->mode = isset($options['mode']) ? $options['mode'] : FTP_BINARY;
         $this->ssl = isset($options['ssl']) ? $options['ssl'] : false;
+        $this->utf8 = isset($options['utf8']) ? $options['utf8'] : false;
     }
 
     /**
@@ -520,6 +522,11 @@ class Ftp implements Adapter,
         if ($this->passive && !ftp_pasv($this->connection, true)) {
             $this->close();
             throw new \RuntimeException('Could not turn passive mode on.');
+        }
+
+        // enable utf8 mode if configured
+        if($this->utf8 == true) {
+            ftp_raw($this->connection, "OPTS UTF8 ON");
         }
 
         // ensure the adapter's directory exists
