@@ -2,7 +2,7 @@
 
 namespace Gaufrette\Adapter\AzureBlobStorage;
 
-use WindowsAzure\Common\ServicesBuilder;
+use MicrosoftAzure\Storage\Common\ServicesBuilder;
 
 /**
  * Basic implementation for a Blob proxy factory.
