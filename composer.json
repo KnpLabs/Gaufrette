@@ -25,6 +25,9 @@
     "require": {
         "php": ">=5.4"
     },
+    "conflict": {
+        "microsoft/windowsazure": "<0.4.3"
+    },
     "require-dev": {
         "aws/aws-sdk-php": "~2",
         "amazonwebservices/aws-sdk-for-php": "1.5.*",
