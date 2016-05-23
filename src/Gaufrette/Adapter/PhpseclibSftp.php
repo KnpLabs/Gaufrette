@@ -49,7 +49,7 @@ class PhpseclibSftp implements Adapter,
         $sourcePath = $this->computePath($sourceKey);
         $targetPath = $this->computePath($targetKey);
 
-        $this->ensureDirectoryExists(dirname($targetPath), true);
+        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath), true);
 
         return $this->sftp->rename($sourcePath, $targetPath);
     }
@@ -62,7 +62,7 @@ class PhpseclibSftp implements Adapter,
         $this->initialize();
 
         $path = $this->computePath($key);
-        $this->ensureDirectoryExists(dirname($path), true);
+        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($path), true);
         if ($this->sftp->put($path, $content)) {
             return $this->sftp->size($path);
         }
