@@ -5,10 +5,10 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
-use WindowsAzure\Blob\Models\CreateBlobOptions;
-use WindowsAzure\Blob\Models\CreateContainerOptions;
-use WindowsAzure\Blob\Models\DeleteContainerOptions;
-use WindowsAzure\Blob\Models\ListBlobsOptions;
+use WindowsAzure\Storage\Blob\Models\CreateBlobOptions;
+use WindowsAzure\Storage\Blob\Models\CreateContainerOptions;
+use WindowsAzure\Storage\Blob\Models\DeleteContainerOptions;
+use WindowsAzure\Storage\Blob\Models\ListBlobsOptions;
 use WindowsAzure\Common\ServiceException;
 
 /**
