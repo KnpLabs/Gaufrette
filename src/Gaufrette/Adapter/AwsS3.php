@@ -4,6 +4,8 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Aws\S3\S3Client;
+use Gaufrette\Util;
+
 
 /**
  * Amazon S3 adapter using the AWS SDK for PHP v2.x.
@@ -132,16 +134,22 @@ class AwsS3 implements Adapter,
          * it to prevent everything being served up as binary/octet-stream.
          */
         if (!isset($options['ContentType']) && $this->detectContentType) {
-            $finfo = new \finfo(FILEINFO_MIME_TYPE);
-            $mimeType = $finfo->buffer($content);
-
-            $options['ContentType'] = $mimeType;
+            $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
+            if (is_resource($content)) {
+                $contentType = $fileInfo->file(stream_get_meta_data($content)['uri']);
+            } else {
+                $contentType = $fileInfo->buffer($content);
+            }
+            $options['ContentType'] = $contentType;
         }
 
         try {
             $this->service->putObject($options);
-
-            return strlen($content);
+            if (is_resource($content)) {
+                return Util\Size::fromResource($content);
+            } else {
+                return Util\Size::fromContent($content);
+            }
         } catch (\Exception $e) {
             return false;
         }
