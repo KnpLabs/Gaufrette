@@ -79,7 +79,7 @@ class Ftp implements Adapter,
         $this->ensureDirectoryExists($this->directory, $this->create);
 
         $path = $this->computePath($key);
-        $directory = str_replace('\\', '/', \Gaufrette\Util\Path::dirname($path));
+        $directory = \Gaufrette\Util\Path::dirname($path);
 
         $this->ensureDirectoryExists($directory, true);
 
@@ -108,7 +108,7 @@ class Ftp implements Adapter,
         $sourcePath = $this->computePath($sourceKey);
         $targetPath = $this->computePath($targetKey);
 
-        $this->ensureDirectoryExists(str_replace('\\', '/', \Gaufrette\Util\Path::dirname($targetPath)), true);
+        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath));
 
         return ftp_rename($this->getConnection(), $sourcePath, $targetPath);
     }
@@ -121,7 +121,7 @@ class Ftp implements Adapter,
         $this->ensureDirectoryExists($this->directory, $this->create);
 
         $file  = $this->computePath($key);
-        $lines = ftp_rawlist($this->getConnection(), '-al ' . str_replace('\\', '/', \Gaufrette\Util\Path::dirname($file)));
+        $lines = ftp_rawlist($this->getConnection(), '-al ' . \Gaufrette\Util\Path::dirname($file));
 
         if (false === $lines) {
             return false;
@@ -275,7 +275,8 @@ class Ftp implements Adapter,
         $file = new File($key, $filesystem);
 
         if (!array_key_exists($key, $this->fileData)) {
-            $directory = \Gaufrette\Util\Path::dirname($key) == '.' ? '' : str_replace('\\', '/', \Gaufrette\Util\Path::dirname($key));
+            $dirname = \Gaufrette\Util\Path::dirname($key);
+            $directory = $dirname == '.' ? '' : $dirname;
             $this->listDirectory($directory);
         }
 
@@ -321,7 +322,7 @@ class Ftp implements Adapter,
     protected function createDirectory($directory)
     {
         // create parent directory if needed
-        $parent = str_replace('\\', '/', \Gaufrette\Util\Path::dirname($directory));
+        $parent = \Gaufrette\Util\Path::dirname($directory);
         if (!$this->isDir($parent)) {
             $this->createDirectory($parent);
         }

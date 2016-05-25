@@ -101,8 +101,8 @@ class Sftp implements Adapter,
 
         $dirs = array();
         foreach ($files as $file) {
-            if ('.' !== \Gaufrette\Util\Path::dirname($file)) {
-                $dirs[] = \Gaufrette\Util\Path::dirname($file);
+            if ('.' !== $dirname = \Gaufrette\Util\Path::dirname($file)) {
+                $dirs[] = $dirname;
             }
         }
 
