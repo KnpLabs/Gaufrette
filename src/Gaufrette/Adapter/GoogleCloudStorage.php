@@ -136,8 +136,7 @@ class GoogleCloudStorage implements Adapter,
          * it to prevent everything being served up as application/octet-stream.
          */
         if (!isset($metadata['ContentType']) && $this->detectContentType) {
-            $finfo = new \finfo(FILEINFO_MIME_TYPE);
-            $options['mimeType'] = $finfo->buffer($content);
+            $options['mimeType'] = $this->guessContentType($content);
             unset($metadata['ContentType']);
         } elseif (isset($metadata['ContentType'])) {
             $options['mimeType'] = $metadata['ContentType'];
@@ -380,5 +379,21 @@ class GoogleCloudStorage implements Adapter,
         } catch (\Google_Service_Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return string
+     */
+    private function guessContentType($content)
+    {
+        $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
+
+        if (is_resource($content)) {
+            return $fileInfo->file(stream_get_meta_data($content)['uri']);
+        }
+
+        return $fileInfo->buffer($content);
     }
 }
