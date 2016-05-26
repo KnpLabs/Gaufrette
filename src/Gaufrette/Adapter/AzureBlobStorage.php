@@ -147,12 +147,8 @@ class AzureBlobStorage implements Adapter,
             $options = new CreateBlobOptions();
 
             if ($this->detectContentType) {
-                $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
-                if (is_resource($content)) {
-                    $contentType = $fileInfo->file(stream_get_meta_data($content)['uri']);
-                } else {
-                    $contentType = $fileInfo->buffer($content);
-                }
+                $contentType = $this->guessContentType($content);
+
                 $options->setBlobContentType($contentType);
             }
 
@@ -160,9 +156,9 @@ class AzureBlobStorage implements Adapter,
 
             if (is_resource($content)) {
                 return Util\Size::fromResource($content);
-            } else {
-                return Util\Size::fromContent($content);
             }
+
+            return Util\Size::fromContent($content);
         } catch (ServiceException $e) {
             $this->failIfContainerNotFound($e, sprintf('write content for key "%s"', $key));
 
@@ -390,5 +386,21 @@ class AzureBlobStorage implements Adapter,
         }
 
         return $exception->getErrorReason();
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return string
+     */
+    private function guessContentType($content)
+    {
+        $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
+
+        if (is_resource($content)) {
+            return $fileInfo->file(stream_get_meta_data($content)['uri']);
+        }
+
+        return $fileInfo->buffer($content);
     }
 }
