@@ -239,6 +239,14 @@ class AmazonS3 implements Adapter,
     }
 
     /**
+     * Return the name of the bucket for this adapter.
+     */
+    public function getBucket()
+    {
+        return $this->bucket;
+    }
+
+    /**
      * Ensures the specified bucket exists. If the bucket does not exists
      * and the create parameter is set to true, it will try to create the
      * bucket.
