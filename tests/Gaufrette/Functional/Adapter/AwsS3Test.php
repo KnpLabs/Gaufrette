@@ -14,9 +14,11 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
 {
     protected function getClient()
     {
-        return S3Client::factory(array(
+        return new S3Client(array(
             'key'    => 'foo',
-            'secret' => 'bar'
+            'secret' => 'bar',
+            'region' => 'us-west-2',
+            'version' => 'latest'
         ));
     }
 
@@ -113,5 +115,17 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         $adapter->write('test.txt', 'some content');
         $keys = $adapter->listKeys();
         $this->assertEquals('test.txt', $keys['key']);
+    }
+
+    public function testListFiles()
+    {
+        $client = $this->getClient();
+        $adapter = new AwsS3($client, 'bucket', array('directory' => 'test'));
+        $adapter->write('test.txt', 'some content');
+        $files = $adapter->listFiles();
+
+        $this->assertEquals('test.txt', $files[0]['key']);
+        $this->assertEquals(12, $files[0]['size']); // 'some content' = 12 bytes.
+        $this->assertNotEmpty($files[0]['mtime']);
     }
 }
