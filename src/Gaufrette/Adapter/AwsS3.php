@@ -15,6 +15,7 @@ use Gaufrette\Util;
 class AwsS3 implements Adapter,
                        MetadataSupporter,
                        ListKeysAware,
+                       ListFilesAware,
                        SizeCalculator
 {
     protected $service;
