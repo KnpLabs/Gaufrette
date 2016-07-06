@@ -14,11 +14,9 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
 {
     protected function getClient()
     {
-        return new S3Client(array(
+        return S3Client::factory(array(
             'key'    => 'foo',
-            'secret' => 'bar',
-            'region' => 'us-west-2',
-            'version' => 'latest'
+            'secret' => 'bar'
         ));
     }
 
