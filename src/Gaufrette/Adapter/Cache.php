@@ -169,6 +169,14 @@ class Cache implements Adapter,
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function listDirectory($key)
+    {
+        return $this->source->listDirectory($key);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setMetadata($key, $metadata)
