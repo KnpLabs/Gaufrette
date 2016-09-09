@@ -6,6 +6,5 @@ tests/adapters/*
 bin/*
 !bin/configure_test_env.sh
 doc/.couscous
-/nbproject/private/
 nbproject/*
 tests/Gaufrette/Functional/adapters/*.php
