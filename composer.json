@@ -23,8 +23,7 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
-        "google/cloud": "^0.7.1"
+        "php": ">=5.4"
     },
     "require-dev": {
         "aws/aws-sdk-php": "~2",
@@ -39,7 +38,8 @@
         "phpunit/phpunit": "3.7.*",
         "microsoft/windowsazure": "dev-master",
         "mikey179/vfsStream": "~1.2.0",
-        "league/flysystem": "~1.0"
+        "league/flysystem": "~1.0",
+        "google/cloud": "^0.7.1"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",
