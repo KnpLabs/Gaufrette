@@ -8,4 +8,4 @@ bin/*
 doc/.couscous
 /nbproject/private/
 nbproject/*
-tests/Gaufrette/Functional/adapters/*
+tests/Gaufrette/Functional/adapters/*.php
