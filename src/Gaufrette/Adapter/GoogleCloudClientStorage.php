@@ -221,23 +221,8 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourceSu
      */
     public function rename($sourceKey, $targetKey)
     {
-        # there is no support for rename currently in Google Cloud Client Library 0.7.1 - it will be added in v0.8
+        # there is no support for rename currently in Google Cloud Client Library 0.7.1 - it will be added in v0.8 any time now
         return false;
-        /*
-        $metadata = $this->getMetadata($sourceKey);
-        
-        $sourceKey = $this->computePath($sourceKey);
-        $targetKey = $this->computePath($targetKey);
-
-        $object = $this->bucket->object($sourceKey);
-       // try {
-            $info = $object->copy($sourceKey,$targetKey);
-            
-            var_dump($info);
-       // } catch (\Google\Cloud\Exception\GoogleException $e) {
-            return false;
-       // }
-        return true;*/
     }
     
     /**
