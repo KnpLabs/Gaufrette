@@ -74,7 +74,7 @@ class File
      *
      * @throws FileNotFound
      *
-     * @param array $metadata optional metadata which should be send when read
+     * @param array $metadata optional metadata which should be set when read
      *
      * @return string
      */
