@@ -1,0 +1,19 @@
+<?php
+
+$storage = new StorageClient(array(
+    'projectId'     => 'your-project-id',
+    'keyFilePath'   => 'path/to/your/project/key.json'
+));
+
+$bucket_name = 'bucket_name';
+
+$adapter = new Gaufrette\Adapter\GoogleCloudClientStorage($storage, $bucket_name,
+    array(
+        'directory' => '',
+        'acl'       => array(
+            'allUsers' => \Google\Cloud\Storage\Acl::ROLE_READER
+        )
+    )
+);
+
+return $adapter;

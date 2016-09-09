@@ -23,7 +23,8 @@
         }
     ],
     "require": {
-        "php": ">=5.4"
+        "php": ">=5.4",
+        "google/cloud": "^0.7.1"
     },
     "require-dev": {
         "aws/aws-sdk-php": "~2",
