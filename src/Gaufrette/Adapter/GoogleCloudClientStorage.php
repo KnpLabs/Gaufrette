@@ -215,6 +215,7 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
         $this->isBucket();
         $object = $this->bucket->object($this->computePath($key));
         $object->delete();
+        $this->setMetadata($key, null);
         return true;
     }
     
