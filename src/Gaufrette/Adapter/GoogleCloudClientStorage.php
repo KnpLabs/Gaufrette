@@ -4,6 +4,7 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\Adapter\MetadataSupporter;
+use Gaufrette\Adapter\ResourcesSupporter;
 use Gaufrette\Adapter\ListKeysAware;
 
 /**
@@ -13,14 +14,14 @@ use Gaufrette\Adapter\ListKeysAware;
  * @package Gaufrette
  * @author  Lech Buszczynski <lecho@phatcat.eu>
  */
-class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourceSupporter, ListKeysAware {
+class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesSupporter, ListKeysAware {
 
     protected $storageClient;
     protected $bucket;
     protected $bucketValidated;
-    protected $options  = array();
-    protected $metadata = array();
-    protected $resource = array();
+    protected $options      = array();
+    protected $metadata     = array();
+    protected $resources    = array();
 
     /**
      * @param Google\Cloud\Storage\StorageClient    $service    Authenticated storage client class
@@ -105,7 +106,7 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourceSu
         $this->isBucket();     
         $object = $this->bucket->object($this->computePath($key));
         $info = $object->info();
-        $this->setResource($key, $info);
+        $this->setResources($key, $info);
         return $object->downloadAsString();
     }
     
@@ -122,21 +123,21 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourceSu
             'metadata'      => $this->getMetadata($key),
         );
 
-        $object = $this->bucket->upload(
+        $this->bucket->upload(
             $content,
             $options
         );
-
-        $acl = $object->acl();
-        foreach ($this->options['acl'] as $k => $v)
-        {
-            $acl->add($k, $v);
-        }
-        $object->update(array('metadata' => $this->getMetadata($key)));
         
-        $info = $object->info();
-        $this->setResource($key, $info);        
-        return $info['size'];
+        $this->updateKeyProperties($key,
+            array(
+                'acl'       => $this->options['acl'],
+                'metadata'  => $this->getMetadata($key)
+            )
+        );
+        
+        $size = $this->getResourceByName($key, 'size');
+        
+        return $size === null ? false : $size;
     }
     
     /**
@@ -202,7 +203,7 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourceSu
         $this->isBucket();
         $object = $object = $this->bucket->object($this->computePath($key));
         $info = $object->info();
-        $this->setResource($key, $info);
+        $this->setResources($key, $info);
         return strtotime($info['updated']);
     }
     
@@ -211,6 +212,7 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourceSu
      */
     public function delete($key)
     {
+        $this->isBucket();
         $object = $this->bucket->object($this->computePath($key));
         $object->delete();
         return true;
@@ -221,7 +223,34 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourceSu
      */
     public function rename($sourceKey, $targetKey)
     {
-        # there is no support for rename currently in Google Cloud Client Library 0.7.1 - it will be added in v0.8 any time now
+        $this->isBucket();
+        
+        $metadata = $this->getMetadata($sourceKey);
+        
+        $sourceKey = $this->computePath($sourceKey);
+        $targetKey = $this->computePath($targetKey);
+        
+        $object = $this->bucket->object($sourceKey);
+        
+        $copiedObject = $object->copy($this->bucket,
+            array(
+                'name' => $targetKey
+            )
+        );
+        
+        if ($copiedObject->exists())
+        {
+            $this->updateKeyProperties($targetKey,
+                array(
+                    'acl'       => $this->options['acl'],
+                    'metadata'  => $this->getMetadata($sourceKey)
+                )
+            );
+            $this->setMetadata($targetKey, $this->getMetadata($sourceKey));
+            $this->setMetadata($sourceKey, null);
+            $object->delete();
+            return true;
+        }
         return false;
     }
     
@@ -244,25 +273,60 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourceSu
     /**
      * {@inheritdoc}
      */
-    public function setResource($key, $data)
+    public function setResources($key, $data)
     {
-        $this->resource[$key] = $data;
+        $this->resources[$key] = $data;
     }
     
     /**
      * {@inheritdoc}
      */
-    public function getResource($key, $name = null)
+    public function getResources($key)
     {
-        if (isset($this->resource[$key]))
+        return isset($this->resources[$key]) ? $this->resources[$key] : array();
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function getResourceByName($key, $resourceName)
+    {
+        return isset($this->resources[$key][$resourceName]) ? $this->resources[$key][$resourceName] : null;
+    }
+    
+    /**
+     * Sets ACL and metadata information.
+     * 
+     * @param   string  $key
+     * @param   array   $options    Can contain "acl" and/or "metadata" arrays.
+     * @return  boolean
+     */
+    protected function updateKeyProperties($key, $options = array())
+    {
+        if ($this->exists($key) === false)
         {
-            if ($name)
-            {
-                return isset($this->resource[$key][$name]) ? $this->resource[$key][$name] : null;
-            } elseif (isset($this->resource[$key])) {
-                return isset($this->resource[$key]) ? $this->resource[$key] : array();
-            }
-        }            
-        return array();
-    }    
+            return false;
+        }
+        
+        $object = $this->bucket->object($this->computePath($key));
+        
+        $properties = array_replace_recursive(
+            array(
+                'acl'       => array(),
+                'metadata'  => array()
+            ), $options
+        );
+
+        $acl = $object->acl();
+        foreach ($properties['acl'] as $k => $v)
+        {
+            $acl->add($k, $v);
+        }
+        $object->update(array('metadata' => $properties['metadata']));
+
+        $info = $object->info();
+
+        $this->setResources($key, $info);
+        return true;
+    }
 }
