@@ -88,5 +88,46 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
         $this->assertEquals($info['OhMy'], 'I am a cat file!');
         $this->filesystem->delete($file);
         $adapter->setOptions($options);
-    }    
+    }
+    
+    /**
+     * @test
+     * @group functional
+     * @group gccs
+     */
+    public function shouldWriteAndRenameFile()
+    {
+        /** @var \Gaufrette\Adapter\GoogleCloudClientStorage $adapter */
+        $adapter = $this->filesystem->getAdapter();
+        $options = $adapter->getOptions();
+        $file   = 'Cat.txt';       
+        $adapter->setMetadata($file, array('OhMy' => 'I am a cat file!'));
+        $this->assertEquals(strlen($this->string), $this->filesystem->write($file, $this->string, true));
+        $adapter->rename('Cat.txt', 'Kitten.txt');      
+        $this->assertEquals($adapter->getMetadata('Kitten.txt'), $adapter->getResourceByName('Kitten.txt', 'metadata'));
+        $this->filesystem->delete('Kitten.txt');
+        $adapter->setOptions($options);
+    }
+    
+    /**
+     * @test
+     * @group functional
+     * @group gccs
+     */
+    public function shouldWriteAndReadPublicFile()
+    {
+        /** @var \Gaufrette\Adapter\GoogleCloudClientStorage $adapter */
+        $adapter = $this->filesystem->getAdapter();
+        $options = $adapter->getOptions();
+        $file   = 'Cat.txt';       
+        $this->assertEquals(strlen($this->string), $this->filesystem->write($file, $this->string, true));
+
+        $public_link = sprintf('https://storage.googleapis.com/%s/Cat.txt', $adapter->getBucket()->name());
+        
+        $headers = @get_headers($public_link);       
+        $this->assertEquals($headers[0], 'HTTP/1.0 200 OK');       
+        $this->filesystem->delete('Cat.txt');
+        $adapter->setOptions($options);
+    }
+    
 }

@@ -37,7 +37,7 @@
         "microsoft/azure-storage-blob": "^1.0",
         "akeneo/phpspec-skip-example-extension": "^4.0",
         "liuggio/fastest": "^1.6",
-        "google/cloud": "^0.7.1"
+        "google/cloud": "^0.8.0"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony",
