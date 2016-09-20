@@ -3,6 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use GuzzleHttp;
 
 /**
  * Google Cloud Storage adapter using the Google APIs Client Library for PHP.
@@ -93,15 +94,24 @@ class GoogleCloudStorage implements Adapter,
             return false;
         }
 
-        $request = new \Google_Http_Request($object->getMediaLink());
-        $this->service->getClient()->getAuth()->sign($request);
+        if (class_exists('Google_Http_Request')) {
+            $request = new Google_Http_Request($object->getMediaLink());
+            $this->service->getClient()->getAuth()->sign($request);
+            $response = $this->service->getClient()->getIo()->executeRequest($request);
+            if ($response[2] == 200) {
+                $this->setMetadata($key, $object->getMetadata());
 
-        $response = $this->service->getClient()->getIo()->executeRequest($request);
+                return $response[0];
+            }
+        } else {
+            $httpClient = new GuzzleHttp\Client();
+            $httpClient = $this->service->getClient()->authorize($httpClient);
+            $response = $httpClient->request('GET', $object->getMediaLink());
+            if ($response->getStatusCode() == 200) {
+                $this->setMetadata($key, $object->getMetadata());
 
-        if ($response[2] == 200) {
-            $this->setMetadata($key, $object->getMetadata());
-
-            return $response[0];
+                return $response->getBody();
+            }
         }
 
         return false;
