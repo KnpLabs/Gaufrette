@@ -1,12 +1,12 @@
 <?php
 
-namespace spec\Gaufrette\Stream;
+namespace spec\Gaufrette\Adapter\Local;
 
 use PhpSpec\ObjectBehavior;
 use Gaufrette\StreamMode;
 use org\bovigo\vfs\vfsStream;
 
-class LocalSpec extends ObjectBehavior
+class LocalStreamSpec extends ObjectBehavior
 {
     function it_throws_runtime_exception_when_file_doesnt_exists()
     {
