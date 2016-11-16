@@ -1,8 +1,6 @@
 <?php
 
-namespace Gaufrette\Adapter;
-
-@trigger_error('The '.__NAMESPACE__.'\SafeLocal is deprecated since version 0.4. Use Gaufrette\Adapter\Local\SafeLocal instead.', E_USER_DEPRECATED);
+namespace Gaufrette\Adapter\Local;
 
 /**
  * Safe local adapter that encodes key to avoid the use of the directories

@@ -1,7 +1,8 @@
 <?php
 
-namespace spec\Gaufrette\Adapter;
+namespace spec\Gaufrette\Adapter\Local;
 
+use Gaufrette\Adapter\Local\Local;
 use org\bovigo\vfs\vfsStream;
 use PhpSpec\ObjectBehavior;
 
@@ -16,7 +17,7 @@ class SafeLocalSpec extends ObjectBehavior
 
     function it_is_local_adapter()
     {
-        $this->shouldHaveType('Gaufrette\Adapter\Local');
+        $this->shouldHaveType(Local::class);
     }
 
     function it_computes_path_using_base64()
