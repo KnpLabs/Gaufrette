@@ -1,8 +1,6 @@
 <?php
 
-namespace Gaufrette\Adapter;
-
-@trigger_error('The '.__NAMESPACE__.'\AwsS3 is deprecated since version 0.4. Use Gaufrette\Adapter\Aws\S3 instead.', E_USER_DEPRECATED);
+namespace Gaufrette\Adapter\Aws;
 
 use Gaufrette\Adapter;
 use Aws\S3\S3Client;
@@ -14,10 +12,7 @@ use Gaufrette\Util;
  *
  * @author  Michael Dowling <mtdowling@gmail.com>
  */
-class AwsS3 implements Adapter,
-                       MetadataSupporter,
-                       ListKeysAware,
-                       SizeCalculator
+class S3 implements Adapter, Adapter\MetadataSupporter, Adapter\ListKeysAware, Adapter\SizeCalculator
 {
     protected $service;
     protected $bucket;

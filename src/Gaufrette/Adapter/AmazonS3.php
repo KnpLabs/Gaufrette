@@ -2,6 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
+@trigger_error('The '.__NAMESPACE__.'\AmazonS3 is deprecated since version 0.4. Use Gaufrette\Adapters\Aws\S3 instead.', E_USER_DEPRECATED);
+
 use AmazonS3 as AmazonClient;
 use Gaufrette\Adapter;
 

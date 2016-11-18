@@ -2,7 +2,7 @@
 
 namespace Gaufrette\Functional\Adapter;
 
-use Gaufrette\Adapter\AwsS3;
+use Gaufrette\Adapter\Aws\S3;
 use Aws\S3\S3Client;
 use Guzzle\Plugin\Mock\MockPlugin;
 use Guzzle\Http\Message\Response;
@@ -10,7 +10,7 @@ use Guzzle\Http\Message\Response;
 /**
  * @todo move to phpspec
  */
-class AwsS3Test extends \PHPUnit_Framework_TestCase
+class S3Test extends \PHPUnit_Framework_TestCase
 {
     protected function getClient()
     {
@@ -29,7 +29,7 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         ));
         $client = $this->getClient();
         $client->addSubscriber($mock);
-        $adapter = new AwsS3($client, 'bucket', array('create' => true));
+        $adapter = new S3($client, 'bucket', array('create' => true));
         $this->assertEquals('foo', $adapter->read('foo'));
 
         $requests = $mock->getReceivedRequests();
@@ -47,7 +47,7 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         $mock = new MockPlugin(array(new Response(404)));
         $client = $this->getClient();
         $client->addSubscriber($mock);
-        $adapter = new AwsS3($client, 'bucket');
+        $adapter = new S3($client, 'bucket');
         $adapter->read('foo');
     }
 
@@ -59,7 +59,7 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         ));
         $client = $this->getClient();
         $client->addSubscriber($mock);
-        $adapter = new AwsS3($client, 'bucket');
+        $adapter = new S3($client, 'bucket');
         $this->assertEquals(7, $adapter->write('foo', 'testing'));
         $requests = $mock->getReceivedRequests();
         $this->assertEquals('bucket.s3.amazonaws.com', $requests[1]->getHost());
@@ -71,7 +71,7 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         $mock = new MockPlugin(array(new Response(200)));
         $client = $this->getClient();
         $client->addSubscriber($mock);
-        $adapter = new AwsS3($client, 'bucket');
+        $adapter = new S3($client, 'bucket');
         $this->assertTrue($adapter->exists('foo'));
         $requests = $mock->getReceivedRequests();
         $this->assertEquals('bucket.s3.amazonaws.com', $requests[0]->getHost());
@@ -82,7 +82,7 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
     public function testGetsObjectUrls()
     {
         $client = $this->getClient();
-        $adapter = new AwsS3($client, 'bucket');
+        $adapter = new S3($client, 'bucket');
         $this->assertEquals('https://bucket.s3.amazonaws.com/foo', $adapter->getUrl('foo'));
     }
 
@@ -91,7 +91,7 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         $mock = new MockPlugin(array(new Response(200)));
         $client = $this->getClient();
         $client->addSubscriber($mock);
-        $adapter = new AwsS3($client, 'bucket', array('directory' => 'bar'));
+        $adapter = new S3($client, 'bucket', array('directory' => 'bar'));
         $this->assertTrue($adapter->exists('foo'));
         $requests = $mock->getReceivedRequests();
         $this->assertEquals('bucket.s3.amazonaws.com', $requests[0]->getHost());
@@ -102,14 +102,14 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
     public function testGetsObjectUrlsWithDirectory()
     {
         $client = $this->getClient();
-        $adapter = new AwsS3($client, 'bucket', array('directory' => 'bar'));
+        $adapter = new S3($client, 'bucket', array('directory' => 'bar'));
         $this->assertEquals('https://bucket.s3.amazonaws.com/bar/foo', $adapter->getUrl('foo'));
     }
 
     public function shouldListKeysWithoutDirectory()
     {
         $client = $this->getClient();
-        $adapter = new AwsS3($client, 'bucket', array('directory' => 'bar'));
+        $adapter = new S3($client, 'bucket', array('directory' => 'bar'));
         $adapter->write('test.txt', 'some content');
         $keys = $adapter->listKeys();
         $this->assertEquals('test.txt', $keys['key']);
