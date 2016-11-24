@@ -67,29 +67,29 @@ class AwsS3 implements Adapter,
      *
      * @param string $key     Object key
      * @param int|string|\DateTime $expires The time at which the URL should
-     *     expire. This can be a Unix timestamp, a PHP DateTime object, or a
-     *     string that can be evaluated by strtotime.
+     *      expire. This can be a Unix timestamp, a PHP DateTime object, or a
+     *      string that can be evaluated by strtotime.
+     * @param array $parameters Optional parameters.
+     *      Exempli gratia:
+     *      - ['ResponseContentType' => 'application/pdf']
+     *      to force Response Content-Type header to "application/pdf"
+     *      - ['ResponseContentDisposition' => 'attachment; filename="file.pdf"']
+     *      to force resource download using a particular file-name
      *
      * @return string
      */
-    public function getAuthUrl($key, $expires = null)
+    public function getAuthUrl($key, $expires = '+15 minutes', $parameters = [])
     {
-        $cmd = $this
-            ->service
-            ->getCommand(
-                'GetObject',
-                array(
-                    'Bucket' => $this->bucket,
-                    'Key'    => $this->computePath($key)
-                )
-            );
+        $cmdOptions = array_merge(
+            $parameters,
+            [
+                'Bucket' => $this->bucket,
+                'Key'    => $this->computePath($key),
+            ]
+        );
 
-        $request = $this
-            ->service
-            ->createPresignedRequest(
-                $cmd,
-                $expires
-            );
+        $cmd = $this->service->getCommand('GetObject', $cmdOptions);
+        $request = $this->service->createPresignedRequest($cmd, $expires);
 
         $presignedUrl = (string) $request->getUri();
 
