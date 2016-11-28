@@ -12,7 +12,7 @@ interface BlobProxyFactoryInterface
     /**
      * Creates a new instance of the Blob proxy.
      *
-     * @return \WindowsAzure\Blob\Internal\IBlob
+     * @return \MicrosoftAzure\Storage\Blob\Internal\IBlob
      */
     public function create();
 }
