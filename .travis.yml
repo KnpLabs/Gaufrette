@@ -6,16 +6,20 @@ cache:
   directories:
     - $HOME/.composer/cache/files
 
-php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - hhvm
- 
+# Need to use lowest dbal version to
 matrix:
   allow_failures:
     - php: hhvm
   fast_finish: true
+  include:
+    - php: 5.4
+      env: DBAL_VERSION=~2.3.0
+    - php: 5.5
+      env: DBAL_VERSION=2.5.4
+    - php: 5.6
+      env: DBAL_VERSION=~2.5
+    - php: hhvm
+      env: DBAL_VERSION=2.5.4
 
 before_script:
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini && phpenv config-rm xdebug.ini; fi
@@ -23,7 +27,10 @@ before_script:
   #- if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" ]]; then echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
   - if [[ ${TRAVIS_PHP_VERSION:0:4} == "hhvm" ]];  then composer require mongofill/mongofill --ignore-platform-reqs; fi
   - cp tests/Gaufrette/Functional/adapters/DoctrineDbal.php.dist tests/Gaufrette/Functional/adapters/DoctrineDbal.php -f
-  - composer self-update && composer install --prefer-source --no-interaction --ignore-platform-reqs
+  - composer self-update
+  - composer global require --prefer-dist hirak/prestissimo
+  - composer require doctrine/dbal:${DBAL_VERSION}
+  - composer update --prefer-source --no-interaction --ignore-platform-reqs
 
 script:
   - php bin/phpspec run -fpretty --verbose
