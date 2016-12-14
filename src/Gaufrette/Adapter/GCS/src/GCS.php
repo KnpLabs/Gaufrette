@@ -1,8 +1,6 @@
 <?php
 
-namespace Gaufrette\Adapter;
-
-@trigger_error('The '.__NAMESPACE__.'\GoogleCloudStorage is deprecated since version 0.5. Use Gaufrette\Adapter\GCS\GCS instead.', E_USER_DEPRECATED);
+namespace Gaufrette\Adapter\GCS;
 
 use Gaufrette\Adapter;
 
@@ -10,11 +8,8 @@ use Gaufrette\Adapter;
  * Google Cloud Storage adapter using the Google APIs Client Library for PHP.
  *
  * @author  Patrik Karisch <patrik@karisch.guru>
- * @deprecated 0.4 Deprecated since version 0.5 Use \Gaufrette\Adapter\GCS\GCS instead.
  */
-class GoogleCloudStorage implements Adapter,
-                                    MetadataSupporter,
-                                    ListKeysAware
+class GCS implements Adapter, Adapter\MetadataSupporter, Adapter\ListKeysAware
 {
     protected $service;
     protected $bucket;

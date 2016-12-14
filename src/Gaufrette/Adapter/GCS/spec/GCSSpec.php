@@ -1,10 +1,10 @@
 <?php
 
-namespace spec\Gaufrette\Adapter;
+namespace spec\Gaufrette\Adapter\GCS;
 
 use PhpSpec\ObjectBehavior;
 
-class GoogleCloudStorageSpec extends ObjectBehavior
+class GCSSpec extends ObjectBehavior
 {
     public function let(\Google_Service_Storage $service)
     {

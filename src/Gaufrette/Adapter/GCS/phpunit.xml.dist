@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         bootstrap="tests/bootstrap.php.dist"
+>
+    <php>
+        <!-- <env name="GCS_ACCOUNT_JSON" value="" />
+        <env name="GCS_APP_NAME" value="Gaufrette" />
+        <env name="GCS_BUCKET" value="gaufrette" /> -->
+    </php>
+
+    <testsuites>
+        <testsuite name="Google Cloud Storage Adapter Test Suite">
+            <directory>./tests</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory>./src</directory>
+        </whitelist>
+    </filter>
+</phpunit>

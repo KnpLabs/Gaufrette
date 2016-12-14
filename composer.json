@@ -32,7 +32,6 @@
         "aws/aws-sdk-php": "~2",
         "amazonwebservices/aws-sdk-for-php": "1.5.*",
         "rackspace/php-opencloud"  : "1.9.*",
-        "google/apiclient": "~1.1.3",
         "phpspec/phpspec": "~2.4",
         "phpseclib/phpseclib": "^2.0",
         "doctrine/dbal": ">=2.3",
@@ -62,8 +61,12 @@
         "ext-mongo": "*",
         "ext-fileinfo": "This extension is used to automatically detect the content-type of a file in the AwsS3, OpenCloud, AzureBlogStorage and GoogleCloudStorage adapters"
     },
+    "replace": {
+        "gaufrette/gcs-adapter": "0.1"
+    },
     "autoload": {
-        "psr-0": { "Gaufrette": "src/" }
+        "psr-0": { "Gaufrette": "src/" },
+        "psr-4": { "Gaufrette\\Adapter\\GCS\\": "src/Gaufrette/Adapter/GCS/src/" }
     },
     "extra": {
         "branch-alias": {
