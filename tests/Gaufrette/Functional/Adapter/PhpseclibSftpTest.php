@@ -2,8 +2,8 @@
 
 namespace Gaufrette\Functional\Adapter;
 
-use Gaufrette\Adapter\PhpseclibSftp;
+use Gaufrette\Adapter\Phpseclib\Tests\SftpTest;
 
-class PhpseclibSftpTest extends FunctionalTestCase
+class PhpseclibSftpTest extends SftpTest
 {
 }

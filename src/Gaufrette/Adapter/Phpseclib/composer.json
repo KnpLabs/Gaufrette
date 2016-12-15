@@ -1,0 +1,36 @@
+{
+    "name": "gaufrette/phpspeclib-adapter",
+    "type": "library",
+    "require": {
+        "php": ">=5.6",
+        "phpseclib/phpseclib": "^2.0",
+        "knplabs/gaufrette": "0.4.*@dev"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "^3.1",
+        "phpunit/phpunit": "^5.7"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "KnpLabs",
+            "email": "hello@knplabs.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {"Gaufrette\\Adapter\\Phpseclib\\": "src/"}
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Gaufrette\\Adapter\\Phpseclib\\Tests\\": "tests/",
+            "Gaufrette\\Functional\\Adapter\\": "vendor/knplabs/gaufrette/tests/Gaufrette/Functional/Adapter"
+        }
+    },
+    "scripts": {
+        "tests": [
+            "vendor/bin/phpspec run --format=pretty",
+            "vendor/bin/phpunit tests/"
+        ]
+    }
+}

@@ -63,7 +63,16 @@
         "ext-fileinfo": "This extension is used to automatically detect the content-type of a file in the AwsS3, OpenCloud, AzureBlogStorage and GoogleCloudStorage adapters"
     },
     "autoload": {
-        "psr-0": { "Gaufrette": "src/" }
+        "psr-0": {
+            "Gaufrette\\Adapter\\Phpseclib\\": "src/Gaufrette/Adapter/Phpseclib/src/",
+            "Gaufrette\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Gaufrette\\Functional\\": "tests/Gaufrette/Functional/",
+            "Gaufrette\\Adapter\\Phpseclib\\Tests\\": "src/Gaufrette/Adapter/Phpseclib/tests/"
+        }
     },
     "extra": {
         "branch-alias": {
