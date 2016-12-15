@@ -7,11 +7,9 @@ cache:
     - $HOME/.composer/cache/files
 
 php:
-  - 5.4
-  - 5.5
   - 5.6
   - hhvm
- 
+
 matrix:
   allow_failures:
     - php: hhvm
@@ -19,12 +17,11 @@ matrix:
 
 before_script:
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini && phpenv config-rm xdebug.ini; fi
-  # waiting https://github.com/mongodb/mongo-php-library/pull/57
-  #- if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" ]]; then echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
+  # - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" ]]; then echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
   - if [[ ${TRAVIS_PHP_VERSION:0:4} == "hhvm" ]];  then composer require mongofill/mongofill --ignore-platform-reqs; fi
   - cp tests/Gaufrette/Functional/adapters/DoctrineDbal.php.dist tests/Gaufrette/Functional/adapters/DoctrineDbal.php -f
   - composer self-update && composer install --prefer-source --no-interaction --ignore-platform-reqs
 
 script:
-  - php bin/phpspec run -fpretty --verbose
+  - php bin/phpspec run -fpretty --verbose --no-interaction
   - php bin/phpunit
