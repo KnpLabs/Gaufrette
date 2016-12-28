@@ -10,26 +10,28 @@ namespace Gaufrette\Util;
 class Checksum
 {
     /**
-     * Returns the checksum of the given content.
+     * Returns the checksum of the given content and algorithm.
      *
      * @param string $content
+     * @param string $algo
      *
      * @return string
      */
-    public static function fromContent($content)
+    public static function fromContent($content, $algo = 'md5')
     {
-        return md5($content);
+        return hash($algo, $content);
     }
 
     /**
-     * Returns the checksum of the specified file.
+     * Returns the checksum of the specified file and algorithm.
      *
      * @param string $filename
+     * @param string $algo
      *
      * @return string
      */
-    public static function fromFile($filename)
+    public static function fromFile($filename, $algo = 'md5')
     {
-        return md5_file($filename);
+        return hash_file($algo, $filename);
     }
 }
