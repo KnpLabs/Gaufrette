@@ -6,18 +6,18 @@ use Gaufrette\Util;
 use Gaufrette\Adapter;
 use Gaufrette\Stream;
 
-
 /**
  * Adapter for the local filesystem.
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class Local implements Adapter,
-                       StreamFactory,
-                       ChecksumCalculator,
-                       SizeCalculator,
-                       MimeTypeProvider
+class Local implements
+    Adapter,
+    StreamFactory,
+    ChecksumCalculator,
+    SizeCalculator,
+    MimeTypeProvider
 {
     protected $directory;
     private $create;
@@ -151,9 +151,9 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      */
-    public function checksum($key)
+    public function checksum($key, $algo = 'md5')
     {
-        return Util\Checksum::fromFile($this->computePath($key));
+        return Util\Checksum::fromFile($this->computePath($key), $algo);
     }
 
     /**

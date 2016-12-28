@@ -10,11 +10,12 @@ namespace Gaufrette\Adapter;
 interface ChecksumCalculator
 {
     /**
-     * Returns the checksum of the specified key.
+     * Returns the checksum of the specified key and algorithm.
      *
      * @param string $key
+     * @param string $algo
      *
      * @return string
      */
-    public function checksum($key);
+    public function checksum($key, $algo);
 }

@@ -235,21 +235,22 @@ class Filesystem
     }
 
     /**
-     * Returns the checksum of the specified file's content.
+     * Returns the checksum of the specified file's content and algorithm.
      *
      * @param string $key
+     * @param string $algo
      *
      * @return string A MD5 hash
      */
-    public function checksum($key)
+    public function checksum($key, $algo = 'md5')
     {
         $this->assertHasFile($key);
 
         if ($this->adapter instanceof Adapter\ChecksumCalculator) {
-            return $this->adapter->checksum($key);
+            return $this->adapter->checksum($key, $algo);
         }
 
-        return Util\Checksum::fromContent($this->read($key));
+        return Util\Checksum::fromContent($this->read($key), $algo);
     }
 
     /**
