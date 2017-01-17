@@ -25,6 +25,7 @@ class Ftp implements Adapter,
     protected $create;
     protected $mode;
     protected $ssl;
+    protected $timeout;
     protected $fileData = array();
     protected $utf8;
 
@@ -48,6 +49,7 @@ class Ftp implements Adapter,
         $this->create = isset($options['create']) ? $options['create'] : false;
         $this->mode = isset($options['mode']) ? $options['mode'] : FTP_BINARY;
         $this->ssl = isset($options['ssl']) ? $options['ssl'] : false;
+        $this->timeout = isset($options['timeout']) ? $options['timeout'] : 90;
         $this->utf8 = isset($options['utf8']) ? $options['utf8'] : false;
     }
 
@@ -498,10 +500,10 @@ class Ftp implements Adapter,
     {
         // open ftp connection
         if (!$this->ssl) {
-            $this->connection = ftp_connect($this->host, $this->port);
+            $this->connection = ftp_connect($this->host, $this->port, $this->timeout);
         } else {
             if (function_exists('ftp_ssl_connect')) {
-                $this->connection = ftp_ssl_connect($this->host, $this->port);
+                $this->connection = ftp_ssl_connect($this->host, $this->port, $this->timeout);
             } else {
                 throw new \RuntimeException('This Server Has No SSL-FTP Available.');
             }
