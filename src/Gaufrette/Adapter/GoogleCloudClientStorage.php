@@ -1,5 +1,4 @@
 <?php
-
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
@@ -14,8 +13,8 @@ use Gaufrette\Adapter\ListKeysAware;
  * @package Gaufrette
  * @author  Lech Buszczynski <lecho@phatcat.eu>
  */
-class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesSupporter, ListKeysAware {
-
+class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesSupporter, ListKeysAware
+{
     protected $storageClient;
     protected $bucket;
     protected $bucketValidated;
@@ -267,7 +266,15 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
      * {@inheritdoc}
      */
     public function getMetadata($key)
-    {    
+    {
+        if (!isset($this->metadata[$key]) && $this->exists($key))
+        {
+            $data = $this->bucket->object($key)->info();
+            if (isset($data['metadata']))
+            {
+                $this->metadata[$key] = $data['metadata'];
+            }
+        }
         return isset($this->metadata[$key]) ? $this->metadata[$key] : array();
     }
     
