@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -o nounset
+set -o errexit
+set -o xtrace
+
+DIR=$(dirname ${BASH_SOURCE[0]})/..
+
+cp \
+    ${DIR}/tests/Gaufrette/Functional/adapters/DoctrineDbal.php.dist \
+    ${DIR}/tests/Gaufrette/Functional/adapters/DoctrineDbal.php
+
+${DIR}/vendor/bin/phpspec run --format=pretty
+${DIR}/vendor/bin/phpunit

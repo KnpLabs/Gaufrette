@@ -1,8 +1,9 @@
+bin/*
+!bin/tests
+!bin/tests-all
+doc/.couscous
+tests/adapters/*
+!tests/adapters/*.dist
 vendor/
 composer.lock
 phpunit.xml
-tests/adapters/*
-!tests/adapters/*.dist
-bin/*
-!bin/configure_test_env.sh
-doc/.couscous
