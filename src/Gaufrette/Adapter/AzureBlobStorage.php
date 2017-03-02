@@ -148,13 +148,21 @@ class AzureBlobStorage implements Adapter,
 
             if ($this->detectContentType) {
                 $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
-                $contentType = $fileInfo->buffer($content);
-                $options->setContentType($contentType);
+                if (is_resource($content)) {
+                    $contentType = $fileInfo->file(stream_get_meta_data($content)['uri']);
+                } else {
+                    $contentType = $fileInfo->buffer($content);
+                }
+                $options->setBlobContentType($contentType);
             }
 
             $this->blobProxy->createBlockBlob($this->containerName, $key, $content, $options);
 
-            return Util\Size::fromContent($content);
+            if (is_resource($content)) {
+                return Util\Size::fromResource($content);
+            } else {
+                return Util\Size::fromContent($content);
+            }
         } catch (ServiceException $e) {
             $this->failIfContainerNotFound($e, sprintf('write content for key "%s"', $key));
 
