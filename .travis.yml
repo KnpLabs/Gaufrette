@@ -1,6 +1,6 @@
 language: php
 
-sudo: false
+sudo: true
 
 cache:
   directories:
@@ -20,6 +20,9 @@ matrix:
 before_script:
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini && phpenv config-rm xdebug.ini; fi
   - if [[ ${TRAVIS_PHP_VERSION:0:4} == "hhvm" ]];  then composer require mongofill/mongofill --ignore-platform-reqs; fi
+  - sudo apt-get update
+  - sudo apt-get install -y libssh2-1-dev
+  - yes | pecl install ssh2
   - cp tests/Gaufrette/Functional/adapters/DoctrineDbal.php.dist tests/Gaufrette/Functional/adapters/DoctrineDbal.php -f
   - composer self-update && composer install --prefer-source --no-interaction
 
