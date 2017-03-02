@@ -37,8 +37,8 @@ Symfony integration is available through [KnpLabs/KnpGaufretteBundle](https://gi
 
 As some filesystem adapters use vendor libraries, you should install the vendors:
 
-    $ cd gaufrette
-    $ php composer.phar install
+    $ composer install
+    $ composer require microsoft/windowsazure # Needs php >= 5.5
     $ sh bin/configure_test_env.sh
 
 It will avoid skip a lot of tests.
