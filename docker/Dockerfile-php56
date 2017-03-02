@@ -1,0 +1,23 @@
+FROM jolicode/php56:latest
+
+ENV SRC_DIR /usr/src/gaufrette
+WORKDIR ${SRC_DIR}/
+
+RUN sudo apt-get update && \
+    sudo apt-get install -y libssh2-1-dev && \
+    sudo rm -rf /var/lib/apt/lists/* && \
+    pecl install mongo ssh2
+
+COPY composer.json ${SRC_DIR}/
+RUN sudo chown -R travis ${SRC_DIR} && \
+    composer global require hirak/prestissimo && \
+    composer update --prefer-lowest --prefer-stable && \
+    composer require microsoft/windowsazure:~0.4.3 && \
+    rm -rf ~/.composer/cache/*
+
+VOLUME ${SRC_DIR}/vendor
+
+COPY . ${SRC_DIR}/
+RUN sudo chown -R travis ${SRC_DIR}
+
+CMD "${SRC_DIR}/bin/tests"

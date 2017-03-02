@@ -28,5 +28,5 @@ before_script:
   - if [[ ${TRAVIS_PHP_VERSION:0:3} != "5.4" ]]; then composer require microsoft/windowsazure:^0.4.3; fi
 
 script:
-  - php bin/phpspec run -fpretty --verbose
-  - php bin/phpunit
+  - php vendor/bin/phpspec run -fpretty --verbose
+  - php vendor/bin/phpunit

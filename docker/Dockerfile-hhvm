@@ -1,0 +1,16 @@
+FROM webdevops/hhvm:ubuntu-16.04
+
+ENV SRC_DIR /usr/src/gaufrette
+WORKDIR ${SRC_DIR}
+
+COPY composer.json ${SRC_DIR}/
+RUN composer global require hirak/prestissimo && \
+    composer remove --dev --no-update herzult/php-ssh && \
+    composer update --prefer-lowest --prefer-stable && \
+    composer require microsoft/windowsazure:~0.5 && \
+    rm -rf ~/.composer/cache/*
+
+VOLUME ${SRC_DIR}/vendor
+
+COPY . ${SRC_DIR}/
+CMD "${SRC_DIR}/bin/tests"

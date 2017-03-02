@@ -27,5 +27,5 @@ install:
 
 test_script:
   - cd C:\projects\gaufrette
-  - php bin\phpspec.bat run -fpretty --verbose
-  - php bin\phpunit.bat
+  - php vendor\bin\phpspec.bat run -fpretty --verbose
+  - php vendor\bin\phpunit.bat
