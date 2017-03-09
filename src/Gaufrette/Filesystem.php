@@ -163,7 +163,10 @@ class Filesystem
      */
     public function delete($key)
     {
-        $this->assertHasFile($key);
+        if (! empty($key) && ! $this->has($key)) {
+            // If the file does not exist, we already deleted it successfully!
+            return true;
+        }
 
         if ($this->adapter->delete($key)) {
             $this->removeFromRegister($key);
