@@ -211,6 +211,8 @@ class Cache implements Adapter,
                 if (time() - $this->ttl >= $dateCache) {
                     $dateSource = $this->source->mtime($key);
                     $needsReload = $dateCache < $dateSource;
+                    // touch file mod time so that we only check the source once per $ttl interval
+                    $this->cache->write($key, $this->cache->read($key));
                 }
             } catch (\RuntimeException $e) {
             }
