@@ -92,8 +92,15 @@ class AwsS3 implements Adapter,
         $this->ensureBucketExists();
         $options = $this->getOptions($key);
 
+        // Copy ContentType metadata to local metadata
+        $object = $this->service->getObject($options);
+        if (!array_key_exists($key, $this->metadata) || !is_array($this->metadata[$key])) {
+            $this->metadata[$key] = array();
+        }
+        $this->metadata[$key]['ContentType'] = $object->get('ContentType');
+
         try {
-            return (string) $this->service->getObject($options)->get('Body');
+            return (string) $object->get('Body');
         } catch (\Exception $e) {
             return false;
         }
