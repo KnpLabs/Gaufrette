@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  sftp:
+    image: atmoz/sftp
+    command: gaufrette:gaufrette:::tests/
+    env_file: .env
+    ports:
+        - "2222:22"

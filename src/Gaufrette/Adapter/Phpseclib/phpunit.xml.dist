@@ -12,11 +12,11 @@
          bootstrap="vendor/autoload.php"
 >
     <php>
-        <!-- <env name="SFTP_HOST" value="localhost" />
-        <env name="SFTP_PORT" value="22" />
+        <env name="SFTP_HOST" value="localhost" />
+        <env name="SFTP_PORT" value="2222" />
         <env name="SFTP_USER" value="gaufrette" />
         <env name="SFTP_PASS" value="gaufrette" />
-        <env name="SFTP_BASE_DIR" value="/home/gaufrette/share" /> -->
+        <env name="SFTP_BASE_DIR" value="/tests" />
     </php>
 
     <testsuites>

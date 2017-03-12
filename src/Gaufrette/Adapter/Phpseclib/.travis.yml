@@ -1,6 +1,7 @@
-language: php
+sudo: required
 
-sudo: false
+services:
+  - docker
 
 cache:
   directories:
@@ -9,6 +10,7 @@ cache:
 php:
   - 5.6
   - 7.0
+  - 7.1
   - hhvm
 
 matrix:
@@ -16,6 +18,7 @@ matrix:
     - php: hhvm
 
 before_script:
+  - docker-compose up -d
   - composer install --prefer-source --no-interaction
 
 script:
