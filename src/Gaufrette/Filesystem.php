@@ -45,9 +45,13 @@ class Filesystem
      * @param string $key
      *
      * @return bool TRUE if the file exists, FALSE otherwise
+     *
+     * @throws \InvalidArgumentException If $key is invalid
      */
     public function has($key)
     {
+        self::assertValidKey($key);
+
         return $this->adapter->exists($key);
     }
 
@@ -59,12 +63,16 @@ class Filesystem
      *
      * @return bool TRUE if the rename was successful
      *
-     * @throws Exception\FileNotFound   when sourceKey does not exist
-     * @throws Exception\UnexpectedFile when targetKey exists
-     * @throws \RuntimeException        when cannot rename
+     * @throws Exception\FileNotFound    when sourceKey does not exist
+     * @throws Exception\UnexpectedFile  when targetKey exists
+     * @throws \RuntimeException         when cannot rename
+     * @throws \InvalidArgumentException If $sourceKey or $targetKey are invalid
      */
     public function rename($sourceKey, $targetKey)
     {
+        self::assertValidKey($sourceKey);
+        self::assertValidKey($targetKey);
+
         $this->assertHasFile($sourceKey);
 
         if ($this->has($targetKey)) {
@@ -90,11 +98,14 @@ class Filesystem
      * @param bool   $create Whether to create the file if it does not exist
      *
      * @throws Exception\FileNotFound
+     * @throws \InvalidArgumentException If $key is invalid
      *
      * @return File
      */
     public function get($key, $create = false)
     {
+        self::assertValidKey($key);
+
         if (!$create) {
             $this->assertHasFile($key);
         }
@@ -111,11 +122,14 @@ class Filesystem
      *
      * @throws Exception\FileAlreadyExists When file already exists and overwrite is false
      * @throws \RuntimeException           When for any reason content could not be written
+     * @throws \InvalidArgumentException   If $key is invalid
      *
      * @return int The number of bytes that were written into the file
      */
     public function write($key, $content, $overwrite = false)
     {
+        self::assertValidKey($key);
+
         if (!$overwrite && $this->has($key)) {
             throw new Exception\FileAlreadyExists($key);
         }
@@ -134,13 +148,16 @@ class Filesystem
      *
      * @param string $key Key of the file
      *
-     * @throws Exception\FileNotFound when file does not exist
-     * @throws \RuntimeException      when cannot read file
+     * @throws Exception\FileNotFound    when file does not exist
+     * @throws \RuntimeException         when cannot read file
+     * @throws \InvalidArgumentException If $key is invalid
      *
      * @return string
      */
     public function read($key)
     {
+        self::assertValidKey($key);
+
         $this->assertHasFile($key);
 
         $content = $this->adapter->read($key);
@@ -157,12 +174,15 @@ class Filesystem
      *
      * @param string $key
      *
-     * @throws \RuntimeException when cannot read file
+     * @throws \RuntimeException         when cannot read file
+     * @throws \InvalidArgumentException If $key is invalid
      *
      * @return bool
      */
     public function delete($key)
     {
+        self::assertValidKey($key);
+
         $this->assertHasFile($key);
 
         if ($this->adapter->delete($key)) {
@@ -226,9 +246,13 @@ class Filesystem
      * @param string $key
      *
      * @return int An UNIX like timestamp
+     *
+     * @throws \InvalidArgumentException If $key is invalid
      */
     public function mtime($key)
     {
+        self::assertValidKey($key);
+
         $this->assertHasFile($key);
 
         return $this->adapter->mtime($key);
@@ -240,9 +264,13 @@ class Filesystem
      * @param string $key
      *
      * @return string A MD5 hash
+     *
+     * @throws \InvalidArgumentException If $key is invalid
      */
     public function checksum($key)
     {
+        self::assertValidKey($key);
+
         $this->assertHasFile($key);
 
         if ($this->adapter instanceof Adapter\ChecksumCalculator) {
@@ -258,9 +286,13 @@ class Filesystem
      * @param string $key
      *
      * @return int File size in Bytes
+     *
+     * @throws \InvalidArgumentException If $key is invalid
      */
     public function size($key)
     {
+        self::assertValidKey($key);
+
         $this->assertHasFile($key);
 
         if ($this->adapter instanceof Adapter\SizeCalculator) {
@@ -276,9 +308,13 @@ class Filesystem
      * @param $key
      *
      * @return Stream|Stream\InMemoryBuffer
+     *
+     * @throws \InvalidArgumentException If $key is invalid
      */
     public function createStream($key)
     {
+        self::assertValidKey($key);
+
         if ($this->adapter instanceof Adapter\StreamFactory) {
             return $this->adapter->createStream($key);
         }
@@ -292,9 +328,13 @@ class Filesystem
      * @param $key
      *
      * @return File
+     *
+     * @throws \InvalidArgumentException If $key is invalid
      */
     public function createFile($key)
     {
+        self::assertValidKey($key);
+
         if (false === $this->isFileInRegister($key)) {
             if ($this->adapter instanceof Adapter\FileFactory) {
                 $this->fileRegister[$key] = $this->adapter->createFile($key, $this);
@@ -312,9 +352,13 @@ class Filesystem
      * @param string $key
      *
      * @return string
+     *
+     * @throws \InvalidArgumentException If $key is invalid
      */
     public function mimeType($key)
     {
+        self::assertValidKey($key);
+
         $this->assertHasFile($key);
 
         if ($this->adapter instanceof Adapter\MimeTypeProvider) {
@@ -339,7 +383,7 @@ class Filesystem
      */
     private function assertHasFile($key)
     {
-        if (!empty($key) && !$this->has($key)) {
+        if (!$this->has($key)) {
             throw new Exception\FileNotFound($key);
         }
     }
@@ -384,5 +428,17 @@ class Filesystem
     public function isDirectory($key)
     {
         return $this->adapter->isDirectory($key);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @throws \InvalidArgumentException Given $key should not be empty
+     */
+    private static function assertValidKey($key)
+    {
+        if (empty($key)) {
+            throw new \InvalidArgumentException('Object path is empty.');
+        }
     }
 }
