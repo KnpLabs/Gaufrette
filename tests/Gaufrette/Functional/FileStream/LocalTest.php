@@ -12,7 +12,7 @@ class LocalTest extends FunctionalTestCase
     public function setUp()
     {
         $this->directory = __DIR__.DIRECTORY_SEPARATOR.'filesystem';
-        @mkdir($this->directory.DIRECTORY_SEPARATOR.'subdir', 0777, true);
+        mkdir($this->directory.DIRECTORY_SEPARATOR.'subdir', 0777, true);
         $this->filesystem = new Filesystem(new LocalAdapter($this->directory, true));
 
         $this->registerLocalFilesystemInStream();
@@ -21,10 +21,19 @@ class LocalTest extends FunctionalTestCase
     public function tearDown()
     {
         if (is_file($file = $this->directory.DIRECTORY_SEPARATOR.'test.txt')) {
-            @unlink($file);
+            unlink($file);
+        }
+        if (is_file($file = $this->directory.DIRECTORY_SEPARATOR.'copy1.txt')) {
+            unlink($file);
+        }
+        if (is_file($file = $this->directory.DIRECTORY_SEPARATOR.'copy2.txt')) {
+            unlink($file);
+        }
+        if (is_dir($dir = $this->directory.DIRECTORY_SEPARATOR.'subdir')) {
+            rmdir($dir);
         }
         if (is_dir($this->directory)) {
-            @rmdir($this->directory);
+            rmdir($this->directory);
         }
     }
 
