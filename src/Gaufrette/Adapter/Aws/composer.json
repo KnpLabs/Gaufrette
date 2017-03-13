@@ -1,0 +1,29 @@
+{
+    "name": "gaufrette/aws-adapter",
+    "type": "library",
+    "require": {
+        "knplabs/gaufrette": "dev-master",
+        "aws/aws-sdk-php": "~2"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "^3.1",
+        "phpunit/phpunit": "3.7.*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "KnpLabs",
+            "email": "hello@knplabs.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {"Gaufrette\\Adapter\\Aws\\": "src/"}
+    },
+    "scripts": {
+        "test": [
+            "vendor/bin/phpspec run -fpretty",
+            "vendor/bin/phpunit tests/"
+        ]
+    }
+}
