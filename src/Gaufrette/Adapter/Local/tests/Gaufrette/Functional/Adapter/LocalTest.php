@@ -3,7 +3,7 @@
 namespace Gaufrette\Functional\Adapter;
 
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\Local;
+use Gaufrette\Adapter\Local\Local;
 
 class LocalTest extends FunctionalTestCase
 {
@@ -17,6 +17,7 @@ class LocalTest extends FunctionalTestCase
             mkdir($this->directory);
         }
 
+        // var_dump($this->directory);
         $this->filesystem = new Filesystem(new Local($this->directory));
     }
 
@@ -51,11 +52,11 @@ class LocalTest extends FunctionalTestCase
     {
         $dirname = sprintf(
             '%s/adapters/aaa',
-            dirname(__DIR__)
+            __DIR__
         );
         $linkname = sprintf(
             '%s/adapters/../../../../link',
-            dirname(__DIR__)
+            __DIR__
         );
 
         @mkdir($dirname);
@@ -146,7 +147,7 @@ class LocalTest extends FunctionalTestCase
     {
         $dirname = sprintf(
             '%s/adapters/bbb',
-            dirname(__DIR__)
+            __DIR__
         );
 
         @mkdir($dirname);

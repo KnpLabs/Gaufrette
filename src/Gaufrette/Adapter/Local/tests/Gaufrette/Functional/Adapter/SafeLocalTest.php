@@ -3,7 +3,7 @@
 namespace Gaufrette\Functional\Adapter;
 
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\SafeLocal;
+use Gaufrette\Adapter\Local\SafeLocal;
 
 class SafeLocalTest extends FunctionalTestCase
 {

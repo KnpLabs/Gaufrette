@@ -1,8 +1,6 @@
 <?php
 
-namespace Gaufrette\Stream;
-
-@trigger_error('The '.__NAMESPACE__.'\Local is deprecated since version 0.4. Use Gaufrette\Adapter\Local\LocalStream instead.', E_USER_DEPRECATED);
+namespace Gaufrette\Adapter\Local;
 
 use Gaufrette\Stream;
 use Gaufrette\StreamMode;
@@ -12,7 +10,7 @@ use Gaufrette\StreamMode;
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Local implements Stream
+class LocalStream implements Stream
 {
     private $path;
     private $mode;
