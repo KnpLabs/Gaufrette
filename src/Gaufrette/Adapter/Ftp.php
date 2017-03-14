@@ -13,7 +13,8 @@ use Gaufrette\Filesystem;
  */
 class Ftp implements Adapter,
                      FileFactory,
-                     ListKeysAware
+                     ListKeysAware,
+                     SizeCalculator
 {
     protected $connection = null;
     protected $directory;
@@ -290,6 +291,24 @@ class Ftp implements Adapter,
         }
 
         return $file;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return int
+     *
+     * @throws \RuntimeException
+     */
+    public function size($key)
+    {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
+        if (-1 === $size = ftp_size($this->connection, $key)) {
+            throw new \RuntimeException(sprintf('Unable to fetch the size of "%s".', $key));
+        }
+
+        return $size;
     }
 
     /**
