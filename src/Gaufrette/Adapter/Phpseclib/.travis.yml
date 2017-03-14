@@ -1,0 +1,26 @@
+sudo: required
+
+services:
+  - docker
+
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+  - hhvm
+
+matrix:
+  allow_failures:
+    - php: hhvm
+
+before_script:
+  - docker-compose up -d
+  - composer install --prefer-source --no-interaction
+
+script:
+  - vendor/bin/phpspec run -fpretty --verbose --no-interaction
+  - vendor/bin/phpunit
