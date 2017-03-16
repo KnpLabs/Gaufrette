@@ -2,41 +2,50 @@
 
 namespace Gaufrette\Functional\Adapter;
 
-use Gaufrette\Adapter\AwsS3;
+use Aws\CommandInterface;
+use Aws\Result;
+use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
-use Guzzle\Plugin\Mock\MockPlugin;
-use Guzzle\Http\Message\Response;
+use Aws\MockHandler;
+use Gaufrette\Adapter\AwsS3;
 
 /**
  * @todo move to phpspec
  */
 class AwsS3Test extends \PHPUnit_Framework_TestCase
 {
-    protected function getClient()
+    protected function getClient(MockHandler $mock = null)
     {
-        return S3Client::factory(array(
-            'key'    => 'foo',
-            'secret' => 'bar'
-        ));
+        return new S3Client([
+            'handler'     => $mock,
+            'region'      => 'eu-west-1',
+            'version'     => 'latest',
+            'credentials' => [
+                'key'    => 'foo',
+                'secret' => 'bar',
+            ],
+        ]);
+    }
+
+    private function mockException(array $context = [])
+    {
+        return function (CommandInterface $command) use ($context) {
+            return new S3Exception('Mock exception', $command, $context);
+        };
     }
 
     public function testCreatesBucketIfMissing()
     {
-        $mock = new MockPlugin(array(
-            new Response(404),                // Head bucket response
-            new Response(200),                // Create bucket response
-            new Response(200, array(), 'foo') // Get object response
-        ));
-        $client = $this->getClient();
-        $client->addSubscriber($mock);
+        $mock = new MockHandler([
+            $this->mockException(['code' => 'NoSuchBucket']),
+            new Result(),
+            new Result(['Body' => 'foo']),
+        ]);
+        $client = $this->getClient($mock);
         $adapter = new AwsS3($client, 'bucket', array('create' => true));
-        $this->assertEquals('foo', $adapter->read('foo'));
 
-        $requests = $mock->getReceivedRequests();
-        $this->assertEquals('HEAD', $requests[0]->getMethod());
-        $this->assertEquals('PUT', $requests[1]->getMethod());
-        $this->assertEquals('GET', $requests[2]->getMethod());
-        $this->assertEquals('bucket.s3.amazonaws.com', $requests[0]->getHost());
+        $this->assertEquals('foo', $adapter->read('foo'));
+        $this->assertEquals(0, $mock->count());
     }
 
     /**
@@ -44,66 +53,61 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
      */
     public function testThrowsExceptionIfBucketMissingAndNotCreating()
     {
-        $mock = new MockPlugin(array(new Response(404)));
-        $client = $this->getClient();
-        $client->addSubscriber($mock);
+        $mock = new MockHandler([
+            $this->mockException(['code' => 'NoSuchBucket'])
+        ]);
+        $client = $this->getClient($mock);
         $adapter = new AwsS3($client, 'bucket');
+
         $adapter->read('foo');
+
     }
 
     public function testWritesObjects()
     {
-        $mock = new MockPlugin(array(
-            new Response(200), // HEAD bucket response
-            new Response(201)  // PUT object response
-        ));
-        $client = $this->getClient();
-        $client->addSubscriber($mock);
+        $mock = new MockHandler([
+            new Result(),
+            new Result(),
+        ]);
+        $client = $this->getClient($mock);
         $adapter = new AwsS3($client, 'bucket');
+
         $this->assertEquals(7, $adapter->write('foo', 'testing'));
-        $requests = $mock->getReceivedRequests();
-        $this->assertEquals('bucket.s3.amazonaws.com', $requests[1]->getHost());
-        $this->assertEquals('PUT', $requests[1]->getMethod());
+        $this->assertEquals(0, $mock->count());
     }
 
     public function testChecksForObjectExistence()
     {
-        $mock = new MockPlugin(array(new Response(200)));
-        $client = $this->getClient();
-        $client->addSubscriber($mock);
+        $mock = new MockHandler([new Result()]);
+        $client = $this->getClient($mock);
         $adapter = new AwsS3($client, 'bucket');
+
         $this->assertTrue($adapter->exists('foo'));
-        $requests = $mock->getReceivedRequests();
-        $this->assertEquals('bucket.s3.amazonaws.com', $requests[0]->getHost());
-        $this->assertEquals('HEAD', $requests[0]->getMethod());
-        $this->assertEquals('/foo', $requests[0]->getResource());
+        $this->assertEquals(0, $mock->count());
     }
 
     public function testGetsObjectUrls()
     {
         $client = $this->getClient();
         $adapter = new AwsS3($client, 'bucket');
-        $this->assertEquals('https://bucket.s3.amazonaws.com/foo', $adapter->getUrl('foo'));
+        $this->assertEquals('https://s3-eu-west-1.amazonaws.com/bucket/foo', $adapter->getUrl('foo'));
     }
 
     public function testChecksForObjectExistenceWithDirectory()
     {
-        $mock = new MockPlugin(array(new Response(200)));
-        $client = $this->getClient();
-        $client->addSubscriber($mock);
+        $mock = new MockHandler([new Result()]);
+        $client = $this->getClient($mock);
         $adapter = new AwsS3($client, 'bucket', array('directory' => 'bar'));
+
         $this->assertTrue($adapter->exists('foo'));
-        $requests = $mock->getReceivedRequests();
-        $this->assertEquals('bucket.s3.amazonaws.com', $requests[0]->getHost());
-        $this->assertEquals('HEAD', $requests[0]->getMethod());
-        $this->assertEquals('/bar/foo', $requests[0]->getResource());
+        $this->assertEquals(0, $mock->count());
     }
 
     public function testGetsObjectUrlsWithDirectory()
     {
         $client = $this->getClient();
         $adapter = new AwsS3($client, 'bucket', array('directory' => 'bar'));
-        $this->assertEquals('https://bucket.s3.amazonaws.com/bar/foo', $adapter->getUrl('foo'));
+        $this->assertEquals('https://s3-eu-west-1.amazonaws.com/bucket/bar/foo', $adapter->getUrl('foo'));
     }
 
     public function shouldListKeysWithoutDirectory()

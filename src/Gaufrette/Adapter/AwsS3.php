@@ -16,23 +16,35 @@ class AwsS3 implements Adapter,
                        ListKeysAware,
                        SizeCalculator
 {
+    /** @var S3Client */
     protected $service;
+    /** @var string */
     protected $bucket;
+    /** @var array */
     protected $options;
+    /** @var bool */
     protected $bucketExists;
-    protected $metadata = array();
+    /** @var array */
+    protected $metadata = [];
+    /** @var bool */
     protected $detectContentType;
 
-    public function __construct(S3Client $service, $bucket, array $options = array(), $detectContentType = false)
+    /**
+     * @param S3Client $service
+     * @param string   $bucket
+     * @param array    $options
+     * @param bool     $detectContentType
+     */
+    public function __construct(S3Client $service, $bucket, array $options = [], $detectContentType = false)
     {
         $this->service = $service;
         $this->bucket = $bucket;
         $this->options = array_replace(
-            array(
+            [
                 'create' => false,
                 'directory' => '',
                 'acl' => 'private',
-            ),
+            ],
             $options
         );
 
@@ -51,7 +63,7 @@ class AwsS3 implements Adapter,
      *
      * @return string
      */
-    public function getUrl($key, array $options = array())
+    public function getUrl($key, array $options = [])
     {
         return $this->service->getObjectUrl(
             $this->bucket,
@@ -80,7 +92,7 @@ class AwsS3 implements Adapter,
      */
     public function getMetadata($key)
     {
-        return isset($this->metadata[$key]) ? $this->metadata[$key] : array();
+        return isset($this->metadata[$key]) ? $this->metadata[$key] : [];
     }
 
     /**
@@ -115,9 +127,7 @@ class AwsS3 implements Adapter,
         $this->ensureBucketExists();
         $options = $this->getOptions(
             $targetKey,
-            array(
-                'CopySource' => $this->bucket.'/'.$this->computePath($sourceKey),
-            )
+            ['CopySource' => $this->bucket.'/'.$this->computePath($sourceKey)]
         );
 
         try {
@@ -135,7 +145,7 @@ class AwsS3 implements Adapter,
     public function write($key, $content)
     {
         $this->ensureBucketExists();
-        $options = $this->getOptions($key, array('Body' => $content));
+        $options = $this->getOptions($key, ['Body' => $content]);
 
         /*
          * If the ContentType was not already set in the metadata, then we autodetect
@@ -207,14 +217,14 @@ class AwsS3 implements Adapter,
      */
     public function listKeys($prefix = '')
     {
-        $options = array('Bucket' => $this->bucket);
+        $options = ['Bucket' => $this->bucket];
         if ((string) $prefix != '') {
             $options['Prefix'] = $this->computePath($prefix);
         } elseif (!empty($this->options['directory'])) {
             $options['Prefix'] = $this->options['directory'];
         }
 
-        $keys = array();
+        $keys = [];
         $iter = $this->service->getIterator('ListObjects', $options);
         foreach ($iter as $file) {
             $keys[] = $this->computeKey($file['Key']);
@@ -242,11 +252,11 @@ class AwsS3 implements Adapter,
      */
     public function isDirectory($key)
     {
-        $result = $this->service->listObjects(array(
+        $result = $this->service->listObjects([
             'Bucket' => $this->bucket,
             'Prefix' => rtrim($this->computePath($key), '/').'/',
             'MaxKeys' => 1,
-        ));
+        ]);
 
         return count($result['Contents']) > 0;
     }
@@ -277,18 +287,16 @@ class AwsS3 implements Adapter,
             ));
         }
 
-        $options = array('Bucket' => $this->bucket);
-        if ($this->service->getRegion() != 'us-east-1') {
-            $options['LocationConstraint'] = $this->service->getRegion();
-        }
-
-        $this->service->createBucket($options);
+        $this->service->createBucket([
+            'Bucket' => $this->bucket,
+            'LocationConstraint' => $this->service->getRegion()
+        ]);
         $this->bucketExists = true;
 
         return true;
     }
 
-    protected function getOptions($key, array $options = array())
+    protected function getOptions($key, array $options = [])
     {
         $options['ACL'] = $this->options['acl'];
         $options['Bucket'] = $this->bucket;
