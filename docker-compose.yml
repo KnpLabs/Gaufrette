@@ -1,24 +1,6 @@
 version: '2'
 
 services:
-  php54:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile-php54
-    volumes:
-      - './spec/:/usr/src/gaufrette/spec/'
-      - './src/:/usr/src/gaufrette/src/'
-      - './tests/:/usr/src/gaufrette/tests/'
-
-  php55:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile-php55
-    volumes:
-      - './spec/:/usr/src/gaufrette/spec/'
-      - './src/:/usr/src/gaufrette/src/'
-      - './tests/:/usr/src/gaufrette/tests/'
-
   php56:
     build:
       context: .
