@@ -3,30 +3,54 @@ version: '2'
 services:
   php54:
     build:
-        context: .
-        dockerfile: docker/Dockerfile-php54
+      context: .
+      dockerfile: docker/Dockerfile-php54
+    volumes:
+      - './spec/:/usr/src/gaufrette/spec/'
+      - './src/:/usr/src/gaufrette/src/'
+      - './tests/:/usr/src/gaufrette/tests/'
 
   php55:
     build:
-        context: .
-        dockerfile: docker/Dockerfile-php55
+      context: .
+      dockerfile: docker/Dockerfile-php55
+    volumes:
+      - './spec/:/usr/src/gaufrette/spec/'
+      - './src/:/usr/src/gaufrette/src/'
+      - './tests/:/usr/src/gaufrette/tests/'
 
   php56:
     build:
-        context: .
-        dockerfile: docker/Dockerfile-php56
+      context: .
+      dockerfile: docker/Dockerfile-php56
+    volumes:
+      - './spec/:/usr/src/gaufrette/spec/'
+      - './src/:/usr/src/gaufrette/src/'
+      - './tests/:/usr/src/gaufrette/tests/'
 
   php70:
     build:
-        context: .
-        dockerfile: docker/Dockerfile-php70
+      context: .
+      dockerfile: docker/Dockerfile-php70
+    volumes:
+      - './spec/:/usr/src/gaufrette/spec/'
+      - './src/:/usr/src/gaufrette/src/'
+      - './tests/:/usr/src/gaufrette/tests/'
 
   php71:
     build:
-        context: .
-        dockerfile: docker/Dockerfile-php71
+      context: .
+      dockerfile: docker/Dockerfile-php71
+    volumes:
+      - './spec/:/usr/src/gaufrette/spec/'
+      - './src/:/usr/src/gaufrette/src/'
+      - './tests/:/usr/src/gaufrette/tests/'
 
   hhvm:
     build:
       context: .
       dockerfile: docker/Dockerfile-hhvm
+    volumes:
+      - './spec/:/usr/src/gaufrette/spec/'
+      - './src/:/usr/src/gaufrette/src/'
+      - './tests/:/usr/src/gaufrette/tests/'
