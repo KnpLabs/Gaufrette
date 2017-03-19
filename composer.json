@@ -23,7 +23,7 @@
         }
     ],
     "require": {
-        "php": ">=5.4"
+        "php": ">=5.6"
     },
     "conflict": {
         "microsoft/windowsazure": "<0.4.3"

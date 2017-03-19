@@ -2,8 +2,6 @@
 
 set -o xtrace
 
-docker-compose run --rm php54
-docker-compose run --rm php55
 docker-compose run --rm php56
 docker-compose run --rm php70
 docker-compose run --rm php71
