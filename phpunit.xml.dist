@@ -13,20 +13,9 @@
 >
 
     <php>
-        <!-- Configuration for the GridFS adapter
-        <server name="MONGO_SERVER" value="localhost:27017" />
-        <server name="MONGO_DATABASE" value="gaufrette" />
-        -->
-        <!-- Configuration for the FTP adapter
-        <server name="FTP_DIRECTORY" value="/" />
-        <server name="FTP_HOST" value="localhost" />
-        <server name="FTP_USERNAME" value="john" />
-        <server name="FTP_PASSWORD" value="johnpass" />
-        <server name="FTP_MODE" value="1" />
-        <server name="FTP_PASSIVE" value="0" />
-        <server name="FTP_PORT" value="21" />
-        <server name="FTP_CREATE" value="0" />
-        -->
+        <!-- Parameters for GridFS adapter -->
+        <!--<env name="MONGO_URI" value="mongodb://localhost:27017" />
+        <env name="MONGO_DBNAME" value="gridfs_test" />-->
     </php>
 
     <testsuites>

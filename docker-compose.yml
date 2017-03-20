@@ -27,6 +27,11 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
+    environment:
+      MONGO_URI: "mongodb://mongodb:27017"
+      MONGO_DBNAME: "gridfs_test"
+    depends_on:
+      - mongodb
 
   php70:
     build:
@@ -36,6 +41,12 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
+    environment:
+      MONGO_URI: "mongodb://mongodb:27017"
+      MONGO_DBNAME: "gridfs_test"
+    depends_on:
+      - mongodb
+
 
   php71:
     build:
@@ -45,6 +56,11 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
+    environment:
+      MONGO_URI: "mongodb://mongodb:27017"
+      MONGO_DBNAME: "gridfs_test"
+    depends_on:
+      - mongodb
 
   hhvm:
     build:
@@ -54,3 +70,13 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
+    environment:
+      MONGO_URI: "mongodb://mongodb:27017"
+      MONGO_DBNAME: "gridfs_test"
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
