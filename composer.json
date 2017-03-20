@@ -40,7 +40,8 @@
         "herzult/php-ssh": "*",
         "phpunit/phpunit": "3.7.*",
         "mikey179/vfsStream": "~1.2.0",
-        "league/flysystem": "~1.0"
+        "league/flysystem": "~1.0",
+        "mongodb/mongodb": "~1.1.4"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",
@@ -58,8 +59,9 @@
         "ext-apc": "to use the APC adapter",
         "ext-curl": "*",
         "ext-mbstring": "*",
-        "ext-mongo": "*",
-        "ext-fileinfo": "This extension is used to automatically detect the content-type of a file in the AwsS3, OpenCloud, AzureBlogStorage and GoogleCloudStorage adapters"
+        "ext-mongodb": "*",
+        "ext-fileinfo": "This extension is used to automatically detect the content-type of a file in the AwsS3, OpenCloud, AzureBlogStorage and GoogleCloudStorage adapters",
+        "mongodb/mongodb": "*"
     },
     "autoload": {
         "psr-0": { "Gaufrette": "src/" }
