@@ -300,4 +300,36 @@ class AmazonS3 implements Adapter,
 
         return sprintf('%s/%s', $directory, $key);
     }
+    
+    /**
+     * Overwrites the current metadata of an object.
+     * 
+     * @param type $key
+     * @param array $metadata 
+     */
+    public function overwriteMetadata($key, array $metadata){
+    
+        // Check that the bucket we are writing to actually exists
+        // Check that the object actually exsits
+        if($this->exists($key)){
+            
+            // Compute the path of the object (S3 does not really have "folders")
+            $key = $this->prependBaseDirectory($key);
+        
+            // Specify that we want to override metadata
+            $metadata['metadataDirective'] = 'REPLACE';
+            
+            // Perform the operation.
+            $response = $this->service->copy_object(
+                array('bucket' => $this->bucket, 'filename' => $key), 
+                array('bucket' => $this->bucket, 'filename' => $key), 
+                $metadata
+            );
+            if (!$response->isOK()) {
+                throw new \RuntimeException(sprintf('Could not update metadata in the \'%s\' file.', $key));
+            }
+        }else{
+            throw new \RuntimeException(sprintf('The \'%s\' file does not exist.', $key));
+        }
+    }
 }
