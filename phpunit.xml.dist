@@ -16,6 +16,10 @@
         <!-- Parameters for GridFS adapter -->
         <!--<env name="MONGO_URI" value="mongodb://localhost:27017" />
         <env name="MONGO_DBNAME" value="gridfs_test" />-->
+
+        <!-- Configuration for AwsS3 adapter -->
+        <!--<env name="AWS_SECRET" value="" />
+        <env name="AWS_KEY" value="" />-->
     </php>
 
     <testsuites>
