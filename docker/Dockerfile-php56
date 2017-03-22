@@ -6,7 +6,7 @@ WORKDIR ${SRC_DIR}/
 RUN sudo apt-get update && \
     sudo apt-get install -y libssh2-1-dev && \
     sudo rm -rf /var/lib/apt/lists/* && \
-    pecl install mongo ssh2
+    pecl install mongodb ssh2
 
 COPY composer.json ${SRC_DIR}/
 RUN sudo chown -R travis ${SRC_DIR} && \
