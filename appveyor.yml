@@ -8,6 +8,13 @@ branches:
 cache:
   - '%LOCALAPPDATA%\Composer\files'
 
+environment:
+  AWS_KEY:
+    secure: nMVfvhojgVc9VBlrYXeddaYIQHlVAlupWmxNjXMlsB0=
+  AWS_SECRET:
+    secure: MiAf2q7mnqSIZSoChd9v3pwUrXHeAEpZP8Zc0E0qjiOBXPvplzJVtrkWRwTNlQl3
+  AWS_BUCKET: gaufretteci
+
 init:
   - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;%PATH%
 

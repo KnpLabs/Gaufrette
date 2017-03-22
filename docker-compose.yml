@@ -1,3 +1,4 @@
+
 version: '2'
 
 services:
@@ -9,6 +10,7 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
+    env_file: .env
 
   php55:
     build:
@@ -18,6 +20,7 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
+    env_file: .env
 
   php56:
     build:
@@ -27,11 +30,9 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
-    environment:
-      MONGO_URI: "mongodb://mongodb:27017"
-      MONGO_DBNAME: "gridfs_test"
     depends_on:
       - mongodb
+    env_file: .env
 
   php70:
     build:
@@ -41,12 +42,9 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
-    environment:
-      MONGO_URI: "mongodb://mongodb:27017"
-      MONGO_DBNAME: "gridfs_test"
     depends_on:
       - mongodb
-
+    env_file: .env
 
   php71:
     build:
@@ -56,9 +54,7 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
-    environment:
-      MONGO_URI: "mongodb://mongodb:27017"
-      MONGO_DBNAME: "gridfs_test"
+    env_file: .env
     depends_on:
       - mongodb
 
@@ -70,9 +66,7 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
-    environment:
-      MONGO_URI: "mongodb://mongodb:27017"
-      MONGO_DBNAME: "gridfs_test"
+    env_file: .env
     depends_on:
       - mongodb
 
