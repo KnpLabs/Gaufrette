@@ -92,7 +92,16 @@ class AwsS3 implements Adapter,
         $options = $this->getOptions($key);
 
         try {
-            return (string) $this->service->getObject($options)->get('Body');
+            // Get remote object
+            $object = $this->service->getObject($options);
+            // If there's no metadata array set up for this object, set it up
+            if (!array_key_exists($key, $this->metadata) || !is_array($this->metadata[$key])) {
+                $this->metadata[$key] = [];
+            }
+            // Make remote ContentType metadata available locally
+            $this->metadata[$key]['ContentType'] = $object->get('ContentType');
+
+            return (string) $object->get('Body');
         } catch (\Exception $e) {
             return false;
         }
