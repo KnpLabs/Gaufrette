@@ -91,14 +91,16 @@ class AwsS3 implements Adapter,
         $this->ensureBucketExists();
         $options = $this->getOptions($key);
 
-        // Copy ContentType metadata to local metadata
-        $object = $this->service->getObject($options);
-        if (!array_key_exists($key, $this->metadata) || !is_array($this->metadata[$key])) {
-            $this->metadata[$key] = array();
-        }
-        $this->metadata[$key]['ContentType'] = $object->get('ContentType');
-
         try {
+            // Get remote object
+            $object = $this->service->getObject($options);
+            // If there's no metadata array set up for this object, set it up
+            if (!array_key_exists($key, $this->metadata) || !is_array($this->metadata[$key])) {
+                $this->metadata[$key] = [];
+            }
+            // Make remote ContentType metadata available locally
+            $this->metadata[$key]['ContentType'] = $object->get('ContentType');
+
             return (string) $object->get('Body');
         } catch (\Exception $e) {
             return false;
