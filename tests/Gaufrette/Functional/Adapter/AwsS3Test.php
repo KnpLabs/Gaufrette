@@ -11,25 +11,14 @@ use Gaufrette\Filesystem;
  */
 class AwsS3Test extends \PHPUnit_Framework_TestCase
 {
-    static private $SDK_VERSION = 3;
+    /** @var int */
+    static private $SDK_VERSION;
 
     /** @var string */
     private $bucket;
 
     /** @var S3Client */
     private $client;
-
-    public static function setUpBeforeClass()
-    {
-        $installed = json_decode(file_get_contents(__DIR__.'/../../../../vendor/composer/installed.json'), true);
-        $sdk = current(array_filter($installed, function ($dependency) {
-            return $dependency['name'] === 'aws/aws-sdk-php';
-        }));
-
-        if (version_compare($sdk['version'], '3.0.0') === -1) {
-            self::$SDK_VERSION = 2;
-        }
-    }
 
     public function setUp()
     {
@@ -40,9 +29,14 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped();
         }
 
+        if (self::$SDK_VERSION === null) {
+            self::$SDK_VERSION = method_exists(S3Client::class, 'getArguments') ? 3 : 2;
+        }
+
         $this->bucket = uniqid(getenv('AWS_BUCKET'));
 
         if (self::$SDK_VERSION === 3) {
+            // New way of instantiating S3Client for aws-sdk-php v3
             $this->client = new S3Client([
                 'region' => 'eu-west-1',
                 'version' => 'latest',
