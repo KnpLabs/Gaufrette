@@ -57,7 +57,7 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        if ($this->bucket === null) {
+        if (!$this->client->doesBucketExist($this->bucket)) {
             return;
         }
 
@@ -81,7 +81,6 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
      */
     public function testThrowsExceptionIfBucketMissingAndNotCreating()
     {
-        $this->bucket = null;
         $filesystem = $this->getFilesystem();
         $filesystem->read('foo');
     }
@@ -102,12 +101,16 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
     public function testGetsObjectUrls()
     {
         $filesystem = $this->getFilesystem(['create' => true]);
+        $expected   = sprintf('https://%s.s3-eu-west-1.amazonaws.com/foo', $this->bucket);
+
+        if (self::$SDK_VERSION === 3) {
+            $expected = sprintf('https://s3-eu-west-1.amazonaws.com/%s/foo', $this->bucket);
+        }
 
         $this->assertEquals(
-            sprintf('https://%s.s3-eu-west-1.amazonaws.com/foo', $this->bucket),
+            $expected,
             $filesystem->getAdapter()->getUrl('foo')
         );
-        $this->bucket = null;
     }
 
     public function testChecksForObjectExistenceWithDirectory()
@@ -121,12 +124,16 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
     public function testGetsObjectUrlsWithDirectory()
     {
         $filesystem = $this->getFilesystem(['directory' => 'bar']);
+        $expected   = sprintf('https://%s.s3-eu-west-1.amazonaws.com/bar/foo', $this->bucket);
+
+        if (self::$SDK_VERSION === 3) {
+            $expected = sprintf('https://s3-eu-west-1.amazonaws.com/%s/bar/foo', $this->bucket);
+        }
 
         $this->assertEquals(
-            sprintf('https://%s.s3-eu-west-1.amazonaws.com/bar/foo', $this->bucket),
+            $expected,
             $filesystem->getAdapter()->getUrl('foo')
         );
-        $this->bucket = null;
     }
 
     public function shouldListKeysWithoutDirectory()
