@@ -1,0 +1,11 @@
+#/bin/bash
+
+set -o errexit
+set -o xtrace
+
+BASE_DIR=$(dirname ${BASH_SOURCE[0]})/..
+
+cp ${BASE_DIR}/.env.dist ${BASE_DIR}/.env
+
+sed -i -e "s/AWS_KEY=.*/AWS_KEY=${AWS_KEY}/" ${BASE_DIR}/.env
+sed -i -e "s/AWS_SECRET=.*/AWS_SECRET=${AWS_SECRET}/" ${BASE_DIR}/.env

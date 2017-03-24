@@ -1,42 +1,26 @@
+sudo: required
+
 language: php
 
-sudo: true
-
-cache:
-  directories:
-    - $HOME/.composer/cache/files
+services:
+  - docker
 
 env:
   global:
-    - AWS_KEY:
-    - AWS_SECRET:
+    DOCKER_COMPOSE_VERSION: 1.11.1
+    AWS_KEY:
+    AWS_SECRET:
 
-php:
-  - 5.6
-  - hhvm
-
-services:
-  - mongodb
-
-env:
-  - MONGO_URI="mongodb://127.0.0.1:27017"
-    MONGO_DBNAME="gridfs_test"
-
-matrix:
-  allow_failures:
-    - php: hhvm
-  fast_finish: true
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 
 before_script:
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini && phpenv config-rm xdebug.ini; fi
-  - if [[ ${TRAVIS_PHP_VERSION:0:4} == "hhvm" ]];  then composer require mongofill/mongofill --ignore-platform-reqs; fi
-  - sudo apt-get update
-  - sudo apt-get install -y libssh2-1-dev
-  - if [[ ${TRAVIS_PHP_VERSION:0:4} != "hhvm" ]]; then yes | pecl install ssh2 ; fi
-  - cp tests/Gaufrette/Functional/adapters/DoctrineDbal.php.dist tests/Gaufrette/Functional/adapters/DoctrineDbal.php -f
-  - composer self-update && composer install --prefer-source --no-interaction
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} != "5.4" ]]; then composer require microsoft/windowsazure:^0.4.3; fi
+  - sudo apt-get update && sudo apt-get install -y --no-install-recommends -qq parallel
+  - bin/build-dot-env
+  - docker-compose build php56
 
 script:
-  - php vendor/bin/phpspec run -fpretty --verbose
-  - php vendor/bin/phpunit --verbose
+  - docker-compose run --rm php56

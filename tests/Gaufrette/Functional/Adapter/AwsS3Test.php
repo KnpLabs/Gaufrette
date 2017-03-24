@@ -25,6 +25,7 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         $key = getenv('AWS_KEY');
         $secret = getenv('AWS_SECRET');
 
+        var_dump(strlen($key), strlen($secret));
         if (empty($key) || empty($secret)) {
             $this->markTestSkipped();
         }
@@ -35,6 +36,7 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
 
         $this->bucket = uniqid(getenv('AWS_BUCKET'));
 
+        var_dump($this->bucket, self::$SDK_VERSION);
         if (self::$SDK_VERSION === 3) {
             // New way of instantiating S3Client for aws-sdk-php v3
             $this->client = new S3Client([
