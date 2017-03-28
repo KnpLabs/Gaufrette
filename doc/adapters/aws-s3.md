@@ -10,7 +10,8 @@ composer require aws/aws-sdk-php
 ```
 
 In order to use this adapter you'll need an access key and a secret key. 
-We **strongly recommend** you to create a dedicated IAM user with the most restrictive policy:
+We **strongly recommend** you to create a dedicated IAM user with the most restrictive policy 
+(in such case you can remove `s3:CreateBucket` action):
 
 ```json
 {
@@ -20,7 +21,6 @@ We **strongly recommend** you to create a dedicated IAM user with the most restr
             "Effect": "Allow",
             "Action": [
                 "s3:CreateBucket",
-                "s3:DeleteBucket",
                 "s3:ListBucket"
             ],
             "Resource": [
@@ -42,6 +42,9 @@ We **strongly recommend** you to create a dedicated IAM user with the most restr
 }
 ```
 
+You can even skip `s3:CreateBucket` role if you create your bucket first, which is also recommended 
+for production environment.
+
 ## Example
 
 ```php
@@ -51,6 +54,7 @@ use Aws\S3\S3Client;
 use Gaufrette\Adapter\AwsS3 as AwsS3Adapter;
 use Gaufrette\Filesystem;
 
+// For aws-sdk-php v3
 $s3client = new S3Client([
     'credentials' => array(
         'key'     => 'your_key_here',
