@@ -194,6 +194,17 @@ class File
     }
 
     /**
+     * @param string $newKey
+     */
+    public function rename($newKey)
+    {
+        // Should be replaced by a try..finally block
+        $this->filesystem->rename($this->key, $newKey);
+
+        $this->key = $newKey;
+    }
+
+    /**
      * Sets the metadata array to be stored in adapters that can support it.
      *
      * @param array $metadata
