@@ -173,6 +173,12 @@ class FileSpec extends ObjectBehavior
         $filesystem->delete('filename')->shouldBeCalled()->willReturn(true);
         $this->delete()->shouldReturn(true);
     }
+
+    function it_renames_file_from_filesystem($filesystem)
+    {
+        $filesystem->rename('filename', 'newname')->shouldBeCalled();
+        $this->rename('newname');
+    }
 }
 
 interface MetadataAdapter extends \Gaufrette\Adapter,

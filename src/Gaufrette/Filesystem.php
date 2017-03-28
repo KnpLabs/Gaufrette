@@ -58,6 +58,8 @@ class Filesystem
     /**
      * Renames a file.
      *
+     * File::rename should be preferred or you may face bad filesystem consistency.
+     *
      * @param string $sourceKey
      * @param string $targetKey
      *
@@ -67,6 +69,8 @@ class Filesystem
      * @throws Exception\UnexpectedFile  when targetKey exists
      * @throws \RuntimeException         when cannot rename
      * @throws \InvalidArgumentException If $sourceKey or $targetKey are invalid
+     *
+     * @see File::rename
      */
     public function rename($sourceKey, $targetKey)
     {
