@@ -2,6 +2,8 @@ bin/*
 !bin/tests
 !bin/tests-all
 doc/.couscous
+tests/adapters/*
+!tests/adapters/*.dist
 vendor/
 .env
 composer.lock
