@@ -95,7 +95,7 @@ class GoogleCloudStorage implements Adapter,
         }
 
         if (class_exists('Google_Http_Request')) {
-            $request = new Google_Http_Request($object->getMediaLink());
+            $request = new \Google_Http_Request($object->getMediaLink());
             $this->service->getClient()->getAuth()->sign($request);
             $response = $this->service->getClient()->getIo()->executeRequest($request);
             if ($response[2] == 200) {
