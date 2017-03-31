@@ -41,11 +41,10 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
         $adapter = $this->filesystem->getAdapter();
         $options = $adapter->getOptions();        
 
-        $adapter->setOptions(array('directory' => 'Phat'));
-        $this->assertEquals(strlen($this->string), $this->filesystem->write('Cat.txt', $this->string, true));
+        $this->assertEquals(strlen($this->string), $this->filesystem->write('Phat/Cat.txt', $this->string, true));
         $keys = $this->filesystem->keys();               
         $this->assertEquals($keys[0], 'Phat/Cat.txt');
-        $this->filesystem->delete('Cat.txt');        
+        $this->filesystem->delete('Phat/Cat.txt');        
         $adapter->setOptions($options);
     }
     
@@ -59,14 +58,14 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
         /** @var \Gaufrette\Adapter\GoogleCloudClientStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
         $options = $adapter->getOptions();
-        $adapter->setOptions(array('directory' => 'Phat'));
-        $this->assertEquals(strlen($this->string), $this->filesystem->write('Cat.txt', $this->string, true));
+        //$adapter->setOptions(array('directory' => 'Phat'));
+        $this->assertEquals(strlen($this->string), $this->filesystem->write('Phat/Cat.txt', $this->string, true));
         $this->assertEquals(strlen($this->string), $this->filesystem->write('Phatter/Cat.txt', $this->string, true));
 
-        $this->assertEquals($this->string, $this->filesystem->read('Cat.txt'));
+        $this->assertEquals($this->string, $this->filesystem->read('Phat/Cat.txt'));
         $this->assertEquals($this->string, $this->filesystem->read('Phatter/Cat.txt'));
 
-        $this->filesystem->delete('Cat.txt');
+        $this->filesystem->delete('Phat/Cat.txt');
         $this->filesystem->delete('Phatter/Cat.txt');
         $adapter->setOptions($options);
     }
