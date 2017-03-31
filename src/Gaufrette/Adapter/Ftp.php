@@ -13,7 +13,8 @@ use Gaufrette\Filesystem;
  */
 class Ftp implements Adapter,
                      FileFactory,
-                     ListKeysAware
+                     ListKeysAware,
+                     SizeCalculator
 {
     protected $connection = null;
     protected $directory;
@@ -25,6 +26,7 @@ class Ftp implements Adapter,
     protected $create;
     protected $mode;
     protected $ssl;
+    protected $timeout;
     protected $fileData = array();
     protected $utf8;
 
@@ -48,6 +50,7 @@ class Ftp implements Adapter,
         $this->create = isset($options['create']) ? $options['create'] : false;
         $this->mode = isset($options['mode']) ? $options['mode'] : FTP_BINARY;
         $this->ssl = isset($options['ssl']) ? $options['ssl'] : false;
+        $this->timeout = isset($options['timeout']) ? $options['timeout'] : 90;
         $this->utf8 = isset($options['utf8']) ? $options['utf8'] : false;
     }
 
@@ -291,6 +294,24 @@ class Ftp implements Adapter,
     }
 
     /**
+     * @param string $key
+     *
+     * @return int
+     *
+     * @throws \RuntimeException
+     */
+    public function size($key)
+    {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
+        if (-1 === $size = ftp_size($this->connection, $key)) {
+            throw new \RuntimeException(sprintf('Unable to fetch the size of "%s".', $key));
+        }
+
+        return $size;
+    }
+
+    /**
      * Ensures the specified directory exists. If it does not, and the create
      * parameter is set to TRUE, it tries to create it.
      *
@@ -496,16 +517,21 @@ class Ftp implements Adapter,
      */
     private function connect()
     {
+        if ($this->ssl && !function_exists('ftp_ssl_connect')) {
+            throw new \RuntimeException('This Server Has No SSL-FTP Available.');
+        }
+
         // open ftp connection
         if (!$this->ssl) {
-            $this->connection = ftp_connect($this->host, $this->port);
+            $this->connection = ftp_connect($this->host, $this->port, $this->timeout);
         } else {
-            if (function_exists('ftp_ssl_connect')) {
-                $this->connection = ftp_ssl_connect($this->host, $this->port);
-            } else {
-                throw new \RuntimeException('This Server Has No SSL-FTP Available.');
-            }
+            $this->connection = ftp_ssl_connect($this->host, $this->port, $this->timeout);
         }
+
+        if (PHP_VERSION_ID >= 50600) {
+            ftp_set_option($this->connection, FTP_USEPASVADDRESS, false);
+        }
+
         if (!$this->connection) {
             throw new \RuntimeException(sprintf('Could not connect to \'%s\' (port: %s).', $this->host, $this->port));
         }

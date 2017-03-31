@@ -2,17 +2,27 @@
 
 namespace spec\Gaufrette\Adapter;
 
+use MongoDB\BSON\UTCDateTime;
+use MongoDB\GridFS\Bucket;
+use MongoDB\GridFS\Exception\FileNotFoundException;
+use MongoDB\Model\BSONDocument;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class GridFSSpec extends ObjectBehavior
 {
-    /**
-     * @param \MongoGridFS $gridFs
-     */
-    function let($gridFs)
+    private $resources = [];
+
+    function let(Bucket $bucket)
     {
-        $this->beConstructedWith($gridFs);
+        $this->beConstructedWith($bucket);
+    }
+
+    function letGo()
+    {
+        array_map(function ($res) {
+            @fclose($res);
+        }, $this->resources);
     }
 
     function it_is_adapter()
@@ -35,51 +45,36 @@ class GridFSSpec extends ObjectBehavior
         $this->shouldHaveType('Gaufrette\Adapter\ListKeysAware');
     }
 
-    /**
-     * @param \MongoGridFS $gridFs
-     * @param \MongoGridFSFile $file
-     */
-    function it_reads_file($gridFs, $file)
+    function it_reads_file($bucket)
     {
-        $file
-            ->getBytes()
-            ->willReturn('some content')
-        ;
-        $gridFs
-            ->findOne('filename', array())
+        $this->resources[] = $readable = fopen('php://memory', 'rw');
+        fwrite($readable, 'some content');
+        fseek($readable, 0);
+
+        $bucket
+            ->openDownloadStreamByName('filename')
             ->shouldBeCalled()
-            ->willReturn($file)
+            ->willReturn($readable)
         ;
 
         $this->read('filename')->shouldReturn('some content');
     }
 
-    /**
-     * @param \MongoGridFS $gridFs
-     */
-    function it_does_not_fail_when_cannot_read($gridFs)
+    function it_does_not_fail_when_cannot_read($bucket)
     {
-        $gridFs
-            ->findOne('filename', array())
-            ->shouldBeCalled()
-            ->willReturn(null)
-        ;
+        $bucket->openDownloadStreamByName('filename')->willThrow(FileNotFoundException::class);
 
         $this->read('filename')->shouldReturn(false);
     }
 
-    /**
-     * @param \MongoGridFS $gridFs
-     * @param \MongoGridFSFile $file
-     */
-    function it_checks_if_file_exists($gridFs, $file)
+    function it_checks_if_file_exists($bucket, BSONDocument $file)
     {
-        $gridFs
-            ->findOne('filename', array())
+        $bucket
+            ->findOne(['filename' => 'filename'])
             ->willReturn($file)
         ;
-        $gridFs
-            ->findOne('filename2', array())
+        $bucket
+            ->findOne(['filename' => 'filename2'])
             ->willReturn(null)
         ;
 
@@ -87,228 +82,87 @@ class GridFSSpec extends ObjectBehavior
         $this->exists('filename2')->shouldReturn(false);
     }
 
-    /**
-     * @param \MongoGridFS $gridFs
-     */
-    function it_deletes_file($gridFs)
+    function it_deletes_file($bucket)
     {
-        $file = new \stdClass;
-        $file->file = array('_id' => 123);
-        $gridFs
-            ->findOne('filename', array('_id'))
-            ->willReturn($file)
+        $bucket
+            ->findOne(['filename' => 'filename'], ['projection' => ['_id' => 1]])
+            ->willReturn($file = new BSONDocument(['_id' => 123]))
         ;
-        $gridFs
-            ->delete(123)
-            ->willReturn(true)
-        ;
+        $bucket->delete(123)->shouldBeCalled();
 
         $this->delete('filename')->shouldReturn(true);
     }
 
-    /**
-     * @param \MongoGridFS $gridFs
-     */
-    function it_does_not_delete_file($gridFs)
+    function it_does_not_delete_file($bucket)
     {
-        $file = new \stdClass;
-        $file->file = array('_id' => 123);
-        $gridFs
-            ->findOne('filename', array('_id'))
-            ->willReturn($file)
-        ;
-        $gridFs
-            ->delete(123)
-            ->willReturn(false)
-        ;
-        $this->delete('filename')->shouldReturn(false);
+        $bucket->findOne(['filename' => 'filename'], ['projection' => ['_id' => 1]])->willReturn(null);
 
-        $gridFs
-            ->findOne('filename', array('_id'))
-            ->willReturn(null)
-        ;
         $this->delete('filename')->shouldReturn(false);
     }
 
-    /**
-     * @param \MongoGridFS $gridFs
-     * @param \MongoGridFSFile $file
-     */
-    function it_writes_file($gridFs, $file)
+    function it_writes_file($bucket)
     {
-        $file
-            ->getSize()
-            ->willReturn(12)
-        ;
-        $gridFs
-            ->findOne('filename', array())
-            ->willReturn(null)
-        ;
-        $gridFs
-            ->storeBytes('some content', array('date' => 1234, 'someother' => 'metadata', 'filename' => 'filename'))
-            ->willReturn('someId')
-        ;
-        $gridFs
-            ->findOne(array('_id' => 'someId'))
-            ->willReturn($file)
+        $this->resources[] = $writable = fopen('php://memory', 'rw');
+
+        $bucket
+            ->openUploadStream('filename', ['metadata' => ['someother' => 'metadata']])
+            ->willReturn($writable)
         ;
 
-        $this->setMetadata('filename', array('date' => 1234, 'someother' => 'metadata'));
+        $this->setMetadata('filename', ['someother' => 'metadata']);
         $this
             ->write('filename', 'some content')
             ->shouldReturn(12)
         ;
     }
 
-    /**
-     * @param \MongoGridFS $gridFs
-     * @param \MongoGridFSFile $file
-     */
-    function it_updates_file($gridFs, $file)
+    function it_renames_file($bucket)
     {
-        $someFile = new \stdClass;
-        $someFile->file = array('_id' => 123);
-        $gridFs
-            ->findOne('filename', array('_id'))
-            ->shouldBeCalled()
-            ->willReturn($someFile)
-        ;
-        $gridFs
-            ->delete(123)
-            ->shouldBeCalled()
-            ->willReturn(true)
-        ;
+        $this->resources[] = $writable = fopen('php://memory', 'rw');
+        $this->resources[] = $readable = fopen('php://memory', 'rw');
+        fwrite($readable, 'some content');
+        fseek($readable, 0);
 
-        $file
-            ->getSize()
-            ->willReturn(12)
-        ;
-        $gridFs
-            ->findOne('filename', array())
-            ->willReturn($file)
-        ;
-        $gridFs
-            ->storeBytes(Argument::any(), Argument::any())
-            ->willReturn('someId')
-        ;
-        $gridFs
-            ->findOne(array('_id' => 'someId'))
-            ->willReturn($file)
-        ;
+        $bucket->openUploadStream('otherFilename', ['metadata' => ['some' => 'metadata']])->willReturn($writable);
+        $bucket->downloadToStreamByName('filename', $writable)->shouldBeCalled();
 
-        $this
-            ->write('filename', 'some content')
-            ->shouldReturn(12)
+        $bucket
+            ->findOne(['filename' => 'filename'], ['projection' => ['_id' => 1]])
+            ->willReturn($toDelete = new BSONDocument(['_id' => 1234]))
         ;
-    }
+        $bucket->delete(1234)->shouldBeCalled();
 
-    /**
-     * @param \MongoGridFS $gridFs
-     * @param \MongoGridFSFile $file
-     */
-    function it_renames_file($gridFs, $file)
-    {
-        $file
-            ->getBytes()
-            ->willReturn('some content')
-        ;
-        $file
-            ->getSize()
-            ->willReturn(12)
-        ;
-        $gridFs
-            ->findOne('otherFilename', array())
-            ->willReturn(null)
-        ;
-        $gridFs
-            ->findOne('filename', array())
-            ->shouldBeCalled()
-            ->willReturn($file)
-        ;
-        $gridFs
-            ->storeBytes('some content', array('date' => 1234, 'filename' => 'otherFilename'))
-            ->shouldBeCalled()
-            ->willReturn('someId')
-        ;
-
-        $fileToDelete = new \stdClass;
-        $fileToDelete->file = array('_id' => 123);
-        $gridFs
-            ->findOne('filename', array('_id'))
-            ->willReturn($fileToDelete)
-        ;
-        $gridFs
-            ->findOne(array('_id' => 'someId'))
-            ->willReturn($file)
-        ;
-        $gridFs
-            ->delete(123)
-            ->shouldBeCalled()
-            ->willReturn(true)
-        ;
-
-        $this->setMetadata('otherFilename', array('date' => 1234));
+        $this->setMetadata('filename', ['some' => 'metadata']);
         $this->rename('filename', 'otherFilename')->shouldReturn(true);
     }
 
-    /**
-     * @param \MongoGridFS $gridFs
-     */
-    function it_fetches_keys($gridFs, $file, $otherFile)
+    function it_fetches_keys($bucket)
     {
-        $gridFs
-            ->find(array(), array('filename'))
-            ->willReturn(array(new TestFile('filename'), new TestFile('otherFilename')))
+        $bucket
+            ->find([], ['projection' => ['filename' => 1]])
+            ->willReturn([new BSONDocument(['filename' => 'filename']), new BSONDocument(['filename' => 'otherFilename'])])
         ;
 
-        $this->keys()->shouldReturn(array('filename', 'otherFilename'));
+        $this->keys()->shouldReturn(['filename', 'otherFilename']);
     }
 
-    /**
-     * @param \MongoGridFS $gridFs
-     */
-    function it_fetches_mtime($gridFs)
+    function it_fetches_mtime($bucket)
     {
-        $time = new \stdClass;
-        $time->sec = 12345;
-
-        $someFile = new \stdClass;
-        $someFile->file = array('date' => $time);
-        $gridFs
-            ->findOne('filename', array('date'))
-            ->willReturn($someFile)
+        $bucket
+            ->findOne(['filename' => 'filename'], ['projection' => ['uploadDate' => 1]])
+            ->willReturn(new BSONDocument(['uploadDate' => new UTCDateTime(12345000)]))
         ;
 
         $this->mtime('filename')->shouldReturn(12345);
     }
 
-    /**
-     * @param \MongoGridFS $gridFs
-     */
-    function it_calculates_checksum($gridFs)
+    function it_calculates_checksum($bucket)
     {
-        $someFile = new \stdClass;
-        $someFile->file = array('md5' => 'md5123');
-        $gridFs
-            ->findOne('filename', array('md5'))
-            ->willReturn($someFile)
+        $bucket
+            ->findOne(['filename' => 'filename'], ['projection' => ['md5' => 1]])
+            ->willReturn(new BSONDocument(['md5' => 'md5123']))
         ;
 
         $this->checksum('filename')->shouldReturn('md5123');
-    }
-}
-
-class TestFile
-{
-    private $filename;
-
-    public function __construct($filename)
-    {
-        $this->filename = $filename;
-    }
-
-    public function getFilename()
-    {
-        return $this->filename;
     }
 }

@@ -5,11 +5,11 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
-use WindowsAzure\Blob\Models\CreateBlobOptions;
-use WindowsAzure\Blob\Models\CreateContainerOptions;
-use WindowsAzure\Blob\Models\DeleteContainerOptions;
-use WindowsAzure\Blob\Models\ListBlobsOptions;
-use WindowsAzure\Common\ServiceException;
+use MicrosoftAzure\Storage\Blob\Models\CreateBlobOptions;
+use MicrosoftAzure\Storage\Blob\Models\CreateContainerOptions;
+use MicrosoftAzure\Storage\Blob\Models\DeleteContainerOptions;
+use MicrosoftAzure\Storage\Blob\Models\ListBlobsOptions;
+use MicrosoftAzure\Storage\Common\ServiceException;
 
 /**
  * Microsoft Azure Blob Storage adapter.
@@ -42,7 +42,7 @@ class AzureBlobStorage implements Adapter,
     protected $detectContentType;
 
     /**
-     * @var \WindowsAzure\Blob\Internal\IBlob
+     * @var \MicrosoftAzure\Storage\Blob\Internal\IBlob
      */
     protected $blobProxy;
 
@@ -65,8 +65,8 @@ class AzureBlobStorage implements Adapter,
     /**
      * Creates a new container.
      *
-     * @param string                                           $containerName
-     * @param \WindowsAzure\Blob\Models\CreateContainerOptions $options
+     * @param string                                                     $containerName
+     * @param \MicrosoftAzure\Storage\Blob\Models\CreateContainerOptions $options
      *
      * @throws \RuntimeException if cannot create the container
      */
@@ -147,12 +147,16 @@ class AzureBlobStorage implements Adapter,
             $options = new CreateBlobOptions();
 
             if ($this->detectContentType) {
-                $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
-                $contentType = $fileInfo->buffer($content);
-                $options->setContentType($contentType);
+                $contentType = $this->guessContentType($content);
+
+                $options->setBlobContentType($contentType);
             }
 
             $this->blobProxy->createBlockBlob($this->containerName, $key, $content, $options);
+
+            if (is_resource($content)) {
+                return Util\Size::fromResource($content);
+            }
 
             return Util\Size::fromContent($content);
         } catch (ServiceException $e) {
@@ -382,5 +386,21 @@ class AzureBlobStorage implements Adapter,
         }
 
         return $exception->getErrorReason();
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return string
+     */
+    private function guessContentType($content)
+    {
+        $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
+
+        if (is_resource($content)) {
+            return $fileInfo->file(stream_get_meta_data($content)['uri']);
+        }
+
+        return $fileInfo->buffer($content);
     }
 }

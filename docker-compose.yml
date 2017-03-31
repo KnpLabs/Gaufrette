@@ -1,0 +1,76 @@
+
+version: '2'
+
+services:
+  php54:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-php54
+    volumes:
+      - './spec/:/usr/src/gaufrette/spec/'
+      - './src/:/usr/src/gaufrette/src/'
+      - './tests/:/usr/src/gaufrette/tests/'
+    env_file: .env
+
+  php55:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-php55
+    volumes:
+      - './spec/:/usr/src/gaufrette/spec/'
+      - './src/:/usr/src/gaufrette/src/'
+      - './tests/:/usr/src/gaufrette/tests/'
+    env_file: .env
+
+  php56:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-php56
+    volumes:
+      - './spec/:/usr/src/gaufrette/spec/'
+      - './src/:/usr/src/gaufrette/src/'
+      - './tests/:/usr/src/gaufrette/tests/'
+    depends_on:
+      - mongodb
+    env_file: .env
+
+  php70:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-php70
+    volumes:
+      - './spec/:/usr/src/gaufrette/spec/'
+      - './src/:/usr/src/gaufrette/src/'
+      - './tests/:/usr/src/gaufrette/tests/'
+    depends_on:
+      - mongodb
+    env_file: .env
+
+  php71:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-php71
+    volumes:
+      - './spec/:/usr/src/gaufrette/spec/'
+      - './src/:/usr/src/gaufrette/src/'
+      - './tests/:/usr/src/gaufrette/tests/'
+    env_file: .env
+    depends_on:
+      - mongodb
+
+  hhvm:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-hhvm
+    volumes:
+      - './spec/:/usr/src/gaufrette/spec/'
+      - './src/:/usr/src/gaufrette/src/'
+      - './tests/:/usr/src/gaufrette/tests/'
+    env_file: .env
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
