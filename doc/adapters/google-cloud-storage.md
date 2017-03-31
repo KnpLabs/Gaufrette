@@ -9,6 +9,8 @@ To use the GoogleCloudStorage adapter you will need to create a connection using
 (https://console.developers.google.com/). You can then create the `\Google_Service_Storage` which is required for the
 GoogleCloudStorage adapter.
 
+Install with: composer require google/cloud-storage
+
 ## Example
 
 ```php
