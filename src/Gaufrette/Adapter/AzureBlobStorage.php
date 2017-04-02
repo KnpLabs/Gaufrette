@@ -10,6 +10,7 @@ use MicrosoftAzure\Storage\Blob\Models\CreateContainerOptions;
 use MicrosoftAzure\Storage\Blob\Models\DeleteContainerOptions;
 use MicrosoftAzure\Storage\Blob\Models\ListBlobsOptions;
 use MicrosoftAzure\Storage\Common\ServiceException;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Microsoft Azure Blob Storage adapter.
@@ -379,13 +380,17 @@ class AzureBlobStorage implements Adapter,
      */
     protected function getErrorCodeFromServiceException(ServiceException $exception)
     {
-        $xml = @simplexml_load_string($exception->getErrorReason());
+        if (method_exists($exception, 'getErrorReason')) {
+            $xml = @simplexml_load_string($exception->getErrorReason());
 
-        if ($xml && isset($xml->Code)) {
-            return (string) $xml->Code;
+            if ($xml && isset($xml->Code)) {
+                return (string) $xml->Code;
+            }
+
+            return $exception->getErrorReason();
+        } else {
+            return static::parseErrorCode($exception->getResponse());
         }
-
-        return $exception->getErrorReason();
     }
 
     /**
@@ -402,5 +407,54 @@ class AzureBlobStorage implements Adapter,
         }
 
         return $fileInfo->buffer($content);
+    }
+
+    /**
+     * Error message to be parsed.
+     *
+     * @param  ResponseInterface $response The response with a response body.
+     *
+     * @return string
+     */
+    protected static function parseErrorCode(ResponseInterface $response)
+    {
+        //try to parse using xml serializer, if failed, return the whole body
+        //as the error message.
+        try {
+            $sxml = new \SimpleXMLElement($response->getBody());
+            $data = static::_sxml2arr($sxml);
+
+            if (array_key_exists('Code', $data)) {
+                $errorCode = $data['Code'];
+            } else {
+                $errorCode = $response->getReasonPhrase();
+            }
+        } catch (\Exception $e) {
+            $errorCode = $response->getReasonPhrase();
+        }
+
+        return $errorCode;
+    }
+
+    /**
+     * Converts a SimpleXML object to an Array recursively
+     * ensuring all sub-elements are arrays as well.
+     *
+     * @param string $sxml The SimpleXML object.
+     * @param array  $arr  The array into which to store results.
+     *
+     * @return array
+     */
+    private static function _sxml2arr($sxml, array $arr = null)
+    {
+        foreach ((array) $sxml as $key => $value) {
+            if (is_object($value) || (is_array($value))) {
+                $arr[$key] = static::_sxml2arr($value);
+            } else {
+                $arr[$key] = $value;
+            }
+        }
+
+        return $arr;
     }
 }
