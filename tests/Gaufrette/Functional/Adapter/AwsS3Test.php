@@ -57,7 +57,7 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        if (!$this->client->doesBucketExist($this->bucket)) {
+        if ($this->client === null || !$this->client->doesBucketExist($this->bucket)) {
             return;
         }
 
