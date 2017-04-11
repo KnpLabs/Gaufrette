@@ -111,7 +111,7 @@ class Ftp implements Adapter,
         $sourcePath = $this->computePath($sourceKey);
         $targetPath = $this->computePath($targetKey);
 
-        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath));
+        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath), $this->create);
 
         return ftp_rename($this->getConnection(), $sourcePath, $targetPath);
     }
