@@ -528,7 +528,7 @@ class Ftp implements Adapter,
             $this->connection = ftp_ssl_connect($this->host, $this->port, $this->timeout);
         }
 
-        if (PHP_VERSION_ID >= 50600) {
+        if (PHP_VERSION_ID >= 50618) {
             ftp_set_option($this->connection, FTP_USEPASVADDRESS, false);
         }
 
