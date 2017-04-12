@@ -4,7 +4,12 @@ currentMenu: aws-s3
 
 # AWS S3
 
-First, you will need to install AWS SDK for PHP:
+First, you will need to install the adapter:
+```bash
+composer require gaufrette/aws-s3-adapter
+```
+
+If you want a specific version of AWS SDK (both v2 and v3 are supported), you can require it:
 ```bash
 composer require aws/aws-sdk-php
 ```
