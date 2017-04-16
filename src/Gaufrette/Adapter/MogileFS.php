@@ -306,7 +306,7 @@ class MogileFS implements Adapter
      *
      * @return mixed Array on success, false on failure
      */
-    private function getPaths($key)
+    public function getPaths($key)
     {
         $res = $this->doRequest('GET_PATHS', array('key' => $key));
         unset($res['paths']);
