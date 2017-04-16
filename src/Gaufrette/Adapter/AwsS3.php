@@ -164,7 +164,7 @@ class AwsS3 implements Adapter,
 
             return Util\Size::fromContent($content);
         } catch (\Exception $e) {
-            return false;
+            throw new \RuntimeException('Could not put object on S3.', 0, $e);
         }
     }
 

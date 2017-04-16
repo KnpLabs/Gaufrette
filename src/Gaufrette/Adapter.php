@@ -24,6 +24,7 @@ interface Adapter
      *
      * @param string $key
      * @param string $content
+     * @throws \RuntimeException
      *
      * @return int|bool The number of bytes that were written into the file
      */
