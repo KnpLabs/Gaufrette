@@ -255,7 +255,7 @@ class Local implements Adapter,
      */
     protected function createDirectory($directory)
     {
-        $created = mkdir($directory, $this->mode, true);
+        $created = @mkdir($directory, $this->mode, true);
 
         if (!$created) {
             if (!is_dir($directory)) {
