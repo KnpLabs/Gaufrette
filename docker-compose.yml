@@ -72,3 +72,8 @@ services:
 
   mongodb:
     image: mongo
+
+  vsftpd:
+    build:
+      context: docker
+      dockerfile: Dockerfile-ftp
