@@ -76,12 +76,8 @@ services:
 
   mongodb:
     image: mongo
-    ports:
-      - "27017:27017"
 
   sftp:
     build:
       context: docker
       dockerfile: Dockerfile-sftp
-    ports:
-      - "22:22"
