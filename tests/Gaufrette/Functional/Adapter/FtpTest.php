@@ -41,6 +41,5 @@ class FtpTest extends FunctionalTestCase
         foreach ($keys as $key) {
             $adapter->delete($key);
         }
-
     }
 }
