@@ -21,6 +21,12 @@
         <!--<env name="AWS_KEY" value="" />
         <env name="AWS_SECRET" value="" />
         <env name="AWS_BUCKET" value="" />-->
+
+        <!-- Configuration for Ftp adapter -->
+        <!--<env name="FTP_HOST" value="" />
+        <env name="FTP_USER" value="" />
+        <env name="FTP_PASSWORD" value="" />
+        <env name="FTP_BASE_DIR" value="" />-->
     </php>
 
     <testsuites>
