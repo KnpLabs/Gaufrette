@@ -199,9 +199,9 @@ class Filesystem
      *
      * @return array
      */
-    public function keys()
+    public function keys($prefix = null)
     {
-        return $this->adapter->keys();
+        return $this->adapter->keys($prefix);
     }
 
     /**
@@ -224,8 +224,8 @@ class Filesystem
         $dirs = array();
         $keys = array();
 
-        foreach ($this->keys() as $key) {
-            if (empty($prefix) || 0 === strpos($key, $prefix)) {
+        foreach ($this->keys($prefix) as $key) {
+            if (empty($prefix)) {
                 if ($this->adapter->isDirectory($key)) {
                     $dirs[] = $key;
                 } else {
