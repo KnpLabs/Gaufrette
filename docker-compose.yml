@@ -81,3 +81,8 @@ services:
     build:
       context: docker
       dockerfile: Dockerfile-sftp
+
+  vsftpd:
+    build:
+      context: docker
+      dockerfile: Dockerfile-ftp
