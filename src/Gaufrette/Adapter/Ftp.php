@@ -362,7 +362,7 @@ class Ftp implements Adapter,
      */
     private function isDir($directory)
     {
-        if ('/' === $directory) {
+        if ('/' === $directory || '\\' === $directory) {
             return true;
         }
 
