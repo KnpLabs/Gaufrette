@@ -1,9 +1,10 @@
 <?php
 
-namespace Gaufrette\Functional\FileStream;
+namespace Gaufrette\Adapter\Local\Functional\FileStream;
 
+use Gaufrette\Adapter\Local\Local;
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\Local as LocalAdapter;
+use Gaufrette\Functional\FileStream\FunctionalTestCase;
 
 class LocalTest extends FunctionalTestCase
 {
@@ -13,18 +14,15 @@ class LocalTest extends FunctionalTestCase
     {
         $this->directory = __DIR__.DIRECTORY_SEPARATOR.'filesystem';
         @mkdir($this->directory.DIRECTORY_SEPARATOR.'subdir', 0777, true);
-        $this->filesystem = new Filesystem(new LocalAdapter($this->directory, true));
+        $this->filesystem = new Filesystem(new Local($this->directory, true));
 
         $this->registerLocalFilesystemInStream();
     }
 
     public function tearDown()
     {
-        if (is_file($file = $this->directory.DIRECTORY_SEPARATOR.'test.txt')) {
-            @unlink($file);
-        }
         if (is_dir($this->directory)) {
-            @rmdir($this->directory);
+            (new \Symfony\Component\Filesystem\Filesystem())->remove($this->directory);
         }
     }
 

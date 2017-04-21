@@ -1,7 +1,8 @@
 <?php
 
-namespace spec\Gaufrette\Adapter;
+namespace spec\Gaufrette\Adapter\Local;
 
+use Gaufrette\Adapter\Local\LocalStream;
 use org\bovigo\vfs\vfsStream;
 use PhpSpec\ObjectBehavior;
 
@@ -87,7 +88,7 @@ class LocalSpec extends ObjectBehavior
 
     function it_creates_local_stream()
     {
-        $this->createStream('filename')->shouldReturnAnInstanceOf('Gaufrette\Stream\Local');
+        $this->createStream('filename')->shouldReturnAnInstanceOf(LocalStream::class);
     }
 
     function it_does_not_allow_to_read_path_above_main_file_directory()

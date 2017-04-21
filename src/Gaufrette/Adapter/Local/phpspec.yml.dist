@@ -1,0 +1,5 @@
+suites:
+    main:
+        namespace: Gaufrette\Adapter\Local\
+        psr4_prefix: Gaufrette\Adapter\Local\
+        src_path: src/
