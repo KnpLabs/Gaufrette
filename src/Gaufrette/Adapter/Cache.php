@@ -6,10 +6,14 @@ use Gaufrette\File;
 use Gaufrette\Adapter;
 use Gaufrette\Adapter\InMemory as InMemoryAdapter;
 
+@trigger_error('The '.__NAMESPACE__.'\Cache adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
+
 /**
  * Cache adapter.
  *
  * @author  Antoine Hérault <antoine.herault@gmail.com>
+ *
+ * @deprecated The Cache adapter is deprecated since version 0.4 and will be removed in 1.0.
  */
 class Cache implements Adapter,
                        MetadataSupporter
