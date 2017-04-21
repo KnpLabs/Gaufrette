@@ -5,6 +5,8 @@ namespace Gaufrette\Adapter;
 use AmazonS3 as AmazonClient;
 use Gaufrette\Adapter;
 
+@trigger_error('The '.__NAMESPACE__.'\AclAwareAmazonS3 adapter is deprecated since version 0.4 and will be removed in 1.0. Use the AwsS3 adapter instead.', E_USER_DEPRECATED);
+
 /**
  * Makes the AmazonS3 adapter ACL aware. Uses the AWS SDK for PHP v1.x.
  *
@@ -13,6 +15,8 @@ use Gaufrette\Adapter;
  * and regular adapter.
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
+ *
+ * @deprecated The AclAwareAmazonS3 adapter is deprecated since version 0.4 and will be removed in 1.0. Use the AwsS3 adapter instead.
  */
 class AclAwareAmazonS3 implements Adapter,
                                   MetadataSupporter

@@ -5,12 +5,16 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 
+@trigger_error('The '.__NAMESPACE__.'\Apc adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
+
 /**
  * Apc adapter, a non-persistent adapter for when this sort of thing is appropriate.
  *
  * @author Alexander Deruwe <alexander.deruwe@gmail.com>
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
+ *
+ * @deprecated The Apc adapter is deprecated since version 0.4 and will be removed in 1.0.
  */
 class Apc implements Adapter
 {
