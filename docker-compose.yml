@@ -32,6 +32,7 @@ services:
       - './tests/:/usr/src/gaufrette/tests/'
     depends_on:
       - mongodb
+      - sftp
     env_file: .env
 
   php70:
@@ -44,6 +45,7 @@ services:
       - './tests/:/usr/src/gaufrette/tests/'
     depends_on:
       - mongodb
+      - sftp
     env_file: .env
 
   php71:
@@ -57,6 +59,7 @@ services:
     env_file: .env
     depends_on:
       - mongodb
+      - sftp
 
   hhvm:
     build:
@@ -69,8 +72,16 @@ services:
     env_file: .env
     depends_on:
       - mongodb
+      - sftp
 
   mongodb:
     image: mongo
     ports:
       - "27017:27017"
+
+  sftp:
+    build:
+      context: docker
+      dockerfile: Dockerfile-sftp
+    ports:
+      - "22:22"
