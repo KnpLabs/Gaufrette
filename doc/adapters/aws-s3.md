@@ -32,6 +32,15 @@ $s3client = new S3Client([
     'version' => 'latest',
     'region'  => 'eu-west-1',
 ]);
+// For aws-sdk-php v2
+$s3client = S3Client::factory([
+    'credentials' => [
+        'key'     => 'your_key_here',
+        'secret'  => 'your_secret',
+    ],
+    'version' => '2006-03-01',
+    'region'  => 'eu-west-1',
+]);
 $adapter = new AwsS3Adapter($s3client,'your-bucket-name');
 $filesystem = new Filesystem($adapter);
 ```
