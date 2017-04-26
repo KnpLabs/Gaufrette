@@ -9,6 +9,8 @@ First, you will need to install AWS SDK for PHP:
 composer require aws/aws-sdk-php
 ```
 
+In order to use this adapter you'll need an access key and a secret key.
+
 ## Example
 
 ```php
@@ -41,10 +43,15 @@ $filesystem = new Filesystem($adapter);
 ```
 
 ## IAM policy
+
+If you are not familiar with AWS, here are the key concepts:
+* [IAM, stands for *Identity and Access Management*](http://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html)
+* [IAM policies, are the way to grant access to your IAM users/groups](http://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_access-management.html)
  
-In order to use this adapter you'll need an access key and a secret key. 
-We **strongly recommend** you to create a dedicated IAM user with the most restrictive policy 
-(in such case you can remove `s3:CreateBucket` action):
+We **strongly recommend** you to create a dedicated IAM user with the most restrictive policy.
+
+You can even skip `s3:CreateBucket` role if you manually create your bucket first, which is also recommended 
+for production environment.
 
 ```json
 {
@@ -74,6 +81,3 @@ We **strongly recommend** you to create a dedicated IAM user with the most restr
     ]
 }
 ```
-
-You can even skip `s3:CreateBucket` role if you create your bucket first, which is also recommended 
-for production environment.
