@@ -64,6 +64,11 @@
                                             Streaming
                                         </a>
                                     </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/implementing-new-adapter.html">
+                                            Implementing new Adapter
+                                        </a>
+                                    </li>
                                                             </ul>
                                                     <p class="text-muted">
                                 Adapters
@@ -88,6 +93,16 @@
                                                                     <li class="">
                                         <a href="https://knplabs.github.io/Gaufrette/adapters/azure-blob-storage.html">
                                             Azure Blob Storage
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/adapters/doctrine-dbal.html">
+                                            Doctrine DBAL
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/adapters/flysystem.html">
+                                            Flysystem
                                         </a>
                                     </li>
                                                                     <li class="">
@@ -145,8 +160,10 @@
 <p>If you have to deal with a slow filesystem, it is out of question to use it directly.
 So, you need a cache! Happily, Gaufrette offers a cache system ready for use.
 It consist of an adapter decorator itself composed of two adapters:</p>
-<pre><code>* The *source* adapter that should be cached
-* The *cache* adapter that is used to cache</code></pre>
+<ul>
+<li>The <em>source</em> adapter that should be cached</li>
+<li>The <em>cache</em> adapter that is used to cache</li>
+</ul>
 <p>Here is an example of how to cache an ftp filesystem:</p>
 <pre><code class="language-php">&lt;?php
 

@@ -64,6 +64,11 @@
                                             Streaming
                                         </a>
                                     </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/implementing-new-adapter.html">
+                                            Implementing new Adapter
+                                        </a>
+                                    </li>
                                                             </ul>
                                                     <p class="text-muted">
                                 Adapters
@@ -88,6 +93,16 @@
                                                                     <li class="">
                                         <a href="https://knplabs.github.io/Gaufrette/adapters/azure-blob-storage.html">
                                             Azure Blob Storage
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/adapters/doctrine-dbal.html">
+                                            Doctrine DBAL
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/adapters/flysystem.html">
+                                            Flysystem
                                         </a>
                                     </li>
                                                                     <li class="">
@@ -142,7 +157,7 @@
                 
                 <section class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
                     <h1 id="phpseclib-adapter">phpseclib adapter</h1>
-<p><em>N.B.</em> It is recommended to use this adapter over <a href="doc/adapters/sftp.html">SFTP</a>.</p>
+<p><em>N.B.</em> It is recommended to use this adapter over <a href="sftp.html">SFTP</a>.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
 <li><a href="https://github.com/phpseclib/phpseclib">phpseclib</a></li>
@@ -153,7 +168,10 @@
 <pre><code class="language-php">
 $sftp = new phpseclib\Net\SFTP($host = 'localhost', $port = 22);
 
-$adapter = new Gaufrette\Adapter\PhpseclibSftp($sftp, $distantDirectory = null, $createDirectoryIfDoesntExist = false, $username = 'gaufrette', $password = 'gaufrette');
+//now you need to login manually with the lib
+$sftp-&gt;login('foo', 'bar');
+
+$adapter = new Gaufrette\Adapter\PhpseclibSftp($sftp, $distantDirectory = null, $createDirectoryIfDoesntExist = false);
 $filesystem = new Gaufrette\Filesystem($adapter);</code></pre>
                 </section>
 

@@ -75,7 +75,7 @@
                             </p>
 
                             <ul class="nav nav-pills nav-stacked">
-                                                                    <li class="active">
+                                                                    <li class="">
                                         <a href="https://knplabs.github.io/Gaufrette/adapters/amazon-s3.html">
                                             Amazon S3
                                         </a>
@@ -100,7 +100,7 @@
                                             Doctrine DBAL
                                         </a>
                                     </li>
-                                                                    <li class="">
+                                                                    <li class="active">
                                         <a href="https://knplabs.github.io/Gaufrette/adapters/flysystem.html">
                                             Flysystem
                                         </a>
@@ -156,15 +156,26 @@
 
                 
                 <section class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
-                    <h1 id="amazons3-amp-aclawareamazons3">AmazonS3 &amp; AclAwareAmazonS3</h1>
-<p>When using the legacy Amazon S3 adapters (aws-sdk-php &lt; 2), you will need to specify a CA
-certificate to be able to talk to Amazon servers in https. You can use
-the one which is shipped with the SDK by defining before creating the
-<code>\AmazonS3</code> object:</p>
-<pre><code class="language-php">define("AWS_CERTIFICATE_AUTHORITY", true);</code></pre>
-<p>Specifying a custom CA certificate is not required when using the
-<code>Gaufrette\Adapter\AmazonS3</code> adapter because it uses the newest version of the
-AWS SDK for PHP.</p>
+                    <h1 id="flysystem">Flysystem</h1>
+<p>Folks from <a href="http://thephpleague.com/">thephpleague</a> have built extraordinary <a href="https://github.com/thephpleague/flysystem">Flysystem</a> package which does exactly the same thing as Gaufrette, but with slightly different API.</p>
+<p>We wanted to make Gaufrette compatible with as many systems as possible, and didn't want to reinvent the wheel.
+So we built a Flysystem adapter.</p>
+<p>With this adapter you can use any <a href="https://github.com/thephpleague/flysystem#adapters">Flysystem adapter</a> with no performance penalties. It is just a tiny layer that makes Gaufrette talk to Flysystem adapters.</p>
+<h2 id="example">Example</h2>
+<p>We will show using Flysystem adapter on Dropbox example.</p>
+<p>First, you need to install Flysystem Dropbox adapter through composer:</p>
+<pre><code class="language-bash">$ composer require league/flysystem-dropbox</code></pre>
+<p>Now, just wrap Dropbox adapter into Gaufrette Flysystem adapter.</p>
+<pre><code class="language-php">&lt;?php
+
+$adapter = new Gaufrette\Adapter\Flysystem(
+    new League\Flysystem\Dropbox\DropboxAdapter(
+        new Dropbox\Client('&lt;token&gt;', '&lt;consumer_secret&gt;')
+    )
+);
+
+$filesystem = new Gaufrette\Filesystem($adapter);</code></pre>
+<p>As said above, same pattern can be applied to any <a href="https://github.com/thephpleague/flysystem#adapters">Flysystem adapter</a>.</p>
                 </section>
 
             </div>

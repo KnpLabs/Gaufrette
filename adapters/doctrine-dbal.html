@@ -75,7 +75,7 @@
                             </p>
 
                             <ul class="nav nav-pills nav-stacked">
-                                                                    <li class="active">
+                                                                    <li class="">
                                         <a href="https://knplabs.github.io/Gaufrette/adapters/amazon-s3.html">
                                             Amazon S3
                                         </a>
@@ -95,7 +95,7 @@
                                             Azure Blob Storage
                                         </a>
                                     </li>
-                                                                    <li class="">
+                                                                    <li class="active">
                                         <a href="https://knplabs.github.io/Gaufrette/adapters/doctrine-dbal.html">
                                             Doctrine DBAL
                                         </a>
@@ -156,15 +156,47 @@
 
                 
                 <section class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
-                    <h1 id="amazons3-amp-aclawareamazons3">AmazonS3 &amp; AclAwareAmazonS3</h1>
-<p>When using the legacy Amazon S3 adapters (aws-sdk-php &lt; 2), you will need to specify a CA
-certificate to be able to talk to Amazon servers in https. You can use
-the one which is shipped with the SDK by defining before creating the
-<code>\AmazonS3</code> object:</p>
-<pre><code class="language-php">define("AWS_CERTIFICATE_AUTHORITY", true);</code></pre>
-<p>Specifying a custom CA certificate is not required when using the
-<code>Gaufrette\Adapter\AmazonS3</code> adapter because it uses the newest version of the
-AWS SDK for PHP.</p>
+                    <hr />
+<h1 id="doctrine-dbal">Doctrine DBAL</h1>
+<p>If you aren't already using Doctrine, you should install DBAL through:</p>
+<pre><code class="language-bash">$ composer require doctrine/dbal</code></pre>
+<p>In order to use the adapter, you will need to prepare the table with the following columns:</p>
+<table>
+<thead>
+<tr>
+<th>Columns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+</tr>
+<tr>
+<td>content</td>
+</tr>
+<tr>
+<td>mtime</td>
+</tr>
+<tr>
+<td>checksum</td>
+</tr>
+</tbody>
+</table>
+<h2 id="example">Example</h2>
+<p><code>Doctrine</code> adapter takes three arguments:</p>
+<ul>
+<li>the first, mandatory, is a prepared DBAL connection (you can read more about it in <a href="http://doctrine-orm.readthedocs.org/projects/doctrine-dbal/en/latest/reference/configuration.html">the DBAL docs</a>)</li>
+<li>the second, mandatory, is a table name where the files will be stored</li>
+<li>the third one is optional array of columns, which allows you to override the default column names</li>
+</ul>
+<pre><code class="language-php">&lt;?php
+
+use Gaufrette\Adapter\DoctrineDbal as DbalAdapter;
+use Gaufrette\Filesystem;
+
+$connection = DriverManager::getConnection($params);
+$adapter = new DbalAdapter($connection, 'files');
+$filesystem = new Filesystem($adapter);</code></pre>
                 </section>
 
             </div>

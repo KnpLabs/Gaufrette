@@ -64,6 +64,11 @@
                                             Streaming
                                         </a>
                                     </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/implementing-new-adapter.html">
+                                            Implementing new Adapter
+                                        </a>
+                                    </li>
                                                             </ul>
                                                     <p class="text-muted">
                                 Adapters
@@ -88,6 +93,16 @@
                                                                     <li class="">
                                         <a href="https://knplabs.github.io/Gaufrette/adapters/azure-blob-storage.html">
                                             Azure Blob Storage
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/adapters/doctrine-dbal.html">
+                                            Doctrine DBAL
+                                        </a>
+                                    </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/adapters/flysystem.html">
+                                            Flysystem
                                         </a>
                                     </li>
                                                                     <li class="">
@@ -144,6 +159,7 @@
                     <h1 id="aws-s3">AWS S3</h1>
 <p>First, you will need to install AWS SDK for PHP:</p>
 <pre><code class="language-bash">composer require aws/aws-sdk-php</code></pre>
+<p>In order to use this adapter you'll need an access key and a secret key.</p>
 <h2 id="example">Example</h2>
 <pre><code class="language-php">&lt;?php
 
@@ -151,14 +167,61 @@ use Aws\S3\S3Client;
 use Gaufrette\Adapter\AwsS3 as AwsS3Adapter;
 use Gaufrette\Filesystem;
 
-$s3client = S3Client::factory(array(
-    'key'     =&gt; 'your_key_here',
-    'secret'  =&gt; 'your_secret',
+// For aws-sdk-php v3
+$s3client = new S3Client([
+    'credentials' =&gt; [
+        'key'     =&gt; 'your_key_here',
+        'secret'  =&gt; 'your_secret',
+    ],
     'version' =&gt; 'latest',
     'region'  =&gt; 'eu-west-1',
-));
+]);
+// For aws-sdk-php v2
+$s3client = S3Client::factory([
+    'credentials' =&gt; [
+        'key'     =&gt; 'your_key_here',
+        'secret'  =&gt; 'your_secret',
+    ],
+    'version' =&gt; '2006-03-01',
+    'region'  =&gt; 'eu-west-1',
+]);
 $adapter = new AwsS3Adapter($s3client,'your-bucket-name');
 $filesystem = new Filesystem($adapter);</code></pre>
+<h2 id="iam-policy">IAM policy</h2>
+<p>If you are not familiar with AWS, here are the key concepts:</p>
+<ul>
+<li><a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html">IAM, stands for <em>Identity and Access Management</em></a></li>
+<li><a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_access-management.html">IAM policies, are the way to grant access to your IAM users/groups</a></li>
+</ul>
+<p>We <strong>strongly recommend</strong> you to create a dedicated IAM user with the most restrictive policy.</p>
+<p>You can even skip <code>s3:CreateBucket</code> role if you manually create your bucket first, which is also recommended
+for production environment.</p>
+<pre><code class="language-json">{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:CreateBucket",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::bucket_name"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::bucket_name/*"
+            ]
+        }
+    ]
+}</code></pre>
                 </section>
 
             </div>

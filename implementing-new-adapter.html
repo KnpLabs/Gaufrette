@@ -64,7 +64,7 @@
                                             Streaming
                                         </a>
                                     </li>
-                                                                    <li class="">
+                                                                    <li class="active">
                                         <a href="https://knplabs.github.io/Gaufrette/implementing-new-adapter.html">
                                             Implementing new Adapter
                                         </a>
@@ -75,7 +75,7 @@
                             </p>
 
                             <ul class="nav nav-pills nav-stacked">
-                                                                    <li class="active">
+                                                                    <li class="">
                                         <a href="https://knplabs.github.io/Gaufrette/adapters/amazon-s3.html">
                                             Amazon S3
                                         </a>
@@ -156,15 +156,38 @@
 
                 
                 <section class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
-                    <h1 id="amazons3-amp-aclawareamazons3">AmazonS3 &amp; AclAwareAmazonS3</h1>
-<p>When using the legacy Amazon S3 adapters (aws-sdk-php &lt; 2), you will need to specify a CA
-certificate to be able to talk to Amazon servers in https. You can use
-the one which is shipped with the SDK by defining before creating the
-<code>\AmazonS3</code> object:</p>
-<pre><code class="language-php">define("AWS_CERTIFICATE_AUTHORITY", true);</code></pre>
-<p>Specifying a custom CA certificate is not required when using the
-<code>Gaufrette\Adapter\AmazonS3</code> adapter because it uses the newest version of the
-AWS SDK for PHP.</p>
+                    <h1 id="implementing-new-adapter">Implementing new Adapter</h1>
+<p>Let's say we want to support new storage system with existing Graufette API.
+The way to do it is by implementing a new adapter.</p>
+<p>We will illustrate this by implementing example adapter for KnpStorage file system.</p>
+<h2 id="spec-bdd">Spec BDD</h2>
+<p>We encourage contributors to start with describing a new adapter:</p>
+<pre><code class="language-bash">$ ./bin/phpspec describe Gaufrette/Adapter/KnpStorage
+Specification for Gaufrette\Adapter\KnpStorage created in Gaufrette/spec/Gaufrette/Adapter/KnpStorageSpec.php.</code></pre>
+<p>We describe how our adapter is instantated and make sure it implements <code>Gaufrette\Adapter</code> interface:</p>
+<pre><code class="language-php">&lt;?php
+
+class KnpStorageSpec extends ObjectBehavior
+{
+    function let(KnpStorage $storage)
+    {
+        $this-&gt;beConstructedWith($storage);
+    }
+
+    function it_is_adapter()
+    {
+        $this-&gt;shouldImplement('Gaufrette\Adapter');
+    }
+}
+</code></pre>
+<p>To get the benefits of PHPSpec code generator we run:</p>
+<pre><code class="language-bash">$ ./bin/phpspec run spec/Gaufrette/Adapter/KnpStorageSpec.php</code></pre>
+<p>You can continue to play with PHPSpec, read more on <a href="http://phpspec.readthedocs.org/en/latest/">PHPSpec website</a>.</p>
+<h2 id="implementing-adapter-interface">Implementing adapter interface</h2>
+<p>Now all we need to do is to make sure <code>KnpStorage</code> implements all Gaufrette <code>Adapterinterface</code> methods.</p>
+<h2 id="contibute-it">Contibute it</h2>
+<p>Once you are sure your adapter is ready, share it with awesome Gaufrette community by submitting a pull request.</p>
+<p>Thank you for doing this, you are awesome!</p>
                 </section>
 
             </div>
