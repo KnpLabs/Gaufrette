@@ -14,6 +14,30 @@ If you want a specific version of AWS SDK (both v2 and v3 are supported), you ca
 composer require aws/aws-sdk-php
 ```
 
+## Example
+
+```php
+<?php
+
+use Aws\S3\S3Client;
+use Gaufrette\Adapter\AwsS3 as AwsS3Adapter;
+use Gaufrette\Filesystem;
+
+// For aws-sdk-php v3
+$s3client = new S3Client([
+    'credentials' => [
+        'key'     => 'your_key_here',
+        'secret'  => 'your_secret',
+    ],
+    'version' => 'latest',
+    'region'  => 'eu-west-1',
+]);
+$adapter = new AwsS3Adapter($s3client,'your-bucket-name');
+$filesystem = new Filesystem($adapter);
+```
+
+## IAM policy
+ 
 In order to use this adapter you'll need an access key and a secret key. 
 We **strongly recommend** you to create a dedicated IAM user with the most restrictive policy 
 (in such case you can remove `s3:CreateBucket` action):
@@ -49,25 +73,3 @@ We **strongly recommend** you to create a dedicated IAM user with the most restr
 
 You can even skip `s3:CreateBucket` role if you create your bucket first, which is also recommended 
 for production environment.
-
-## Example
-
-```php
-<?php
-
-use Aws\S3\S3Client;
-use Gaufrette\Adapter\AwsS3 as AwsS3Adapter;
-use Gaufrette\Filesystem;
-
-// For aws-sdk-php v3
-$s3client = new S3Client([
-    'credentials' => array(
-        'key'     => 'your_key_here',
-        'secret'  => 'your_secret',
-    ),
-    'version' => 'latest',
-    'region'  => 'eu-west-1',
-]);
-$adapter = new AwsS3Adapter($s3client,'your-bucket-name');
-$filesystem = new Filesystem($adapter);
-```
