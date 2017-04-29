@@ -418,19 +418,18 @@ class AzureBlobStorage implements Adapter,
      */
     protected static function parseErrorCode(ResponseInterface $response)
     {
+        $errorCode = $response->getReasonPhrase();
+
         //try to parse using xml serializer, if failed, return the whole body
         //as the error message.
         try {
-            $sxml = new \SimpleXMLElement($response->getBody());
-            $data = static::_sxml2arr($sxml);
+            $body = new \SimpleXMLElement($response->getBody());
+            $data = static::xmlToArray($body);
 
             if (array_key_exists('Code', $data)) {
                 $errorCode = $data['Code'];
-            } else {
-                $errorCode = $response->getReasonPhrase();
             }
         } catch (\Exception $e) {
-            $errorCode = $response->getReasonPhrase();
         }
 
         return $errorCode;
@@ -445,11 +444,11 @@ class AzureBlobStorage implements Adapter,
      *
      * @return array
      */
-    private static function _sxml2arr($sxml, array $arr = null)
+    private static function xmlToArray($sxml, array $arr = null)
     {
         foreach ((array) $sxml as $key => $value) {
             if (is_object($value) || (is_array($value))) {
-                $arr[$key] = static::_sxml2arr($value);
+                $arr[$key] = static::xmlToArray($value);
             } else {
                 $arr[$key] = $value;
             }
