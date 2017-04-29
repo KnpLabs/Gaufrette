@@ -5,11 +5,12 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
+use MicrosoftAzure\Storage\Blob\Models\Blob;
 use MicrosoftAzure\Storage\Blob\Models\CreateBlobOptions;
 use MicrosoftAzure\Storage\Blob\Models\CreateContainerOptions;
 use MicrosoftAzure\Storage\Blob\Models\DeleteContainerOptions;
 use MicrosoftAzure\Storage\Blob\Models\ListBlobsOptions;
-use MicrosoftAzure\Storage\Common\ServiceException;
+use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
 
 /**
  * Microsoft Azure Blob Storage adapter.
@@ -47,12 +48,24 @@ class AzureBlobStorage implements Adapter,
     protected $blobProxy;
 
     /**
+     * @var bool
+     */
+    protected $multiContainerMode = false;
+
+    /**
+     * @var CreateContainerOptions
+     */
+    protected $createContainerOptions;
+
+    /**
      * @param AzureBlobStorage\BlobProxyFactoryInterface $blobProxyFactory
-     * @param string                                     $containerName
+     * @param string|null                                $containerName
      * @param bool                                       $create
      * @param bool                                       $detectContentType
+     *
+     * @throws \RuntimeException
      */
-    public function __construct(BlobProxyFactoryInterface $blobProxyFactory, $containerName, $create = false, $detectContentType = true)
+    public function __construct(BlobProxyFactoryInterface $blobProxyFactory, $containerName = null, $create = false, $detectContentType = true)
     {
         $this->blobProxyFactory = $blobProxyFactory;
         $this->containerName = $containerName;
@@ -60,6 +73,22 @@ class AzureBlobStorage implements Adapter,
         if ($create) {
             $this->createContainer($containerName);
         }
+    }
+
+    /**
+     * @return CreateContainerOptions
+     */
+    public function getCreateContainerOptions()
+    {
+        return $this->createContainerOptions;
+    }
+
+    /**
+     * @param CreateContainerOptions $options
+     */
+    public function setCreateContainerOptions(CreateContainerOptions $options)
+    {
+        $this->createContainerOptions = $options;
     }
 
     /**
@@ -79,7 +108,7 @@ class AzureBlobStorage implements Adapter,
         } catch (ServiceException $e) {
             $errorCode = $this->getErrorCodeFromServiceException($e);
 
-            if ($errorCode != self::ERROR_CONTAINER_ALREADY_EXISTS) {
+            if ($errorCode !== self::ERROR_CONTAINER_ALREADY_EXISTS) {
                 throw new \RuntimeException(sprintf(
                     'Failed to create the configured container "%s": %s (%s).',
                     $containerName,
@@ -107,7 +136,7 @@ class AzureBlobStorage implements Adapter,
         } catch (ServiceException $e) {
             $errorCode = $this->getErrorCodeFromServiceException($e);
 
-            if ($errorCode != self::ERROR_CONTAINER_NOT_FOUND) {
+            if ($errorCode !== self::ERROR_CONTAINER_NOT_FOUND) {
                 throw new \RuntimeException(sprintf(
                     'Failed to delete the configured container "%s": %s (%s).',
                     $containerName,
@@ -120,6 +149,7 @@ class AzureBlobStorage implements Adapter,
 
     /**
      * {@inheritdoc}
+     * @throws \RuntimeException
      */
     public function read($key)
     {
@@ -138,6 +168,7 @@ class AzureBlobStorage implements Adapter,
 
     /**
      * {@inheritdoc}
+     * @throws \RuntimeException
      */
     public function write($key, $content)
     {
@@ -168,6 +199,7 @@ class AzureBlobStorage implements Adapter,
 
     /**
      * {@inheritdoc}
+     * @throws \RuntimeException
      */
     public function exists($key)
     {
@@ -202,6 +234,7 @@ class AzureBlobStorage implements Adapter,
 
     /**
      * {@inheritdoc}
+     * @throws \RuntimeException
      */
     public function keys()
     {
@@ -211,7 +244,7 @@ class AzureBlobStorage implements Adapter,
             $blobList = $this->blobProxy->listBlobs($this->containerName);
 
             return array_map(
-                function ($blob) {
+                function (Blob $blob) {
                     return $blob->getName();
                 },
                 $blobList->getBlobs()
@@ -231,6 +264,7 @@ class AzureBlobStorage implements Adapter,
 
     /**
      * {@inheritdoc}
+     * @throws \RuntimeException
      */
     public function mtime($key)
     {
@@ -249,6 +283,7 @@ class AzureBlobStorage implements Adapter,
 
     /**
      * {@inheritdoc}
+     * @throws \RuntimeException
      */
     public function delete($key)
     {
@@ -267,6 +302,7 @@ class AzureBlobStorage implements Adapter,
 
     /**
      * {@inheritdoc}
+     * @throws \RuntimeException
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -295,6 +331,7 @@ class AzureBlobStorage implements Adapter,
 
     /**
      * {@inheritdoc}
+     * @throws \RuntimeException
      */
     public function setMetadata($key, $content)
     {
@@ -317,6 +354,7 @@ class AzureBlobStorage implements Adapter,
 
     /**
      * {@inheritdoc}
+     * @throws \RuntimeException
      */
     public function getMetadata($key)
     {
@@ -344,7 +382,7 @@ class AzureBlobStorage implements Adapter,
      */
     protected function init()
     {
-        if ($this->blobProxy == null) {
+        if ($this->blobProxy === null) {
             $this->blobProxy = $this->blobProxyFactory->create();
         }
     }
@@ -361,7 +399,7 @@ class AzureBlobStorage implements Adapter,
     {
         $errorCode = $this->getErrorCodeFromServiceException($exception);
 
-        if ($errorCode == self::ERROR_CONTAINER_NOT_FOUND) {
+        if ($errorCode === self::ERROR_CONTAINER_NOT_FOUND) {
             throw new \RuntimeException(sprintf(
                 'Failed to %s: container "%s" not found.',
                 $action,
@@ -379,17 +417,11 @@ class AzureBlobStorage implements Adapter,
      */
     protected function getErrorCodeFromServiceException(ServiceException $exception)
     {
-        $xml = @simplexml_load_string($exception->getErrorReason());
-
-        if ($xml && isset($xml->Code)) {
-            return (string) $xml->Code;
-        }
-
-        return $exception->getErrorReason();
+        return $exception->getCode();
     }
 
     /**
-     * @param string $content
+     * @param string|resource $content
      *
      * @return string
      */
