@@ -70,7 +70,9 @@ class AzureBlobStorage implements Adapter,
         $this->blobProxyFactory = $blobProxyFactory;
         $this->containerName = $containerName;
         $this->detectContentType = $detectContentType;
-        if ($create) {
+        if (null === $containerName) {
+            $this->multiContainerMode = true;
+        } elseif ($create) {
             $this->createContainer($containerName);
         }
     }
@@ -102,6 +104,10 @@ class AzureBlobStorage implements Adapter,
     public function createContainer($containerName, CreateContainerOptions $options = null)
     {
         $this->init();
+
+        if (null === $options) {
+            $options = $this->getCreateContainerOptions();
+        }
 
         try {
             $this->blobProxy->createContainer($containerName, $options);
@@ -154,13 +160,14 @@ class AzureBlobStorage implements Adapter,
     public function read($key)
     {
         $this->init();
+        list($containerName, $key) = $this->tokenizeKey($key);
 
         try {
-            $blob = $this->blobProxy->getBlob($this->containerName, $key);
+            $blob = $this->blobProxy->getBlob($containerName, $key);
 
             return stream_get_contents($blob->getContentStream());
         } catch (ServiceException $e) {
-            $this->failIfContainerNotFound($e, sprintf('read key "%s"', $key));
+            $this->failIfContainerNotFound($e, sprintf('read key "%s"', $key), $containerName);
 
             return false;
         }
@@ -173,17 +180,20 @@ class AzureBlobStorage implements Adapter,
     public function write($key, $content)
     {
         $this->init();
+        list($containerName, $key) = $this->tokenizeKey($key);
+
+        $options = new CreateBlobOptions();
+
+        if ($this->detectContentType) {
+            $contentType = $this->guessContentType($content);
+
+            $options->setBlobContentType($contentType);
+        }
 
         try {
-            $options = new CreateBlobOptions();
+            $this->createContainer($containerName);
 
-            if ($this->detectContentType) {
-                $contentType = $this->guessContentType($content);
-
-                $options->setBlobContentType($contentType);
-            }
-
-            $this->blobProxy->createBlockBlob($this->containerName, $key, $content, $options);
+            $this->blobProxy->createBlockBlob($containerName, $key, $content, $options);
 
             if (is_resource($content)) {
                 return Util\Size::fromResource($content);
@@ -191,7 +201,7 @@ class AzureBlobStorage implements Adapter,
 
             return Util\Size::fromContent($content);
         } catch (ServiceException $e) {
-            $this->failIfContainerNotFound($e, sprintf('write content for key "%s"', $key));
+            $this->failIfContainerNotFound($e, sprintf('write content for key "%s"', $key), $containerName);
 
             return false;
         }
@@ -204,12 +214,13 @@ class AzureBlobStorage implements Adapter,
     public function exists($key)
     {
         $this->init();
+        list($containerName, $key) = $this->tokenizeKey($key);
 
         $listBlobsOptions = new ListBlobsOptions();
         $listBlobsOptions->setPrefix($key);
 
         try {
-            $blobsList = $this->blobProxy->listBlobs($this->containerName, $listBlobsOptions);
+            $blobsList = $this->blobProxy->listBlobs($containerName, $listBlobsOptions);
 
             foreach ($blobsList->getBlobs() as $blob) {
                 if ($key === $blob->getName()) {
@@ -217,13 +228,13 @@ class AzureBlobStorage implements Adapter,
                 }
             }
         } catch (ServiceException $e) {
-            $this->failIfContainerNotFound($e, 'check if key exists');
+            $this->failIfContainerNotFound($e, 'check if key exists', $containerName);
             $errorCode = $this->getErrorCodeFromServiceException($e);
 
             throw new \RuntimeException(sprintf(
                 'Failed to check if key "%s" exists in container "%s": %s (%s).',
                 $key,
-                $this->containerName,
+                $containerName,
                 $e->getErrorText(),
                 $errorCode
             ), $e->getCode());
@@ -239,6 +250,7 @@ class AzureBlobStorage implements Adapter,
     public function keys()
     {
         $this->init();
+        // list($containerName, $key) = $this->tokenizeKey($key);
 
         try {
             $blobList = $this->blobProxy->listBlobs($this->containerName);
@@ -250,7 +262,7 @@ class AzureBlobStorage implements Adapter,
                 $blobList->getBlobs()
             );
         } catch (ServiceException $e) {
-            $this->failIfContainerNotFound($e, 'retrieve keys');
+            $this->failIfContainerNotFound($e, 'retrieve keys', $this->containerName);
             $errorCode = $this->getErrorCodeFromServiceException($e);
 
             throw new \RuntimeException(sprintf(
@@ -269,13 +281,14 @@ class AzureBlobStorage implements Adapter,
     public function mtime($key)
     {
         $this->init();
+        list($containerName, $key) = $this->tokenizeKey($key);
 
         try {
-            $properties = $this->blobProxy->getBlobProperties($this->containerName, $key);
+            $properties = $this->blobProxy->getBlobProperties($containerName, $key);
 
             return $properties->getProperties()->getLastModified()->getTimestamp();
         } catch (ServiceException $e) {
-            $this->failIfContainerNotFound($e, sprintf('read mtime for key "%s"', $key));
+            $this->failIfContainerNotFound($e, sprintf('read mtime for key "%s"', $key), $containerName);
 
             return false;
         }
@@ -288,13 +301,14 @@ class AzureBlobStorage implements Adapter,
     public function delete($key)
     {
         $this->init();
+        list($containerName, $key) = $this->tokenizeKey($key);
 
         try {
-            $this->blobProxy->deleteBlob($this->containerName, $key);
+            $this->blobProxy->deleteBlob($containerName, $key);
 
             return true;
         } catch (ServiceException $e) {
-            $this->failIfContainerNotFound($e, sprintf('delete key "%s"', $key));
+            $this->failIfContainerNotFound($e, sprintf('delete key "%s"', $key), $containerName);
 
             return false;
         }
@@ -308,13 +322,16 @@ class AzureBlobStorage implements Adapter,
     {
         $this->init();
 
+        list($sourceContainerName, $sourceKey) = $this->tokenizeKey($sourceKey);
+        list($targetContainerName, $targetKey) = $this->tokenizeKey($targetKey);
+
         try {
-            $this->blobProxy->copyBlob($this->containerName, $targetKey, $this->containerName, $sourceKey);
-            $this->blobProxy->deleteBlob($this->containerName, $sourceKey);
+            $this->blobProxy->copyBlob($targetContainerName, $targetKey, $sourceContainerName, $sourceKey);
+            $this->blobProxy->deleteBlob($sourceContainerName, $sourceKey);
 
             return true;
         } catch (ServiceException $e) {
-            $this->failIfContainerNotFound($e, sprintf('rename key "%s"', $sourceKey));
+            $this->failIfContainerNotFound($e, sprintf('rename key "%s"', $sourceKey), $sourceContainerName);
 
             return false;
         }
@@ -336,16 +353,17 @@ class AzureBlobStorage implements Adapter,
     public function setMetadata($key, $content)
     {
         $this->init();
+        list($containerName, $key) = $this->tokenizeKey($key);
 
         try {
-            $this->blobProxy->setBlobMetadata($this->containerName, $key, $content);
+            $this->blobProxy->setBlobMetadata($containerName, $key, $content);
         } catch (ServiceException $e) {
             $errorCode = $this->getErrorCodeFromServiceException($e);
 
             throw new \RuntimeException(sprintf(
                 'Failed to set metadata for blob "%s" in container "%s": %s (%s).',
                 $key,
-                $this->containerName,
+                $containerName,
                 $e->getErrorText(),
                 $errorCode
             ), $e->getCode());
@@ -359,9 +377,10 @@ class AzureBlobStorage implements Adapter,
     public function getMetadata($key)
     {
         $this->init();
+        list($containerName, $key) = $this->tokenizeKey($key);
 
         try {
-            $properties = $this->blobProxy->getBlobProperties($this->containerName, $key);
+            $properties = $this->blobProxy->getBlobProperties($containerName, $key);
 
             return $properties->getMetadata();
         } catch (ServiceException $e) {
@@ -370,7 +389,7 @@ class AzureBlobStorage implements Adapter,
             throw new \RuntimeException(sprintf(
                 'Failed to get metadata for blob "%s" in container "%s": %s (%s).',
                 $key,
-                $this->containerName,
+                $containerName,
                 $e->getErrorText(),
                 $errorCode
             ), $e->getCode());
@@ -395,7 +414,7 @@ class AzureBlobStorage implements Adapter,
      *
      * @throws \RuntimeException
      */
-    protected function failIfContainerNotFound(ServiceException $exception, $action)
+    protected function failIfContainerNotFound(ServiceException $exception, $action, $containerName)
     {
         $errorCode = $this->getErrorCodeFromServiceException($exception);
 
@@ -403,7 +422,7 @@ class AzureBlobStorage implements Adapter,
             throw new \RuntimeException(sprintf(
                 'Failed to %s: container "%s" not found.',
                 $action,
-                $this->containerName
+                $containerName
             ), $exception->getCode());
         }
     }
@@ -417,7 +436,13 @@ class AzureBlobStorage implements Adapter,
      */
     protected function getErrorCodeFromServiceException(ServiceException $exception)
     {
-        return $exception->getCode();
+        $errorText = $exception->getErrorText();
+        switch ($errorText) {
+            case 'The specified container already exists.':
+                return self::ERROR_CONTAINER_ALREADY_EXISTS;
+                break;
+        }
+        return $errorText;
     }
 
     /**
@@ -434,5 +459,24 @@ class AzureBlobStorage implements Adapter,
         }
 
         return $fileInfo->buffer($content);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return array
+     * @throws \InvalidArgumentException
+     */
+    private function tokenizeKey($key)
+    {
+        $containerName = $this->containerName;
+        if (true === $this->multiContainerMode) {
+            if (false === ($index = strpos($key, '/'))) {
+                throw new \InvalidArgumentException('No /');
+            }
+            $containerName = substr($key, 0, $index);
+            $key = substr($key, $index + 1);
+        }
+        return array($containerName, $key);
     }
 }
