@@ -156,6 +156,7 @@ class AzureBlobStorage implements Adapter,
     /**
      * {@inheritdoc}
      * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function read($key)
     {
@@ -176,6 +177,7 @@ class AzureBlobStorage implements Adapter,
     /**
      * {@inheritdoc}
      * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function write($key, $content)
     {
@@ -194,22 +196,22 @@ class AzureBlobStorage implements Adapter,
             $this->createContainer($containerName);
 
             $this->blobProxy->createBlockBlob($containerName, $key, $content, $options);
-
-            if (is_resource($content)) {
-                return Util\Size::fromResource($content);
-            }
-
-            return Util\Size::fromContent($content);
         } catch (ServiceException $e) {
             $this->failIfContainerNotFound($e, sprintf('write content for key "%s"', $key), $containerName);
 
             return false;
         }
+        if (is_resource($content)) {
+            return Util\Size::fromResource($content);
+        }
+
+        return Util\Size::fromContent($content);
     }
 
     /**
      * {@inheritdoc}
      * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function exists($key)
     {
@@ -228,8 +230,11 @@ class AzureBlobStorage implements Adapter,
                 }
             }
         } catch (ServiceException $e) {
-            $this->failIfContainerNotFound($e, 'check if key exists', $containerName);
             $errorCode = $this->getErrorCodeFromServiceException($e);
+            if ($this->multiContainerMode && self::ERROR_CONTAINER_NOT_FOUND === $errorCode) {
+                return false;
+            }
+            $this->failIfContainerNotFound($e, 'check if key exists', $containerName);
 
             throw new \RuntimeException(sprintf(
                 'Failed to check if key "%s" exists in container "%s": %s (%s).',
@@ -277,6 +282,7 @@ class AzureBlobStorage implements Adapter,
     /**
      * {@inheritdoc}
      * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function mtime($key)
     {
@@ -297,6 +303,7 @@ class AzureBlobStorage implements Adapter,
     /**
      * {@inheritdoc}
      * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function delete($key)
     {
@@ -317,6 +324,7 @@ class AzureBlobStorage implements Adapter,
     /**
      * {@inheritdoc}
      * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -326,6 +334,7 @@ class AzureBlobStorage implements Adapter,
         list($targetContainerName, $targetKey) = $this->tokenizeKey($targetKey);
 
         try {
+            $this->createContainer($targetContainerName);
             $this->blobProxy->copyBlob($targetContainerName, $targetKey, $sourceContainerName, $sourceKey);
             $this->blobProxy->deleteBlob($sourceContainerName, $sourceKey);
 
@@ -349,6 +358,7 @@ class AzureBlobStorage implements Adapter,
     /**
      * {@inheritdoc}
      * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function setMetadata($key, $content)
     {
@@ -373,6 +383,7 @@ class AzureBlobStorage implements Adapter,
     /**
      * {@inheritdoc}
      * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function getMetadata($key)
     {
@@ -411,6 +422,7 @@ class AzureBlobStorage implements Adapter,
      *
      * @param ServiceException $exception
      * @param string           $action
+     * @param string           $containerName
      *
      * @throws \RuntimeException
      */
@@ -436,13 +448,13 @@ class AzureBlobStorage implements Adapter,
      */
     protected function getErrorCodeFromServiceException(ServiceException $exception)
     {
-        $errorText = $exception->getErrorText();
-        switch ($errorText) {
-            case 'The specified container already exists.':
-                return self::ERROR_CONTAINER_ALREADY_EXISTS;
-                break;
+        $xml = @simplexml_load_string($exception->getResponse()->getBody());
+
+        if ($xml && isset($xml->Code)) {
+            return (string) $xml->Code;
         }
-        return $errorText;
+
+        return $exception->getErrorText();
     }
 
     /**
@@ -472,11 +484,12 @@ class AzureBlobStorage implements Adapter,
         $containerName = $this->containerName;
         if (true === $this->multiContainerMode) {
             if (false === ($index = strpos($key, '/'))) {
+                // TODO: specify better error message here
                 throw new \InvalidArgumentException('No /');
             }
             $containerName = substr($key, 0, $index);
             $key = substr($key, $index + 1);
         }
-        return array($containerName, $key);
+        return [$containerName, $key];
     }
 }
