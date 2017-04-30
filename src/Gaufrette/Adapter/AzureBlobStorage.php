@@ -6,6 +6,7 @@ use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
 use MicrosoftAzure\Storage\Blob\Models\Blob;
+use MicrosoftAzure\Storage\Blob\Models\Container;
 use MicrosoftAzure\Storage\Blob\Models\CreateBlobOptions;
 use MicrosoftAzure\Storage\Blob\Models\CreateContainerOptions;
 use MicrosoftAzure\Storage\Blob\Models\DeleteContainerOptions;
@@ -255,9 +256,17 @@ class AzureBlobStorage implements Adapter,
     public function keys()
     {
         $this->init();
-        // list($containerName, $key) = $this->tokenizeKey($key);
 
         try {
+            if ($this->multiContainerMode) {
+                $containersList = $this->blobProxy->listContainers();
+                return array_map(
+                    function(Container $container) {
+                        return $container->getName();
+                    }, $containersList->getContainers()
+                );
+            }
+
             $blobList = $this->blobProxy->listBlobs($this->containerName);
 
             return array_map(
@@ -484,8 +493,10 @@ class AzureBlobStorage implements Adapter,
         $containerName = $this->containerName;
         if (true === $this->multiContainerMode) {
             if (false === ($index = strpos($key, '/'))) {
-                // TODO: specify better error message here
-                throw new \InvalidArgumentException('No /');
+                throw new \InvalidArgumentException(sprintf(
+                    'Failed to establish container name from key "%s", container name is required in multi-container mode',
+                    $key
+                ));
             }
             $containerName = substr($key, 0, $index);
             $key = substr($key, $index + 1);

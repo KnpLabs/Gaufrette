@@ -120,22 +120,18 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldFetchKeys()
     {
-        $this->assertEquals(array(), $this->filesystem->keys());
-
-        $this->filesystem->write('container/foo', 'Some content');
-        $this->filesystem->write('container/bar', 'Some content');
-        $this->filesystem->write('container/baz', 'Some content');
+        $this->filesystem->write('container8-1/foo', 'Some content');
+        $this->filesystem->write('container8-2/bar', 'Some content');
+        $this->filesystem->write('container8-3/baz', 'Some content');
 
         $actualKeys = $this->filesystem->keys();
-
-        $this->assertEquals(3, count($actualKeys));
-        foreach (array('foo', 'bar', 'baz') as $key) {
+        foreach (['container8-1', 'container8-2', 'container8-3'] as $key) {
             $this->assertContains($key, $actualKeys);
         }
 
-        $this->filesystem->delete('container/foo');
-        $this->filesystem->delete('container/bar');
-        $this->filesystem->delete('container/baz');
+        $this->filesystem->delete('container8-1/foo');
+        $this->filesystem->delete('container8-2/bar');
+        $this->filesystem->delete('container8-3/baz');
     }
 
     /**
@@ -144,11 +140,11 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldWorkWithHiddenFiles()
     {
-        $this->filesystem->write('container/.foo', 'hidden');
-        $this->assertTrue($this->filesystem->has('container/.foo'));
-        $this->assertContains('container/.foo', $this->filesystem->keys());
-        $this->filesystem->delete('container/.foo');
-        $this->assertFalse($this->filesystem->has('container/.foo'));
+        $this->filesystem->write('container9/.foo', 'hidden');
+        $this->assertTrue($this->filesystem->has('container9/.foo'));
+        $this->assertContains('container9', $this->filesystem->keys());
+        $this->filesystem->delete('container9/.foo');
+        $this->assertFalse($this->filesystem->has('container9/.foo'));
     }
 
     /**
@@ -157,8 +153,8 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldKeepFileObjectInRegister()
     {
-        $FileObjectA = $this->filesystem->createFile('container/somefile');
-        $FileObjectB = $this->filesystem->createFile('container/somefile');
+        $FileObjectA = $this->filesystem->createFile('container10/somefile');
+        $FileObjectB = $this->filesystem->createFile('container10/somefile');
 
         $this->assertTrue($FileObjectA === $FileObjectB);
     }
@@ -169,14 +165,14 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldWrtieToSameFile()
     {
-        $FileObjectA = $this->filesystem->createFile('container/somefile');
+        $FileObjectA = $this->filesystem->createFile('container11/somefile');
         $FileObjectA->setContent('ABC');
 
-        $FileObjectB = $this->filesystem->createFile('container/somefile');
+        $FileObjectB = $this->filesystem->createFile('container11/somefile');
         $FileObjectB->setContent('DEF');
 
         $this->assertEquals('DEF', $FileObjectB->getContent());
 
-        $this->filesystem->delete('container/somefile');
+        $this->filesystem->delete('container11/somefile');
     }
 }
