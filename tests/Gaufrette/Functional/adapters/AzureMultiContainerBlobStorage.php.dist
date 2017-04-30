@@ -3,4 +3,4 @@
 $connectionString   = 'BlobEndpoint=http://XXXXXXXXXXX.blob.core.windows.net/;AccountName=XXXXXXXXXXXX;AccountKey=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 
 $factory = new Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactory($connectionString);
-return new Gaufrette\Adapter\AzureBlobStorage($factory, $containerName, $create);
+return new Gaufrette\Adapter\AzureBlobStorage($factory);
