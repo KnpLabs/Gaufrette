@@ -25,7 +25,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
     }
 
     /**
-     * @teste
+     * @test
      * @group functional
      */
     public function shouldUpdateFileContent()
