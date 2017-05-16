@@ -8,12 +8,9 @@ currentMenu: phpseclib-sftp
 
 ## Prerequisites
 
-* [phpseclib](https://github.com/phpseclib/phpseclib)
-
-You can install it via:
-
+First, you will need to install the adapter:
 ```bash
-composer require phpseclib/phpseclib:^2.0
+composer require gaufrette/phpseclib-sftp-adapter
 ```
 
 ## Configuration

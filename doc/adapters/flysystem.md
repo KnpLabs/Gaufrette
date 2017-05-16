@@ -4,6 +4,11 @@ currentMenu: flysystem
 
 # Flysystem
 
+First, you will need to install the adapter:
+```bash
+composer require gaufrette/flysystem-adapter
+```
+
 Folks from [thephpleague](http://thephpleague.com/) have built extraordinary [Flysystem](https://github.com/thephpleague/flysystem) package which does exactly the same thing as Gaufrette, but with slightly different API.
 
 We wanted to make Gaufrette compatible with as many systems as possible, and didn't want to reinvent the wheel.
