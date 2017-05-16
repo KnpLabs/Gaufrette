@@ -4,10 +4,9 @@ currentMenu: doctrine-dbal
 
 # Doctrine DBAL
 
-If you aren't already using Doctrine, you should install DBAL through:
-
+First, you will need to install the adapter:
 ```bash
-$ composer require doctrine/dbal
+composer require gaufrette/doctrine-dbal-adapter
 ```
 
 In order to use the adapter, you will need to prepare the table with the following columns:
