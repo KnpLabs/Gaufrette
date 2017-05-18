@@ -14,9 +14,18 @@ class LocalTest extends FunctionalTestCase
     {
         $this->directory = __DIR__.DIRECTORY_SEPARATOR.'filesystem';
         @mkdir($this->directory.DIRECTORY_SEPARATOR.'subdir', 0777, true);
-        $this->filesystem = new Filesystem(new LocalAdapter($this->directory, true));
+        $this->filesystem = new Filesystem(new LocalAdapter($this->directory, true, 0770));
 
         $this->registerLocalFilesystemInStream();
+    }
+
+    public function testDirectoryChmod()
+    {
+        $r = fopen('gaufrette://filestream/foo/bar', 'a+');
+        fclose($r);
+
+        $perms = fileperms($this->directory . '/foo/');
+        $this->assertEquals('0770', substr(sprintf('%o', $perms), -4));
     }
 
     public function tearDown()
