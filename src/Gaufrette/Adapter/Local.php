@@ -79,7 +79,7 @@ class Local implements Adapter,
      */
     public function exists($key)
     {
-        return file_exists($this->computePath($key));
+        return is_file($this->computePath($key));
     }
 
     /**
