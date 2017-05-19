@@ -46,6 +46,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function read($key)
     {
@@ -54,6 +58,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function write($key, $content)
     {
@@ -65,6 +73,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -84,6 +96,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function keys()
     {
@@ -101,7 +117,7 @@ class Local implements Adapter,
             $files = new \EmptyIterator();
         }
 
-        $keys = array();
+        $keys = [];
         foreach ($files as $file) {
             $keys[] = $this->computeKey($file);
         }
@@ -112,6 +128,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function mtime($key)
     {
@@ -120,6 +140,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function delete($key)
     {
@@ -134,6 +158,10 @@ class Local implements Adapter,
      * @param string $key
      *
      * @return bool
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function isDirectory($key)
     {
@@ -142,6 +170,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function createStream($key)
     {
@@ -150,6 +182,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function checksum($key)
     {
@@ -158,6 +194,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function size($key)
     {
@@ -166,6 +206,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function mimeType($key)
     {
@@ -179,6 +223,10 @@ class Local implements Adapter,
      *
      * @param $path
      * @return string
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function computeKey($path)
     {
@@ -194,7 +242,8 @@ class Local implements Adapter,
      *
      * @return string A path
      *
-     * @throws OutOfBoundsException If the computed path is out of the
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \OutOfBoundsException If the computed path is out of the
      *                              directory
      * @throws \RuntimeException     If directory does not exists and cannot be created
      */
@@ -211,6 +260,8 @@ class Local implements Adapter,
      * @param string $path
      *
      * @return string
+     * @throws \OutOfBoundsException If the computed path is out of the
+     *                              directory
      */
     protected function normalizePath($path)
     {
@@ -230,6 +281,7 @@ class Local implements Adapter,
      * @param bool   $create    Whether to create the directory if it does
      *                          not exist
      *
+     * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException if the directory does not exists and could not
      *                          be created
      */
