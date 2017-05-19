@@ -1,0 +1,29 @@
+FROM php:7.1-cli
+
+ENV SRC_DIR /usr/src/gaufrette
+WORKDIR ${SRC_DIR}
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        git \
+        libssh2-1-dev \
+        libssl-dev \
+        unzip \
+        zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/* && \
+    pecl install mongodb ssh2-alpha zip && \
+    echo 'extension=/usr/local/lib/php/extensions/no-debug-non-zts-20160303/mongodb.so' >> /usr/local/etc/php/conf.d/mongodb.ini && \
+    echo 'extension=/usr/local/lib/php/extensions/no-debug-non-zts-20160303/ssh2.so' >> /usr/local/etc/php/conf.d/ssh2.ini && \
+    echo 'extension=/usr/local/lib/php/extensions/no-debug-non-zts-20160303/zip.so' >> /usr/local/etc/php/conf.d/zip.ini
+
+COPY composer.json ${SRC_DIR}/
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    composer global require hirak/prestissimo && \
+    composer update --prefer-lowest --prefer-stable && \
+    composer require microsoft/windowsazure:~0.5 && \
+    rm -rf ~/.composer/cache/*
+
+VOLUME ${SRC_DIR}/vendor
+
+COPY . ${SRC_DIR}/
+CMD "${SRC_DIR}/bin/tests"

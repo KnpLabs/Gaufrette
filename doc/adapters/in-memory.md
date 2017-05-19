@@ -6,6 +6,11 @@ currentMenu: in-memory
 
 This adapter is useful in test environments where you don't want to depend on external filesystems.
 
+First, you will need to install the adapter:
+```bash
+composer require gaufrette/in-memory-adapter
+```
+
 ## Example
 
 `InMemory` adapter only takes an array of available files as argument.

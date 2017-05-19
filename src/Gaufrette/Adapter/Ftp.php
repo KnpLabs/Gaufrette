@@ -13,7 +13,8 @@ use Gaufrette\Filesystem;
  */
 class Ftp implements Adapter,
                      FileFactory,
-                     ListKeysAware
+                     ListKeysAware,
+                     SizeCalculator
 {
     protected $connection = null;
     protected $directory;
@@ -110,7 +111,7 @@ class Ftp implements Adapter,
         $sourcePath = $this->computePath($sourceKey);
         $targetPath = $this->computePath($targetKey);
 
-        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath));
+        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath), true);
 
         return ftp_rename($this->getConnection(), $sourcePath, $targetPath);
     }
@@ -290,6 +291,24 @@ class Ftp implements Adapter,
         }
 
         return $file;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return int
+     *
+     * @throws \RuntimeException
+     */
+    public function size($key)
+    {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
+        if (-1 === $size = ftp_size($this->connection, $key)) {
+            throw new \RuntimeException(sprintf('Unable to fetch the size of "%s".', $key));
+        }
+
+        return $size;
     }
 
     /**
@@ -498,16 +517,21 @@ class Ftp implements Adapter,
      */
     private function connect()
     {
+        if ($this->ssl && !function_exists('ftp_ssl_connect')) {
+            throw new \RuntimeException('This Server Has No SSL-FTP Available.');
+        }
+
         // open ftp connection
         if (!$this->ssl) {
             $this->connection = ftp_connect($this->host, $this->port, $this->timeout);
         } else {
-            if (function_exists('ftp_ssl_connect')) {
-                $this->connection = ftp_ssl_connect($this->host, $this->port, $this->timeout);
-            } else {
-                throw new \RuntimeException('This Server Has No SSL-FTP Available.');
-            }
+            $this->connection = ftp_ssl_connect($this->host, $this->port, $this->timeout);
         }
+
+        if (defined('FTP_USEPASVADDRESS')) {
+            ftp_set_option($this->connection, FTP_USEPASVADDRESS, false);
+        }
+
         if (!$this->connection) {
             throw new \RuntimeException(sprintf('Could not connect to \'%s\' (port: %s).', $this->host, $this->port));
         }

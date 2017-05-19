@@ -147,12 +147,16 @@ class AzureBlobStorage implements Adapter,
             $options = new CreateBlobOptions();
 
             if ($this->detectContentType) {
-                $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
-                $contentType = $fileInfo->buffer($content);
-                $options->setContentType($contentType);
+                $contentType = $this->guessContentType($content);
+
+                $options->setBlobContentType($contentType);
             }
 
             $this->blobProxy->createBlockBlob($this->containerName, $key, $content, $options);
+
+            if (is_resource($content)) {
+                return Util\Size::fromResource($content);
+            }
 
             return Util\Size::fromContent($content);
         } catch (ServiceException $e) {
@@ -382,5 +386,21 @@ class AzureBlobStorage implements Adapter,
         }
 
         return $exception->getErrorReason();
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return string
+     */
+    private function guessContentType($content)
+    {
+        $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
+
+        if (is_resource($content)) {
+            return $fileInfo->file(stream_get_meta_data($content)['uri']);
+        }
+
+        return $fileInfo->buffer($content);
     }
 }

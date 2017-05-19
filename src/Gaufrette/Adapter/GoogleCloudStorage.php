@@ -5,10 +5,14 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use GuzzleHttp;
 
+@trigger_error('The '.__NAMESPACE__.'\GoogleCloudStorage adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
+
 /**
  * Google Cloud Storage adapter using the Google APIs Client Library for PHP.
  *
  * @author  Patrik Karisch <patrik@karisch.guru>
+ *
+ * @deprecated The GoogleCloudStorage adapter is deprecated since version 0.4 and will be removed in 1.0.
  */
 class GoogleCloudStorage implements Adapter,
                                     MetadataSupporter,
@@ -95,7 +99,7 @@ class GoogleCloudStorage implements Adapter,
         }
 
         if (class_exists('Google_Http_Request')) {
-            $request = new Google_Http_Request($object->getMediaLink());
+            $request = new \Google_Http_Request($object->getMediaLink());
             $this->service->getClient()->getAuth()->sign($request);
             $response = $this->service->getClient()->getIo()->executeRequest($request);
             if ($response[2] == 200) {
@@ -136,8 +140,7 @@ class GoogleCloudStorage implements Adapter,
          * it to prevent everything being served up as application/octet-stream.
          */
         if (!isset($metadata['ContentType']) && $this->detectContentType) {
-            $finfo = new \finfo(FILEINFO_MIME_TYPE);
-            $options['mimeType'] = $finfo->buffer($content);
+            $options['mimeType'] = $this->guessContentType($content);
             unset($metadata['ContentType']);
         } elseif (isset($metadata['ContentType'])) {
             $options['mimeType'] = $metadata['ContentType'];
@@ -380,5 +383,21 @@ class GoogleCloudStorage implements Adapter,
         } catch (\Google_Service_Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return string
+     */
+    private function guessContentType($content)
+    {
+        $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
+
+        if (is_resource($content)) {
+            return $fileInfo->file(stream_get_meta_data($content)['uri']);
+        }
+
+        return $fileInfo->buffer($content);
     }
 }
