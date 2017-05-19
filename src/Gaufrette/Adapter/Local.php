@@ -288,6 +288,9 @@ class Local implements Adapter,
     protected function ensureDirectoryExists($directory, $create = false)
     {
         if (!is_dir($directory)) {
+
+
+            
             if (!$create) {
                 throw new \RuntimeException(sprintf('The directory "%s" does not exist.', $directory));
             }
