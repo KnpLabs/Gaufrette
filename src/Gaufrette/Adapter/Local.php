@@ -14,10 +14,10 @@ use Gaufrette\Stream;
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
 class Local implements Adapter,
-                       StreamFactory,
-                       ChecksumCalculator,
-                       SizeCalculator,
-                       MimeTypeProvider
+    StreamFactory,
+    ChecksumCalculator,
+    SizeCalculator,
+    MimeTypeProvider
 {
     protected $directory;
     private $create;
@@ -29,7 +29,7 @@ class Local implements Adapter,
      *                          exist (default FALSE)
      * @param int    $mode      Mode for mkdir
      *
-     * @throws RuntimeException if the specified directory does not exist and
+     * @throws \RuntimeException if the specified directory does not exist and
      *                          could not be created
      */
     public function __construct($directory, $create = false, $mode = 0777)
@@ -46,6 +46,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function read($key)
     {
@@ -54,6 +58,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function write($key, $content)
     {
@@ -65,6 +73,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -84,6 +96,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function keys()
     {
@@ -101,7 +117,7 @@ class Local implements Adapter,
             $files = new \EmptyIterator();
         }
 
-        $keys = array();
+        $keys = [];
         foreach ($files as $file) {
             $keys[] = $this->computeKey($file);
         }
@@ -112,6 +128,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function mtime($key)
     {
@@ -120,6 +140,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function delete($key)
     {
@@ -134,6 +158,10 @@ class Local implements Adapter,
      * @param string $key
      *
      * @return bool
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function isDirectory($key)
     {
@@ -142,6 +170,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function createStream($key)
     {
@@ -150,6 +182,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function checksum($key)
     {
@@ -158,6 +194,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function size($key)
     {
@@ -166,6 +206,10 @@ class Local implements Adapter,
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function mimeType($key)
     {
@@ -177,9 +221,12 @@ class Local implements Adapter,
     /**
      * Computes the key from the specified path.
      *
-     * @param string $path
+     * @param $path
+     * @return string
      *
-     * return string
+     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function computeKey($path)
     {
@@ -195,9 +242,10 @@ class Local implements Adapter,
      *
      * @return string A path
      *
-     * @throws OutOfBoundsException If the computed path is out of the
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \OutOfBoundsException If the computed path is out of the
      *                              directory
-     * @throws RuntimeException     If directory does not exists and cannot be created
+     * @throws \RuntimeException     If directory does not exists and cannot be created
      */
     protected function computePath($key)
     {
@@ -212,6 +260,8 @@ class Local implements Adapter,
      * @param string $path
      *
      * @return string
+     * @throws \OutOfBoundsException If the computed path is out of the
+     *                              directory
      */
     protected function normalizePath($path)
     {
@@ -231,7 +281,8 @@ class Local implements Adapter,
      * @param bool   $create    Whether to create the directory if it does
      *                          not exist
      *
-     * @throws RuntimeException if the directory does not exists and could not
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException if the directory does not exists and could not
      *                          be created
      */
     protected function ensureDirectoryExists($directory, $create = false)
@@ -250,17 +301,13 @@ class Local implements Adapter,
      *
      * @param string $directory Path of the directory to create
      *
-     * @throws InvalidArgumentException if the directory already exists
-     * @throws RuntimeException         if the directory could not be created
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     protected function createDirectory($directory)
     {
-        $created = @mkdir($directory, $this->mode, true);
-
-        if (!$created) {
-            if (!is_dir($directory)) {
-                throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
-            }
+        if (!@mkdir($directory, $this->mode, true) && !is_dir($directory)) {
+            throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
         }
     }
 }
