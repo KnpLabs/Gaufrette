@@ -21,6 +21,10 @@ services:
 env:
   - MONGO_URI="mongodb://127.0.0.1:27017"
     MONGO_DBNAME="gridfs_test"
+    SFTP_HOST=localhost
+    SFTP_USER=gaufrette
+    SFTP_PASSWORD=gaufrette
+    SFTP_BASE_DIR=/home/gaufrette
 
 matrix:
   allow_failures:
@@ -32,6 +36,9 @@ before_script:
   - if [[ ${TRAVIS_PHP_VERSION:0:4} == "hhvm" ]];  then composer require mongofill/mongofill --ignore-platform-reqs; fi
   - sudo apt-get update
   - sudo apt-get install -y libssh2-1-dev
+  - sudo useradd -d /home/gaufrette gaufrette
+  - echo "gaufrette:gaufrette" | sudo chpasswd
+  - sudo mkdir /home/gaufrette && sudo chown gaufrette:gaufrette /home/gaufrette
   - if [[ ${TRAVIS_PHP_VERSION:0:4} != "hhvm" ]]; then yes | pecl install ssh2 ; fi
   - cp tests/Gaufrette/Functional/adapters/DoctrineDbal.php.dist tests/Gaufrette/Functional/adapters/DoctrineDbal.php -f
   - composer self-update && composer install --prefer-source --no-interaction
