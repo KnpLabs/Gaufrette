@@ -136,11 +136,19 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function shouldListKeysWithoutDirectory()
+    public function testListKeysWithoutDirectory()
     {
-        $filesystem = $this->getFilesystem();
+        $filesystem = $this->getFilesystem(['create' => true]);
         $filesystem->write('test.txt', 'some content');
         $keys = $filesystem->listKeys();
-        $this->assertEquals('test.txt', $keys['key']);
+        $this->assertEquals(['test.txt'], $keys);
+    }
+
+    public function testListKeysWithDirectory()
+    {
+        $filesystem = $this->getFilesystem(['create' => true, 'directory' => 'root/']);
+        $filesystem->write('test.txt', 'some content');
+        $keys = $filesystem->listKeys();
+        $this->assertEquals(['test.txt'], $keys);
     }
 }
