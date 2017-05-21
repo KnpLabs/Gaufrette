@@ -10,7 +10,7 @@ use Gaufrette\Adapter\ListKeysAware;
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class Filesystem
+class Filesystem implements FilesystemInterface
 {
     protected $adapter;
 
@@ -40,13 +40,7 @@ class Filesystem
     }
 
     /**
-     * Indicates whether the file matching the specified key exists.
-     *
-     * @param string $key
-     *
-     * @return bool TRUE if the file exists, FALSE otherwise
-     *
-     * @throws \InvalidArgumentException If $key is invalid
+     * {@inheritdoc}
      */
     public function has($key)
     {
@@ -56,21 +50,7 @@ class Filesystem
     }
 
     /**
-     * Renames a file.
-     *
-     * File::rename should be preferred or you may face bad filesystem consistency.
-     *
-     * @param string $sourceKey
-     * @param string $targetKey
-     *
-     * @return bool TRUE if the rename was successful
-     *
-     * @throws Exception\FileNotFound    when sourceKey does not exist
-     * @throws Exception\UnexpectedFile  when targetKey exists
-     * @throws \RuntimeException         when cannot rename
-     * @throws \InvalidArgumentException If $sourceKey or $targetKey are invalid
-     *
-     * @see File::rename
+     * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
@@ -96,15 +76,7 @@ class Filesystem
     }
 
     /**
-     * Returns the file matching the specified key.
-     *
-     * @param string $key    Key of the file
-     * @param bool   $create Whether to create the file if it does not exist
-     *
-     * @throws Exception\FileNotFound
-     * @throws \InvalidArgumentException If $key is invalid
-     *
-     * @return File
+     * {@inheritdoc}
      */
     public function get($key, $create = false)
     {
@@ -118,17 +90,7 @@ class Filesystem
     }
 
     /**
-     * Writes the given content into the file.
-     *
-     * @param string $key       Key of the file
-     * @param string $content   Content to write in the file
-     * @param bool   $overwrite Whether to overwrite the file if exists
-     *
-     * @throws Exception\FileAlreadyExists When file already exists and overwrite is false
-     * @throws \RuntimeException           When for any reason content could not be written
-     * @throws \InvalidArgumentException   If $key is invalid
-     *
-     * @return int The number of bytes that were written into the file
+     * {@inheritdoc}
      */
     public function write($key, $content, $overwrite = false)
     {
@@ -148,15 +110,7 @@ class Filesystem
     }
 
     /**
-     * Reads the content from the file.
-     *
-     * @param string $key Key of the file
-     *
-     * @throws Exception\FileNotFound    when file does not exist
-     * @throws \RuntimeException         when cannot read file
-     * @throws \InvalidArgumentException If $key is invalid
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function read($key)
     {
@@ -174,14 +128,7 @@ class Filesystem
     }
 
     /**
-     * Deletes the file matching the specified key.
-     *
-     * @param string $key
-     *
-     * @throws \RuntimeException         when cannot read file
-     * @throws \InvalidArgumentException If $key is invalid
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function delete($key)
     {
@@ -199,9 +146,7 @@ class Filesystem
     }
 
     /**
-     * Returns an array of all keys.
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function keys()
     {
@@ -209,15 +154,7 @@ class Filesystem
     }
 
     /**
-     * Lists keys beginning with given prefix
-     * (no wildcard / regex matching).
-     *
-     * if adapter implements ListKeysAware interface, adapter's implementation will be used,
-     * in not, ALL keys will be requested and iterated through.
-     *
-     * @param string $prefix
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function listKeys($prefix = '')
     {
@@ -245,13 +182,7 @@ class Filesystem
     }
 
     /**
-     * Returns the last modified time of the specified file.
-     *
-     * @param string $key
-     *
-     * @return int An UNIX like timestamp
-     *
-     * @throws \InvalidArgumentException If $key is invalid
+     * {@inheritdoc}
      */
     public function mtime($key)
     {
@@ -263,13 +194,7 @@ class Filesystem
     }
 
     /**
-     * Returns the checksum of the specified file's content.
-     *
-     * @param string $key
-     *
-     * @return string A MD5 hash
-     *
-     * @throws \InvalidArgumentException If $key is invalid
+     * {@inheritdoc}
      */
     public function checksum($key)
     {
@@ -285,13 +210,7 @@ class Filesystem
     }
 
     /**
-     * Returns the size of the specified file's content.
-     *
-     * @param string $key
-     *
-     * @return int File size in Bytes
-     *
-     * @throws \InvalidArgumentException If $key is invalid
+     * {@inheritdoc}
      */
     public function size($key)
     {
@@ -307,13 +226,7 @@ class Filesystem
     }
 
     /**
-     * Gets a new stream instance of the specified file.
-     *
-     * @param $key
-     *
-     * @return Stream|Stream\InMemoryBuffer
-     *
-     * @throws \InvalidArgumentException If $key is invalid
+     * {@inheritdoc}
      */
     public function createStream($key)
     {
@@ -327,13 +240,7 @@ class Filesystem
     }
 
     /**
-     * Creates a new file in a filesystem.
-     *
-     * @param $key
-     *
-     * @return File
-     *
-     * @throws \InvalidArgumentException If $key is invalid
+     * {@inheritdoc}
      */
     public function createFile($key)
     {
@@ -351,13 +258,7 @@ class Filesystem
     }
 
     /**
-     * Get the mime type of the provided key.
-     *
-     * @param string $key
-     *
-     * @return string
-     *
-     * @throws \InvalidArgumentException If $key is invalid
+     * {@inheritdoc}
      */
     public function mimeType($key)
     {
@@ -425,9 +326,7 @@ class Filesystem
     }
 
     /**
-     * @param string $key
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function isDirectory($key)
     {
