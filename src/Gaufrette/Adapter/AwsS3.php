@@ -14,6 +14,7 @@ use Gaufrette\Util;
 class AwsS3 implements Adapter,
                        MetadataSupporter,
                        ListKeysAware,
+                       ListFilesAware,
                        SizeCalculator
 {
     /** @var S3Client */
@@ -231,6 +232,41 @@ class AwsS3 implements Adapter,
         }
 
         return $keys;
+    }
+
+    /**
+     * List files beginning with given prefix.
+     * Similar to listKeys but this will also return file mtime, size, and etag.
+     * @param string $prefix
+     * @return mixed
+     */
+    public function listFiles($prefix = '')
+    {
+        $options = array('Bucket' => $this->bucket);
+        if ((string) $prefix != '') {
+            $options['Prefix'] = $this->computePath($prefix);
+        } elseif (!empty($this->options['directory'])) {
+            $options['Prefix'] = $this->options['directory'];
+        }
+
+        $files = array();
+        $iter = $this->service->getIterator('ListObjects', $options);
+        foreach ($iter as $file) {
+            $item= [];
+            $item["key"] = $this->computeKey($file['Key']);
+            if (isset($file["LastModified"])) {
+                $item["mtime"] = $file["LastModified"];
+            }
+            if (isset($file["Size"])) {
+                $item["size"] = $file["Size"];
+            }
+            if (isset($file["Etag"])) {
+                $item["etag"] = $file["Etag"];
+            }
+            $files[] = $item;
+        }
+
+        return $files;
     }
 
     /**

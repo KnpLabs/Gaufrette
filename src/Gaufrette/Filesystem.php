@@ -245,6 +245,25 @@ class Filesystem
     }
 
     /**
+     * Lists files beginning with given prefix
+     * (no wildcard / regex matching)
+     *
+     * if adapter implements ListFilesAware interface, adapter's implementation will be used,
+     * otherwise return empty array
+     *
+     * @param  string $prefix
+     * @return array
+     */
+    public function listFiles($prefix = '')
+    {
+        if ($this->adapter instanceof ListFilesAware) {
+            return $this->adapter->listFiles($prefix);
+        }
+
+        return [];
+    }
+
+    /**
      * Returns the last modified time of the specified file.
      *
      * @param string $key
