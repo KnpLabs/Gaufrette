@@ -33,6 +33,7 @@ services:
     depends_on:
       - mongodb
       - sftp
+      - vsftpd
     env_file: .env
 
   php70:
@@ -46,6 +47,7 @@ services:
     depends_on:
       - mongodb
       - sftp
+      - vsftpd
     env_file: .env
 
   php71:
@@ -60,6 +62,7 @@ services:
     depends_on:
       - mongodb
       - sftp
+      - vsftpd
 
   hhvm:
     build:
@@ -73,6 +76,7 @@ services:
     depends_on:
       - mongodb
       - sftp
+      - vsftpd
 
   mongodb:
     image: mongo
