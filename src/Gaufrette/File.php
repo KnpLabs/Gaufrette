@@ -89,6 +89,16 @@ class File
     }
 
     /**
+     * Returns Filesystem instance.
+     *
+     * @return Filesystem filesystem instance
+     */
+    public function getFilesystem()
+    {
+        return $this->filesystem;
+    }
+
+    /**
      * @return string name of the file
      */
     public function getName()
