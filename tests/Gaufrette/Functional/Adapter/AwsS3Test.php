@@ -143,4 +143,16 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         $keys = $filesystem->listKeys();
         $this->assertEquals('test.txt', $keys['key']);
     }
+
+    public function testUploadWithGivenContentType()
+    {
+        $filesystem = $this->getFilesystem(['create' => true]);
+        /** @var AwsS3 $adapter */
+        $adapter = $filesystem->getAdapter();
+
+        $adapter->setMetadata('foo', ['ContentType' => 'text/html']);
+        $filesystem->write('foo', '<html></html>');
+
+        $this->assertEquals('text/html', $filesystem->mimeType('foo'));
+    }
 }
