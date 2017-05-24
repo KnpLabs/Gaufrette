@@ -1,5 +1,6 @@
-Gaufrette
-=========
+# Gaufrette
+
+![climb](http://i.imgur.com/ywnErUd.jpg)
 
 Gaufrette provides a filesystem abstraction layer.
 
@@ -7,8 +8,7 @@ Gaufrette provides a filesystem abstraction layer.
 [![Join the chat at https://gitter.im/KnpLabs/Gaufrette](https://badges.gitter.im/KnpLabs/Gaufrette.svg)](https://gitter.im/KnpLabs/Gaufrette)
 [![Stories in Ready](https://badge.waffle.io/knplabs/gaufrette.png?label=ready&title=Ready)](https://waffle.io/knplabs/gaufrette)
 
-Why use Gaufrette?
-------------------
+## Why use Gaufrette?
 
 Imagine you have to manage a lot of medias in a PHP project. Lets see how to
 take this situation in your advantage using Gaufrette.
@@ -22,15 +22,15 @@ In example, if your project grows up very fast and if your server reaches its
 limits, you can easily move your medias in an Amazon S3 server or any other
 solution.
 
-### Documentation
+## Documentation
 
 Read the official [Gaufrette documentation](doc/index.md).
 
-### Symfony integration
+## Symfony integration
 
 Symfony integration is available through [KnpLabs/KnpGaufretteBundle](https://github.com/KnpLabs/KnpGaufretteBundle).
 
-### Setup the vendor libraries
+## Setup the vendor libraries
 
 As some filesystem adapters use vendor libraries, you should install the vendors:
 
@@ -40,7 +40,7 @@ As some filesystem adapters use vendor libraries, you should install the vendors
 
 It will avoid skip a lot of tests.
 
-### Launch the Test Suite
+## Launch the Test Suite
 
 In the Gaufrette root directory:
 
@@ -54,6 +54,6 @@ To check basic functionality of the adapters (adapters should be configured you 
 
 Is it green?
 
-### Note
+## Note
 
 This project does not have any stable release yet but we do not want to break BC now.
