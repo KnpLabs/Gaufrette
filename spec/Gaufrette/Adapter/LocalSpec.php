@@ -156,6 +156,6 @@ class LocalSpec extends ObjectBehavior
     {
         $this->beConstructedWith(vfsStream::url('test/other'), true);
 
-        $this->exists('/')->shouldReturn(true);
+        $this->isDirectory('/')->shouldReturn(true);
     }
 }

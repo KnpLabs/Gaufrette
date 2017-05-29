@@ -6,6 +6,11 @@ currentMenu: local
 
 Those two adapters aims to use local filesystem. The second one will encode in base64 the filename before storing/retrieving.
 
+First, you will need to install the adapter:
+```bash
+composer require gaufrette/local-adapter
+```
+
 ## Example
 
 ```php

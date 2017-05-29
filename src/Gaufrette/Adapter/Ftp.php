@@ -111,7 +111,7 @@ class Ftp implements Adapter,
         $sourcePath = $this->computePath($sourceKey);
         $targetPath = $this->computePath($targetKey);
 
-        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath));
+        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath), true);
 
         return ftp_rename($this->getConnection(), $sourcePath, $targetPath);
     }
@@ -528,12 +528,12 @@ class Ftp implements Adapter,
             $this->connection = ftp_ssl_connect($this->host, $this->port, $this->timeout);
         }
 
-        if (PHP_VERSION_ID >= 50600) {
-            ftp_set_option($this->connection, FTP_USEPASVADDRESS, false);
-        }
-
         if (!$this->connection) {
             throw new \RuntimeException(sprintf('Could not connect to \'%s\' (port: %s).', $this->host, $this->port));
+        }
+
+        if (defined('FTP_USEPASVADDRESS')) {
+            ftp_set_option($this->connection, FTP_USEPASVADDRESS, false);
         }
 
         $username = $this->username ?: 'anonymous';

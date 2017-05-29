@@ -18,6 +18,7 @@ class FilesystemSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldBeAnInstanceOf('Gaufrette\Filesystem');
+        $this->shouldBeAnInstanceOf('Gaufrette\FilesystemInterface');
     }
 
     /**

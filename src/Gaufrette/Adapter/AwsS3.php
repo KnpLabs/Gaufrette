@@ -14,7 +14,8 @@ use Gaufrette\Util;
 class AwsS3 implements Adapter,
                        MetadataSupporter,
                        ListKeysAware,
-                       SizeCalculator
+                       SizeCalculator,
+                       MimeTypeProvider
 {
     /** @var S3Client */
     protected $service;
@@ -346,5 +347,15 @@ class AwsS3 implements Adapter,
         }
 
         return $fileInfo->buffer($content);
+    }
+
+    public function mimeType($key)
+    {
+        try {
+            $result = $this->service->headObject($this->getOptions($key));
+            return ($result['ContentType']);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

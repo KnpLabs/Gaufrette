@@ -4,6 +4,11 @@ currentMenu: ftp
 
 # FTP
 
+First, you will need to install the adapter:
+```bash
+composer require gaufrette/ftp-adapter
+```
+
 `ftp` extension should be enabled in order to use this adapter.
 Also, some FTP servers need valid configuration so Gaufrette can work with them as expected.
 

@@ -194,6 +194,18 @@ class File
     }
 
     /**
+     * Rename the file and move it to its new location.
+     *
+     * @param string $newKey
+     */
+    public function rename($newKey)
+    {
+        $this->filesystem->rename($this->key, $newKey);
+
+        $this->key = $newKey;
+    }
+
+    /**
      * Sets the metadata array to be stored in adapters that can support it.
      *
      * @param array $metadata

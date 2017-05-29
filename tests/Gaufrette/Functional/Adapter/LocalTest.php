@@ -4,6 +4,7 @@ namespace Gaufrette\Functional\Adapter;
 
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
+use Gaufrette\Functional\LocalDirectoryDeletor;
 
 class LocalTest extends FunctionalTestCase
 {
@@ -24,23 +25,7 @@ class LocalTest extends FunctionalTestCase
     {
         $this->filesystem = null;
 
-        if (file_exists($this->directory)) {
-            $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator(
-                    $this->directory,
-                    \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
-                ),
-                \RecursiveIteratorIterator::CHILD_FIRST
-            );
-
-            foreach ($iterator as $item) {
-                if ($item->isDir()) {
-                    rmdir(strval($item));
-                } else {
-                    unlink(strval($item));
-                }
-            }
-        }
+        LocalDirectoryDeletor::deleteDirectory($this->directory);
     }
 
     /**

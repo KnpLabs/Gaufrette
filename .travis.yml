@@ -21,6 +21,14 @@ services:
 env:
   - MONGO_URI="mongodb://127.0.0.1:27017"
     MONGO_DBNAME="gridfs_test"
+    SFTP_HOST=localhost
+    SFTP_USER=gaufrette
+    SFTP_PASSWORD=gaufrette
+    SFTP_BASE_DIR=/home/gaufrette
+    FTP_HOST=localhost
+    FTP_USER=gaufrette
+    FTP_PASSWORD=gaufrette
+    FTP_BASE_DIR=/gaufrette/
 
 matrix:
   allow_failures:
@@ -31,7 +39,13 @@ before_script:
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini && phpenv config-rm xdebug.ini; fi
   - if [[ ${TRAVIS_PHP_VERSION:0:4} == "hhvm" ]];  then composer require mongofill/mongofill --ignore-platform-reqs; fi
   - sudo apt-get update
-  - sudo apt-get install -y libssh2-1-dev
+  - sudo apt-get install -y libssh2-1-dev vsftpd
+  - sudo useradd -d /home/./gaufrette gaufrette # Removing "./" from this path would break any further Travis builds
+  - echo "gaufrette:gaufrette" | sudo chpasswd
+  - sudo mkdir /home/gaufrette /srv/empty
+  - sudo chown gaufrette:gaufrette /home/gaufrette /srv/ftp
+  - sudo cp .travis/vsftpd.conf /etc/vsftpd.conf
+  - sudo service vsftpd restart
   - if [[ ${TRAVIS_PHP_VERSION:0:4} != "hhvm" ]]; then yes | pecl install ssh2 ; fi
   - cp tests/Gaufrette/Functional/adapters/DoctrineDbal.php.dist tests/Gaufrette/Functional/adapters/DoctrineDbal.php -f
   - composer self-update && composer install --prefer-source --no-interaction

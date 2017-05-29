@@ -57,7 +57,7 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        if (!$this->client->doesBucketExist($this->bucket)) {
+        if ($this->client === null || !$this->client->doesBucketExist($this->bucket)) {
             return;
         }
 
@@ -136,11 +136,44 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function shouldListKeysWithoutDirectory()
+    public function testListKeysWithoutDirectory()
     {
-        $filesystem = $this->getFilesystem();
+        $filesystem = $this->getFilesystem(['create' => true]);
         $filesystem->write('test.txt', 'some content');
-        $keys = $filesystem->listKeys();
-        $this->assertEquals('test.txt', $keys['key']);
+        $this->assertEquals(['test.txt'], $filesystem->listKeys());
+    }
+
+    public function testListKeysWithDirectory()
+    {
+        $filesystem = $this->getFilesystem(['create' => true, 'directory' => 'root/']);
+        $filesystem->write('test.txt', 'some content');
+        $this->assertEquals(['test.txt'], $filesystem->listKeys());
+        $this->assertTrue($filesystem->has('test.txt'));
+    }
+
+    public function testKeysWithoutDirectory()
+    {
+        $filesystem = $this->getFilesystem(['create' => true]);
+        $filesystem->write('test.txt', 'some content');
+        $this->assertEquals(['test.txt'], $filesystem->keys());
+    }
+
+    public function testKeysWithDirectory()
+    {
+        $filesystem = $this->getFilesystem(['create' => true, 'directory' => 'root/']);
+        $filesystem->write('test.txt', 'some content');
+        $this->assertEquals(['test.txt'], $filesystem->keys());
+    }
+
+    public function testUploadWithGivenContentType()
+    {
+        $filesystem = $this->getFilesystem(['create' => true]);
+        /** @var AwsS3 $adapter */
+        $adapter = $filesystem->getAdapter();
+
+        $adapter->setMetadata('foo', ['ContentType' => 'text/html']);
+        $filesystem->write('foo', '<html></html>');
+
+        $this->assertEquals('text/html', $filesystem->mimeType('foo'));
     }
 }
