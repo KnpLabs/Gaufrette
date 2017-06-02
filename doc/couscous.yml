@@ -29,6 +29,9 @@ menu:
                 implementing-new-adapter:
                     text: Implementing new Adapter
                     relativeUrl: implementing-new-adapter.html
+                extras:
+                    text: Extras
+                    relativeUrl: extras.html
         adapters:
             name: Adapters
             items:
