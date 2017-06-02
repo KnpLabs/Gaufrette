@@ -63,9 +63,19 @@ class AwsS3 implements Adapter,
      *                        operation may be specified.
      *
      * @return string
+     *
+     * @deprecated 1.0 Resolving object path into URLs is out of the scope of this repository since v0.4. gaufrette/extras
+     *                 provides a Filesystem decorator with a regular resolve() method. You should use it instead.
+     *
+     * @see https://github.com/Gaufrette/extras
      */
     public function getUrl($key, array $options = [])
     {
+        @trigger_error(
+            E_USER_DEPRECATED,
+                'Using AwsS3::getUrl() method was deprecated since v0.4. Please chek gaufrette/extras package if you want this feature'
+        );
+
         return $this->service->getObjectUrl(
             $this->bucket,
             $this->computePath($key),
