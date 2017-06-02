@@ -38,6 +38,7 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
             ),
             $options
         );
+        $this->options['directory'] = rtrim($this->options['directory'], '/');
     }
     
     /**
@@ -60,14 +61,10 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
         $this->options = array_replace($this->options, $options);
     }
     
-    protected function computePath($key)
+    protected function computePath($key = null)
     {
         if (strlen($this->options['directory']))
         {
-            if (strcmp(substr($this->options['directory'], -1), '/') == 0)
-            {
-                return $this->options['directory'].$key;
-            }
             return $this->options['directory'].'/'.$key;
         }
         return $key;
@@ -133,9 +130,8 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
                 'metadata'  => $this->getMetadata($key)
             )
         );
-        
+
         $size = $this->getResourceByName($key, 'size');
-        
         return $size === null ? false : $size;
     }
     
@@ -146,11 +142,7 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
     {
         $this->isBucket();
         $object = $this->bucket->object($this->computePath($key));
-        if ($object->exists())
-        {
-            return true;
-        }
-        return false;
+        return $object->exists();
     }
     
     /**
@@ -158,11 +150,7 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
      */
     public function isDirectory($key)
     {
-        if ($this->exists($key . '/'))
-        {
-            return true;
-        }
-        return false;
+        return $this->exists($this->computePath(rtrim($key, '/')).'/');
     }
     
     /**
@@ -171,14 +159,9 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
     public function listKeys($prefix = null)
     {
         $this->isBucket();        
-        $keys = array();        
-        if ($prefix === null)
-        {
-            $prefix = $this->options['directory'];
-        } else {
-            $prefix = $this->computePath($prefix);
-        }
-        foreach ($this->bucket->objects(array('prefix' => $prefix)) as $e)
+        $keys = array();
+        
+        foreach ($this->bucket->objects(array('prefix' => $this->computePath($prefix))) as $e)
         {
             $keys[] = $e->name();
         }
@@ -225,16 +208,14 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
     {
         $this->isBucket();
         
-        $metadata = $this->getMetadata($sourceKey);
-        
-        $sourceKey = $this->computePath($sourceKey);
-        $targetKey = $this->computePath($targetKey);
-        
-        $object = $this->bucket->object($sourceKey);
+        $pathedSourceKey = $this->computePath($sourceKey);
+        $pathedTargetKey = $this->computePath($targetKey);
+                
+        $object = $this->bucket->object($pathedSourceKey);
         
         $copiedObject = $object->copy($this->bucket,
             array(
-                'name' => $targetKey
+                'name' => $pathedTargetKey
             )
         );
         
@@ -259,7 +240,7 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
      */
     public function setMetadata($key, $metadata)
     {
-        $this->metadata[$key] = $metadata;
+        $this->metadata[$this->computePath($key)] = $metadata;
     }
 
     /**
@@ -267,15 +248,16 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
      */
     public function getMetadata($key)
     {
-        if (!isset($this->metadata[$key]) && $this->exists($key))
+        $pathedKey = $this->computePath($key);
+        if (!isset($this->metadata[$pathedKey]) && $this->exists($pathedKey))
         {
-            $data = $this->bucket->object($key)->info();
+            $data = $this->bucket->object($pathedKey)->info();
             if (isset($data['metadata']))
             {
-                $this->metadata[$key] = $data['metadata'];
+                $this->metadata[$pathedKey] = $data['metadata'];
             }
         }
-        return isset($this->metadata[$key]) ? $this->metadata[$key] : array();
+        return isset($this->metadata[$pathedKey]) ? $this->metadata[$pathedKey] : array();
     }
     
     /**
@@ -283,7 +265,7 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
      */
     public function setResources($key, $data)
     {
-        $this->resources[$key] = $data;
+        $this->resources[$this->computePath($key)] = $data;
     }
     
     /**
@@ -291,7 +273,8 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
      */
     public function getResources($key)
     {
-        return isset($this->resources[$key]) ? $this->resources[$key] : array();
+        $pathedKey = $this->computePath($key);
+        return isset($this->resources[$pathedKey]) ? $this->resources[$pathedKey] : array();
     }
     
     /**
@@ -299,7 +282,8 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
      */
     public function getResourceByName($key, $resourceName)
     {
-        return isset($this->resources[$key][$resourceName]) ? $this->resources[$key][$resourceName] : null;
+        $pathedKey = $this->computePath($key);
+        return isset($this->resources[$pathedKey][$resourceName]) ? $this->resources[$pathedKey][$resourceName] : null;
     }
     
     /**
@@ -315,7 +299,7 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
         {
             return false;
         }
-        
+      
         $object = $this->bucket->object($this->computePath($key));
         
         $properties = array_replace_recursive(
