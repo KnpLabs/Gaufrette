@@ -42,7 +42,6 @@
         "mikey179/vfsStream": "~1.2.0",
         "league/flysystem": "~1.0",
         "mongodb/mongodb": "~1.1.4"
-    },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",
         "dropbox-php/dropbox-php": "to use the Dropbox adapter",
@@ -61,12 +60,8 @@
         "ext-mbstring": "*",
         "ext-mongodb": "*",
         "ext-fileinfo": "This extension is used to automatically detect the content-type of a file in the AwsS3, OpenCloud, AzureBlogStorage and GoogleCloudStorage adapters",
-<<<<<<< HEAD
         "mongodb/mongodb": "*",
-        "google/cloud-storage": "to use Google Cloud Client Library"
-=======
-        "mongodb/mongodb": "*"
->>>>>>> upstream/master
+        "google/cloud-storage": "to use Google Cloud Client 
     },
     "autoload": {
         "psr-0": { "Gaufrette": "src/" }
