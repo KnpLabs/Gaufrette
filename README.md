@@ -33,27 +33,19 @@ Read the official [Gaufrette documentation](http://knplabs.github.io/Gaufrette/)
 
 Symfony integration is available through [KnpLabs/KnpGaufretteBundle](https://github.com/KnpLabs/KnpGaufretteBundle).
 
-### Setup the vendor libraries
-
-As some filesystem adapters use vendor libraries, you should install the vendors:
-
-    $ cd gaufrette
-    $ php composer.phar install
-    $ sh bin/configure_test_env.sh
-
-It will avoid skip a lot of tests.
-
 ### Launch the Test Suite
 
-In the Gaufrette root directory:
+Requires:
+  * docker
+  * docker-compose
 
-To check if classes specification pass:
+Build images:
 
-    $ php bin/phpspec run
+    $ docker-compose build
 
-To check basic functionality of the adapters (adapters should be configured you will see many skipped tests):
+Launch the tests:
 
-    $ bin/phpunit
+    $ bin/tests-all
 
 Is it green?
 

@@ -5,6 +5,8 @@ namespace Gaufrette\Adapter;
 use AmazonS3 as AmazonClient;
 use Gaufrette\Adapter;
 
+@trigger_error('The '.__NAMESPACE__.'\AmazonS3 adapter is deprecated since version 0.4 and will be removed in 1.0. Use the AwsS3 adapter instead.', E_USER_DEPRECATED);
+
 /**
  * Amazon S3 adapter using the AWS SDK for PHP v1.x.
  *
@@ -12,6 +14,8 @@ use Gaufrette\Adapter;
  *
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  * @author  Leszek Prabucki <leszek.prabucki@gmail.com>
+ *
+ * @deprecated The AmazonS3 adapter is deprecated since version 0.4 and will be removed in 1.0. Use the AwsS3 adapter instead.
  */
 class AmazonS3 implements Adapter,
                           MetadataSupporter

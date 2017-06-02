@@ -30,7 +30,7 @@ class Size
      *
      * @param string $filename
      *
-     * @return string
+     * @return int
      */
     public static function fromFile($filename)
     {

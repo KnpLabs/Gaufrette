@@ -8,12 +8,16 @@ use Gaufrette\Exception;
 use Dropbox_API as DropboxApi;
 use Dropbox_Exception_NotFound as DropboxNotFoundException;
 
+@trigger_error('The '.__NAMESPACE__.'\Dropbox adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
+
 /**
  * Dropbox adapter.
  *
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
+ *
+ * @deprecated The Dropbox adapter is deprecated since version 0.4 and will be removed in 1.0.
  */
 class Dropbox implements Adapter
 {

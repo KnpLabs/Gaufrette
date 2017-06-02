@@ -1,30 +1,56 @@
 language: php
 
-sudo: false
+sudo: true
 
 cache:
   directories:
     - $HOME/.composer/cache/files
 
+env:
+  global:
+    - AWS_KEY:
+    - AWS_SECRET:
+
 php:
-  - 5.4
-  - 5.5
   - 5.6
   - hhvm
- 
+
+services:
+  - mongodb
+
+env:
+  - MONGO_URI="mongodb://127.0.0.1:27017"
+    MONGO_DBNAME="gridfs_test"
+    SFTP_HOST=localhost
+    SFTP_USER=gaufrette
+    SFTP_PASSWORD=gaufrette
+    SFTP_BASE_DIR=/home/gaufrette
+    FTP_HOST=localhost
+    FTP_USER=gaufrette
+    FTP_PASSWORD=gaufrette
+    FTP_BASE_DIR=/gaufrette/
+
 matrix:
   allow_failures:
     - php: hhvm
   fast_finish: true
 
 before_script:
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini && phpenv config-rm xdebug.ini; fi
-  # waiting https://github.com/mongodb/mongo-php-library/pull/57
-  #- if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" ]]; then echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini && phpenv config-rm xdebug.ini; fi
   - if [[ ${TRAVIS_PHP_VERSION:0:4} == "hhvm" ]];  then composer require mongofill/mongofill --ignore-platform-reqs; fi
+  - sudo apt-get update
+  - sudo apt-get install -y libssh2-1-dev vsftpd
+  - sudo useradd -d /home/./gaufrette gaufrette # Removing "./" from this path would break any further Travis builds
+  - echo "gaufrette:gaufrette" | sudo chpasswd
+  - sudo mkdir /home/gaufrette /srv/empty
+  - sudo chown gaufrette:gaufrette /home/gaufrette /srv/ftp
+  - sudo cp .travis/vsftpd.conf /etc/vsftpd.conf
+  - sudo service vsftpd restart
+  - if [[ ${TRAVIS_PHP_VERSION:0:4} != "hhvm" ]]; then yes | pecl install ssh2 ; fi
   - cp tests/Gaufrette/Functional/adapters/DoctrineDbal.php.dist tests/Gaufrette/Functional/adapters/DoctrineDbal.php -f
-  - composer self-update && composer install --prefer-source --no-interaction --ignore-platform-reqs
+  - composer self-update && composer install --prefer-source --no-interaction
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} != "5.4" ]]; then composer require microsoft/windowsazure:^0.4.3; fi
 
 script:
-  - php bin/phpspec run -fpretty --verbose
-  - php bin/phpunit
+  - php vendor/bin/phpspec run -fpretty --verbose
+  - php vendor/bin/phpunit --verbose

@@ -2,6 +2,7 @@
 
 namespace spec\Gaufrette\Adapter;
 
+use Gaufrette\Adapter\MimeTypeProvider;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -33,5 +34,10 @@ class AwsS3Spec extends ObjectBehavior
     function it_supports_sizecalculator()
     {
         $this->shouldHaveType('Gaufrette\Adapter\SizeCalculator');
+    }
+
+    function it_provides_mime_type()
+    {
+        $this->shouldHaveType(MimeTypeProvider::class);
     }
 }

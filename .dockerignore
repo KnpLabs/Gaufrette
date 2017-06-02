@@ -1,0 +1,14 @@
+.idea/
+bin/tests-all
+doc/
+docker/
+vendor/
+.dockerignore
+.editorconfig
+.gitignore
+.travis.yml
+appveyor.yml
+composer.lock
+docker-compose.yml
+LICENSE
+README.md

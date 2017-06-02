@@ -74,7 +74,7 @@ class File
      *
      * @throws FileNotFound
      *
-     * @param array $metadata optional metadata which should be send when read
+     * @param array $metadata optional metadata which should be set when read
      *
      * @return string
      */
@@ -191,6 +191,18 @@ class File
     public function createStream()
     {
         return $this->filesystem->createStream($this->key);
+    }
+
+    /**
+     * Rename the file and move it to its new location.
+     *
+     * @param string $newKey
+     */
+    public function rename($newKey)
+    {
+        $this->filesystem->rename($this->key, $newKey);
+
+        $this->key = $newKey;
     }
 
     /**

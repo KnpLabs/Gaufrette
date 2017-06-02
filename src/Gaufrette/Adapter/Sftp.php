@@ -5,6 +5,11 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Ssh\Sftp as SftpClient;
 
+@trigger_error('The '.__NAMESPACE__.'\Sftp adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
+
+/**
+ * @deprecated The Sftp adapter is deprecated since version 0.4 and will be removed in 1.0.
+ */
 class Sftp implements Adapter,
                       ChecksumCalculator
 {
