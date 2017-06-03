@@ -14,6 +14,7 @@ class LocalTest extends FunctionalTestCase
     {
         $this->directory = __DIR__.DIRECTORY_SEPARATOR.'filesystem';
         @mkdir($this->directory.DIRECTORY_SEPARATOR.'subdir', 0777, true);
+        umask(0002);
         $this->filesystem = new Filesystem(new LocalAdapter($this->directory, true, 0770));
 
         $this->registerLocalFilesystemInStream();
