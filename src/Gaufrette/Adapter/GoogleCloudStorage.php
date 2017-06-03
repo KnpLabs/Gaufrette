@@ -5,10 +5,14 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use GuzzleHttp;
 
+@trigger_error('The '.__NAMESPACE__.'\GoogleCloudStorage adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
+
 /**
  * Google Cloud Storage adapter using the Google APIs Client Library for PHP.
  *
  * @author  Patrik Karisch <patrik@karisch.guru>
+ *
+ * @deprecated The GoogleCloudStorage adapter is deprecated since version 0.4 and will be removed in 1.0.
  */
 class GoogleCloudStorage implements Adapter,
                                     MetadataSupporter,
@@ -95,7 +99,7 @@ class GoogleCloudStorage implements Adapter,
         }
 
         if (class_exists('Google_Http_Request')) {
-            $request = new Google_Http_Request($object->getMediaLink());
+            $request = new \Google_Http_Request($object->getMediaLink());
             $this->service->getClient()->getAuth()->sign($request);
             $response = $this->service->getClient()->getIo()->executeRequest($request);
             if ($response[2] == 200) {

@@ -9,6 +9,11 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
+    depends_on:
+      - mongodb
+      - sftp
+      - vsftpd
+    env_file: .env
 
   php70:
     build:
@@ -18,6 +23,11 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
+    depends_on:
+      - mongodb
+      - sftp
+      - vsftpd
+    env_file: .env
 
   php71:
     build:
@@ -27,6 +37,11 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
+    env_file: .env
+    depends_on:
+      - mongodb
+      - sftp
+      - vsftpd
 
   hhvm:
     build:
@@ -36,3 +51,21 @@ services:
       - './spec/:/usr/src/gaufrette/spec/'
       - './src/:/usr/src/gaufrette/src/'
       - './tests/:/usr/src/gaufrette/tests/'
+    env_file: .env
+    depends_on:
+      - mongodb
+      - sftp
+      - vsftpd
+
+  mongodb:
+    image: mongo
+
+  sftp:
+    build:
+      context: docker
+      dockerfile: Dockerfile-sftp
+
+  vsftpd:
+    build:
+      context: docker
+      dockerfile: Dockerfile-ftp

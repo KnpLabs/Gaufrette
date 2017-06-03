@@ -5,11 +5,15 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 
+@trigger_error('The '.__NAMESPACE__.'\MogileFS adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
+
 /**
  * Adapter for the MogileFS filesystem.
  *
  * @author Mikko Tarvainen 2011 <mtarvainen@gmail.com>
  * @author Antoine Hérault <antoine.herault@gmail.com>
+ *
+ * @deprecated The MogileFS adapter is deprecated since version 0.4 and will be removed in 1.0.
  *
  * Bases partly on Wikimedia MogileFS client code by Jens Frank and Domas Mituzas, 2007.
  * See more: http://svn.wikimedia.org/viewvc/mediawiki/trunk/extensions/MogileClient/

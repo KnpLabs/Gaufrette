@@ -6,22 +6,26 @@ currentMenu: grid-fs
 
 ## Prerequisites
 
-In order to use GridFS adapter, you should have accesible MongoDB instance and [Mongo PHP driver](http://docs.php.net/manual/en/book.mongo.php) installed.
+In order to use GridFS adapter, you should have accesible MongoDB instance, [MongoDB PHP driver](http://docs.php.net/manual/en/book.mongodb.php) and  
+the [`mongodb/mongodb`](https://docs.mongodb.com/php-library/master/) library installed.
 
-You can install the Mongo extension with
+First can install the MongoDB extension with:
 
 ```bash
-pecl install mongo
+pecl install mongodb
 ```
 
-*N.B.* `mongo` php extension is deprecated in favor of [MongoDB PHP driver](http://mongodb.github.io/mongo-php-driver/#installation). We will switch to it right after [new API supports GridFS](http://mongodb.github.io/mongo-php-library/#mongodb-php-library]).
+Then, install the adapter:
+```bash
+composer require gaufrette/gridfs-adapter
+```
 
 ## Usage
 
 ```php
 
-$client = new \MongoClient('mongodb://localhost:27007');
-$db = $client->selectDB('dbname');
-$gridFs = new \MongoGridFs($db);
+$client = new \MongoDB\Client('mongodb://localhost:27017');
+$db = $client->selectDatabase('dbname');
 
-$adapter = new \Gaufrette\Adapter\GridFS($gridFs);
+$adapter = new \Gaufrette\Adapter\GridFS($db->selectGridFSBucket());
+```

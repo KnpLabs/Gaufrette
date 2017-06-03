@@ -24,4 +24,7 @@ $filesystem->write('myFile', 'Hello world!');
 $file = $filesystem->get('myFile');
 echo sprintf('%s (modified %s): %s', $file->getKey(), date('d/m/Y, H:i:s', $file->getMtime()), $file->getContent());
 // Will print something like: "myFile (modified 17/01/2016 18:40:36): Hello world!"
+
+// You can also rename your file like this:
+$file->rename('my/new/file');
 ```
