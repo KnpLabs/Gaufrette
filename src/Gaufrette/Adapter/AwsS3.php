@@ -53,38 +53,6 @@ class AwsS3 implements Adapter,
     }
 
     /**
-     * Gets the publicly accessible URL of an Amazon S3 object.
-     *
-     * @param string $key     Object key
-     * @param array  $options Associative array of options used to buld the URL
-     *                        - expires: The time at which the URL should expire
-     *                        represented as a UNIX timestamp
-     *                        - Any options available in the Amazon S3 GetObject
-     *                        operation may be specified.
-     *
-     * @return string
-     *
-     * @deprecated 1.0 Resolving object path into URLs is out of the scope of this repository since v0.4. gaufrette/extras
-     *                 provides a Filesystem decorator with a regular resolve() method. You should use it instead.
-     *
-     * @see https://github.com/Gaufrette/extras
-     */
-    public function getUrl($key, array $options = [])
-    {
-        @trigger_error(
-            E_USER_DEPRECATED,
-            'Using AwsS3::getUrl() method was deprecated since v0.4. Please chek gaufrette/extras package if you want this feature'
-        );
-
-        return $this->service->getObjectUrl(
-            $this->bucket,
-            $this->computePath($key),
-            isset($options['expires']) ? $options['expires'] : null,
-            $options
-        );
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function setMetadata($key, $metadata)
