@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Exception;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
@@ -13,6 +14,7 @@ use MicrosoftAzure\Storage\Blob\Models\DeleteContainerOptions;
 use MicrosoftAzure\Storage\Blob\Models\ListBlobsOptions;
 use MicrosoftAzure\Storage\Common\ServiceException;
 use Psr\Http\Message\ResponseInterface;
+use SimpleXMLElement;
 
 /**
  * Microsoft Azure Blob Storage adapter.
@@ -537,7 +539,7 @@ class AzureBlobStorage implements Adapter,
     /**
      * Error message to be parsed.
      *
-     * @param  ResponseInterface $response The response with a response body.
+     * @param ResponseInterface $response The response with a response body.
      *
      * @return string
      */
@@ -548,37 +550,14 @@ class AzureBlobStorage implements Adapter,
         //try to parse using xml serializer, if failed, return the whole body
         //as the error message.
         try {
-            $body = new \SimpleXMLElement($response->getBody());
-            $data = static::xmlToArray($body);
+            $sxml = new SimpleXMLElement($response->getBody());
 
-            if (array_key_exists('Code', $data)) {
-                $errorCode = $data['Code'];
+            if (isset($sxml->Code)) {
+                $errorCode = (string) $sxml->Code;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         return $errorCode;
-    }
-
-    /**
-     * Converts a SimpleXML object to an Array recursively
-     * ensuring all sub-elements are arrays as well.
-     *
-     * @param string $sxml The SimpleXML object.
-     * @param array  $arr  The array into which to store results.
-     *
-     * @return array
-     */
-    private static function xmlToArray($sxml, array $arr = null)
-    {
-        foreach ((array) $sxml as $key => $value) {
-            if (is_object($value) || (is_array($value))) {
-                $arr[$key] = static::xmlToArray($value);
-            } else {
-                $arr[$key] = $value;
-            }
-        }
-
-        return $arr;
     }
 }
