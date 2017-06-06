@@ -120,6 +120,24 @@ class Sftp implements Adapter,
     /**
      * {@inheritdoc}
      */
+    public function listDirectory($directory = '')
+    {
+        $this->initialize();
+
+        $path = $directory ? $this->computePath($directory) : $this->directory;
+
+        $contents = $this->sftp->listDirectory($path, true);
+        $directory = $this->directory;
+        array_walk($contents, function(&$input) use ($directory) {
+            $input = str_replace("$directory/", '', $input);
+        });
+
+        return $contents;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function mtime($key)
     {
         $this->initialize();
