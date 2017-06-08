@@ -49,7 +49,6 @@ before_script:
   - if [[ ${TRAVIS_PHP_VERSION:0:4} != "hhvm" ]]; then yes | pecl install ssh2 ; fi
   - cp tests/Gaufrette/Functional/adapters/DoctrineDbal.php.dist tests/Gaufrette/Functional/adapters/DoctrineDbal.php -f
   - composer self-update && composer install --prefer-source --no-interaction
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} != "5.4" ]]; then composer require microsoft/windowsazure:^0.4.3; fi
 
 script:
   - php vendor/bin/phpspec run -fpretty --verbose
