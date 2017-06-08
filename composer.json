@@ -45,19 +45,21 @@
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",
-        "rackspace/php-opencloud"  : "to use Opencloud adapter",
+        "gaufrette/azure-blob-storage-adapter": "to use AzureBlobStorage adapter",
+        "gaufrette/flysystem-adapter": "to use Flysystem adapter",
+        "gaufrette/doctrine-dbal-adapter": "to use DBAL adapter",
+        "gaufrette/phpseclib-sftp-adapter": "to use PhpseclibSftp adapter",
+        "gaufrette/ftp-adapter": "to use Ftp adapter",
+        "gaufrette/aws-s3-adapter": "to use AwsS3 adapter (supports SDK v2 and v3)",
+        "gaufrette/in-memory-adapter": "to use InMemory adapter",
+        "gaufrette/local-adapter": "to use Local adapter",
+        "gaufrette/opencloud-adapter": "to use Opencloud adapter",
+        "gaufrette/zip-adapter": "to use Zip adapter",
+        "gaufrette/gridfs-adapter": "to use GridFS adapter",
         "google/apiclient": "to use GoogleCloudStorage adapter",
-        "phpseclib/phpseclib": "to use PhpseclibSftp adapter",
-        "aws/aws-sdk-php": "to use the Amazon S3 adapter",
-        "doctrine/dbal": "to use the Doctrine DBAL adapter",
-        "microsoft/windowsazure": "to use Microsoft Azure Blob Storage adapter",
-        "league/flysystem": "to use Flysystem adapters",
-        "ext-zip": "to use the Zip adapter",
         "ext-curl": "*",
         "ext-mbstring": "*",
-        "ext-mongodb": "*",
-        "ext-fileinfo": "This extension is used to automatically detect the content-type of a file in the AwsS3, OpenCloud, AzureBlogStorage and GoogleCloudStorage adapters",
-        "mongodb/mongodb": "*"
+        "ext-fileinfo": "This extension is used to automatically detect the content-type of a file in the AwsS3, OpenCloud, AzureBlogStorage and GoogleCloudStorage adapters"
     },
     "autoload": {
         "psr-0": { "Gaufrette": "src/" }
