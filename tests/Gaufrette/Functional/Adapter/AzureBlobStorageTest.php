@@ -12,6 +12,12 @@ use Gaufrette\Filesystem;
  */
 class AzureBlobStorageTest extends FunctionalTestCase
 {
+    /** @var string Name of the Azure container used */
+    private $container;
+
+    /** @var AzureBlobStorage */
+    private $adapter;
+
     public function setUp()
     {
         $account = getenv('AZURE_ACCOUNT');
@@ -24,6 +30,17 @@ class AzureBlobStorageTest extends FunctionalTestCase
 
         $connection = sprintf('BlobEndpoint=http://%1$s.blob.core.windows.net/;AccountName=%1$s;AccountKey=%2$s', $account, $key);
 
-        $this->filesystem = new Filesystem(new AzureBlobStorage(new BlobProxyFactory($connection), $containerName, true));
+        $this->container  = uniqid($containerName);
+        $this->adapter    = new AzureBlobStorage(new BlobProxyFactory($connection), $this->container, true);
+        $this->filesystem = new Filesystem($this->adapter);
+    }
+
+    public function tearDown()
+    {
+        if ($this->adapter === null) {
+            return;
+        }
+
+        $this->adapter->deleteContainer($this->container);
     }
 }
