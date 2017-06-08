@@ -10,6 +10,8 @@ env:
   global:
     - AWS_KEY:
     - AWS_SECRET:
+    - AZURE_ACCOUNT:
+    - AZURE_KEY:
 
 php:
   - 5.6
