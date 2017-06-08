@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Exception;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
@@ -11,7 +12,9 @@ use MicrosoftAzure\Storage\Blob\Models\CreateBlobOptions;
 use MicrosoftAzure\Storage\Blob\Models\CreateContainerOptions;
 use MicrosoftAzure\Storage\Blob\Models\DeleteContainerOptions;
 use MicrosoftAzure\Storage\Blob\Models\ListBlobsOptions;
-use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
+use MicrosoftAzure\Storage\Common\ServiceException;
+use Psr\Http\Message\ResponseInterface;
+use SimpleXMLElement;
 
 /**
  * Microsoft Azure Blob Storage adapter.
@@ -456,13 +459,19 @@ class AzureBlobStorage implements Adapter,
      */
     protected function getErrorCodeFromServiceException(ServiceException $exception)
     {
-        $xml = @simplexml_load_string($exception->getResponse()->getBody());
+        if (method_exists($exception, 'getErrorReason')) {
+            $xml = @simplexml_load_string($exception->getErrorReason());
 
-        if ($xml && isset($xml->Code)) {
-            return (string) $xml->Code;
+            if ($xml && isset($xml->Code)) {
+                return (string) $xml->Code;
+            }
+
+            return $exception->getErrorReason();
+        } else {
+            /** @var ResponseInterface $response */
+            $response = $exception->getResponse();
+            return static::parseErrorCode($response);
         }
-
-        return $exception->getErrorText();
     }
 
     /**
@@ -525,5 +534,30 @@ class AzureBlobStorage implements Adapter,
             },
             $blobList->getBlobs()
         );
+    }
+
+    /**
+     * Error message to be parsed.
+     *
+     * @param ResponseInterface $response The response with a response body.
+     *
+     * @return string
+     */
+    protected static function parseErrorCode(ResponseInterface $response)
+    {
+        $errorCode = $response->getReasonPhrase();
+
+        //try to parse using xml serializer, if failed, return the whole body
+        //as the error message.
+        try {
+            $sxml = new SimpleXMLElement($response->getBody());
+
+            if (isset($sxml->Code)) {
+                $errorCode = (string) $sxml->Code;
+            }
+        } catch (Exception $e) {
+        }
+
+        return $errorCode;
     }
 }
