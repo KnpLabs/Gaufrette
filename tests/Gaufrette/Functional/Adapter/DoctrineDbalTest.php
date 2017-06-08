@@ -2,8 +2,45 @@
 
 namespace Gaufrette\Functional\Adapter;
 
+use Doctrine\DBAL\DriverManager;
+use Gaufrette\Adapter\DoctrineDbal;
+use Gaufrette\Filesystem;
+
 class DoctrineDbalTest extends FunctionalTestCase
 {
+    /** @var  \Doctrine\DBAL\Connection */
+    private $connection;
+
+    public function setUp()
+    {
+        $this->connection = DriverManager::getConnection([
+            'driver' => 'pdo_sqlite',
+            'memory' => true,
+        ]);
+
+        $schema = $this->connection->getSchemaManager()->createSchema();
+
+        $table = $schema->createTable('gaufrette');
+        $table->addColumn('key', 'string', array('unique' => true));
+        $table->addColumn('content', 'blob');
+        $table->addColumn('mtime', 'integer');
+        $table->addColumn('checksum', 'string', array('length' => 32));
+
+        // Generates the SQL from the defined schema and execute each line
+        array_map([$this->connection, 'exec'], $schema->toSql($this->connection->getDatabasePlatform()));
+
+        $this->filesystem = new Filesystem(new DoctrineDbal($this->connection, 'gaufrette'));
+    }
+
+    public function tearDown()
+    {
+        $schemaManager = $this->connection->getSchemaManager();
+
+        if (in_array('gaufrette', $schemaManager->listTableNames())) {
+            $schemaManager->dropTable('gaufrette');
+        }
+    }
+
     /**
     * @test
     */

@@ -54,7 +54,6 @@ before_script:
   - sudo chown gaufrette:gaufrette /home/gaufrette /srv/ftp
   - sudo cp .travis/vsftpd.conf /etc/vsftpd.conf
   - sudo service vsftpd restart
-  - cp tests/Gaufrette/Functional/adapters/DoctrineDbal.php.dist tests/Gaufrette/Functional/adapters/DoctrineDbal.php -f
   - composer self-update && composer install --prefer-source --no-interaction
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then yes | pecl install ssh2 && composer require herzult/php-ssh; fi
 
