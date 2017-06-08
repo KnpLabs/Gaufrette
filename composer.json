@@ -42,7 +42,8 @@
         "league/flysystem": "~1.0",
         "mongodb/mongodb": "~1.1.4",
         "microsoft/windowsazure": "~0.4",
-        "microsoft/azure-storage": "~0.15.0"
+        "microsoft/azure-storage": "~0.15.0",
+        "akeneo/phpspec-skip-example-extension": "~1.2"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",
