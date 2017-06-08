@@ -18,7 +18,7 @@ class AzureBlobStorageTest extends FunctionalTestCase
         $secret = getenv('AZURE_SECRET');
         $containerName = getenv('AZURE_CONTAINER');
         if (empty($key) || empty($secret) || empty($containerName)) {
-            $this->markTestSkipped();
+            $this->markTestSkipped('Either AZURE_KEY, AZURE_SECRET and/or AZURE_CONTAINER env variables are not defined.');
         }
 
         $connection = sprintf('BlobEndpoint=http://%1$s.blob.core.windows.net/;AccountName=%1$s;AccountKey=%2$s', $key, $secret);
