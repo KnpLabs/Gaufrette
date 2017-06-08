@@ -7,6 +7,9 @@ require_once 'functions.php';
 
 use PhpSpec\ObjectBehavior;
 
+/**
+ * @require Ssh\Sftp
+ */
 class SftpSpec extends ObjectBehavior
 {
     /**
