@@ -15,13 +15,13 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
 {
     public function setUp()
     {
+        $account = getenv('AZURE_ACCOUNT');
         $key = getenv('AZURE_KEY');
-        $secret = getenv('AZURE_SECRET');
-        if (empty($key) || empty($secret)) {
-            $this->markTestSkipped();
+        if (empty($account) || empty($key)) {
+            $this->markTestSkipped('Either AZURE_ACCOUNT and/or AZURE_KEY env variables are not defined.');
         }
 
-        $connection = sprintf('BlobEndpoint=http://%1$s.blob.core.windows.net/;AccountName=%1$s;AccountKey=%2$s', $key, $secret);
+        $connection = sprintf('BlobEndpoint=http://%1$s.blob.core.windows.net/;AccountName=%1$s;AccountKey=%2$s', $account, $key);
 
         $this->filesystem = new Filesystem(new AzureBlobStorage(new BlobProxyFactory($connection)));
     }
