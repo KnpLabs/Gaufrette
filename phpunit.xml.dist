@@ -35,8 +35,8 @@
         <env name="FTP_BASE_DIR" value="" />-->
 
         <!-- Configuration for Azure adapter -->
-        <!--<env name="AZURE_KEY" value="" />
-        <env name="AZURE_SECRET" value="" />
+        <!--<env name="AZURE_ACCOUNT" value="" />
+        <env name="AZURE_KEY" value="" />
         <env name="AZURE_CONTAINER" value="" />-->
     </php>
 
