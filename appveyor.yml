@@ -19,6 +19,11 @@ environment:
   RACKSPACE_APIKEY:
     secure: CqBlB4EVIM2FMaYxBdplTaQzw8JgKElxYvKYpXUXPHpOdwJcnYy0gk2KdjF4fXDM
   RACKSPACE_CONTAINER: gaufretteci
+  AZURE_ACCOUNT:
+    secure: s6JCZ8ztVGvVYprceONZOg==
+  AZURE_KEY:
+    secure: 6+9kd9n/BO65LI8ZCJJXOwo9v5QmMULKWExHgECe+rnflaw+ZiQ8jFfHwxxjOfUF1qulAyxHQmDj7M3Cfvbe/DAASjk52ngEMvHC6wv2/Eo0cBMQiUlS9vPeUlvkUy1L
+  AZURE_CONTAINER: gaufretteci
 
 init:
   - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;%PATH%
