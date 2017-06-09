@@ -9,7 +9,7 @@ RUN apt-get update && \
         libssh2-1-dev \
         libssl-dev \
         unzip \
-        zlib1g-dev \
+        libzip-dev \
     && rm -rf /var/lib/apt/lists/* && \
     pecl install mongodb ssh2-alpha zip && \
     echo 'extension=/usr/local/lib/php/extensions/no-debug-non-zts-20160303/mongodb.so' >> /usr/local/etc/php/conf.d/mongodb.ini && \
@@ -20,7 +20,6 @@ COPY composer.json ${SRC_DIR}/
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer global require hirak/prestissimo && \
     composer update --prefer-lowest --prefer-stable && \
-    composer require microsoft/windowsazure:~0.5 && \
     rm -rf ~/.composer/cache/*
 
 VOLUME ${SRC_DIR}/vendor

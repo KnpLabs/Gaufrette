@@ -13,6 +13,10 @@ use Gaufrette\Filesystem;
  */
 class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
 {
+    private $adapter;
+
+    private $containers = [];
+
     public function setUp()
     {
         $account = getenv('AZURE_ACCOUNT');
@@ -23,7 +27,8 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
 
         $connection = sprintf('BlobEndpoint=http://%1$s.blob.core.windows.net/;AccountName=%1$s;AccountKey=%2$s', $account, $key);
 
-        $this->filesystem = new Filesystem(new AzureBlobStorage(new BlobProxyFactory($connection)));
+        $this->adapter = new AzureBlobStorage(new BlobProxyFactory($connection));
+        $this->filesystem = new Filesystem($this->adapter);
     }
 
     /**
@@ -32,13 +37,14 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldWriteAndRead()
     {
-        $this->assertEquals(12, $this->filesystem->write('container1/foo', 'Some content'));
-        $this->assertEquals(13, $this->filesystem->write('test/subdir/foo', 'Some content1', true));
+        $path1 = $this->createUniqueContainerName('container') . '/foo';
+        $path2 = $this->createUniqueContainerName('test') . '/subdir/foo';
 
-        $this->assertEquals('Some content', $this->filesystem->read('container1/foo'));
-        $this->assertEquals('Some content1', $this->filesystem->read('test/subdir/foo'));
-        $this->filesystem->delete('container1/foo');
-        $this->filesystem->delete('test/subdir/foo');
+        $this->assertEquals(12, $this->filesystem->write($path1, 'Some content'));
+        $this->assertEquals(13, $this->filesystem->write($path2, 'Some content1', true));
+
+        $this->assertEquals('Some content', $this->filesystem->read($path1));
+        $this->assertEquals('Some content1', $this->filesystem->read($path2));
     }
 
     /**
@@ -47,11 +53,12 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldUpdateFileContent()
     {
-        $this->filesystem->write('container2/foo', 'Some content');
-        $this->filesystem->write('container2/foo', 'Some content updated', true);
+        $path = $this->createUniqueContainerName('container') . '/foo';
 
-        $this->assertEquals('Some content updated', $this->filesystem->read('container2/foo'));
-        $this->filesystem->delete('container2/foo');
+        $this->filesystem->write($path, 'Some content');
+        $this->filesystem->write($path, 'Some content updated', true);
+
+        $this->assertEquals('Some content updated', $this->filesystem->read($path));
     }
 
     /**
@@ -60,15 +67,17 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldCheckIfFileExists()
     {
-        $this->assertFalse($this->filesystem->has('container3/foo'));
+        $path1 = $this->createUniqueContainerName('container') . '/foo';
+        $path2 = $this->createUniqueContainerName('test') . '/somefile';
 
-        $this->filesystem->write('container3/foo', 'Some content');
+        $this->assertFalse($this->filesystem->has($path1));
 
-        $this->assertTrue($this->filesystem->has('container3/foo'));
-        $this->assertFalse($this->filesystem->has('test/somefile'));
-        $this->assertFalse($this->filesystem->has('test/somefile'));
+        $this->filesystem->write($path1, 'Some content');
 
-        $this->filesystem->delete('container3/foo');
+        $this->assertTrue($this->filesystem->has($path1));
+        // @TODO: why is it done two times?
+        $this->assertFalse($this->filesystem->has($path2));
+        $this->assertFalse($this->filesystem->has($path2));
     }
 
     /**
@@ -77,11 +86,11 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldGetMtime()
     {
-        $this->filesystem->write('container4/foo', 'Some content');
+        $path = $this->createUniqueContainerName('container') . '/foo';
 
-        $this->assertGreaterThan(0, $this->filesystem->mtime('container4/foo'));
+        $this->filesystem->write($path, 'Some content');
 
-        $this->filesystem->delete('container4/foo');
+        $this->assertGreaterThan(0, $this->filesystem->mtime($path));
     }
 
     /**
@@ -101,19 +110,22 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldRenameFile()
     {
-        $this->filesystem->write('container6/foo', 'Some content');
-        $this->filesystem->rename('container6/foo', 'container6-new/boo');
+        $somedir = $this->createUniqueContainerName('somedir');
+        $path1 = $this->createUniqueContainerName('container') . '/foo';
+        $path2 = $this->createUniqueContainerName('container-new') . '/boo';
+        $path3 = $somedir . '/sub/boo';
 
-        $this->assertFalse($this->filesystem->has('container6/foo'));
-        $this->assertEquals('Some content', $this->filesystem->read('container6-new/boo'));
-        $this->filesystem->delete('container6-new/boo');
+        $this->filesystem->write($path1, 'Some content');
+        $this->filesystem->rename($path1, $path2);
 
-        $this->filesystem->write('container6/foo', 'Some content');
-        $this->filesystem->rename('container6/foo', 'somedir/sub/boo');
+        $this->assertFalse($this->filesystem->has($path1));
+        $this->assertEquals('Some content', $this->filesystem->read($path2));
 
-        $this->assertFalse($this->filesystem->has('somedir/sub/foo'));
-        $this->assertEquals('Some content', $this->filesystem->read('somedir/sub/boo'));
-        $this->filesystem->delete('somedir/sub/boo');
+        $this->filesystem->write($path1, 'Some content');
+        $this->filesystem->rename($path1, $path3);
+
+        $this->assertFalse($this->filesystem->has($somedir . '/sub/foo'));
+        $this->assertEquals('Some content', $this->filesystem->read($path3));
     }
 
     /**
@@ -122,13 +134,15 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldDeleteFile()
     {
-        $this->filesystem->write('container7/foo', 'Some content');
+        $path = $this->createUniqueContainerName('container') . '/foo';
 
-        $this->assertTrue($this->filesystem->has('container7/foo'));
+        $this->filesystem->write($path, 'Some content');
 
-        $this->filesystem->delete('container7/foo');
+        $this->assertTrue($this->filesystem->has($path));
 
-        $this->assertFalse($this->filesystem->has('container7/foo'));
+        $this->filesystem->delete($path);
+
+        $this->assertFalse($this->filesystem->has($path));
     }
 
     /**
@@ -137,18 +151,18 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldFetchKeys()
     {
-        $this->filesystem->write('container8-1/foo', 'Some content');
-        $this->filesystem->write('container8-2/bar', 'Some content');
-        $this->filesystem->write('container8-3/baz', 'Some content');
+        $path1 = $this->createUniqueContainerName('container-1') . '/foo';
+        $path2 = $this->createUniqueContainerName('container-2') . '/bar';
+        $path3 = $this->createUniqueContainerName('container-3') . '/baz';
+
+        $this->filesystem->write($path1, 'Some content');
+        $this->filesystem->write($path2, 'Some content');
+        $this->filesystem->write($path3, 'Some content');
 
         $actualKeys = $this->filesystem->keys();
-        foreach (['container8-1/foo', 'container8-2/bar', 'container8-3/baz'] as $key) {
+        foreach ([$path1, $path2, $path3] as $key) {
             $this->assertContains($key, $actualKeys);
         }
-
-        $this->filesystem->delete('container8-1/foo');
-        $this->filesystem->delete('container8-2/bar');
-        $this->filesystem->delete('container8-3/baz');
     }
 
     /**
@@ -157,11 +171,13 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldWorkWithHiddenFiles()
     {
-        $this->filesystem->write('container9/.foo', 'hidden');
-        $this->assertTrue($this->filesystem->has('container9/.foo'));
-        $this->assertContains('container9/.foo', $this->filesystem->keys());
-        $this->filesystem->delete('container9/.foo');
-        $this->assertFalse($this->filesystem->has('container9/.foo'));
+        $path = $this->createUniqueContainerName('container') . '/.foo';
+
+        $this->filesystem->write($path, 'hidden');
+        $this->assertTrue($this->filesystem->has($path));
+        $this->assertContains($path, $this->filesystem->keys());
+        $this->filesystem->delete($path);
+        $this->assertFalse($this->filesystem->has($path));
     }
 
     /**
@@ -170,8 +186,10 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldKeepFileObjectInRegister()
     {
-        $FileObjectA = $this->filesystem->createFile('container10/somefile');
-        $FileObjectB = $this->filesystem->createFile('container10/somefile');
+        $path = $this->createUniqueContainerName('container') . '/somefile';
+
+        $FileObjectA = $this->filesystem->createFile($path);
+        $FileObjectB = $this->filesystem->createFile($path);
 
         $this->assertTrue($FileObjectA === $FileObjectB);
     }
@@ -182,14 +200,28 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      */
     public function shouldWrtieToSameFile()
     {
-        $FileObjectA = $this->filesystem->createFile('container11/somefile');
+        $path = $this->createUniqueContainerName('container') . '/somefile';
+
+        $FileObjectA = $this->filesystem->createFile($path);
         $FileObjectA->setContent('ABC');
 
-        $FileObjectB = $this->filesystem->createFile('container11/somefile');
+        $FileObjectB = $this->filesystem->createFile($path);
         $FileObjectB->setContent('DEF');
 
         $this->assertEquals('DEF', $FileObjectB->getContent());
+    }
 
-        $this->filesystem->delete('container11/somefile');
+    private function createUniqueContainerName($prefix)
+    {
+        $this->containers[] = $container = uniqid($prefix);
+
+        return $container;
+    }
+
+    public function tearDown()
+    {
+        foreach ($this->containers as $container) {
+            $this->adapter->deleteContainer($container);
+        }
     }
 }
