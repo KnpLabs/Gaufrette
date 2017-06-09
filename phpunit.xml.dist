@@ -42,8 +42,7 @@
         <!-- Configuration for Google Cloud Client adapter -->
         <!--<env name="GCCS_PROJECT_ID" value="" />
         <env name="GCCS_BUCKET_NAME" value="" />
-        <env name="GCCS_JSON_KEY_FILE_PATH" value="" />-->
-  
+        <env name="GCCS_JSON_KEY_FILE_PATH" value="" />-->  
     </php>
 
     <testsuites>

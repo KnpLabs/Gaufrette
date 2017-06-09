@@ -42,7 +42,7 @@
         "mikey179/vfsStream": "~1.2.0",
         "league/flysystem": "~1.0",
         "mongodb/mongodb": "~1.1.4",
-        "google/cloud-storage": "dev-master"
+        "google/cloud-storage": "~1.0"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",
