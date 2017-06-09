@@ -3,7 +3,6 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\Adapter\MetadataSupporter;
-use Gaufrette\Adapter\ResourcesSupporter;
 use Gaufrette\Adapter\ListKeysAware;
 
 /**
@@ -13,7 +12,7 @@ use Gaufrette\Adapter\ListKeysAware;
  * @package Gaufrette
  * @author  Lech Buszczynski <lecho@phatcat.eu>
  */
-class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesSupporter, ListKeysAware
+class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ListKeysAware
 {
     protected $storageClient;
     protected $bucket;
@@ -101,9 +100,13 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
     {   
         $this->isBucket();     
         $object = $this->bucket->object($this->computePath($key));
-        $info = $object->info();
-        $this->setResources($key, $info);
-        return $object->downloadAsString();
+        try {
+            $info = $object->info();
+            $this->setResources($key, $info);
+            return $object->downloadAsString();
+        } catch (\Exception $e) {
+            return false;
+        }
     }
     
     /**
@@ -195,9 +198,13 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ResourcesS
     public function delete($key)
     {
         $this->isBucket();
-        $object = $this->bucket->object($this->computePath($key));
-        $object->delete();
-        $this->setMetadata($key, null);
+        try {
+            $object = $this->bucket->object($this->computePath($key));
+            $object->delete();
+            $this->setMetadata($key, null);
+        } catch (\Exception $e) {
+            return false;
+        }
         return true;
     }
     
