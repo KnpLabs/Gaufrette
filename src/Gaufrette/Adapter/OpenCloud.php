@@ -3,6 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Gaufrette\Util;
 use Guzzle\Http\Exception\BadResponseException;
 use OpenCloud\Common\Exceptions\DeleteError;
 use OpenCloud\ObjectStore\Resource\Container;
@@ -106,12 +107,12 @@ class OpenCloud implements Adapter,
     public function write($key, $content)
     {
         try {
-            $object = $this->getContainer()->uploadObject($key, $content);
+            $this->getContainer()->uploadObject($key, $content);
         } catch (CreateUpdateError $updateError) {
             return false;
         }
 
-        return $object->getContentLength();
+        return Util\Size::fromContent($content);
     }
 
     /**
