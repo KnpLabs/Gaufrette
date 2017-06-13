@@ -161,7 +161,7 @@ class OpenCloud implements Adapter,
     public function mtime($key)
     {
         if ($object = $this->tryGetObject($key)) {
-            return $object->getLastModified();
+            return (new \DateTime($object->getLastModified()))->format('U');
         }
 
         return false;
