@@ -6,6 +6,7 @@ use Guzzle\Http\Exception\BadResponseException;
 use OpenCloud\Common\Exceptions\CreateUpdateError;
 use OpenCloud\Common\Exceptions\DeleteError;
 use OpenCloud\ObjectStore\Exception\ObjectNotFoundException;
+use OpenCloud\ObjectStore\Resource\DataObject;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -235,5 +236,20 @@ class OpenCloudSpec extends ObjectBehavior
         $this->beConstructedWith($objectStore, $containerName, true);
 
         $this->shouldThrow('\RuntimeException')->duringExists('test');
+    }
+
+    function it_returns_false_if_the_object_does_not_exists_when_fetching_mtime($container)
+    {
+        $container->getObject('foo')->willThrow(ObjectNotFoundException::class);
+
+        $this->mtime('foo')->shouldReturn(false);
+    }
+
+    function it_fetches_file_mtime(DataObject $object, $container)
+    {
+        $container->getObject('foo')->willReturn($object);
+        $object->getLastModified()->willReturn('Tue, 13 Jun 2017 22:02:34 GMT');
+
+        $this->mtime('foo')->shouldReturn('1497391354');
     }
 }
