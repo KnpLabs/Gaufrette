@@ -14,6 +14,11 @@ environment:
   AWS_SECRET:
     secure: MiAf2q7mnqSIZSoChd9v3pwUrXHeAEpZP8Zc0E0qjiOBXPvplzJVtrkWRwTNlQl3
   AWS_BUCKET: gaufretteci
+  RACKSPACE_USER:
+    secure: aEIZdm+IXe9dGLOnSmgu8A==
+  RACKSPACE_APIKEY:
+    secure: CqBlB4EVIM2FMaYxBdplTaQzw8JgKElxYvKYpXUXPHpOdwJcnYy0gk2KdjF4fXDM
+  RACKSPACE_CONTAINER: gaufretteci
 
 init:
   - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;%PATH%
