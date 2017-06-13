@@ -6,13 +6,6 @@ cache:
   directories:
     - $HOME/.composer/cache/files
 
-env:
-  global:
-    - AWS_KEY:
-    - AWS_SECRET:
-    - AZURE_ACCOUNT:
-    - AZURE_KEY:
-
 php:
   - 5.6
   - 7.0
