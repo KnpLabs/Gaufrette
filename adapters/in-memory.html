@@ -69,6 +69,11 @@
                                             Implementing new Adapter
                                         </a>
                                     </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/extras.html">
+                                            Extras
+                                        </a>
+                                    </li>
                                                             </ul>
                                                     <p class="text-muted">
                                 Adapters
@@ -158,6 +163,8 @@
                 <section class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
                     <h1 id="inmemory">InMemory</h1>
 <p>This adapter is useful in test environments where you don't want to depend on external filesystems.</p>
+<p>First, you will need to install the adapter:</p>
+<pre><code class="language-bash">composer require gaufrette/in-memory-adapter</code></pre>
 <h2 id="example">Example</h2>
 <p><code>InMemory</code> adapter only takes an array of available files as argument.</p>
 <pre><code>&lt;?php

@@ -69,7 +69,7 @@
                                             Implementing new Adapter
                                         </a>
                                     </li>
-                                                                    <li class="">
+                                                                    <li class="active">
                                         <a href="https://knplabs.github.io/Gaufrette/extras.html">
                                             Extras
                                         </a>
@@ -135,7 +135,7 @@
                                             Local
                                         </a>
                                     </li>
-                                                                    <li class="active">
+                                                                    <li class="">
                                         <a href="https://knplabs.github.io/Gaufrette/adapters/open-cloud.html">
                                             OpenCloud
                                         </a>
@@ -161,66 +161,38 @@
 
                 
                 <section class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
-                    <h1 id="opencloud-amp-lazyopencloud">OpenCloud &amp; LazyOpenCloud</h1>
-<p><strong>Warning: LazyOpenCloud adapter has been deprecated since v0.4.0 and will be removed in v1.0.0.</strong></p>
-<p>First, you will need to install the adapter:</p>
-<pre><code class="language-bash">composer require gaufrette/opencloud-adapter</code></pre>
-<p>To use the OpenCloud adapter you will need to create a connection using the <a href="https://github.com/rackspace/php-opencloud">OpenCloud SDK</a>.
-You can then fetch the ObjectStore which is required for the OpenCloud adapter.</p>
-<h2 id="opencloud-example">OpenCloud Example</h2>
+                    <h1 id="gaufrette-extras">Gaufrette Extras</h1>
+<p>Some extra features built on top of Gaufette live in a package separate from the core. It provides:</p>
+<ul>
+<li><strong>Resolvable filesystem</strong>: introduce <code>resolve()</code> method to transform an object path into a URI.</li>
+</ul>
+<p>In order to install it:</p>
+<pre><code>composer require gaufrette/extras</code></pre>
+<h2 id="resolvable-filesystem">Resolvable filesystem</h2>
+<p>Filesystem decorator providing <code>resolve()</code> method to resolve an object path into URI. It uses a resolver
+(implementing <code>ResolverInterface</code>) to do the resolution.</p>
 <pre><code class="language-php">&lt;?php
 
-use OpenCloud\OpenStack;
-use Gaufrette\Adapter\OpenCloud as OpenCloudAdapter;
+use Gaufrette\Filesystem;
+use Gaufrette\Adapter\AwsS3;
+use Gaufrette\Extras\Resolvable\ResolvableFilesystem;
+use Gaufrette\Extras\Resolvable\Resolver\AwsS3PresignedResolver;
 
-$connection = new OpenCloud\OpenStack(
-    'https://example.com/v2/identity',
-    array(
-        'username' =&gt; 'your username',
-        'password' =&gt; 'your Keystone password',
-        'tenantName' =&gt; 'your tenant (project) name'
-    )
-);
-$objectStore = $connection-&gt;objectStoreService('cloudFiles', 'LON', 'publicURL');
-
-$adapter = new OpenCloudAdapter(
-    $objectStore,
-    'container-name'
-);
-$filesystem = new Filesystem($adapter);</code></pre>
-<h2 id="rackspace-example">Rackspace Example</h2>
-<p>Rackspace uses a difference connection class</p>
-<pre><code class="language-php">&lt;?php
-
-use OpenCloud\Rackspace;
-use Gaufrette\Adapter\OpenCloud as OpenCloudAdapter;
-
-$connection = new OpenCloud\Rackspace(
-     'https://identity.api.rackspacecloud.com/v2.0/',
-     array(
-         'username' =&gt; 'rackspace-user',
-         'apiKey' =&gt; '0900af093093788912388fc09dde090ffee09'
-     )
+$client     = // AwsS3 client instantiation
+$decorated  = new Filesystem(new AwsS3($client, 'my_bucket', ['directory' =&gt; 'root/dir']));
+$filesystem = new ResolvableFilesystem(
+    $decorated,
+    new AwsS3PresignedUrlResolver($client, 'my_bucket', 'root/dir')
 );
 
-$objectStore = $connection-&gt;objectStoreService('cloudFiles', 'LON', 'publicURL');
-
-$adapter = new OpenCloudAdapter(
-    $objectStore,
-    'container-name'
-);
-$filesystem = new Filesystem($adapter);</code></pre>
-<h2 id="lazyopencloud-example">LazyOpenCloud Example</h2>
-<p>Instantiating the OpenCloud object store service has some overhead because it issues an authentication request,
-even if you end up not using the filesystem. For better performance you can use a lazy-loading adapter which only authenticates when needed.</p>
-<pre><code class="language-php">&lt;?php
-
-// ... $connection from previous step, either OpenCloud\OpenStack or OpenCloud\Rackspace instance
-
-$factory = new Gaufrette\Adapter\OpenStackCloudFiles\ObjectStoreFactory($connection);
-$adapter = new Gaufrette\Adapter\LazyOpenCloud($factory, 'container-name');
-
-$filesystem = new Filesystem($adapter);</code></pre>
+// should return something like "https://eu-west-1.blabla.aws.com/my_bucket/root/dir/foo/bar.png?token
+var_dump($filesystem-&gt;resolve('foo/bar.png'));</code></pre>
+<p>Currently, the following resolvers are implemented. All can be found in the <code>Gaufrette\Extras\Resolvable\Resolver</code> namespace:</p>
+<ul>
+<li><strong>AwsS3PublicUrlResolver</strong>: Create a URL for an object stored on S3 with public ACL.</li>
+<li><strong>AwsS3PresignedUrlResolver</strong>: Create a temporary URL, valid for a given amount of time. Useful when you have to share object(s) with private ACL.</li>
+<li><strong>StaticUrlResolver</strong>: Resolves the object into an URL by concatenating a prefix with object pah.</li>
+</ul>
                 </section>
 
             </div>

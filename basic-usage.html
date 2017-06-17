@@ -69,6 +69,11 @@
                                             Implementing new Adapter
                                         </a>
                                     </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/extras.html">
+                                            Extras
+                                        </a>
+                                    </li>
                                                             </ul>
                                                     <p class="text-muted">
                                 Adapters
@@ -174,7 +179,10 @@ $filesystem-&gt;write('myFile', 'Hello world!');
 // Or use File objects
 $file = $filesystem-&gt;get('myFile');
 echo sprintf('%s (modified %s): %s', $file-&gt;getKey(), date('d/m/Y, H:i:s', $file-&gt;getMtime()), $file-&gt;getContent());
-// Will print something like: "myFile (modified 17/01/2016 18:40:36): Hello world!"</code></pre>
+// Will print something like: "myFile (modified 17/01/2016 18:40:36): Hello world!"
+
+// You can also rename your file like this:
+$file-&gt;rename('my/new/file');</code></pre>
                 </section>
 
             </div>

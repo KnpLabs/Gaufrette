@@ -69,6 +69,11 @@
                                             Implementing new Adapter
                                         </a>
                                     </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/extras.html">
+                                            Extras
+                                        </a>
+                                    </li>
                                                             </ul>
                                                     <p class="text-muted">
                                 Adapters
@@ -157,6 +162,8 @@
                 
                 <section class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
                     <h1 id="azureblobstorage">AzureBlobStorage</h1>
+<p>First, you will need to install the adapter:</p>
+<pre><code class="language-bash">composer require gaufrette/azure-blob-storage-adapter</code></pre>
 <p>Azure Blob Storage is the storage service provided by Microsoft Windows Azure cloud environment. To use this adapter
 you need to install the <a href="http://www.windowsazure.com/en-us/develop/php/common-tasks/download-php-sdk/">Azure SDK for php</a>
 into your project.</p>
@@ -167,13 +174,33 @@ into your project.</p>
 <a href="https://manage.windowsazure.com">Windows Azure management console</a>.</p>
 <p>Thanks to the blob proxy factory, the adapter lazy loads the connection to the endpoint, so it will not create any
 connection until it's really needed (eg. when a read or write operation is issued).</p>
+<h2 id="multi-container-mode">Multi-container mode</h2>
+<p>If you specify a container name, adapter will use only that container for all blobs.</p>
+<p>If you omit specifying a container, it will use a so-called multi-container mode in which container name is determined
+directly from key. This allows for more flexibility if you're using dedicated storage accounts per asset type
+(ie. one for images, one for videos) as you get to group assets logically, use container-level privileges, etc.</p>
 <h2 id="example">Example</h2>
 <pre><code class="language-php">&lt;?php
 
 $connectionString = '...';
 $factory = new Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactory($connectionString);
+
+// single-container mode
 $adapter = new Gaufrette\Adapter\AzureBlobStorage($factory, 'my-container');
-$filesystem = new Gaufrette\Filesystem($adapter);</code></pre>
+$filesystem = new Gaufrette\Filesystem($adapter);
+// container=my-container, path=my/stuff.txt
+$filesystem-&gt;write('my/stuff.txt', 'This is my stuff');
+
+// multi-container mode
+$adapter = new Gaufrette\Adapter\AzureBlobStorage($factory);
+// make auto-created containers public by default
+$containerOptions = new MicrosoftAzure\Storage\Blob\Models\CreateContainerOptions;
+$containerOptions-&gt;setPublicAccess(true);
+$adapter-&gt;setCreateContainerOptions($containerOptions);
+$filesystem = new Gaufrette\Filesystem($adapter);
+// container=my (auto-created), path=stuff.txt
+$filesystem-&gt;write('my/stuff.txt', 'This is my stuff');
+</code></pre>
                 </section>
 
             </div>

@@ -69,6 +69,11 @@
                                             Implementing new Adapter
                                         </a>
                                     </li>
+                                                                    <li class="">
+                                        <a href="https://knplabs.github.io/Gaufrette/extras.html">
+                                            Extras
+                                        </a>
+                                    </li>
                                                             </ul>
                                                     <p class="text-muted">
                                 Adapters
@@ -160,10 +165,10 @@
 <h2 id="prerequisites">Prerequisites</h2>
 <p>In order to use GridFS adapter, you should have accesible MongoDB instance, <a href="http://docs.php.net/manual/en/book.mongodb.php">MongoDB PHP driver</a> and<br />
 the <a href="https://docs.mongodb.com/php-library/master/"><code>mongodb/mongodb</code></a> library installed.</p>
-<p>You can install the MongoDB extension with</p>
+<p>First can install the MongoDB extension with:</p>
 <pre><code class="language-bash">pecl install mongodb</code></pre>
-<p>And the PHP library with</p>
-<pre><code class="language-bash">composer require mongodb/mongodb</code></pre>
+<p>Then, install the adapter:</p>
+<pre><code class="language-bash">composer require gaufrette/gridfs-adapter</code></pre>
 <h2 id="usage">Usage</h2>
 <pre><code class="language-php">
 $client = new \MongoDB\Client('mongodb://localhost:27017');
