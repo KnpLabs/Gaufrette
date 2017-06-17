@@ -4,6 +4,8 @@ currentMenu: amazon-s3
 
 # AmazonS3 & AclAwareAmazonS3
 
+**Warning: This adapter has been deprecated since v0.4.0 and will be removed in v1.0.0. You should rather use the AwsS3 adapter.**
+
 When using the legacy Amazon S3 adapters (aws-sdk-php < 2), you will need to specify a CA
 certificate to be able to talk to Amazon servers in https. You can use
 the one which is shipped with the SDK by defining before creating the
