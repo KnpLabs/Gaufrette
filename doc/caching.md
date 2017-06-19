@@ -6,7 +6,7 @@ currentMenu: caching
 
 If you have to deal with a slow filesystem, it is out of question to use it directly.
 So, you need a cache! Happily, Gaufrette offers a cache system ready for use.
-It consist of an adapter decorator itself composed of two adapters:
+It consists of an adapter decorator itself composed of two adapters:
 
 * The *source* adapter that should be cached
 * The *cache* adapter that is used to cache
