@@ -2,6 +2,8 @@
 
 namespace Gaufrette;
 
+use Gaufrette\Util\Path;
+
 /**
  * Stream wrapper class for the Gaufrette filesystems.
  *
@@ -250,7 +252,7 @@ class StreamWrapper
                 'query' => null,
                 'fragment' => null,
             ),
-            parse_url($path) ?: array()
+            Path::parseUrl($path) ?: array()
         );
 
         $domain = $parts['host'];
