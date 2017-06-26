@@ -40,6 +40,28 @@ to install before using Gaufrette anymore.
 
 Symfony integration is available through [KnpLabs/KnpGaufretteBundle](https://github.com/KnpLabs/KnpGaufretteBundle).
 
+### Maintainers
+
+Here is the list of dedicated maintainer(s) for every adapter not deprecated. If you don't receive any response to 
+your issue or pull request in a timely manner, ping us:
+
+| Adapter            | Referent                    |
+|--------------------|-----------------------------|
+| AwsS3              | @NiR-                       |
+| AzureBlobStorage   | @NiR-                       |
+| DoctrineDbal       | @pedrotroller, @NicolasNSSM |
+| Flysystem          | @nicolasmure                |
+| Ftp                | @fabschurt                  |
+| GoogleCloudStorage | @AntoineLelaisant           |
+| GridFS             | @NiR-                       |
+| InMemory           |                             |
+| Local              |                             |
+| OpenCloud          | @NiR-                       |
+| PhpseclibSftp      | @fabschurt                  |
+| Zip                |                             |
+
+For `InMemory`, `Local` and `Zip` adapters everyone in this list is considered as a maintainer.
+
 ### Launch the Test Suite
 
 Requires:
