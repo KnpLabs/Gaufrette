@@ -30,6 +30,12 @@ solution.
 
 Read the official [Gaufrette documentation](http://knplabs.github.io/Gaufrette/).
 
+### Metapackages for adapters
+
+Every maintained adapter now have a dedicated metapackage. You can [find the list on packagist](https://packagist.org/packages/gaufrette/). 
+**We highly recommend you to use them as they contain their own requirements**: you don't need to worry about third-party dependencies 
+to install before using Gaufrette anymore.
+
 ### Symfony integration
 
 Symfony integration is available through [KnpLabs/KnpGaufretteBundle](https://github.com/KnpLabs/KnpGaufretteBundle).
