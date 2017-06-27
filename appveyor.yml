@@ -61,4 +61,4 @@ install:
 test_script:
   - cd C:\projects\gaufrette
   - vendor\bin\phpspec run -fpretty --verbose
-  - vendor\bin\phpunit -c phpunit.xml.dist
+  - vendor\bin\phpunit --verbose -c phpunit.xml.dist
