@@ -4,6 +4,8 @@ currentMenu: open-cloud
 
 # OpenCloud & LazyOpenCloud
 
+**Warning: LazyOpenCloud adapter has been deprecated since v0.4.0 and will be removed in v1.0.0.**
+
 First, you will need to install the adapter:
 ```bash
 composer require gaufrette/opencloud-adapter

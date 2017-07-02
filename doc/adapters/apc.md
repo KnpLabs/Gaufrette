@@ -4,6 +4,8 @@ currentMenu: apc
 
 # APC
 
+**Warning: This adapter has been deprecated since v0.4.0 and will be removed in v1.0.0.**
+
 `apc` extension should be enabled in order to use this adapter.
 
 ## Example

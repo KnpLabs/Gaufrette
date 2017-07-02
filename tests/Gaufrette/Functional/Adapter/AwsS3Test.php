@@ -26,7 +26,7 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         $secret = getenv('AWS_SECRET');
 
         if (empty($key) || empty($secret)) {
-            $this->markTestSkipped();
+            $this->markTestSkipped('Either AWS_KEY and/or AWS_SECRET env variables are not defined.');
         }
 
         if (self::$SDK_VERSION === null) {
