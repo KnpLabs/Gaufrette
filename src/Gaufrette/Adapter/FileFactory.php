@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\File;
 use Gaufrette\Filesystem;
 
 /**
