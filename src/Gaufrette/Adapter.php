@@ -2,6 +2,7 @@
 
 namespace Gaufrette;
 
+use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Exception\StorageFailure;
 
 /**
@@ -19,6 +20,7 @@ interface Adapter
      *
      * @return string
      *
+     * @throws FileNotFound
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function read($key);
@@ -62,6 +64,7 @@ interface Adapter
      *
      * @return int An UNIX like timestamp
      *
+     * @throws FileNotFound
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function mtime($key);
@@ -71,6 +74,7 @@ interface Adapter
      *
      * @param string $key
      *
+     * @throws FileNotFound
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function delete($key);
@@ -81,7 +85,7 @@ interface Adapter
      * @param string $sourceKey
      * @param string $targetKey
      *
-     * 
+     * @throws FileNotFound
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function rename($sourceKey, $targetKey);
