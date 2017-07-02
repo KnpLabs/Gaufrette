@@ -8,6 +8,8 @@ use Gaufrette\Filesystem;
 
 class AwsS3Test extends FunctionalTestCase
 {
+    use FileNotFoundTests;
+
     /** @var int */
     static private $SDK_VERSION;
 
