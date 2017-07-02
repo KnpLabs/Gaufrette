@@ -2,6 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Exception\StorageFailure;
+
 /**
  * Interface which add mime type provider support to adapter.
  *
@@ -15,6 +17,8 @@ interface MimeTypeProvider
      * @param string $key
      *
      * @return string
+     *
+     * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function mimeType($key);
 }
