@@ -36,10 +36,8 @@ $s3client = new S3Client([
 ]);
 // For aws-sdk-php v2
 $s3client = S3Client::factory([
-    'credentials' => [
-        'key'     => 'your_key_here',
-        'secret'  => 'your_secret',
-    ],
+    'key'     => 'your_key_here',
+    'secret'  => 'your_secret',
     'version' => '2006-03-01',
     'region'  => 'eu-west-1',
 ]);

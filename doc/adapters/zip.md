@@ -9,6 +9,12 @@ First, you will need to install the adapter:
 composer require gaufrette/zip-adapter
 ```
 
+You need zip extension too:
+```bash
+sudo apt-get install libzip-dev # On Debian, Ubuntu, ...
+sudo pecl install zip
+```
+
 ## Example
 
 ```php
