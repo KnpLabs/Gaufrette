@@ -168,6 +168,10 @@ class FunctionalTestCase extends \PHPUnit_Framework_TestCase
      */
     public function shouldUnlinkFile()
     {
+        if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
+            $this->markTestSkipped('Flaky test on windows.');
+        }
+
         $this->filesystem->write('test.txt', 'some content');
         unlink('gaufrette://filestream/test.txt');
 

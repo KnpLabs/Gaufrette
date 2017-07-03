@@ -15,6 +15,8 @@ sudo apt-get install libzip-dev # On Debian, Ubuntu, ...
 sudo pecl install zip
 ```
 
+**Warning: this adapter is buggy under Windows.**
+
 ## Example
 
 ```php
