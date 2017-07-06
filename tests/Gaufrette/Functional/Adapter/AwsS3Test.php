@@ -63,6 +63,7 @@ class AwsS3Test extends FunctionalTestCase
         $result = $this->client->listObjects(['Bucket' => $this->bucket]);
 
         if (!$result->hasKey('Contents')) {
+            $this->client->deleteBucket(['Bucket' => $this->bucket]);
             return;
         }
 
