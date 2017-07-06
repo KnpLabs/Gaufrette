@@ -52,6 +52,9 @@ class AwsS3 implements Adapter,
             $options
         );
 
+        // Remove trailing slash so it can't be doubled in computePath() method
+        $this->options['directory'] = rtrim($this->options['directory'], '/');
+
         $this->detectContentType = $detectContentType;
     }
 
