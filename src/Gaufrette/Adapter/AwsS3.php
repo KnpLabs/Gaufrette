@@ -196,6 +196,8 @@ class AwsS3 implements Adapter,
      */
     public function listKeys($prefix = '')
     {
+        $this->ensureBucketExists();
+
         $options = ['Bucket' => $this->bucket];
         if ((string) $prefix != '') {
             $options['Prefix'] = $this->computePath($prefix);

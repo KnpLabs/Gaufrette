@@ -47,7 +47,7 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      *
-     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
@@ -59,7 +59,7 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      *
-     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
@@ -74,7 +74,7 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      *
-     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
@@ -97,7 +97,7 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      *
-     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
@@ -129,7 +129,7 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      *
-     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
@@ -141,7 +141,7 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      *
-     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
@@ -159,7 +159,7 @@ class Local implements Adapter,
      *
      * @return bool
      *
-     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
@@ -171,7 +171,7 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      *
-     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
@@ -183,7 +183,7 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      *
-     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
@@ -195,7 +195,7 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      *
-     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
@@ -207,7 +207,7 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      *
-     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
@@ -224,7 +224,7 @@ class Local implements Adapter,
      * @param $path
      * @return string
      *
-     * @throws \OutOfBoundsException If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
@@ -242,10 +242,9 @@ class Local implements Adapter,
      *
      * @return string A path
      *
-     * @throws \InvalidArgumentException if the directory already exists
-     * @throws \OutOfBoundsException If the computed path is out of the
-     *                              directory
-     * @throws \RuntimeException     If directory does not exists and cannot be created
+     * @throws \InvalidArgumentException If the directory already exists
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
+     * @throws \RuntimeException         If directory does not exists and cannot be created
      */
     protected function computePath($key)
     {
