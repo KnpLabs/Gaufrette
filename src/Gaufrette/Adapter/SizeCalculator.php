@@ -1,6 +1,8 @@
 <?php
 
 namespace Gaufrette\Adapter;
+use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Exception\StorageFailure;
 
 /**
  * Interface which add size calculation support to adapter.
@@ -15,6 +17,9 @@ interface SizeCalculator
      * @param string $key
      *
      * @return int
+     *
+     * @throws FileNotFound
+     * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function size($key);
 }

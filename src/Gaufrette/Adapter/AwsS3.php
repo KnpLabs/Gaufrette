@@ -2,8 +2,11 @@
 
 namespace Gaufrette\Adapter;
 
+use Aws\S3\Exception\S3Exception;
 use Gaufrette\Adapter;
 use Aws\S3\S3Client;
+use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Exception\StorageFailure;
 use Gaufrette\Util;
 
 /**
@@ -48,6 +51,9 @@ class AwsS3 implements Adapter,
             ],
             $options
         );
+
+        // Remove trailing slash so it can't be doubled in computePath() method
+        $this->options['directory'] = rtrim($this->options['directory'], '/');
 
         $this->detectContentType = $detectContentType;
     }
@@ -94,7 +100,11 @@ class AwsS3 implements Adapter,
 
             return (string) $object->get('Body');
         } catch (\Exception $e) {
-            return false;
+            if ($e instanceof S3Exception && $e->getResponse()->getStatusCode() === 404) {
+                throw new FileNotFound($key);
+            }
+
+            throw StorageFailure::unexpectedFailure('read', ['key' => $key], $e);
         }
     }
 
@@ -114,7 +124,15 @@ class AwsS3 implements Adapter,
 
             return $this->delete($sourceKey);
         } catch (\Exception $e) {
-            return false;
+            if ($e instanceof S3Exception && $e->getResponse()->getStatusCode() === 404) {
+                throw new FileNotFound($sourceKey);
+            }
+
+            throw StorageFailure::unexpectedFailure(
+                'rename',
+                ['sourceKey' => $sourceKey, 'targetKey' => $targetKey],
+                $e
+            );
         }
     }
 
@@ -143,7 +161,11 @@ class AwsS3 implements Adapter,
 
             return Util\Size::fromContent($content);
         } catch (\Exception $e) {
-            return false;
+            throw StorageFailure::unexpectedFailure(
+                'write',
+                ['key' => $key, 'content' => $content],
+                $e
+            );
         }
     }
 
@@ -152,7 +174,13 @@ class AwsS3 implements Adapter,
      */
     public function exists($key)
     {
-        return $this->service->doesObjectExist($this->bucket, $this->computePath($key));
+        $path = $this->computePath($key);
+
+        try {
+            return $this->service->doesObjectExist($this->bucket, $path);
+        } catch (\Exception $exception) {
+            throw StorageFailure::unexpectedFailure('exists', ['key' => $key], $exception);
+        }
     }
 
     /**
@@ -165,7 +193,11 @@ class AwsS3 implements Adapter,
 
             return strtotime($result['LastModified']);
         } catch (\Exception $e) {
-            return false;
+            if ($e instanceof S3Exception && $e->getResponse()->getStatusCode() === 404) {
+                throw new FileNotFound($key);
+            }
+
+            throw StorageFailure::unexpectedFailure('mtime', ['key' => $key], $e);
         }
     }
 
@@ -179,7 +211,11 @@ class AwsS3 implements Adapter,
 
             return $result['ContentLength'];
         } catch (\Exception $e) {
-            return false;
+            if ($e instanceof S3Exception && $e->getResponse()->getStatusCode() === 404) {
+                throw new FileNotFound($key);
+            }
+
+            throw StorageFailure::unexpectedFailure('size', ['key' => $key], $e);
         }
     }
 
@@ -198,17 +234,20 @@ class AwsS3 implements Adapter,
     {
         $this->ensureBucketExists();
 
-        $options = ['Bucket' => $this->bucket];
-        if ((string) $prefix != '') {
-            $options['Prefix'] = $this->computePath($prefix);
-        } elseif (!empty($this->options['directory'])) {
-            $options['Prefix'] = $this->options['directory'];
-        }
+        $options = [
+            'Bucket' => $this->bucket,
+            'Prefix' => $this->computePath($prefix),
+        ];
 
         $keys = [];
-        $iter = $this->service->getIterator('ListObjects', $options);
-        foreach ($iter as $file) {
-            $keys[] = $this->computeKey($file['Key']);
+        $objects = $this->service->getIterator('ListObjects', $options);
+
+        try {
+            foreach ($objects as $file) {
+                $keys[] = $this->computeKey($file['Key']);
+            }
+        } catch (S3Exception $e) {
+            throw StorageFailure::unexpectedFailure('listKeys', ['prefix' => $prefix], $e);
         }
 
         return $keys;
@@ -224,7 +263,11 @@ class AwsS3 implements Adapter,
 
             return true;
         } catch (\Exception $e) {
-            return false;
+            if ($e instanceof S3Exception && $e->getResponse()->getStatusCode() === 404) {
+                throw new FileNotFound($key);
+            }
+
+            throw StorageFailure::unexpectedFailure('delete', ['key' => $key], $e);
         }
     }
 
@@ -335,7 +378,11 @@ class AwsS3 implements Adapter,
             $result = $this->service->headObject($this->getOptions($key));
             return ($result['ContentType']);
         } catch (\Exception $e) {
-            return false;
+            if ($e instanceof S3Exception && $e->getResponse()->getStatusCode() === 404) {
+                throw new FileNotFound($key);
+            }
+
+            throw StorageFailure::unexpectedFailure('mimeType', ['key' => $key], $e);
         }
     }
 }

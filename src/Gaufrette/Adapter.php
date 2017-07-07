@@ -2,6 +2,9 @@
 
 namespace Gaufrette;
 
+use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Exception\StorageFailure;
+
 /**
  * Interface for the filesystem adapters.
  *
@@ -15,7 +18,10 @@ interface Adapter
      *
      * @param string $key
      *
-     * @return string|bool if cannot read content
+     * @return string
+     *
+     * @throws FileNotFound
+     * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function read($key);
 
@@ -25,7 +31,9 @@ interface Adapter
      * @param string $key
      * @param string $content
      *
-     * @return int|bool The number of bytes that were written into the file
+     * @return int The number of bytes that were written into the file
+     *
+     * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function write($key, $content);
 
@@ -35,6 +43,8 @@ interface Adapter
      * @param string $key
      *
      * @return bool
+     *
+     * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function exists($key);
 
@@ -42,6 +52,8 @@ interface Adapter
      * Returns an array of all keys (files and directories).
      *
      * @return array
+     *
+     * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function keys();
 
@@ -50,7 +62,10 @@ interface Adapter
      *
      * @param string $key
      *
-     * @return int|bool An UNIX like timestamp or false
+     * @return int An UNIX like timestamp
+     *
+     * @throws FileNotFound
+     * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function mtime($key);
 
@@ -59,7 +74,8 @@ interface Adapter
      *
      * @param string $key
      *
-     * @return bool
+     * @throws FileNotFound
+     * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function delete($key);
 
@@ -69,7 +85,8 @@ interface Adapter
      * @param string $sourceKey
      * @param string $targetKey
      *
-     * @return bool
+     * @throws FileNotFound
+     * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function rename($sourceKey, $targetKey);
 
@@ -79,6 +96,8 @@ interface Adapter
      * @param string $key
      *
      * @return bool
+     *
+     * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function isDirectory($key);
 }

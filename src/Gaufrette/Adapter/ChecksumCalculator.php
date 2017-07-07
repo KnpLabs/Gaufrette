@@ -2,6 +2,9 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Exception\StorageFailure;
+
 /**
  * Interface which add checksum calculation support to adapter.
  *
@@ -15,6 +18,9 @@ interface ChecksumCalculator
      * @param string $key
      *
      * @return string
+     *
+     * @throws FileNotFound
+     * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function checksum($key);
 }
