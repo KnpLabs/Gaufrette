@@ -3,8 +3,11 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Exception\StorageFailure;
 use Gaufrette\Exception\UnsupportedAdapterMethodException;
 use League\Flysystem\AdapterInterface;
+use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Util;
 
 class Flysystem implements Adapter, ListKeysAware
@@ -34,7 +37,21 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function read($key)
     {
-        return $this->adapter->read($key)['contents'];
+        try {
+            $result = $this->adapter->read($key);
+        } catch (\Exception $e) {
+            if ($e instanceof FileNotFoundException) {
+                throw new FileNotFound($key, $e->getCode(), $e);
+            }
+
+            throw StorageFailure::unexpectedFailure('read', ['key' => $key], $e);
+        }
+
+        if (false === $result) {
+            throw StorageFailure::unexpectedFailure('read', ['key' => $key]);
+        }
+
+        return $result['contents'];
     }
 
     /**
@@ -42,7 +59,22 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function write($key, $content)
     {
-        return $this->adapter->write($key, $content, $this->config);
+        try {
+            $result = $this->adapter->write($key, $content, $this->config);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure(
+                'write',
+                ['key' => $key, 'content' => $content],
+                $e
+            );
+        }
+
+        if (false === $result) {
+            throw StorageFailure::unexpectedFailure(
+                'write',
+                ['key' => $key, 'content' => $content]
+            );
+        }
     }
 
     /**
@@ -50,7 +82,11 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function exists($key)
     {
-        return $this->adapter->has($key);
+        try {
+            return $this->adapter->has($key);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('exists', ['key' => $key], $e);
+        }
     }
 
     /**
@@ -58,9 +94,13 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function keys()
     {
-        return array_map(function ($content) {
-            return $content['path'];
-        }, $this->adapter->listContents());
+        try {
+            return array_map(function ($content) {
+                return $content['path'];
+            }, $this->adapter->listContents());
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('keys', [], $e);
+        }
     }
 
     /**
@@ -71,14 +111,22 @@ class Flysystem implements Adapter, ListKeysAware
         $dirs = [];
         $keys = [];
 
-        foreach ($this->adapter->listContents() as $content) {
-            if (empty($prefix) || 0 === strpos($content['path'], $prefix)) {
-                if ('dir' === $content['type']) {
-                    $dirs[] = $content['path'];
-                } else {
-                    $keys[] = $content['path'];
+        try {
+            foreach ($this->adapter->listContents() as $content) {
+                if (empty($prefix) || 0 === strpos($content['path'], $prefix)) {
+                    if ('dir' === $content['type']) {
+                        $dirs[] = $content['path'];
+                    } else {
+                        $keys[] = $content['path'];
+                    }
                 }
             }
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure(
+                'listKeys',
+                ['prefix' => $prefix],
+                $e
+            );
         }
 
         return [
@@ -92,7 +140,21 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function mtime($key)
     {
-        return $this->adapter->getTimestamp($key);
+        try {
+            $result = $this->adapter->getTimestamp($key);
+        } catch (\Exception $e) {
+            if ($e instanceof FileNotFoundException) {
+                throw new FileNotFound($key, $e->getCode(), $e);
+            }
+
+            throw StorageFailure::unexpectedFailure('mtime', ['key' => $key], $e);
+        }
+
+        if (false === $result) {
+            throw StorageFailure::unexpectedFailure('mtime', ['key' => $key]);
+        }
+
+        return $result;
     }
 
     /**
@@ -100,7 +162,19 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function delete($key)
     {
-        return $this->adapter->delete($key);
+        try {
+            $result = $this->adapter->delete($key);
+        } catch (\Exception $e) {
+            if ($e instanceof FileNotFoundException) {
+                throw new FileNotFound($key, $e->getCode(), $e);
+            }
+
+            throw StorageFailure::unexpectedFailure('delete', ['key' => $key], $e);
+        }
+
+        if (false === $result) {
+            throw StorageFailure::unexpectedFailure('delete', ['key' => $key]);
+        }
     }
 
     /**
@@ -108,7 +182,26 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function rename($sourceKey, $targetKey)
     {
-        return $this->adapter->rename($sourceKey, $targetKey);
+        try {
+            $result = $this->adapter->rename($sourceKey, $targetKey);
+        } catch (\Exception $e) {
+            if ($e instanceof FileNotFoundException) {
+                throw new FileNotFound($sourceKey, $e->getCode(), $e);
+            }
+
+            throw StorageFailure::unexpectedFailure(
+                'rename',
+                ['sourceKey' => $sourceKey, 'targetKey' => $targetKey],
+                $e
+            );
+        }
+
+        if (false === $result) {
+            throw StorageFailure::unexpectedFailure(
+                'rename',
+                ['sourceKey' => $sourceKey, 'targetKey' => $targetKey]
+            );
+        }
     }
 
     /**
