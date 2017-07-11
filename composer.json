@@ -27,7 +27,7 @@
         "amazonwebservices/aws-sdk-for-php": "1.5.*",
         "rackspace/php-opencloud"  : "^1.9.2",
         "google/apiclient": "~1.1.3",
-        "phpspec/phpspec": "~2.4",
+        "phpspec/phpspec": "^3.0",
         "phpseclib/phpseclib": "^2.0",
         "doctrine/dbal": ">=2.3",
         "dropbox-php/dropbox-php": "*",
@@ -37,7 +37,7 @@
         "mongodb/mongodb": "~1.1.4",
         "microsoft/windowsazure": "~0.4",
         "microsoft/azure-storage": "~0.15.0",
-        "akeneo/phpspec-skip-example-extension": "~1.2"
+        "akeneo/phpspec-skip-example-extension": "2.0.*"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony2",

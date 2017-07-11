@@ -2,6 +2,9 @@
 
 namespace spec\Gaufrette;
 
+use Gaufrette\FilesystemMap;
+use Gaufrette\Filesystem;
+use Gaufrette\Stream;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -12,7 +15,7 @@ class StreamWrapperSpec extends ObjectBehavior
      * @param \Gaufrette\Filesystem    $filesystem
      * @param \Gaufrette\Stream        $stream
      */
-    function let($map, $filesystem, $stream)
+    function let(FilesystemMap $map, Filesystem $filesystem, Stream $stream)
     {
         $filesystem->createStream('filename')->willReturn($stream);
         $map->get('some')->willReturn($filesystem);
@@ -27,7 +30,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_opens_stream($stream)
+    function it_opens_stream(Stream $stream)
     {
         $stream->open(Argument::any())->willReturn(true);
 
@@ -57,7 +60,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_does_not_read_from_stream($stream)
+    function it_does_not_read_from_stream(Stream $stream)
     {
         $stream->open(Argument::any())->willReturn(true);
         $stream->read(4)->willReturn('some');
@@ -74,7 +77,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_writes_to_stream($stream)
+    function it_writes_to_stream(Stream $stream)
     {
         $stream->open(Argument::any())->willReturn(true);
         $stream->write('some content')->shouldBeCalled()->willReturn(12);
@@ -95,7 +98,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_closes_stream($stream)
+    function it_closes_stream(Stream $stream)
     {
         $stream->open(Argument::any())->willReturn(true);
         $stream->close()->shouldBeCalled();
@@ -106,7 +109,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_does_not_flush_stream_when_is_not_opened($stream)
+    function it_does_not_flush_stream_when_is_not_opened(Stream $stream)
     {
         $stream->flush()->shouldNotBeCalled();
         $this->stream_flush();
@@ -115,7 +118,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_flushes_stream($stream)
+    function it_flushes_stream(Stream $stream)
     {
         $stream->open(Argument::any())->willReturn(true);
         $stream->flush()->shouldBeCalled();
@@ -126,7 +129,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_does_not_seek_in_stream_when_is_not_opened($stream)
+    function it_does_not_seek_in_stream_when_is_not_opened(Stream $stream)
     {
         $stream->seek(12, SEEK_SET)->shouldNotBeCalled();
         $this->stream_seek(12, SEEK_SET);
@@ -135,7 +138,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_seeks_in_stream($stream)
+    function it_seeks_in_stream(Stream $stream)
     {
         $stream->open(Argument::any())->willReturn(true);
         $stream->seek(12, SEEK_SET)->shouldBeCalled()->willReturn(true);
@@ -146,7 +149,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_does_not_tell_about_position_in_stream_when_is_not_opened($stream)
+    function it_does_not_tell_about_position_in_stream_when_is_not_opened(Stream $stream)
     {
         $stream->tell()->shouldNotBeCalled();
         $this->stream_tell();
@@ -155,7 +158,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_does_tell_about_position_in_stream($stream)
+    function it_does_tell_about_position_in_stream(Stream $stream)
     {
         $stream->open(Argument::any())->willReturn(true);
         $stream->tell()->shouldBeCalled()->willReturn(12);
@@ -166,7 +169,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_does_not_mark_as_eof_if_stream_is_not_opened($stream)
+    function it_does_not_mark_as_eof_if_stream_is_not_opened(Stream $stream)
     {
         $stream->eof()->shouldNotBeCalled();
         $this->stream_eof();
@@ -175,7 +178,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_checks_if_eof($stream)
+    function it_checks_if_eof(Stream $stream)
     {
         $stream->open(Argument::any())->willReturn(true);
         $this->stream_open('gaufrette://some/filename', 'w+');
@@ -195,7 +198,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_stats_file($stream)
+    function it_stats_file(Stream $stream)
     {
         $stat = array(
             'dev'   => 1,
@@ -222,7 +225,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_should_stat_from_url($stream)
+    function it_should_stat_from_url(Stream $stream)
     {
         $stat = array(
             'dev'   => 1,
@@ -246,9 +249,10 @@ class StreamWrapperSpec extends ObjectBehavior
     }
 
     /**
+     * @param \Gaufrette\Filesystem $stream
      * @param \Gaufrette\Stream $stream
      */
-    function it_stats_even_if_it_cannot_be_open($filesystem, $stream)
+    function it_stats_even_if_it_cannot_be_open(Filesystem $filesystem, Stream $stream)
     {
         $filesystem->createStream('dir/')->willReturn($stream);
         $stream->open(Argument::any())->willThrow(new \RuntimeException);
@@ -259,7 +263,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_does_not_unlink_when_cannot_open($stream)
+    function it_does_not_unlink_when_cannot_open(Stream $stream)
     {
         $stream->open(Argument::any())->willThrow(new \RuntimeException);
         $this->unlink('gaufrette://some/filename')->shouldReturn(false);
@@ -268,7 +272,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_unlinks_file($stream)
+    function it_unlinks_file(Stream $stream)
     {
         $stream->open(Argument::any())->willReturn(true);
         $stream->unlink()->willReturn(true);
@@ -284,7 +288,7 @@ class StreamWrapperSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Stream $stream
      */
-    function it_casts_stream($stream)
+    function it_casts_stream(Stream $stream)
     {
         $stream->open(Argument::any())->willReturn(true);
         $stream->cast(STREAM_CAST_FOR_SELECT)->willReturn('resource');

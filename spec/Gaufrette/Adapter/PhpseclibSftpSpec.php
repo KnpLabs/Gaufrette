@@ -10,15 +10,23 @@ if (!defined('NET_SFTP_TYPE_DIRECTORY')) {
     define('NET_SFTP_TYPE_DIRECTORY', 2);
 }
 
+use Gaufrette\Filesystem;
 use phpseclib\Net\SFTP as Base;
 use PhpSpec\ObjectBehavior;
+
+class SFTP extends Base
+{
+    public function __construct()
+    {
+    }
+}
 
 class PhpseclibSftpSpec extends ObjectBehavior
 {
     /**
      * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
-    function let($sftp)
+    function let(SFTP $sftp)
     {
         $this->beConstructedWith($sftp, '/home/l3l0', false, 'l3lo', 'password');
     }
@@ -41,7 +49,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     /**
      * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
-    function it_fetches_keys($sftp)
+    function it_fetches_keys(SFTP $sftp)
     {
         $sftp
             ->rawlist('/home/l3l0/')
@@ -62,7 +70,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     /**
      * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
-    function it_reads_file($sftp)
+    function it_reads_file(SFTP $sftp)
     {
         $sftp->get('/home/l3l0/filename')->willReturn('some content');
 
@@ -72,7 +80,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     /**
      * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
-    function it_creates_and_writes_file($sftp)
+    function it_creates_and_writes_file(SFTP $sftp)
     {
         $sftp->pwd()->willReturn('/home/l3l0');
         $sftp->chdir('/home/l3l0')->willReturn(true);
@@ -85,7 +93,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     /**
      * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
-    function it_renames_file($sftp)
+    function it_renames_file(SFTP $sftp)
     {
         $sftp->pwd()->willReturn('/home/l3l0');
         $sftp->chdir('/home/l3l0')->willReturn(true);
@@ -100,7 +108,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     /**
      * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
-    function it_should_check_if_file_exists($sftp)
+    function it_should_check_if_file_exists(SFTP $sftp)
     {
         $sftp->pwd()->willReturn('/home/l3l0');
         $sftp->chdir('/home/l3l0')->willReturn(true);
@@ -116,7 +124,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
     /**
      * @param \spec\Gaufrette\Adapter\SFTP $sftp
      */
-    function it_should_check_is_directory($sftp)
+    function it_should_check_is_directory(SFTP $sftp)
     {
         $sftp->pwd()->willReturn('/home/l3l0');
         $sftp->chdir('/home/l3l0')->willReturn(true);
@@ -131,7 +139,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
      * @param \spec\Gaufrette\Adapter\SFTP $sftp
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_should_create_file($sftp, $filesystem)
+    function it_should_create_file(SFTP $sftp, Filesystem $filesystem)
     {
         $sftp->stat('/home/l3l0/filename')->willReturn(array(
             'name' => '/home/l3l0/filename',
@@ -139,12 +147,5 @@ class PhpseclibSftpSpec extends ObjectBehavior
         ));
 
         $this->createFile('filename', $filesystem)->beAnInstanceOf('Gaufrette\File');
-    }
-}
-
-class SFTP extends Base
-{
-    public function __construct()
-    {
     }
 }
