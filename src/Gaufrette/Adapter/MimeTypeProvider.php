@@ -2,7 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Exception\StorageFailure;
 
 /**
@@ -19,7 +18,6 @@ interface MimeTypeProvider
      *
      * @return string
      *
-     * @throws FileNotFound
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function mimeType($key);

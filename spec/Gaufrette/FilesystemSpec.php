@@ -4,6 +4,7 @@ namespace spec\Gaufrette;
 
 use Gaufrette\Adapter;
 use Gaufrette\File;
+use Gaufrette\Exception\StorageFailure;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -33,7 +34,7 @@ class FilesystemSpec extends ObjectBehavior
         $this->getAdapter()->shouldBe($adapter);
     }
 
-    function it_check_if_file_exists_using_adapter(Adapter $adapter)
+    function it_checks_if_file_exists_using_adapter(Adapter $adapter)
     {
         $adapter->exists('filename')->willReturn(true);
         $adapter->exists('otherFilename')->willReturn(false);
@@ -46,9 +47,9 @@ class FilesystemSpec extends ObjectBehavior
     {
         $adapter->exists('filename')->shouldBeCalled()->willReturn(true);
         $adapter->exists('otherFilename')->shouldBeCalled()->willReturn(false);
-        $adapter->rename('filename', 'otherFilename')->shouldBeCalled()->willReturn(true);
+        $adapter->rename('filename', 'otherFilename')->shouldBeCalled();
 
-        $this->rename('filename', 'otherFilename')->shouldReturn(true);
+        $this->rename('filename', 'otherFilename');
     }
 
     function it_fails_when_renamed_source_file_does_not_exist(Adapter $adapter)
@@ -72,14 +73,14 @@ class FilesystemSpec extends ObjectBehavior
         ;
     }
 
-    function it_fails_when_rename_is_not_successful(Adapter $adapter)
+    function it_fails_when_a_storage_failure_happens_during_rename(Adapter $adapter)
     {
         $adapter->exists('filename')->willReturn(true);
         $adapter->exists('otherFilename')->willReturn(false);
-        $adapter->rename('filename', 'otherFilename')->willReturn(false);
+        $adapter->rename('filename', 'otherFilename')->willThrow(StorageFailure::class);
 
         $this
-            ->shouldThrow(new \RuntimeException('Could not rename the "filename" key to "otherFilename".'))
+            ->shouldThrow(StorageFailure::class)
             ->duringRename('filename', 'otherFilename')
         ;
     }
@@ -91,7 +92,7 @@ class FilesystemSpec extends ObjectBehavior
         $this->get('filename')->shouldBeAnInstanceOf('Gaufrette\File');
     }
 
-    function it_does_not_get_file_object_when_file_with_key_does_not_exist(Adapter $adapter)
+    function it_does_not_get_file_object_when_file_does_not_exist(Adapter $adapter)
     {
         $adapter->exists('filename')->willReturn(false);
 
@@ -108,7 +109,7 @@ class FilesystemSpec extends ObjectBehavior
         $this->get('filename', true)->shouldBeAnInstanceOf('Gaufrette\File');
     }
 
-    function it_delegates_file_creation_to_adapter_when_adapter_is_file_factory(ExtendedAdapter $extendedAdapter, File $file)
+    function it_delegates_file_instantiation_to_adapter_when_adapter_is_file_factory(ExtendedAdapter $extendedAdapter, File $file)
     {
         $this->beConstructedWith($extendedAdapter);
         $extendedAdapter->exists('filename')->willReturn(true);
@@ -120,16 +121,16 @@ class FilesystemSpec extends ObjectBehavior
     function it_writes_content_to_new_file(Adapter $adapter)
     {
         $adapter->exists('filename')->shouldBeCalled()->willReturn(false);
-        $adapter->write('filename', 'some content to write')->shouldBeCalled()->willReturn(21);
+        $adapter->write('filename', 'some content to write')->shouldBeCalled();
 
-        $this->write('filename', 'some content to write')->shouldReturn(21);
+        $this->write('filename', 'some content to write');
     }
 
     function it_updates_content_of_file(Adapter $adapter)
     {
-        $adapter->write('filename', 'some content to write')->shouldBeCalled()->willReturn(21);
+        $adapter->write('filename', 'some content to write')->shouldBeCalled();
 
-        $this->write('filename', 'some content to write', true)->shouldReturn(21);
+        $this->write('filename', 'some content to write', true);
     }
 
     function it_does_not_update_content_of_file_when_file_cannot_be_overwriten(Adapter $adapter)
@@ -146,10 +147,10 @@ class FilesystemSpec extends ObjectBehavior
     function it_fails_when_write_is_not_successful(Adapter $adapter)
     {
         $adapter->exists('filename')->willReturn(false);
-        $adapter->write('filename', 'some content to write')->shouldBeCalled()->willReturn(false);
+        $adapter->write('filename', 'some content to write')->shouldBeCalled()->willThrow(StorageFailure::class);
 
         $this
-            ->shouldThrow(new \RuntimeException('Could not write the "filename" key content.'))
+            ->shouldThrow(StorageFailure::class)
             ->duringWrite('filename', 'some content to write')
         ;
     }
@@ -174,10 +175,10 @@ class FilesystemSpec extends ObjectBehavior
     function it_fails_when_read_is_not_successful(Adapter $adapter)
     {
         $adapter->exists('filename')->willReturn(true);
-        $adapter->read('filename')->willReturn(false);
+        $adapter->read('filename')->willThrow(StorageFailure::class);
 
         $this
-            ->shouldThrow(new \RuntimeException('Could not read the "filename" key content.'))
+            ->shouldThrow(StorageFailure::class)
             ->duringRead('filename')
         ;
     }
@@ -185,9 +186,9 @@ class FilesystemSpec extends ObjectBehavior
     function it_deletes_file(Adapter $adapter)
     {
         $adapter->exists('filename')->shouldBeCalled()->willReturn(true);
-        $adapter->delete('filename')->shouldBeCalled()->willReturn(true);
+        $adapter->delete('filename')->shouldBeCalled();
 
-        $this->delete('filename')->shouldReturn(true);
+        $this->delete('filename');
     }
 
     function it_does_not_delete_file_which_does_not_exist(Adapter $adapter)
@@ -203,10 +204,10 @@ class FilesystemSpec extends ObjectBehavior
     function it_fails_when_delete_is_not_successful(Adapter $adapter)
     {
         $adapter->exists('filename')->willReturn(true);
-        $adapter->delete('filename')->willReturn(false);
+        $adapter->delete('filename')->willThrow(StorageFailure::class);
 
         $this
-            ->shouldThrow(new \RuntimeException('Could not remove the "filename" key.'))
+            ->shouldThrow(StorageFailure::class)
             ->duringDelete('filename')
         ;
     }

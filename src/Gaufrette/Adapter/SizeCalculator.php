@@ -1,6 +1,7 @@
 <?php
 
 namespace Gaufrette\Adapter;
+
 use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Exception\StorageFailure;
 
