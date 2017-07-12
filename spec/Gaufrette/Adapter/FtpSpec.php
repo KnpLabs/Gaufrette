@@ -5,6 +5,7 @@ namespace spec\Gaufrette\Adapter;
 //hack - mock php built-in functions
 require_once 'functions.php';
 
+use Gaufrette\Filesystem;
 use PhpSpec\ObjectBehavior;
 
 class FtpSpec extends ObjectBehavior
@@ -154,7 +155,7 @@ class FtpSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_creates_file($filesystem)
+    function it_creates_file(Filesystem $filesystem)
     {
         $this->createFile('filename', $filesystem)->shouldReturnAnInstanceOf('\Gaufrette\File');
     }
@@ -162,7 +163,7 @@ class FtpSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_creates_file_in_not_existing_directory($filesystem)
+    function it_creates_file_in_not_existing_directory(Filesystem $filesystem)
     {
         $this->createFile('bb/cc/dd/filename', $filesystem)->shouldReturnAnInstanceOf('\Gaufrette\File');
     }
