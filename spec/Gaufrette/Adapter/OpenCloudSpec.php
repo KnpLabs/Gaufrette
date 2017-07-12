@@ -20,10 +20,6 @@ use PhpSpec\ObjectBehavior;
  */
 class OpenCloudSpec extends ObjectBehavior
 {
-    /**
-     * @param OpenCloud\ObjectStore\Service $objectStore
-     * @param OpenCloud\ObjectStore\Resource\Container $container
-     */
     function let(Service $objectStore, Container $container)
     {
         $objectStore->getContainer("test")->willReturn($container);
@@ -35,10 +31,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->shouldHaveType('Gaufrette\Adapter');
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container  $container
-     * @param OpenCloud\ObjectStore\Resource\DataObject $object
-     */
     function it_reads_file(Container $container, DataObject $object)
     {
         $object->getContent()->willReturn("Hello World");
@@ -47,9 +39,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->read('test')->shouldReturn('Hello World');
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container $container
-     */
     function it_reads_file_on_error_returns_false(Container $container)
     {
         $container->getObject("test")->willThrow(new ObjectNotFoundException());
@@ -57,10 +46,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->read('test')->shouldReturn(false);
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container  $container
-     * @param OpenCloud\ObjectStore\Resource\DataObject $object
-     */
     function it_writes_file_returns_size(Container $container, DataObject $object)
     {
         $testData     = "Hello World!";
@@ -72,9 +57,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->write('test', $testData)->shouldReturn($testDataSize);
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container  $container
-     */
     function it_writes_file_and_write_fails_returns_false(Container $container)
     {
         $testData = "Hello World!";
@@ -84,10 +66,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->write('test', $testData)->shouldReturn(false);
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container  $container
-     * @param OpenCloud\ObjectStore\Resource\DataObject $object
-     */
     function it_returns_true_if_key_exists(Container $container, DataObject $object)
     {
         $container->getPartialObject('test')->willReturn($object);
@@ -95,9 +73,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->exists('test')->shouldReturn(true);
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container  $container
-     */
     function it_returns_false_if_key_does_not_exist(Container $container)
     {
         $container->getPartialObject('test')->willThrow(new BadResponseException());
@@ -105,10 +80,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->exists('test')->shouldReturn(false);
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container  $container
-     * @param OpenCloud\ObjectStore\Resource\DataObject $object
-     */
     function it_deletes_file_on_success_returns_true(Container $container, DataObject $object)
     {
         $object->delete()->willReturn(null);
@@ -117,10 +88,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->delete('test')->shouldReturn(true);
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container  $container
-     * @param OpenCloud\ObjectStore\Resource\DataObject $object
-     */
     function it_deletes_file_returns_false_on_failure(Container $container, DataObject $object)
     {
         $object->delete()->willThrow(new DeleteError());
@@ -129,9 +96,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->delete('test')->shouldReturn(false);
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container $container
-     */
     function it_deletes_file_if_file_does_not_exist_returns_false(Container $container)
     {
         $container->getObject("test")->willThrow(new ObjectNotFoundException());
@@ -139,10 +103,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->delete('test')->shouldReturn(false);
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container  $container
-     * @param OpenCloud\ObjectStore\Resource\DataObject $object
-     */
     function it_returns_checksum_if_file_exists(Container $container, DataObject $object)
     {
         $object->getEtag()->willReturn("test String");
@@ -151,9 +111,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->checksum('test')->shouldReturn("test String");
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container $container
-     */
     function it_returns_false_when_file_does_not_exist(Container $container)
     {
         $container->getObject("test")->willThrow(new ObjectNotFoundException());
@@ -161,13 +118,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->checksum('test')->shouldReturn(false);
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container $container
-     * @param OpenCloud\Common\Collection              $objectList
-     * @param OpenCloud\ObjectStore\Resource\DataObject $object1
-     * @param OpenCloud\ObjectStore\Resource\DataObject $object2
-     * @param OpenCloud\ObjectStore\Resource\DataObject $object3
-     */
     function it_returns_files_as_sorted_array(Container $container, Collection $objectList, DataObject $object1, DataObject $object2, DataObject $object3)
     {
         $outputArray = array('key1', 'key2', 'key5');
@@ -194,9 +144,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->keys()->shouldReturn($outputArray);
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Service $objectStore
-     */
     function it_throws_exception_if_container_does_not_exist(Service $objectStore)
     {
         $containerName = 'container-does-not-exist';
@@ -207,10 +154,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->shouldThrow('\RuntimeException')->duringExists('test');
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Service $objectStore
-     * @param OpenCloud\ObjectStore\Resource\Container  $container
-     */
     function it_creates_container(Service $objectStore, Container $container)
     {
         $containerName = 'container-does-not-yet-exist';
@@ -225,9 +168,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->exists($filename)->shouldReturn(false);
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Service $objectStore
-     */
     function it_throws_exeption_if_container_creation_fails(Service $objectStore)
     {
         $containerName = 'container-does-not-yet-exist';
@@ -240,9 +180,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->shouldThrow('\RuntimeException')->duringExists('test');
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\Container  $container
-     */
     function it_returns_false_if_the_object_does_not_exists_when_fetching_mtime(Container $container)
     {
         $container->getObject('foo')->willThrow(ObjectNotFoundException::class);
@@ -250,10 +187,6 @@ class OpenCloudSpec extends ObjectBehavior
         $this->mtime('foo')->shouldReturn(false);
     }
 
-    /**
-     * @param OpenCloud\ObjectStore\Resource\DataObject $object
-     * @param OpenCloud\ObjectStore\Resource\Container  $container
-     */
     function it_fetches_file_mtime(DataObject $object, Container $container)
     {
         $container->getObject('foo')->willReturn($object);
