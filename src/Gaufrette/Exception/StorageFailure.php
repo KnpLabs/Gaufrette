@@ -29,7 +29,7 @@ class StorageFailure extends \RuntimeException implements Exception
         }, array_keys($args), $args);
 
         return new self(
-            sprintf('An unexpected error happened during %s (%s).', $action, implode(', ', $args)),
+            sprintf('An unexpected error happened during "%s" (%s).', $action, implode(', ', $args)),
             0,
             $previous
         );

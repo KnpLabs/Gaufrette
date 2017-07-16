@@ -6,6 +6,8 @@ namespace Gaufrette\Adapter;
  * Interface which add supports for metadata.
  *
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
+ *
+ * @TODO: Re-determine the behavior that should be implemeted for this interface - i.e. AwsS3 & AzureBlobStorage behavior differs
  */
 interface MetadataSupporter
 {

@@ -4,14 +4,17 @@ namespace Gaufrette\Functional\Adapter;
 
 use Gaufrette\Adapter\AzureBlobStorage;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactory;
+use Gaufrette\Exception\StorageFailure;
 use Gaufrette\Filesystem;
+use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class AzureMultiContainerBlobStorageTest
  * @group AzureBlobStorage
  * @group AzureMultiContainerBlobStorage
  */
-class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
+class AzureMultiContainerBlobStorageTest extends TestCase
 {
     private $adapter;
 
@@ -19,8 +22,6 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
 
     public function setUp()
     {
-        $this->markTestSkipped(__CLASS__ . ' is flaky.');
-
         $account = getenv('AZURE_ACCOUNT');
         $key = getenv('AZURE_KEY');
         if (empty($account) || empty($key)) {
@@ -42,8 +43,8 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
         $path1 = $this->createUniqueContainerName('container') . '/foo';
         $path2 = $this->createUniqueContainerName('test') . '/subdir/foo';
 
-        $this->assertEquals(12, $this->filesystem->write($path1, 'Some content'));
-        $this->assertEquals(13, $this->filesystem->write($path2, 'Some content1', true));
+        $this->filesystem->write($path1, 'Some content');
+        $this->filesystem->write($path2, 'Some content1', true);
 
         $this->assertEquals('Some content', $this->filesystem->read($path1));
         $this->assertEquals('Some content1', $this->filesystem->read($path2));
@@ -77,8 +78,6 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
         $this->filesystem->write($path1, 'Some content');
 
         $this->assertTrue($this->filesystem->has($path1));
-        // @TODO: why is it done two times?
-        $this->assertFalse($this->filesystem->has($path2));
         $this->assertFalse($this->filesystem->has($path2));
     }
 
@@ -103,9 +102,9 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
     {
         $path = $this->createUniqueContainerName('container') . '/foo';
 
-        $contentSize = $this->filesystem->write($path, 'Some content');
+        $this->filesystem->write($path, 'Some content');
 
-        $this->assertEquals($contentSize, $this->filesystem->size($path));
+        $this->assertEquals(12, $this->filesystem->size($path));
     }
 
     /**
@@ -236,7 +235,18 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
     public function tearDown()
     {
         foreach ($this->containers as $container) {
-            $this->adapter->deleteContainer($container);
+            try {
+                $this->adapter->deleteContainer($container);
+            } catch (StorageFailure $e) {
+                if (null !== ($previous = $e->getPrevious())
+                    && $previous instanceof ServiceException
+                    && $previous->getResponse()->getStatusCode() === 404
+                ) {
+                    continue;
+                }
+
+                throw $e;
+            }
         }
     }
 }
