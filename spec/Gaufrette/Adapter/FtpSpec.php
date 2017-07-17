@@ -5,6 +5,7 @@ namespace spec\Gaufrette\Adapter;
 //hack - mock php built-in functions
 require_once 'functions.php';
 
+use Gaufrette\Exception\StorageFailure;
 use Gaufrette\Filesystem;
 use PhpSpec\ObjectBehavior;
 
@@ -62,27 +63,27 @@ class FtpSpec extends ObjectBehavior
 
     function it_does_not_read_file()
     {
-        $this->read('filename2')->shouldReturn(false);
+        $this->shouldThrow(StorageFailure::class)->duringRead('filename2');
     }
 
     function it_writes_file()
     {
-        $this->write('filename', 'some content')->shouldReturn(12);
+        $this->write('filename', 'some content');
     }
 
     function it_does_not_write_file()
     {
-        $this->write('filename2', 'some content')->shouldReturn(false);
+        $this->shouldThrow(StorageFailure::class)->duringWrite('filename2', 'some content');
     }
 
     function it_renames_file()
     {
-        $this->rename('filename', 'filename2')->shouldReturn(true);
+        $this->rename('filename', 'filename2');
     }
 
     function it_does_not_not_rename_file_when_target_file_is_invalid()
     {
-        $this->rename('filename', 'invalid')->shouldReturn(false);
+        $this->shouldThrow(StorageFailure::class)->duringRename('filename', 'invalid');
     }
 
     function it_fetches_keys_without_directories_dots()
@@ -144,12 +145,12 @@ class FtpSpec extends ObjectBehavior
 
     function it_deletes_file()
     {
-        $this->delete('filename')->shouldReturn(true);
+        $this->delete('filename');
     }
 
     function it_does_not_delete_file()
     {
-        $this->delete('invalid')->shouldReturn(false);
+        $this->shouldThrow(StorageFailure::class)->duringDelete('invalid');
     }
 
     /**
