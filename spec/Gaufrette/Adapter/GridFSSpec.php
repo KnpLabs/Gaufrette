@@ -2,12 +2,13 @@
 
 namespace spec\Gaufrette\Adapter;
 
+use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Exception\StorageFailure;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\GridFS\Bucket;
 use MongoDB\GridFS\Exception\FileNotFoundException;
 use MongoDB\Model\BSONDocument;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class GridFSSpec extends ObjectBehavior
 {
@@ -53,18 +54,17 @@ class GridFSSpec extends ObjectBehavior
 
         $bucket
             ->openDownloadStreamByName('filename')
-            ->shouldBeCalled()
             ->willReturn($readable)
         ;
 
         $this->read('filename')->shouldReturn('some content');
     }
 
-    function it_does_not_fail_when_cannot_read($bucket)
+    function it_fails_when_cannot_read($bucket)
     {
         $bucket->openDownloadStreamByName('filename')->willThrow(FileNotFoundException::class);
 
-        $this->read('filename')->shouldReturn(false);
+        $this->shouldThrow(FileNotFound::class)->duringRead('filename');
     }
 
     function it_checks_if_file_exists($bucket, BSONDocument $file)
@@ -93,11 +93,11 @@ class GridFSSpec extends ObjectBehavior
         $this->delete('filename')->shouldReturn(true);
     }
 
-    function it_does_not_delete_file($bucket)
+    function it_fails_when_file_to_delete_does_not_exist($bucket)
     {
         $bucket->findOne(['filename' => 'filename'], ['projection' => ['_id' => 1]])->willReturn(null);
 
-        $this->delete('filename')->shouldReturn(false);
+        $this->shouldThrow(FileNotFound::class)->duringDelete('filename');
     }
 
     function it_writes_file($bucket)
@@ -110,10 +110,7 @@ class GridFSSpec extends ObjectBehavior
         ;
 
         $this->setMetadata('filename', ['someother' => 'metadata']);
-        $this
-            ->write('filename', 'some content')
-            ->shouldReturn(12)
-        ;
+        $this->write('filename', 'some content');
     }
 
     function it_renames_file($bucket)
@@ -133,7 +130,7 @@ class GridFSSpec extends ObjectBehavior
         $bucket->delete(1234)->shouldBeCalled();
 
         $this->setMetadata('filename', ['some' => 'metadata']);
-        $this->rename('filename', 'otherFilename')->shouldReturn(true);
+        $this->rename('filename', 'otherFilename');
     }
 
     function it_fetches_keys($bucket)
