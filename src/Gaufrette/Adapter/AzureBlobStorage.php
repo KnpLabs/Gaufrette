@@ -20,7 +20,9 @@ use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
  * @author Paweł Czyżewski <pawel.czyzewski@enginewerk.com>
  */
 class AzureBlobStorage implements Adapter,
-                                  MetadataSupporter
+                                  MetadataSupporter,
+                                  SizeCalculator
+
 {
     /**
      * Error constants.
@@ -304,6 +306,26 @@ class AzureBlobStorage implements Adapter,
 
             return false;
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function size($key)
+    {
+        $this->init();
+        list($containerName, $key) = $this->tokenizeKey($key);
+
+        try {
+            $properties = $this->blobProxy->getBlobProperties($containerName, $key);
+
+            return $properties->getProperties()->getContentLength();
+        } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, sprintf('read content length for key "%s"', $key), $containerName);
+
+            return false;
+        }
+
     }
 
     /**
