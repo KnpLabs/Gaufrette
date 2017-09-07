@@ -3,7 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\File;
-use Gaufrette\Filesystem;
+use Gaufrette\FilesystemInterface;
 
 /**
  * Interface for the file creation class.
@@ -15,10 +15,10 @@ interface FileFactory
     /**
      * Creates a new File instance and returns it.
      *
-     * @param string     $key
-     * @param Filesystem $filesystem
+     * @param string              $key
+     * @param FilesystemInterface $filesystem
      *
      * @return File
      */
-    public function createFile($key, Filesystem $filesystem);
+    public function createFile($key, FilesystemInterface $filesystem);
 }

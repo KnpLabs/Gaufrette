@@ -3,9 +3,9 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-use phpseclib\Net\SFTP as SecLibSFTP;
-use Gaufrette\Filesystem;
 use Gaufrette\File;
+use Gaufrette\FilesystemInterface;
+use phpseclib\Net\SFTP as SecLibSFTP;
 
 class PhpseclibSftp implements Adapter,
                                FileFactory,
@@ -155,7 +155,7 @@ class PhpseclibSftp implements Adapter,
     /**
      * {@inheritdoc}
      */
-    public function createFile($key, Filesystem $filesystem)
+    public function createFile($key, FilesystemInterface $filesystem)
     {
         $file = new File($key, $filesystem);
 

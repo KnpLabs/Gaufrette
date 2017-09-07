@@ -2,8 +2,8 @@
 
 namespace Gaufrette\Stream;
 
+use Gaufrette\FilesystemInterface;
 use Gaufrette\Stream;
-use Gaufrette\Filesystem;
 use Gaufrette\StreamMode;
 use Gaufrette\Util;
 
@@ -18,10 +18,10 @@ class InMemoryBuffer implements Stream
     private $synchronized;
 
     /**
-     * @param Filesystem $filesystem The filesystem managing the file to stream
-     * @param string     $key        The file key
+     * @param FilesystemInterface $filesystem The filesystem managing the file to stream
+     * @param string              $key        The file key
      */
-    public function __construct(Filesystem $filesystem, $key)
+    public function __construct(FilesystemInterface $filesystem, $key)
     {
         $this->filesystem = $filesystem;
         $this->key = $key;

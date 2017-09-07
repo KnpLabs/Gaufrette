@@ -153,7 +153,7 @@ class FtpSpec extends ObjectBehavior
     }
 
     /**
-     * @param \Gaufrette\Filesystem $filesystem
+     * @param \Gaufrette\FilesystemInterface $filesystem
      */
     function it_creates_file(Filesystem $filesystem)
     {
@@ -161,7 +161,7 @@ class FtpSpec extends ObjectBehavior
     }
 
     /**
-     * @param \Gaufrette\Filesystem $filesystem
+     * @param \Gaufrette\FilesystemInterface $filesystem
      */
     function it_creates_file_in_not_existing_directory(Filesystem $filesystem)
     {
