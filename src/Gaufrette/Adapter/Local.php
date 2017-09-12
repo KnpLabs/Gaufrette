@@ -53,6 +53,10 @@ class Local implements Adapter,
      */
     public function read($key)
     {
+        if ($this->isDirectory($key)) {
+            return false;
+        }
+
         return file_get_contents($this->computePath($key));
     }
 
@@ -91,7 +95,7 @@ class Local implements Adapter,
      */
     public function exists($key)
     {
-        return is_file($this->computePath($key));
+        return file_exists($this->computePath($key));
     }
 
     /**
@@ -147,11 +151,13 @@ class Local implements Adapter,
      */
     public function delete($key)
     {
-        if ($this->isDirectory($key)) {
-            return rmdir($this->computePath($key));
+        $file = $this->computePath($key);
+
+        if (!file_exists($file)) {
+            return false;
         }
 
-        return unlink($this->computePath($key));
+        return $this->doDelete($file);
     }
 
     /**
@@ -308,5 +314,42 @@ class Local implements Adapter,
         if (!@mkdir($directory, $this->mode, true) && !is_dir($directory)) {
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
         }
+    }
+
+    /**
+     * Removes files or directories.
+     *
+     * @see https://github.com/symfony/filesystem/blob/master/Filesystem.php#L159
+     *
+     * @param string|array|\Traversable $files A filename, an array of files, or a \Traversable instance to remove
+     *
+     * @return bool
+     */
+    private function doDelete($files)
+    {
+        if ($files instanceof \Traversable) {
+            $files = iterator_to_array($files, false);
+        } elseif (!is_array($files)) {
+            $files = array($files);
+        }
+        $files = array_reverse($files);
+        foreach ($files as $file) {
+            if (is_link($file)) {
+                // See https://bugs.php.net/52176
+                if (!@(unlink($file) || '\\' !== DIRECTORY_SEPARATOR || rmdir($file)) && file_exists($file)) {
+                    return false;
+                }
+            } elseif (is_dir($file)) {
+                $this->doDelete(new \FilesystemIterator($file, \FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS));
+
+                if (!@rmdir($file) && file_exists($file)) {
+                    return false;
+                }
+            } elseif (!@unlink($file) && file_exists($file)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
