@@ -44,12 +44,18 @@ class PhpseclibSftpSpec extends ObjectBehavior
     function it_fetches_keys($sftp)
     {
         $sftp
+            ->file_exists('/home/l3l0/')
+            ->willReturn(true);
+        $sftp
             ->rawlist('/home/l3l0/')
             ->willReturn(array(
                 'filename' => array('type' => NET_SFTP_TYPE_REGULAR),
                 'filename1' => array('type' => NET_SFTP_TYPE_REGULAR),
                 'aaa' => array('type' => NET_SFTP_TYPE_DIRECTORY)
             ));
+        $sftp
+            ->file_exists('/home/l3l0/aaa')
+            ->willReturn(true);
         $sftp
             ->rawlist('/home/l3l0/aaa')
             ->willReturn(array(
