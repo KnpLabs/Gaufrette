@@ -30,9 +30,8 @@ class PhpseclibSftpTest extends FunctionalTestCase
 
         $this->sftp = new SFTP($host, $port);
         $this->sftp->login($user, $password);
-        $this->sftp->mkdir($this->baseDir);
 
-        $this->filesystem = new Filesystem(new PhpseclibSftp($this->sftp, $this->baseDir));
+        $this->filesystem = new Filesystem(new PhpseclibSftp($this->sftp, $this->baseDir, true));
     }
 
     public function tearDown()

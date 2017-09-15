@@ -1,6 +1,6 @@
 language: php
 
-sudo: true
+sudo: required
 
 cache:
   directories:
@@ -14,15 +14,18 @@ php:
 
 services:
   - mongodb
+  - docker
 
 env:
   - MONGO_URI="mongodb://127.0.0.1:27017"
     MONGO_DBNAME="gridfs_test"
     SFTP_HOST=localhost
+    SFTP_PORT=2222
     SFTP_USER=gaufrette
     SFTP_PASSWORD=gaufrette
-    SFTP_BASE_DIR=/home/gaufrette
+    SFTP_BASE_DIR=gaufrette
     FTP_HOST=localhost
+    FTP_PORT=21
     FTP_USER=gaufrette
     FTP_PASSWORD=gaufrette
     FTP_BASE_DIR=/gaufrette/
@@ -39,16 +42,12 @@ before_script:
     else
       composer require mongofill/mongofill --ignore-platform-reqs;
     fi
-  - sudo apt-get update
-  - sudo apt-get install -y libssh2-1-dev vsftpd
-  - sudo useradd -d /home/./gaufrette gaufrette # Removing "./" from this path would break any further Travis builds
-  - echo "gaufrette:gaufrette" | sudo chpasswd
-  - sudo mkdir /home/gaufrette /srv/empty
-  - sudo chown gaufrette:gaufrette /home/gaufrette /srv/ftp
-  - sudo cp .travis/vsftpd.conf /etc/vsftpd.conf
-  - sudo service vsftpd restart
-  - composer self-update && composer install --prefer-source --no-interaction
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then yes | pecl install ssh2 && composer require herzult/php-ssh; fi
+  - docker run -p ${SFTP_PORT}:22 -d atmoz/sftp:alpine ${SFTP_USER}:${SFTP_PASSWORD}:::${SFTP_BASE_DIR}
+  - docker run -d --name ftpd_server -p ${FTP_PORT}:21 -p 30000-30009:30000-30009 -e "PUBLICHOST=${FTP_HOST}" stilliard/pure-ftpd
+  - docker exec -it ftpd_server sh -c "(echo ${FTP_PASSWORD}; echo ${FTP_PASSWORD}) | pure-pw useradd ${FTP_USER} -f /etc/pure-ftpd/passwd/pureftpd.passwd -m -u ftpuser -d /home/ftpusers/${FTP_USER}"
+  - if [[ ${TRAVIS_PHP_VERSION} = 5.* ]]; then sudo apt-get -qq update && sudo apt-get install -y libssh2-1-dev; fi
+  - if [[ ${TRAVIS_PHP_VERSION} = 5.* ]]; then yes | pecl install ssh2 && composer require herzult/php-ssh --no-update --no-scripts; fi
+  - composer update --prefer-dist --no-progress --no-suggest --ansi
 
 script:
   - php vendor/bin/phpspec run -fpretty --verbose
