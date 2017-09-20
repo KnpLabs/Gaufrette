@@ -43,7 +43,7 @@ class LocalTest extends FunctionalTestCase
      */
     public function shouldSupportsDirectory()
     {
-        $this->assertTrue(file_exists('gaufrette://filestream/subdir'));
+        $this->assertFileExists('gaufrette://filestream/subdir');
         $this->assertTrue(is_dir('gaufrette://filestream/subdir'));
     }
 }
