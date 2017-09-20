@@ -3,8 +3,9 @@
 namespace Gaufrette\Functional\Adapter;
 
 use Gaufrette\Filesystem;
+use PHPUnit\Framework\TestCase;
 
-abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
+abstract class FunctionalTestCase extends TestCase
 {
     /**
      * @var Filesystem
@@ -34,7 +35,7 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
         );
 
         if (!file_exists($filename)) {
-            return $this->markTestSkipped(<<<EOF
+            $this->markTestSkipped(<<<EOF
 To run the {$basename} filesystem tests, you must:
 
  1. Copy the file "{$filename}.dist" as "{$filename}"
@@ -167,7 +168,7 @@ EOF
 
         $actualKeys = $this->filesystem->keys();
 
-        $this->assertEquals(3, count($actualKeys));
+        $this->assertCount(3, $actualKeys);
         foreach (array('foo', 'bar', 'baz') as $key) {
             $this->assertContains($key, $actualKeys);
         }
@@ -195,14 +196,14 @@ EOF
         $FileObjectA = $this->filesystem->createFile('somefile');
         $FileObjectB = $this->filesystem->createFile('somefile');
 
-        $this->assertTrue($FileObjectA === $FileObjectB);
+        $this->assertSame($FileObjectA, $FileObjectB);
     }
 
     /**
      * @test
      * @group functional
      */
-    public function shouldWrtieToSameFile()
+    public function shouldWriteToSameFile()
     {
         $FileObjectA = $this->filesystem->createFile('somefile');
         $FileObjectA->setContent('ABC');
