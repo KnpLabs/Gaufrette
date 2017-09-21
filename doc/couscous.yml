@@ -68,9 +68,9 @@ menu:
                 local:
                     text: Local
                     relativeUrl: adapters/local.html
-                open-cloud:
-                    text: OpenCloud
-                    relativeUrl: adapters/open-cloud.html
+                open-stack:
+                    text: OpenStack
+                    relativeUrl: adapters/open-stack.html
                 phpseclib-sftp:
                     text: PhpseclibSftp
                     relativeUrl: adapters/phpseclib-sftp.html

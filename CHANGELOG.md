@@ -3,7 +3,19 @@ v1.0.0
 
 ## New features
 
+- The [OpenCloud adapter](https://github.com/KnpLabs/Gaufrette/blob/v0.5.0/src/Gaufrette/Adapter/OpenCloud.php)
+has been replaced by the [OpenStack adapter](/src/Gaufrette/Adapter/OpenStack.php).
+The new adapter now uses the https://github.com/php-opencloud/openstack SDK
+which is the latest supported version of the SDK for OpenStack instead of
+https://github.com/rackspace/php-opencloud (#533).
 - Google Cloud Storage Adapter (#557)
+
+## Removed
+
+- The [OpenCloud adapter](https://github.com/KnpLabs/Gaufrette/blob/v0.5.0/src/Gaufrette/Adapter/OpenCloud.php)
+has been removed.
+- The [ObjectStoreFactory](https://github.com/KnpLabs/Gaufrette/blob/v0.5.0/src/Gaufrette/Adapter/OpenStackCloudFiles/ObjectStoreFactory.php)
+has been removed.
 
 Thank you @nicolasmure and @PanzerLlama for your contributions !
 

@@ -56,7 +56,7 @@ your issue or pull request in a timely manner, ping us:
 | GridFS             | @NiR-                       |
 | InMemory           |                             |
 | Local              |                             |
-| OpenCloud          | @NiR-                       |
+| OpenStack          | @nicolasmure                |
 | PhpseclibSftp      | @fabschurt                  |
 | Zip                |                             |
 
