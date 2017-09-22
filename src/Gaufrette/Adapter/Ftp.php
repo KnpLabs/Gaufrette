@@ -576,7 +576,7 @@ class Ftp implements Adapter,
     /**
      * Closes the adapter's ftp connection.
      */
-    private function close()
+    public function close()
     {
         if ($this->isConnected()) {
             ftp_close($this->connection);
