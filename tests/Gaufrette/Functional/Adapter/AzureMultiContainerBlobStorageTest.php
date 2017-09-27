@@ -103,9 +103,9 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
     {
         $path = $this->createUniqueContainerName('container') . '/foo';
 
-        $this->filesystem->write($path, 'Some content');
+        $contentSize = $this->filesystem->write($path, 'Some content');
 
-        $this->assertGreaterThan(11, $this->filesystem->size($path));
+        $this->assertEquals($contentSize, $this->filesystem->size($path));
     }
 
     /**
