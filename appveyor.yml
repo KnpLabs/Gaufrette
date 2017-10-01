@@ -51,6 +51,7 @@ install:
   - IF %PHP%==1 copy php.ini-production php.ini /Y
   - IF %PHP%==1 echo extension_dir=ext >> php.ini
   - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
+  - IF %PHP%==1 echo extension=php_mbstring.dll >> php.ini
   - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
   - IF %PHP%==1 echo extension=php_mongodb.dll >> php.ini
   - IF %PHP%==1 echo extension=php_pdo_sqlite.dll >> php.ini
@@ -60,7 +61,7 @@ install:
   - IF %PHP%==1 echo openssl.cafile=c:\php\cacert.pem >> php.ini
   - cd C:\projects\gaufrette
   - appveyor DownloadFile https://getcomposer.org/composer.phar
-  - php composer.phar install --prefer-dist --no-interaction --no-progress --ansi
+  - php composer.phar update --prefer-dist --no-interaction --no-progress --no-suggest --ansi
 
 test_script:
   - cd C:\projects\gaufrette

@@ -60,6 +60,9 @@
     "autoload": {
         "psr-0": { "Gaufrette": "src/" }
     },
+    "autoload-dev": {
+        "psr-0": { "Gaufrette\\Functional": "tests/" }
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"
