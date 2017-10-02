@@ -1,0 +1,56 @@
+FROM php:5.6-alpine
+
+ENV SRC_DIR /usr/src/gaufrette
+
+RUN apk add --no-cache --virtual .persistent-deps \
+        git \
+        zlib
+
+# PHP extensions
+ENV MONGODB_VERSION="1.2.11" \
+    SSH2_VERSION="0.13"
+
+RUN set -xe \
+    && apk add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
+        libssh2-dev \
+        zlib-dev \
+    && docker-php-ext-install \
+        zip \
+    && pecl install \
+        mongodb-${MONGODB_VERSION} \
+        ssh2-${SSH2_VERSION} \
+    && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
+    && docker-php-ext-enable \
+        mongodb \
+        ssh2 \
+    && apk del .build-deps
+
+COPY docker/php.ini /usr/local/etc/php/php.ini
+
+COPY docker/install-composer.sh /usr/local/bin/install-composer
+RUN chmod +x /usr/local/bin/install-composer
+
+RUN set -xe \
+	&& install-composer \
+	&& mv composer.phar /usr/local/bin/composer
+
+ENV COMPOSER_ALLOW_SUPERUSER 1
+
+RUN composer global require "hirak/prestissimo" --prefer-dist --no-progress --no-suggest --optimize-autoloader --apcu-autoloader \
+	&& composer clear-cache
+
+WORKDIR ${SRC_DIR}
+
+COPY composer.json ./
+RUN composer update --prefer-dist --no-autoloader --no-scripts --no-progress --no-suggest \
+    && composer clear-cache
+
+COPY spec spec/
+COPY src src/
+COPY tests tests/
+COPY bin/tests bin/tests
+
+RUN composer dump-autoload
+
+CMD ["bin/tests"]
