@@ -15,7 +15,7 @@ class FilesystemMap
      * Returns an array of all the registered filesystems where the key is the
      * domain and the value the filesystem.
      *
-     * @return array
+     * @return FilesystemInterface[]
      */
     public function all()
     {
@@ -25,13 +25,13 @@ class FilesystemMap
     /**
      * Register the given filesystem for the specified domain.
      *
-     * @param string     $domain
-     * @param Filesystem $filesystem
+     * @param string              $domain
+     * @param FilesystemInterface $filesystem
      *
-     * @throws InvalidArgumentException when the specified domain contains
+     * @throws \InvalidArgumentException when the specified domain contains
      *                                  forbidden characters
      */
-    public function set($domain, Filesystem $filesystem)
+    public function set($domain, FilesystemInterface $filesystem)
     {
         if (!preg_match('/^[-_a-zA-Z0-9]+$/', $domain)) {
             throw new \InvalidArgumentException(sprintf(
@@ -61,9 +61,9 @@ class FilesystemMap
      *
      * @param string $domain
      *
-     * @return Filesystem
+     * @return FilesystemInterface
      *
-     * @throw  InvalidArgumentException when there is no filesystem registered
+     * @throw \InvalidArgumentException when there is no filesystem registered
      *                                  for the specified domain
      */
     public function get($domain)

@@ -4,7 +4,7 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\File;
-use Gaufrette\Filesystem;
+use Gaufrette\FilesystemInterface;
 
 /**
  * Ftp adapter.
@@ -271,7 +271,7 @@ class Ftp implements Adapter,
     /**
      * {@inheritdoc}
      */
-    public function createFile($key, Filesystem $filesystem)
+    public function createFile($key, FilesystemInterface $filesystem)
     {
         $this->ensureDirectoryExists($this->directory, $this->create);
 

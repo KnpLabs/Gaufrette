@@ -49,10 +49,10 @@ class File
     protected $mtime = null;
 
     /**
-     * @param string     $key
-     * @param Filesystem $filesystem
+     * @param string              $key
+     * @param FilesystemInterface $filesystem
      */
-    public function __construct($key, Filesystem $filesystem)
+    public function __construct($key, FilesystemInterface $filesystem)
     {
         $this->key = $key;
         $this->name = $key;
