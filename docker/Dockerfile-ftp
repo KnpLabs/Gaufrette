@@ -1,17 +1,3 @@
-FROM ubuntu:precise
+FROM stilliard/pure-ftpd
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends vsftpd && \
-    rm -rf /var/lib/apt/lists/*
-
-COPY vsftpd.conf /etc/vsftpd.conf
-
-# Removing "./" from homedir would break vsftpd config
-RUN chown root:root /etc/vsftpd.conf && \
-    useradd -d /home/./gaufrette gaufrette && \
-    echo "gaufrette:gaufrette" | chpasswd && \
-    mkdir /home/gaufrette /srv/empty && \
-    chown gaufrette:gaufrette /home/gaufrette /srv/ftp
-
-EXPOSE 20-21
-CMD ["vsftpd"]
+RUN (echo gaufrette; echo gaufrette) | pure-pw useradd gaufrette -f /etc/pure-ftpd/passwd/pureftpd.passwd -m -u ftpuser -d /home/ftpusers/gaufrette
