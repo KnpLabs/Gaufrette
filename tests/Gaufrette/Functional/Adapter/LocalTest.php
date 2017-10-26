@@ -34,6 +34,10 @@ class LocalTest extends FunctionalTestCase
      */
     public function shouldWorkWithSyslink()
     {
+        if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
+            $this->markTestSkipped('Symlinks are not supported on Windows.');
+        }
+
         $dirname = sprintf(
             '%s/adapters/aaa',
             dirname(__DIR__)

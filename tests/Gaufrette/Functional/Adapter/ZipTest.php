@@ -11,6 +11,8 @@ class ZipTest extends FunctionalTestCase
     {
         if (!extension_loaded('zip')) {
             return $this->markTestSkipped('The zip extension is not available.');
+        } elseif (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
+            $this->markTestSkipped('Zip adapter is not supported on Windows.');
         }
 
         @touch(__DIR__ . '/test.zip');

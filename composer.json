@@ -3,7 +3,6 @@
     "type":         "library",
     "description":  "PHP5 library that provides a filesystem abstraction layer",
     "keywords":     ["file", "filesystem", "media", "abstraction"],
-    "minimum-stability": "dev",
     "homepage":     "http://knplabs.com",
     "license":      "MIT",
     "authors": [
@@ -14,12 +13,6 @@
         {
             "name":     "The contributors",
             "homepage": "http://github.com/knplabs/Gaufrette/contributors"
-        }
-    ],
-    "repositories": [
-        {
-            "type": "pear",
-            "url": "https://pear.php.net"
         }
     ],
     "require": {
@@ -37,10 +30,10 @@
         "phpseclib/phpseclib": "^2.0",
         "doctrine/dbal": ">=2.3",
         "dropbox-php/dropbox-php": "*",
-        "phpunit/phpunit": "3.7.*",
+        "phpunit/phpunit": "^5.6.8",
         "mikey179/vfsStream": "~1.2.0",
         "league/flysystem": "~1.0",
-        "mongodb/mongodb": "~1.1.4",
+        "mongodb/mongodb": "^1.1",
         "microsoft/windowsazure": "~0.4",
         "microsoft/azure-storage": "~0.15.0",
         "akeneo/phpspec-skip-example-extension": "~1.2",
@@ -70,9 +63,12 @@
     "autoload": {
         "psr-0": { "Gaufrette": "src/" }
     },
+    "autoload-dev": {
+        "psr-0": { "Gaufrette\\Functional": "tests/" }
+    },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.4.x-dev"
+            "dev-master": "0.5.x-dev"
         }
     }
 }

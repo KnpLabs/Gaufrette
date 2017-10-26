@@ -4,6 +4,8 @@ currentMenu: sftp
 
 # SFTP
 
+**Warning: This adapter has been deprecated since v0.4.0 and will be removed in v1.0.0.**
+
 *N.B.* SFTP adapter is not recommended to use due to https://bugs.php.net/bug.php?id=64169. It is recommended to use
 [phpseclib SFTP adapter](phpseclib-sftp.html) instead.
 

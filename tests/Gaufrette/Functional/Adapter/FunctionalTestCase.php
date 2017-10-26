@@ -3,8 +3,9 @@
 namespace Gaufrette\Functional\Adapter;
 
 use Gaufrette\Filesystem;
+use PHPUnit\Framework\TestCase;
 
-abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
+abstract class FunctionalTestCase extends TestCase
 {
     /**
      * @var Filesystem
@@ -34,7 +35,7 @@ abstract class FunctionalTestCase extends \PHPUnit_Framework_TestCase
         );
 
         if (!file_exists($filename)) {
-            return $this->markTestSkipped(<<<EOF
+            $this->markTestSkipped(<<<EOF
 To run the {$basename} filesystem tests, you must:
 
  1. Copy the file "{$filename}.dist" as "{$filename}"
@@ -67,8 +68,6 @@ EOF
 
         $this->assertEquals('Some content', $this->filesystem->read('foo'));
         $this->assertEquals('Some content1', $this->filesystem->read('test/subdir/foo'));
-        $this->filesystem->delete('foo');
-        $this->filesystem->delete('test/subdir/foo');
     }
 
     /**
@@ -81,7 +80,6 @@ EOF
         $this->filesystem->write('foo', 'Some content updated', true);
 
         $this->assertEquals('Some content updated', $this->filesystem->read('foo'));
-        $this->filesystem->delete('foo');
     }
 
     /**
@@ -97,8 +95,6 @@ EOF
         $this->assertTrue($this->filesystem->has('foo'));
         $this->assertFalse($this->filesystem->has('test/somefile'));
         $this->assertFalse($this->filesystem->has('test/somefile'));
-
-        $this->filesystem->delete('foo');
     }
 
     /**
@@ -110,8 +106,6 @@ EOF
         $this->filesystem->write('foo', 'Some content');
 
         $this->assertGreaterThan(0, $this->filesystem->mtime('foo'));
-
-        $this->filesystem->delete('foo');
     }
 
     /**
@@ -143,7 +137,6 @@ EOF
 
         $this->assertFalse($this->filesystem->has('somedir/sub/foo'));
         $this->assertEquals('Some content', $this->filesystem->read('somedir/sub/boo'));
-        $this->filesystem->delete('somedir/sub/boo');
     }
 
     /**
@@ -175,14 +168,10 @@ EOF
 
         $actualKeys = $this->filesystem->keys();
 
-        $this->assertEquals(3, count($actualKeys));
+        $this->assertCount(3, $actualKeys);
         foreach (array('foo', 'bar', 'baz') as $key) {
             $this->assertContains($key, $actualKeys);
         }
-
-        $this->filesystem->delete('foo');
-        $this->filesystem->delete('bar');
-        $this->filesystem->delete('baz');
     }
 
     /**
@@ -197,33 +186,31 @@ EOF
         $this->filesystem->delete('.foo');
         $this->assertFalse($this->filesystem->has('.foo'));
     }
-    
+
     /**
      * @test
      * @group functional
      */
     public function shouldKeepFileObjectInRegister()
     {
-        $FileObjectA = $this->filesystem->createFile('somefile');        
+        $FileObjectA = $this->filesystem->createFile('somefile');
         $FileObjectB = $this->filesystem->createFile('somefile');
-        
-        $this->assertTrue($FileObjectA === $FileObjectB);
+
+        $this->assertSame($FileObjectA, $FileObjectB);
     }
-    
+
     /**
      * @test
      * @group functional
      */
-    public function shouldWrtieToSameFile()
+    public function shouldWriteToSameFile()
     {
         $FileObjectA = $this->filesystem->createFile('somefile');
         $FileObjectA->setContent('ABC');
-        
+
         $FileObjectB = $this->filesystem->createFile('somefile');
         $FileObjectB->setContent('DEF');
-        
+
         $this->assertEquals('DEF', $FileObjectB->getContent());
-        
-        $this->filesystem->delete('somefile');
     }
 }

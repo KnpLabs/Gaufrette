@@ -205,8 +205,13 @@ class PhpseclibSftp implements Adapter,
     protected function fetchKeys($directory = '', $onlyKeys = true)
     {
         $keys = array('keys' => array(), 'dirs' => array());
+        $computedPath = $this->computePath($directory);
 
-        $list = $this->sftp->rawlist($this->computePath($directory));
+        if (!$this->sftp->file_exists($computedPath)) {
+            return $keys;
+        }
+
+        $list = $this->sftp->rawlist($computedPath);
         foreach ((array) $list as $filename => $stat) {
             if ('.' === $filename || '..' === $filename) {
                 continue;

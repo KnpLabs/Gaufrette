@@ -6,10 +6,7 @@ use Aws\S3\S3Client;
 use Gaufrette\Adapter\AwsS3;
 use Gaufrette\Filesystem;
 
-/**
- * @todo move to phpspec
- */
-class AwsS3Test extends \PHPUnit_Framework_TestCase
+class AwsS3Test extends FunctionalTestCase
 {
     /** @var int */
     static private $SDK_VERSION;
@@ -53,6 +50,8 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
                 'secret' => $secret,
             ]);
         }
+
+        $this->createFilesystem(['create' => true]);
     }
 
     public function tearDown()
@@ -62,18 +61,22 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
         }
 
         $result = $this->client->listObjects(['Bucket' => $this->bucket]);
-        $staleObjects = $result->get('Contents');
 
-        foreach ($staleObjects as $staleObject) {
+        if (!$result->hasKey('Contents')) {
+            $this->client->deleteBucket(['Bucket' => $this->bucket]);
+            return;
+        }
+
+        foreach ($result->get('Contents') as $staleObject) {
             $this->client->deleteObject(['Bucket' => $this->bucket, 'Key' => $staleObject['Key']]);
         }
 
         $this->client->deleteBucket(['Bucket' => $this->bucket]);
     }
 
-    private function getFilesystem(array $adapterOptions = [])
+    private function createFilesystem(array $adapterOptions = [])
     {
-        return new Filesystem(new AwsS3($this->client, $this->bucket, $adapterOptions));
+        $this->filesystem = new Filesystem(new AwsS3($this->client, $this->bucket, $adapterOptions));
     }
 
     /**
@@ -81,81 +84,76 @@ class AwsS3Test extends \PHPUnit_Framework_TestCase
      */
     public function testThrowsExceptionIfBucketMissingAndNotCreating()
     {
-        $filesystem = $this->getFilesystem();
-        $filesystem->read('foo');
+        $this->createFilesystem();
+        $this->filesystem->read('foo');
     }
 
     public function testWritesObjects()
     {
-        $filesystem = $this->getFilesystem(['create' => true]);
-        $this->assertEquals(7, $filesystem->write('foo', 'testing'));
+        $this->assertEquals(7, $this->filesystem->write('foo', 'testing'));
     }
 
     public function testChecksForObjectExistence()
     {
-        $filesystem = $this->getFilesystem(['create' => true]);
-        $filesystem->write('foo', '');
-        $this->assertTrue($filesystem->has('foo'));
+        $this->filesystem->write('foo', '');
+        $this->assertTrue($this->filesystem->has('foo'));
     }
 
     public function testGetsObjectUrls()
     {
-        $filesystem = $this->getFilesystem(['create' => true]);
-        $this->assertNotEmpty($filesystem->getAdapter()->getUrl('foo'));
+        $this->assertNotEmpty($this->filesystem->getAdapter()->getUrl('foo'));
     }
 
     public function testChecksForObjectExistenceWithDirectory()
     {
-        $filesystem = $this->getFilesystem(['directory' => 'bar', 'create' => true]);
-        $filesystem->write('foo', '');
+        $this->createFilesystem(['directory' => 'bar', 'create' => true]);
+        $this->filesystem->write('foo', '');
 
-        $this->assertTrue($filesystem->has('foo'));
+        $this->assertTrue($this->filesystem->has('foo'));
     }
 
     public function testGetsObjectUrlsWithDirectory()
     {
-        $filesystem = $this->getFilesystem(['directory' => 'bar']);
-        $this->assertNotEmpty($filesystem->getAdapter()->getUrl('foo'));
+        $this->createFilesystem(['directory' => 'bar']);
+        $this->assertNotEmpty($this->filesystem->getAdapter()->getUrl('foo'));
     }
 
     public function testListKeysWithoutDirectory()
     {
-        $filesystem = $this->getFilesystem(['create' => true]);
-        $filesystem->write('test.txt', 'some content');
-        $this->assertEquals(['test.txt'], $filesystem->listKeys());
+        $this->assertEquals([], $this->filesystem->listKeys());
+        $this->filesystem->write('test.txt', 'some content');
+        $this->assertEquals(['test.txt'], $this->filesystem->listKeys());
     }
 
     public function testListKeysWithDirectory()
     {
-        $filesystem = $this->getFilesystem(['create' => true, 'directory' => 'root/']);
-        $filesystem->write('test.txt', 'some content');
-        $this->assertEquals(['test.txt'], $filesystem->listKeys());
-        $this->assertTrue($filesystem->has('test.txt'));
+        $this->createFilesystem(['create' => true, 'directory' => 'root/']);
+        $this->filesystem->write('test.txt', 'some content');
+        $this->assertEquals(['test.txt'], $this->filesystem->listKeys());
+        $this->assertTrue($this->filesystem->has('test.txt'));
     }
 
     public function testKeysWithoutDirectory()
     {
-        $filesystem = $this->getFilesystem(['create' => true]);
-        $filesystem->write('test.txt', 'some content');
-        $this->assertEquals(['test.txt'], $filesystem->keys());
+        $this->filesystem->write('test.txt', 'some content');
+        $this->assertEquals(['test.txt'], $this->filesystem->keys());
     }
 
     public function testKeysWithDirectory()
     {
-        $filesystem = $this->getFilesystem(['create' => true, 'directory' => 'root/']);
-        $filesystem->write('test.txt', 'some content');
-        $this->assertEquals(['test.txt'], $filesystem->keys());
+        $this->createFilesystem(['create' => true, 'directory' => 'root/']);
+        $this->filesystem->write('test.txt', 'some content');
+        $this->assertEquals(['test.txt'], $this->filesystem->keys());
     }
 
     public function testUploadWithGivenContentType()
     {
-        $filesystem = $this->getFilesystem(['create' => true]);
         /** @var AwsS3 $adapter */
-        $adapter = $filesystem->getAdapter();
+        $adapter = $this->filesystem->getAdapter();
 
         $adapter->setMetadata('foo', ['ContentType' => 'text/html']);
-        $filesystem->write('foo', '<html></html>');
+        $this->filesystem->write('foo', '<html></html>');
 
-        $this->assertEquals('text/html', $filesystem->mimeType('foo'));
+        $this->assertEquals('text/html', $this->filesystem->mimeType('foo'));
     }
 }

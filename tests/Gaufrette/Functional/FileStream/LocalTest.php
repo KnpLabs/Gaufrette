@@ -22,6 +22,10 @@ class LocalTest extends FunctionalTestCase
 
     public function testDirectoryChmod()
     {
+        if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
+            $this->markTestSkipped('Chmod and umask are not available on Windows.');
+        }
+
         $r = fopen('gaufrette://filestream/foo/bar', 'a+');
         fclose($r);
 
@@ -39,7 +43,7 @@ class LocalTest extends FunctionalTestCase
      */
     public function shouldSupportsDirectory()
     {
-        $this->assertTrue(file_exists('gaufrette://filestream/subdir'));
+        $this->assertFileExists('gaufrette://filestream/subdir');
         $this->assertTrue(is_dir('gaufrette://filestream/subdir'));
     }
 }
