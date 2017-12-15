@@ -18,7 +18,7 @@ Imagine you have to manage a lot of medias in a PHP project. Lets see how to
 take this situation in your advantage using Gaufrette.
 
 The filesystem abstraction layer permits you to develop your application without
-the need to know were all those medias will be stored and how.
+the need to know where all those medias will be stored and how.
 
 Another advantage of this is the possibility to update the files location
 without any impact on the code apart from the definition of your filesystem.
