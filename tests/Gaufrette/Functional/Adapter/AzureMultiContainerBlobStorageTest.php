@@ -206,7 +206,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
         $FileObjectA = $this->filesystem->createFile($path);
         $FileObjectB = $this->filesystem->createFile($path);
 
-        $this->assertTrue($FileObjectA === $FileObjectB);
+        $this->assertSame($FileObjectB, $FileObjectA);
     }
 
     /**

@@ -26,10 +26,10 @@ class FunctionalTestCase extends \PHPUnit_Framework_TestCase
     public function shouldCheckFileExists()
     {
         $this->filesystem->write('test.txt', 'some content');
-        $this->assertTrue(file_exists('gaufrette://filestream/test.txt'));
+        $this->assertFileExists('gaufrette://filestream/test.txt');
 
         $this->filesystem->delete('test.txt');
-        $this->assertFalse(file_exists('gaufrette://filestream/test.txt'));
+        $this->assertFileNotExists('gaufrette://filestream/test.txt');
     }
 
     /**
@@ -201,7 +201,7 @@ class FunctionalTestCase extends \PHPUnit_Framework_TestCase
     public function shouldCreateNewFile($mode)
     {
         $fileHandler = fopen('gaufrette://filestream/test.txt', $mode);
-        $this->assertTrue(file_exists('gaufrette://filestream/test.txt'));
+        $this->assertFileExists('gaufrette://filestream/test.txt');
     }
 
     public static function modesProvider()
