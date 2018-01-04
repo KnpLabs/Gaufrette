@@ -160,7 +160,7 @@ class LocalTest extends FunctionalTestCase
         $this->filesystem->clearFileRegister();
         $fsRegister = $fsReflection->getProperty('fileRegister');
         $fsRegister->setAccessible(true);
-        $this->assertEquals(0, count($fsRegister->getValue($this->filesystem)));
+        $this->assertCount(0, $fsRegister->getValue($this->filesystem));
 
         $this->filesystem->delete('test.txt');
         $this->filesystem->delete('test2.txt');
