@@ -26,9 +26,9 @@ RUN set -xe \
         ssh2 \
     && apk del .build-deps
 
-COPY php.ini /usr/local/etc/php/php.ini
+COPY docker/php.ini /usr/local/etc/php/php.ini
 
-COPY install-composer.sh /usr/local/bin/docker-gaufrette-install-composer
+COPY docker/install-composer.sh /usr/local/bin/docker-gaufrette-install-composer
 RUN chmod +x /usr/local/bin/docker-gaufrette-install-composer
 
 RUN set -xe \
