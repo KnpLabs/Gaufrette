@@ -1,3 +1,29 @@
+v0.5
+====
+
+## New features
+- Added support for calculated size for Azure Blob Storage #523
+- GridFS Support for Metadata Retrieval after Write #535
+
+## Changes
+- Test case for AwsS3 now inherits common test case #514
+- Run azure tests on appveyor #512
+- Bump PHPUnit to ^5.6.8 #529
+- Use composer's autoload-dev #530
+- Drop HHVM support + sync docker conf with Travis #528
+- Refactoring tests to have more detailed failure messages #542
+
+## Fixes
+- Documentation #510
+- Typos #506, #538
+- Fix incomplete tear down phase for AwsS3Test #516
+- Fix FTP tests + bug in PhpseclibSftp::fetchKeys() #527
+- fix travis build for php 5.6 #543
+- Quickfix for Adapter/AwsS3, check if count() call is allowed #544
+
+Thank you @andreasschacht, @bsperduto, @carusogabriel, @dawkaa, @gerkestam2,
+@GrahamCampbell, @Lctrs, @nicolasmure, @NiR- for your contributions !
+
 v0.4
 ====
 
