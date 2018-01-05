@@ -1,9 +1,8 @@
 {
     "name":         "knplabs/gaufrette",
     "type":         "library",
-    "description":  "PHP5 library that provides a filesystem abstraction layer",
+    "description":  "PHP library that provides a filesystem abstraction layer",
     "keywords":     ["file", "filesystem", "media", "abstraction"],
-    "minimum-stability": "dev",
     "homepage":     "http://knplabs.com",
     "license":      "MIT",
     "authors": [
@@ -34,7 +33,7 @@
         "phpunit/phpunit": "~5.7",
         "mikey179/vfsStream": "~1.2.0",
         "league/flysystem": "~1.0",
-        "mongodb/mongodb": "~1.1.4",
+        "mongodb/mongodb": "^1.1",
         "microsoft/windowsazure": "~0.4",
         "microsoft/azure-storage": "~0.15.0",
         "akeneo/phpspec-skip-example-extension": "2.0.*"

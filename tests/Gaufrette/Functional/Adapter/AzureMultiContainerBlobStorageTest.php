@@ -98,6 +98,19 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
     /**
      * @test
      * @group functional
+     */
+    public function shouldGetSize()
+    {
+        $path = $this->createUniqueContainerName('container') . '/foo';
+
+        $contentSize = $this->filesystem->write($path, 'Some content');
+
+        $this->assertEquals($contentSize, $this->filesystem->size($path));
+    }
+
+    /**
+     * @test
+     * @group functional
      * @expectedException \RuntimeException
      * @expectedMessage Could not get mtime for the "foo" key
      */
@@ -193,7 +206,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
         $FileObjectA = $this->filesystem->createFile($path);
         $FileObjectB = $this->filesystem->createFile($path);
 
-        $this->assertTrue($FileObjectA === $FileObjectB);
+        $this->assertSame($FileObjectB, $FileObjectA);
     }
 
     /**

@@ -281,8 +281,13 @@ class AwsS3 implements Adapter,
             'Prefix' => rtrim($this->computePath($key), '/').'/',
             'MaxKeys' => 1,
         ]);
+        if (isset($result['Contents'])) {
+            if (is_array($result['Contents']) || $result['Contents'] instanceof \Countable) {
+                return count($result['Contents']) > 0;
+            }
+        }
 
-        return count($result['Contents']) > 0;
+        return false;
     }
 
     /**
