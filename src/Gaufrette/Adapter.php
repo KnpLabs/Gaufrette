@@ -104,6 +104,8 @@ interface Adapter
      *
      * @throws InvalidKey     If $key is malformed
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
+     *
+     * @TODO: remove this method
      */
     public function isDirectory($key);
 }

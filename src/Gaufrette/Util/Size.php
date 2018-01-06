@@ -30,11 +30,11 @@ class Size
      *
      * @param string $filename
      *
-     * @return int
+     * @return int|false The size of the file or false in case of an error.
      */
     public static function fromFile($filename)
     {
-        return filesize($filename);
+        return @filesize($filename);
     }
 
     /**

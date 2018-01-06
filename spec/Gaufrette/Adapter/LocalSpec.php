@@ -2,6 +2,8 @@
 
 namespace spec\Gaufrette\Adapter;
 
+use Gaufrette\Exception\InvalidKey;
+use Gaufrette\Exception\StorageFailure;
 use org\bovigo\vfs\vfsStream;
 use PhpSpec\ObjectBehavior;
 
@@ -11,6 +13,7 @@ class LocalSpec extends ObjectBehavior
     {
         vfsStream::setup('test');
         vfsStream::copyFromFileSystem(__DIR__.'/MockFilesystem');
+
         $this->beConstructedWith(vfsStream::url('test'));
     }
 
@@ -46,12 +49,12 @@ class LocalSpec extends ObjectBehavior
 
     function it_writes_file()
     {
-        $this->write('filename', 'some content')->shouldReturn(12);
+        $this->write('filename', 'some content');
     }
 
     function it_renames_file()
     {
-        $this->rename('filename', 'aaa/filename2')->shouldReturn(true);
+        $this->rename('filename', 'aaa/filename2');
     }
 
     function it_checks_if_file_exists()
@@ -75,8 +78,8 @@ class LocalSpec extends ObjectBehavior
 
     function it_deletes_file()
     {
-        $this->delete('filename')->shouldReturn(true);
-        $this->delete('filename1')->shouldReturn(false);
+        $this->delete('filename');
+        $this->shouldThrow(StorageFailure::class)->duringDelete('filename1');
     }
 
     function it_checks_if_given_key_is_directory()
@@ -93,69 +96,12 @@ class LocalSpec extends ObjectBehavior
     function it_does_not_allow_to_read_path_above_main_file_directory()
     {
         $this
-            ->shouldThrow(new \OutOfBoundsException(sprintf('The path "%s" is out of the filesystem.', vfsStream::url('filename'))))
+            ->shouldThrow(InvalidKey::class)
             ->duringRead('../filename')
         ;
         $this
-            ->shouldThrow(new \OutOfBoundsException(sprintf('The path "%s" is out of the filesystem.', vfsStream::url('filename'))))
+            ->shouldThrow(InvalidKey::class)
             ->duringExists('../filename')
         ;
-    }
-
-    function it_fails_when_directory_does_not_exists()
-    {
-        $this->beConstructedWith(vfsStream::url('other'));
-
-        $this
-            ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
-            ->duringRead('filename')
-        ;
-        $this
-            ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
-            ->duringWrite('filename', 'some content')
-        ;
-        $this
-            ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
-            ->duringRename('filename', 'otherFilename')
-        ;
-        $this
-            ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
-            ->duringExists('filename')
-        ;
-        $this
-            ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
-            ->duringKeys()
-        ;
-        $this
-            ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
-            ->duringMtime('filename')
-        ;
-        $this
-            ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
-            ->duringDelete('filename')
-        ;
-        $this
-            ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
-            ->duringIsDirectory('filename')
-        ;
-        $this
-            ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
-            ->duringCreateStream('filename')
-        ;
-        $this
-            ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
-            ->duringChecksum('filename')
-        ;
-        $this
-            ->shouldThrow(new \RuntimeException(sprintf('The directory "%s" does not exist.', vfsStream::url('other'))))
-            ->duringMimeType('filename')
-        ;
-    }
-
-    function it_creates_directory_when_does_not_exists()
-    {
-        $this->beConstructedWith(vfsStream::url('test/other'), true);
-
-        $this->isDirectory('/')->shouldReturn(true);
     }
 }

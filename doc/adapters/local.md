@@ -19,6 +19,6 @@ composer require gaufrette/local-adapter
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local as LocalAdapter;
 
-$adapter = new LocalAdapter('/var/media', true, 0750);
+$adapter = new LocalAdapter('/var/media', 0750);
 $filesystem = new Filesystem($adapter);
 ```

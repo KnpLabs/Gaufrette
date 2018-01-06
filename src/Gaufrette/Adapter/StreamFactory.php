@@ -15,6 +15,8 @@ interface StreamFactory
      * @param string $key
      *
      * @return \Gaufrette\Stream
+     *
+     * @throws \Gaufrette\Exception\InvalidKey
      */
     public function createStream($key);
 }
