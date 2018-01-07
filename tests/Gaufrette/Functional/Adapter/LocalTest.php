@@ -12,7 +12,7 @@ class LocalTest extends FunctionalTestCase
 
     public function setUp()
     {
-        $this->directory = sprintf('%s/filesystem', str_replace('\\', '/', __DIR__));
+        $this->directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('gaufrette-tests');
 
         if (!file_exists($this->directory)) {
             mkdir($this->directory);
