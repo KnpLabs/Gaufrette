@@ -7,6 +7,9 @@ use Gaufrette\Filesystem;
 
 class FtpTest extends FunctionalTestCase
 {
+    /** @var string */
+    private $basePath;
+
     public function setUp()
     {
         $host     = getenv('FTP_HOST');
@@ -19,7 +22,15 @@ class FtpTest extends FunctionalTestCase
             $this->markTestSkipped('Either FTP_HOST, FTP_USER, FTP_PASSWORD and/or FTP_BASE_DIR env variables are not defined.');
         }
 
-        $adapter = new Ftp($baseDir, $host, ['port' => $port, 'username' => $user, 'password' => $password, 'passive' => true, 'create' => true]);
+        $baseDir = rtrim($baseDir, '/') . DIRECTORY_SEPARATOR . uniqid();
+
+        $adapter = new Ftp($baseDir, $host, [
+            'port'     => $port,
+            'username' => $user,
+            'password' => $password,
+            'passive'  => true,
+            'create'   => true
+        ]);
         $this->filesystem = new Filesystem($adapter);
     }
 
