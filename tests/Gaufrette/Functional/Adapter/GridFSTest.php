@@ -8,6 +8,9 @@ use MongoDB\Client;
 
 class GridFSTest extends FunctionalTestCase
 {
+    /** @var \MongoDB\GridFS\Bucket */
+    private $bucket;
+
     public function setUp()
     {
         $uri = getenv('MONGO_URI');
@@ -17,12 +20,15 @@ class GridFSTest extends FunctionalTestCase
             $this->markTestSkipped('Either MONGO_URI or MONGO_DBNAME env variables are not defined.');
         }
 
-        $client = new Client($uri);
-        $db = $client->selectDatabase($dbname);
-        $bucket = $db->selectGridFSBucket();
-        $bucket->drop();
+        $this->bucket = (new Client($uri))
+            ->selectDatabase(uniqid($dbname))
+            ->selectGridFSBucket();
+        $this->filesystem = new Filesystem(new GridFS($this->bucket));
+    }
 
-        $this->filesystem = new Filesystem(new GridFS($bucket));
+    public function tearDown()
+    {
+        $this->bucket->drop();
     }
 
     /**
@@ -74,7 +80,7 @@ class GridFSTest extends FunctionalTestCase
             $keys['keys'],
             '', 0, 10, true);
     }
-    
+
     /**
      * @test
      * Tests metadata written to GridFS can be retrieved after writing
@@ -83,10 +89,10 @@ class GridFSTest extends FunctionalTestCase
     {
         //Create local copy of fileadapter
         $fileadpt = clone $this->filesystem->getAdapter();
-        
+
         $this->filesystem->getAdapter()->setMetadata('metadatatest', array('testing'  =>  true));
         $this->filesystem->write('metadatatest', 'test');
-        
+
         $this->assertEquals($this->filesystem->getAdapter()->getMetadata('metadatatest'), $fileadpt->getMetadata('metadatatest'));
     }
 }

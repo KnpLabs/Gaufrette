@@ -10,14 +10,15 @@ class ZipTest extends FunctionalTestCase
     public function setUp()
     {
         if (!extension_loaded('zip')) {
-            return $this->markTestSkipped('The zip extension is not available.');
+            $this->markTestSkipped('The zip extension is not available.');
         } elseif (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
             $this->markTestSkipped('Zip adapter is not supported on Windows.');
         }
 
-        @touch(__DIR__ . '/test.zip');
+        $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('gaufrette-test');
+        @touch($path);
 
-        $this->filesystem = new Filesystem(new Zip(__DIR__ . '/test.zip'));
+        $this->filesystem = new Filesystem(new Zip($path));
     }
 
     public function tearDown()

@@ -8,7 +8,7 @@ use Gaufrette\Filesystem;
 
 class DoctrineDbalTest extends FunctionalTestCase
 {
-    /** @var  \Doctrine\DBAL\Connection */
+    /** @var \Doctrine\DBAL\Connection */
     private $connection;
 
     public function setUp()
