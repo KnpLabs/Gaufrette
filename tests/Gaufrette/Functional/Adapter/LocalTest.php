@@ -38,14 +38,8 @@ class LocalTest extends FunctionalTestCase
             $this->markTestSkipped('Symlinks are not supported on Windows.');
         }
 
-        $dirname = sprintf(
-            '%s/adapters/aaa',
-            dirname(__DIR__)
-        );
-        $linkname = sprintf(
-            '%s/adapters/../../../../link',
-            dirname(__DIR__)
-        );
+        $dirname = sprintf('%s/dirname', $this->directory);
+        $linkname = sprintf('%s/link', $this->directory);
 
         @mkdir($dirname);
         @unlink($linkname);
@@ -133,10 +127,7 @@ class LocalTest extends FunctionalTestCase
      */
     public function shouldBeAbleToClearCache()
     {
-        $dirname = sprintf(
-            '%s/adapters/bbb',
-            dirname(__DIR__)
-        );
+        $dirname = sprintf('%s/bbb', $this->directory);
 
         @mkdir($dirname);
 

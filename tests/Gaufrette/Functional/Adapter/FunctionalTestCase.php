@@ -25,38 +25,6 @@ abstract class FunctionalTestCase extends TestCase
         return $matches[1];
     }
 
-    public function setUp()
-    {
-        $basename = $this->getAdapterName();
-        $filename = sprintf(
-            '%s/adapters/%s.php',
-            dirname(__DIR__),
-            $basename
-        );
-
-        if (!file_exists($filename)) {
-            $this->markTestSkipped(<<<EOF
-To run the {$basename} filesystem tests, you must:
-
- 1. Copy the file "{$filename}.dist" as "{$filename}"
- 2. Modify the copied file to fit your environment
-EOF
-            );
-        }
-
-        $adapter = include $filename;
-        $this->filesystem = new Filesystem($adapter);
-    }
-
-    public function tearDown()
-    {
-        if (null === $this->filesystem) {
-            return;
-        }
-
-        $this->filesystem = null;
-    }
-
     /**
      * @test
      * @group functional
