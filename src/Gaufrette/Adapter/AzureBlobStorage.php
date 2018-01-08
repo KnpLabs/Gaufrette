@@ -261,18 +261,76 @@ class AzureBlobStorage implements Adapter,
     {
         $this->init();
 
+        if ($this->multiContainerMode) {
+            return $this->keysForMultiContainerMode();
+        }
+
+        return $this->keysForSingleContainerMode();
+    }
+
+    /**
+     * List objects stored when the adapter is used in multi container mode.
+     *
+     * @return array
+     *
+     * @throws \RuntimeException
+     */
+    private function keysForMultiContainerMode()
+    {
         try {
-            if ($this->multiContainerMode) {
-                $containersList = $this->blobProxy->listContainers();
-                return call_user_func_array('array_merge', array_map(
-                    function(Container $container) {
-                        $containerName = $container->getName();
-                        return $this->fetchBlobs($containerName, $containerName);
-                    },
-                    $containersList->getContainers()
-                ));
+            $containersList = $this->blobProxy->listContainers()->getContainers();
+            $lists = [];
+
+            foreach ($containersList as $container) {
+                $lists[] = $this->fetchContainerKeysAndIgnore404($container->getName());
             }
 
+            return !empty($lists) ? array_merge(...$lists) : [];
+        } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, 'retrieve keys', $this->containerName);
+            $errorCode = $this->getErrorCodeFromServiceException($e);
+
+            throw new \RuntimeException(sprintf(
+                'Failed to list keys: %s (%s).',
+                $e->getErrorText(),
+                $errorCode
+            ), $e->getCode());
+        }
+    }
+
+    /**
+     * List the keys in a container and ignore any 404 error.
+     *
+     * This prevent race conditions happening when a container is deleted after calling listContainers() and
+     * before the container keys are fetched.
+     *
+     * @param string $containerName
+     *
+     * @return array
+     */
+    private function fetchContainerKeysAndIgnore404($containerName)
+    {
+        try {
+            return $this->fetchBlobs($containerName, $containerName);
+        } catch (ServiceException $e) {
+            if ($e->getResponse()->getStatusCode() === 404) {
+                return [];
+            }
+
+            throw $e;
+        }
+    }
+
+    /**
+     * List objects stored when the adapter is not used in multi container mode.
+     *
+     * @return array
+     *
+     * @throws \RuntimeException
+     */
+    private function keysForSingleContainerMode()
+    {
+        try {
             return $this->fetchBlobs($this->containerName);
         } catch (ServiceException $e) {
             $this->failIfContainerNotFound($e, 'retrieve keys', $this->containerName);
@@ -537,12 +595,14 @@ class AzureBlobStorage implements Adapter,
     private function fetchBlobs($containerName, $prefix = null)
     {
         $blobList = $this->blobProxy->listBlobs($containerName);
-        return array_map(
-            function (Blob $blob) use ($prefix) {
+
+        return array_map(function (Blob $blob) use ($prefix) {
                 $name = $blob->getName();
+
                 if (null !== $prefix) {
                     $name = $prefix .'/'. $name;
                 }
+
                 return $name;
             },
             $blobList->getBlobs()
