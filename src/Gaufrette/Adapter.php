@@ -66,8 +66,8 @@ interface Adapter
      *
      * @return int An UNIX like timestamp
      *
-     * @throws FileNotFound
-     * @throws InvalidKey     If $key is malforme
+     * @throws FileNotFound   If the file does not exist
+     * @throws InvalidKey     If $key is invalid or malformed
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function mtime($key);
@@ -77,7 +77,7 @@ interface Adapter
      *
      * @param string $key
      *
-     * @throws FileNotFound
+     * @throws FileNotFound   If the file does not exist.
      * @throws InvalidKey     If $key is malformed
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
