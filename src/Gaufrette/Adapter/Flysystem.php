@@ -8,6 +8,7 @@ use Gaufrette\Exception\StorageFailure;
 use Gaufrette\Exception\UnsupportedAdapterMethodException;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\FileNotFoundException;
+use League\Flysystem\Config;
 use League\Flysystem\Util;
 
 class Flysystem implements Adapter, ListKeysAware

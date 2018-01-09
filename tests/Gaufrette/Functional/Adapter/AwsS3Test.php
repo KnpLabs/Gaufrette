@@ -92,7 +92,7 @@ class AwsS3Test extends FunctionalTestCase
 
     public function testWritesObjects()
     {
-        $this->assertEquals(7, $this->filesystem->write('foo', 'testing'));
+        $this->filesystem->write('foo', 'testing');
     }
 
     public function testChecksForObjectExistence()
