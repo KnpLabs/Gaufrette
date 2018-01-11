@@ -23,7 +23,7 @@ class StorageFailure extends \RuntimeException implements Exception
     public static function unexpectedFailure($action, array $args, \Exception $previous = null)
     {
         $args = array_map(function ($k, $v) {
-            $v = is_string($v) ? '"'.$v.'"' : $v;
+            $v = var_export($v, true);
 
             return "{$k}: {$v}";
         }, array_keys($args), $args);
