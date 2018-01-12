@@ -2,6 +2,7 @@
 
 namespace spec\Gaufrette\Adapter;
 
+use AmazonS3;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -10,7 +11,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function let($service)
+    function let(AmazonS3 $service)
     {
         $this->beConstructedWith($service, 'bucketName');
     }
@@ -28,7 +29,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_reads_file($service)
+    function it_reads_file(AmazonS3 $service)
     {
         $options = array(
             'range' => 12,
@@ -59,7 +60,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_returns_false_when_cannot_read($service)
+    function it_returns_false_when_cannot_read(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -82,7 +83,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_is_verbose_and_throws_exceptions_when_read($service)
+    function it_is_verbose_and_throws_exceptions_when_read(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -104,7 +105,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_rename_file($service)
+    function it_rename_file(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -143,7 +144,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_is_verbose_and_throws_exceptions_when_rename($service)
+    function it_is_verbose_and_throws_exceptions_when_rename(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -161,7 +162,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_returns_false_when_cannot_rename($service)
+    function it_returns_false_when_cannot_rename(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -190,7 +191,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_should_write_file($service)
+    function it_should_write_file(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -217,7 +218,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_returns_false_when_cannot_write($service)
+    function it_returns_false_when_cannot_write(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -243,7 +244,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_is_verbose_and_throws_exceptions_when_write($service)
+    function it_is_verbose_and_throws_exceptions_when_write(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -261,7 +262,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_should_check_if_file_exists($service)
+    function it_should_check_if_file_exists(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -279,7 +280,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_is_verbose_and_throws_exceptions_when_file_exists($service)
+    function it_is_verbose_and_throws_exceptions_when_file_exists(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -297,7 +298,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_should_get_file_mtime($service)
+    function it_should_get_file_mtime(AmazonS3 $service)
     {
         $metadata = array('acl' => \AmazonS3::ACL_PUBLIC);
         $service
@@ -323,7 +324,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_returns_false_when_cannot_fetch_mtime($service)
+    function it_returns_false_when_cannot_fetch_mtime(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -347,7 +348,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_is_verbose_and_throws_exceptions_when_fetch_mtime($service)
+    function it_is_verbose_and_throws_exceptions_when_fetch_mtime(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -365,7 +366,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_should_delete_file($service)
+    function it_should_delete_file(AmazonS3 $service)
     {
         $metadata = array('acl' => \AmazonS3::ACL_PRIVATE);
 
@@ -390,7 +391,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_is_verbose_and_throws_exceptions_when_fetch_delete($service)
+    function it_is_verbose_and_throws_exceptions_when_fetch_delete(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -411,7 +412,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_returns_false_when_cannot_delete($service)
+    function it_returns_false_when_cannot_delete(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -433,7 +434,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_should_get_keys($service)
+    function it_should_get_keys(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -452,7 +453,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_is_verbose_and_throws_exceptions_when_fetch_keys($service)
+    function it_is_verbose_and_throws_exceptions_when_fetch_keys(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -469,7 +470,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_should_handle_dirs($service)
+    function it_should_handle_dirs(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -496,7 +497,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_should_fail_when_bucket_does_not_exist($service)
+    function it_should_fail_when_bucket_does_not_exist(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -535,7 +536,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_creates_bucket_if_create_mode_is_enabled($service)
+    function it_creates_bucket_if_create_mode_is_enabled(AmazonS3 $service)
     {
         $service->set_region(Argument::any())->shouldBeCalled();
         $service
@@ -560,7 +561,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_fails_when_cannot_create_bucket($service)
+    function it_fails_when_cannot_create_bucket(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -582,7 +583,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_allows_to_configure_reqion($service)
+    function it_allows_to_configure_reqion(AmazonS3 $service)
     {
         $service
             ->if_bucket_exists('bucketName')
@@ -604,7 +605,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_allows_to_configure_region_for_bucket($service)
+    function it_allows_to_configure_region_for_bucket(AmazonS3 $service)
     {
         $service->set_region(Argument::any())->shouldBeCalled();
         $service
@@ -628,7 +629,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function it_allows_to_configure_acl($service)
+    function it_allows_to_configure_acl(AmazonS3 $service)
     {
         $this->setAcl('123abc');
         $service
@@ -656,7 +657,7 @@ class AmazonS3Spec extends ObjectBehavior
     /**
      * @param \AmazonS3 $service
      */
-    function its_file_metadata_acl_are_more_important_than_global_acl_config($service)
+    function its_file_metadata_acl_are_more_important_than_global_acl_config(AmazonS3 $service)
     {
         $this->setAcl('123abc');
         $service

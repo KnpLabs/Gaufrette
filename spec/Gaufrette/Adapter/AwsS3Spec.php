@@ -2,16 +2,16 @@
 
 namespace spec\Gaufrette\Adapter;
 
+use Aws\S3\S3Client;
 use Gaufrette\Adapter\MimeTypeProvider;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class AwsS3Spec extends ObjectBehavior
 {
     /**
      * @param \Aws\S3\S3Client $service
      */
-    function let($service)
+    function let(S3Client $service)
     {
         $this->beConstructedWith($service, 'bucketName');
     }

@@ -5,6 +5,8 @@ namespace spec\Gaufrette\Adapter;
 //hack - mock php built-in functions
 require_once 'functions.php';
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -13,7 +15,7 @@ class DoctrineDbalSpec extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function let($connection)
+    function let(Connection $connection)
     {
         $this->beConstructedWith($connection, 'someTableName');
     }
@@ -36,7 +38,7 @@ class DoctrineDbalSpec extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_checks_if_file_exists($connection)
+    function it_checks_if_file_exists(Connection $connection)
     {
         $connection
             ->quoteIdentifier(Argument::any())
@@ -56,7 +58,7 @@ class DoctrineDbalSpec extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_writes_to_new_file($connection)
+    function it_writes_to_new_file(Connection $connection)
     {
         $connection
             ->quoteIdentifier(Argument::any())
@@ -81,7 +83,7 @@ class DoctrineDbalSpec extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_write_file($connection)
+    function it_write_file(Connection $connection)
     {
         $connection
             ->quoteIdentifier(Argument::any())
@@ -108,7 +110,7 @@ class DoctrineDbalSpec extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_reads_file($connection)
+    function it_reads_file(Connection $connection)
     {
         $connection
             ->quoteIdentifier(Argument::any())
@@ -123,7 +125,7 @@ class DoctrineDbalSpec extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_calculates_checksum($connection)
+    function it_calculates_checksum(Connection $connection)
     {
         $connection
             ->quoteIdentifier(Argument::any())
@@ -138,7 +140,7 @@ class DoctrineDbalSpec extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_gets_mtime($connection)
+    function it_gets_mtime(Connection $connection)
     {
         $connection
             ->quoteIdentifier(Argument::any())
@@ -153,7 +155,7 @@ class DoctrineDbalSpec extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_renames_file($connection)
+    function it_renames_file(Connection $connection)
     {
         $connection
             ->quoteIdentifier(Argument::any())
@@ -177,7 +179,7 @@ class DoctrineDbalSpec extends ObjectBehavior
      * @param \Doctrine\DBAL\Connection $connection
      * @param \Doctrine\DBAL\Statement $stmt
      */
-    function it_get_keys($connection, $stmt)
+    function it_get_keys(Connection $connection, Statement $stmt)
     {
         $stmt->fetchAll(\PDO::FETCH_COLUMN)->willReturn(array('filename', 'filename1', 'filename2'));
         $connection
@@ -193,7 +195,7 @@ class DoctrineDbalSpec extends ObjectBehavior
     /**
      * @param \Doctrine\DBAL\Connection $connection
      */
-    function it_deletes_file($connection)
+    function it_deletes_file(Connection $connection)
     {
         $connection
             ->quoteIdentifier(Argument::any())

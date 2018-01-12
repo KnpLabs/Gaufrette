@@ -2,7 +2,10 @@
 
 namespace spec\Gaufrette\Adapter;
 
+use Gaufrette\Adapter\OpenStackCloudFiles\ObjectStoreFactoryInterface;
 use OpenCloud\ObjectStore\Exception\ObjectNotFoundException;
+use OpenCloud\ObjectStore\Resource\Container;
+use OpenCloud\ObjectStore\Service;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -16,7 +19,7 @@ class LazyOpenCloudSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Adapter\OpenStackCloudFiles\ObjectStoreFactoryInterface $objectStoreFactory
      */
-    function let($objectStoreFactory)
+    function let(ObjectStoreFactoryInterface $objectStoreFactory)
     {
         $this->beConstructedWith($objectStoreFactory, 'test-container-name');
     }
@@ -31,7 +34,11 @@ class LazyOpenCloudSpec extends ObjectBehavior
      * @param \OpenCloud\ObjectStore\Service $objectStore
      * @param \OpenCloud\ObjectStore\Resource\Container $container
      */
-    function it_initializes_object_store($objectStoreFactory, $objectStore, $container)
+    function it_initializes_object_store(
+        ObjectStoreFactoryInterface $objectStoreFactory,
+        Service $objectStore,
+        Container $container
+    )
     {
         $objectStoreFactory->getObjectStore()->shouldBeCalled()->willReturn($objectStore);
         $objectStore->getContainer("test-container-name")->shouldBeCalled()->willReturn($container);
