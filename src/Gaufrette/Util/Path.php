@@ -86,4 +86,39 @@ class Path
     {
         return str_replace('\\', '/', \dirname($path));
     }
+
+    /**
+     * UTF-8 aware parse_url() replacement.
+     *
+     * @param string $url to parse
+     *
+     * @return bool|array
+     *
+     * @see https://secure.php.net/manual/function.parse-url.php#114817
+     */
+    public static function parseUrl($url)
+    {
+        $encodedUrl = preg_replace_callback(
+            '%[^:/@?&=#]+%usD',
+            function ($matches)
+            {
+                return urlencode($matches[0]);
+            },
+            $url
+        );
+
+        $parts = parse_url($encodedUrl);
+
+        if (false === $parts)
+        {
+            return false;
+        }
+
+        foreach ($parts as $name => $value)
+        {
+            $parts[$name] = urldecode($value);
+        }
+
+        return $parts;
+    }
 }
