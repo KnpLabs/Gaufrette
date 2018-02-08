@@ -120,7 +120,11 @@ class Local implements Adapter,
      */
     public function mtime($key)
     {
-        return filemtime($this->computePath($key));
+        if (false === $mtime = filemtime($this->computePath($key))) {
+            throw StorageFailure::unexpectedFailure('mtime', ['key' => $key]);
+        }
+
+        return $mtime;
     }
 
     /**
@@ -210,7 +214,7 @@ class Local implements Adapter,
         $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
 
         if (false === $mimeType = $fileInfo->file($this->computePath($key))) {
-            throw StorageFailure::unexpectedFailure('size', ['key' => $key]);
+            throw StorageFailure::unexpectedFailure('mimeType', ['key' => $key]);
         }
 
         return $mimeType;

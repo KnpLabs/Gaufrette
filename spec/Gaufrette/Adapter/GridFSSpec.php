@@ -90,7 +90,7 @@ class GridFSSpec extends ObjectBehavior
         ;
         $bucket->delete(123)->shouldBeCalled();
 
-        $this->delete('filename')->shouldReturn(true);
+        $this->shouldNotThrow(StorageFailure::class)->duringDelete('filename');
     }
 
     function it_fails_when_file_to_delete_does_not_exist($bucket)
@@ -110,7 +110,7 @@ class GridFSSpec extends ObjectBehavior
         ;
 
         $this->setMetadata('filename', ['someother' => 'metadata']);
-        $this->write('filename', 'some content');
+        $this->shouldNotThrow(StorageFailure::class)->duringWrite('filename', 'some content');
     }
 
     function it_renames_file($bucket)
@@ -130,7 +130,7 @@ class GridFSSpec extends ObjectBehavior
         $bucket->delete(1234)->shouldBeCalled();
 
         $this->setMetadata('filename', ['some' => 'metadata']);
-        $this->rename('filename', 'otherFilename');
+        $this->shouldNotThrow(StorageFailure::class)->duringRename('filename', 'otherFilename');
     }
 
     function it_fetches_keys($bucket)

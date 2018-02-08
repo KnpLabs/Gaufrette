@@ -12,7 +12,7 @@ interface FilesystemInterface
      * @return bool TRUE if the file exists, FALSE otherwise
      *
      * @throws \InvalidArgumentException If $key is invalid
-     * @throws Exception\StorageFailure  When the underlying storage fails asserting file exists
+     * @throws Exception\StorageFailure  When the underlying storage fails to assert file exists
      */
     public function has($key);
 
@@ -26,9 +26,9 @@ interface FilesystemInterface
      *
      * @return bool TRUE if the rename was successful
      *
-     * @throws Exception\FileNotFound    when sourceKey does not exist
-     * @throws Exception\UnexpectedFile  when targetKey exists
-     * @throws Exception\StorageFailure  When the underlying storage fails renaming the file
+     * @throws Exception\FileNotFound    when $sourceKey does not exist
+     * @throws Exception\UnexpectedFile  when $targetKey exists
+     * @throws Exception\StorageFailure  When the underlying storage fails to rename the file
      * @throws \InvalidArgumentException If $sourceKey or $targetKey are invalid
      *
      * @see File::rename()
@@ -42,7 +42,7 @@ interface FilesystemInterface
      * @param string $key    Key of the file
      * @param bool   $create Whether to create the file if it does not exist
      *
-     * @throws Exception\FileNotFound
+     * @throws Exception\FileNotFound    When $key does not exist
      * @throws \InvalidArgumentException If $key is invalid
      *
      * @return File
@@ -58,7 +58,7 @@ interface FilesystemInterface
      *
      * @throws Exception\FileAlreadyExists When file already exists and overwrite is false
      * @throws \InvalidArgumentException   If $key is invalid
-     * @throws Exception\StorageFailure    When the underlying storage fails writing the content
+     * @throws Exception\StorageFailure    When the underlying storage fails to write the content
      */
     public function write($key, $content, $overwrite = false);
 
@@ -69,7 +69,7 @@ interface FilesystemInterface
      *
      * @throws Exception\FileNotFound    when file does not exist
      * @throws \InvalidArgumentException If $key is invalid
-     * @throws Exception\StorageFailure  When the underlying storage fails reading the file
+     * @throws Exception\StorageFailure  When the underlying storage fails to read the file
      *
      * @return string
      */
@@ -82,7 +82,7 @@ interface FilesystemInterface
      *
      * @throws \RuntimeException         when cannot read file
      * @throws \InvalidArgumentException If $key is invalid
-     * @throws Exception\StorageFailure  When the underlying storage fails deleting the file
+     * @throws Exception\StorageFailure  When the underlying storage fails to delete the file
      */
     public function delete($key);
 
@@ -91,7 +91,7 @@ interface FilesystemInterface
      *
      * @return array
      *
-     * @throws Exception\StorageFailure  When the underlying storage fails listing objects
+     * @throws Exception\StorageFailure  When the underlying storage fails to list objects
      */
     public function keys();
 
@@ -106,7 +106,7 @@ interface FilesystemInterface
      *
      * @return array
      *
-     * @throws Exception\StorageFailure  When the underlying storage fails listing objects
+     * @throws Exception\StorageFailure  When the underlying storage fails to list objects
      */
     public function listKeys($prefix = '');
 
@@ -118,7 +118,7 @@ interface FilesystemInterface
      * @return int An UNIX like timestamp
      *
      * @throws \InvalidArgumentException If $key is invalid
-     * @throws Exception\StorageFailure  When the underlying storage fails retrieving file mtime
+     * @throws Exception\StorageFailure  When the underlying storage fails to retrieve file mtime
      */
     public function mtime($key);
 

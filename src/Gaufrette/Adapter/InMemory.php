@@ -3,6 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Util;
 
 /**
@@ -71,6 +72,10 @@ class InMemory implements Adapter,
      */
     public function read($key)
     {
+        if (!isset($this->files[$key])) {
+            throw new FileNotFound($key);
+        }
+
         return $this->files[$key]['content'];
     }
 
@@ -79,10 +84,13 @@ class InMemory implements Adapter,
      */
     public function rename($sourceKey, $targetKey)
     {
+        if (!isset($this->files[$sourceKey])) {
+            throw new FileNotFound($sourceKey);
+        }
+
         $content = $this->read($sourceKey);
         $this->delete($sourceKey);
-
-        return (boolean) $this->write($targetKey, $content);
+        $this->write($targetKey, $content);
     }
 
     /**
@@ -92,8 +100,6 @@ class InMemory implements Adapter,
     {
         $this->files[$key]['content'] = $content;
         $this->files[$key]['mtime'] = time();
-
-        return Util\Size::fromContent($content);
     }
 
     /**
@@ -117,7 +123,11 @@ class InMemory implements Adapter,
      */
     public function mtime($key)
     {
-        return isset($this->files[$key]['mtime']) ? $this->files[$key]['mtime'] : false;
+        if (!isset($this->files[$key])) {
+            throw new FileNotFound($key);
+        }
+
+        return $this->files[$key]['mtime'];
     }
 
     /**
@@ -125,10 +135,12 @@ class InMemory implements Adapter,
      */
     public function delete($key)
     {
+        if (!isset($this->files[$key])) {
+            throw new FileNotFound($key);
+        }
+
         unset($this->files[$key]);
         clearstatcache();
-
-        return true;
     }
 
     /**

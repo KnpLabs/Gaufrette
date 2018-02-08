@@ -191,8 +191,6 @@ class GridFS implements Adapter,
         } catch (\Exception $e) {
             throw StorageFailure::unexpectedFailure('delete', ['key' => $key], $e);
         }
-
-        return true;
     }
 
     /**

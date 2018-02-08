@@ -49,12 +49,12 @@ class LocalSpec extends ObjectBehavior
 
     function it_writes_file()
     {
-        $this->write('filename', 'some content');
+        $this->shouldNotThrow(StorageFailure::class)->duringWrite('filename', 'some content');
     }
 
     function it_renames_file()
     {
-        $this->rename('filename', 'aaa/filename2');
+        $this->shouldNotThrow(StorageFailure::class)->duringRename('filename', 'aaa/filename2');
     }
 
     function it_checks_if_file_exists()
@@ -78,7 +78,7 @@ class LocalSpec extends ObjectBehavior
 
     function it_deletes_file()
     {
-        $this->delete('filename');
+        $this->shouldNotThrow(StorageFailure::class)->duringDelete('filename');
         $this->shouldThrow(StorageFailure::class)->duringDelete('filename1');
     }
 

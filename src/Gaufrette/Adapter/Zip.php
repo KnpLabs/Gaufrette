@@ -131,7 +131,7 @@ class Zip implements Adapter
     public function rename($sourceKey, $targetKey)
     {
         if (!$this->zipArchive->renameName($sourceKey, $targetKey)) {
-            throw new FileNotFound($key);
+            throw new FileNotFound($sourceKey);
         }
 
         if ($this->save() === false) {

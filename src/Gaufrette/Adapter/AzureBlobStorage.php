@@ -8,11 +8,8 @@ use Gaufrette\Exception\InvalidKey;
 use Gaufrette\Exception\StorageFailure;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
 use MicrosoftAzure\Storage\Blob\Models\Blob;
-use MicrosoftAzure\Storage\Blob\Models\Container;
 use MicrosoftAzure\Storage\Blob\Models\CreateBlobOptions;
 use MicrosoftAzure\Storage\Blob\Models\CreateContainerOptions;
-use MicrosoftAzure\Storage\Blob\Models\DeleteContainerOptions;
-use MicrosoftAzure\Storage\Blob\Models\ListBlobsOptions;
 use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
 
 /**
@@ -214,21 +211,12 @@ class AzureBlobStorage implements Adapter,
         $this->init();
         list($containerName, $key) = $this->tokenizeKey($key);
 
-        $listBlobsOptions = new ListBlobsOptions();
-        $listBlobsOptions->setPrefix($key);
-
         try {
-            $blobsList = $this->blobProxy->listBlobs($containerName, $listBlobsOptions);
+            $this->blobProxy->getBlob($containerName, $key);
 
-            foreach ($blobsList->getBlobs() as $blob) {
-                if ($key === $blob->getName()) {
-                    return true;
-                }
-            }
+            return true;
         } catch (ServiceException $e) {
-            $errorCode = $this->getErrorCodeFromServiceException($e);
-
-            if ($this->multiContainerMode && self::ERROR_CONTAINER_NOT_FOUND === $errorCode) {
+            if ($e->getResponse()->getStatusCode() === 404) {
                 return false;
             }
 
@@ -237,8 +225,6 @@ class AzureBlobStorage implements Adapter,
                 'key' => $key,
             ], $e);
         }
-
-        return false;
     }
 
     /**
@@ -419,7 +405,7 @@ class AzureBlobStorage implements Adapter,
             $this->blobProxy->deleteBlob($sourceContainerName, $sourceKey);
         } catch (ServiceException $e) {
             if ($e->getResponse()->getStatusCode() === 404) {
-                throw new FileNotFound($key);
+                throw new FileNotFound($sourceKey);
             }
 
             throw StorageFailure::unexpectedFailure('rename', [
