@@ -56,16 +56,13 @@ class Filesystem implements FilesystemInterface
     {
         self::assertValidKey($sourceKey);
         self::assertValidKey($targetKey);
-
         $this->assertHasFile($sourceKey);
 
         if ($this->has($targetKey)) {
             throw new Exception\UnexpectedFile($targetKey);
         }
 
-        if (!$this->adapter->rename($sourceKey, $targetKey)) {
-            throw new \RuntimeException(sprintf('Could not rename the "%s" key to "%s".', $sourceKey, $targetKey));
-        }
+        $this->adapter->rename($sourceKey, $targetKey);
 
         if ($this->isFileInRegister($sourceKey)) {
             $this->fileRegister[$targetKey] = $this->fileRegister[$sourceKey];
@@ -100,13 +97,7 @@ class Filesystem implements FilesystemInterface
             throw new Exception\FileAlreadyExists($key);
         }
 
-        $numBytes = $this->adapter->write($key, $content);
-
-        if (false === $numBytes) {
-            throw new \RuntimeException(sprintf('Could not write the "%s" key content.', $key));
-        }
-
-        return $numBytes;
+        $this->adapter->write($key, $content);
     }
 
     /**
@@ -115,16 +106,9 @@ class Filesystem implements FilesystemInterface
     public function read($key)
     {
         self::assertValidKey($key);
-
         $this->assertHasFile($key);
 
-        $content = $this->adapter->read($key);
-
-        if (false === $content) {
-            throw new \RuntimeException(sprintf('Could not read the "%s" key content.', $key));
-        }
-
-        return $content;
+        return $this->adapter->read($key);
     }
 
     /**
@@ -133,16 +117,10 @@ class Filesystem implements FilesystemInterface
     public function delete($key)
     {
         self::assertValidKey($key);
-
         $this->assertHasFile($key);
 
-        if ($this->adapter->delete($key)) {
-            $this->removeFromRegister($key);
-
-            return true;
-        }
-
-        throw new \RuntimeException(sprintf('Could not remove the "%s" key.', $key));
+        $this->adapter->delete($key);
+        $this->removeFromRegister($key);
     }
 
     /**
@@ -187,7 +165,6 @@ class Filesystem implements FilesystemInterface
     public function mtime($key)
     {
         self::assertValidKey($key);
-
         $this->assertHasFile($key);
 
         return $this->adapter->mtime($key);
@@ -199,7 +176,6 @@ class Filesystem implements FilesystemInterface
     public function checksum($key)
     {
         self::assertValidKey($key);
-
         $this->assertHasFile($key);
 
         if ($this->adapter instanceof Adapter\ChecksumCalculator) {
@@ -215,7 +191,6 @@ class Filesystem implements FilesystemInterface
     public function size($key)
     {
         self::assertValidKey($key);
-
         $this->assertHasFile($key);
 
         if ($this->adapter instanceof Adapter\SizeCalculator) {
@@ -263,7 +238,6 @@ class Filesystem implements FilesystemInterface
     public function mimeType($key)
     {
         self::assertValidKey($key);
-
         $this->assertHasFile($key);
 
         if ($this->adapter instanceof Adapter\MimeTypeProvider) {

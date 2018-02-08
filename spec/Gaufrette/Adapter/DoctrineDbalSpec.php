@@ -68,7 +68,7 @@ class DoctrineDbalSpec extends ObjectBehavior
                 ))
             ->shouldBeCalled();
 
-        $this->write('filename', 'some content')->shouldReturn(12);
+        $this->write('filename', 'some content');
     }
 
     function it_write_file(Connection $connection)
@@ -92,7 +92,7 @@ class DoctrineDbalSpec extends ObjectBehavior
                 ))
             ->shouldBeCalled();
 
-        $this->write('filename', 'some content')->shouldReturn(12);
+        $this->write('filename', 'some content');
     }
 
     function it_reads_file(Connection $connection)
@@ -148,7 +148,7 @@ class DoctrineDbalSpec extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(1);
 
-        $this->rename('filename', 'newFile')->shouldReturn(true);
+        $this->rename('filename', 'newFile');
     }
 
     function it_get_keys(Connection $connection, Statement $stmt)
@@ -174,6 +174,6 @@ class DoctrineDbalSpec extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(1);
 
-        $this->delete('filename')->shouldReturn(true);
+        $this->delete('filename');
     }
 }

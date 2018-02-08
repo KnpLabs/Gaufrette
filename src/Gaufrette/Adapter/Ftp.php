@@ -3,6 +3,7 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Gaufrette\Exception\StorageFailure;
 use Gaufrette\File;
 use Gaufrette\FilesystemInterface;
 
@@ -64,7 +65,7 @@ class Ftp implements Adapter,
         $temp = fopen('php://temp', 'r+');
 
         if (!ftp_fget($this->getConnection(), $temp, $this->computePath($key), $this->mode)) {
-            return false;
+            throw StorageFailure::unexpectedFailure('read', ['key' => $this->computePath($key)]);
         }
 
         rewind($temp);
@@ -87,18 +88,15 @@ class Ftp implements Adapter,
         $this->ensureDirectoryExists($directory, true);
 
         $temp = fopen('php://temp', 'r+');
-        $size = fwrite($temp, $content);
+        fwrite($temp, $content);
         rewind($temp);
 
         if (!ftp_fput($this->getConnection(), $path, $temp, $this->mode)) {
             fclose($temp);
-
-            return false;
+            throw StorageFailure::unexpectedFailure('write', ['key' => $this->computePath($key)]);
         }
 
         fclose($temp);
-
-        return $size;
     }
 
     /**
@@ -113,7 +111,12 @@ class Ftp implements Adapter,
 
         $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath), true);
 
-        return ftp_rename($this->getConnection(), $sourcePath, $targetPath);
+        if (!ftp_rename($this->getConnection(), $sourcePath, $targetPath)) {
+            throw StorageFailure::unexpectedFailure('rename', [
+                'sourceKey' => $sourceKey,
+                'targetKey' => $targetKey,
+            ]);
+        }
     }
 
     /**
@@ -192,7 +195,7 @@ class Ftp implements Adapter,
 
         // the server does not support this function
         if (-1 === $mtime) {
-            throw new \RuntimeException('Server does not support ftp_mdtm function.');
+            throw new StorageFailure('Server does not support ftp_mdtm function.');
         }
 
         return $mtime;
@@ -205,11 +208,18 @@ class Ftp implements Adapter,
     {
         $this->ensureDirectoryExists($this->directory, $this->create);
 
+        $deleted = false;
+        $computed = $this->computePath($key);
+
         if ($this->isDirectory($key)) {
-            return ftp_rmdir($this->getConnection(), $this->computePath($key));
+            $deleted = ftp_rmdir($this->getConnection(), $computed);
+        } else {
+            $deleted = ftp_delete($this->getConnection(), $computed);
         }
 
-        return ftp_delete($this->getConnection(), $this->computePath($key));
+        if (!$deleted) {
+            throw StorageFailure::unexpectedFailure('delete', ['key' => $computed]);
+        }
     }
 
     /**
@@ -305,7 +315,7 @@ class Ftp implements Adapter,
         $this->ensureDirectoryExists($this->directory, $this->create);
 
         if (-1 === $size = ftp_size($this->connection, $key)) {
-            throw new \RuntimeException(sprintf('Unable to fetch the size of "%s".', $key));
+            throw StorageFailure::unexpectedFailure('size', ['key' => $key]);
         }
 
         return $size;
@@ -319,18 +329,21 @@ class Ftp implements Adapter,
      * @param bool   $create    Whether to create the directory if it does not
      *                          exist
      *
-     * @throws RuntimeException if the directory does not exist and could not
-     *                          be created
+     * @throws \RuntimeException if the directory does not exist and could not
+     *                           be created
+     * @throws StorageFailure    if an error happened when directory is created
      */
     protected function ensureDirectoryExists($directory, $create = false)
     {
-        if (!$this->isDir($directory)) {
-            if (!$create) {
-                throw new \RuntimeException(sprintf('The directory \'%s\' does not exist.', $directory));
-            }
-
-            $this->createDirectory($directory);
+        if ($this->isDir($directory)) {
+            return;
         }
+
+        if (!$create) {
+            throw new \RuntimeException(sprintf('The directory \'%s\' does not exist.', $directory));
+        }
+
+        $this->createDirectory($directory);
     }
 
     /**
@@ -338,7 +351,7 @@ class Ftp implements Adapter,
      *
      * @param string $directory Directory to create
      *
-     * @throws RuntimeException if the directory could not be created
+     * @throws StorageFailure if the directory could not be created
      */
     protected function createDirectory($directory)
     {
@@ -349,9 +362,8 @@ class Ftp implements Adapter,
         }
 
         // create the specified directory
-        $created = ftp_mkdir($this->getConnection(), $directory);
-        if (false === $created) {
-            throw new \RuntimeException(sprintf('Could not create the \'%s\' directory.', $directory));
+        if (!ftp_mkdir($this->getConnection(), $directory)) {
+            throw new StorageFailure(sprintf('Could not create the \'%s\' directory.', $directory));
         }
     }
 
@@ -513,7 +525,9 @@ class Ftp implements Adapter,
     /**
      * Opens the adapter's ftp connection.
      *
-     * @throws RuntimeException if could not connect
+     * @throws \RuntimeException if could not connect
+     *
+     * @TODO: should be moved out of the Adapter
      */
     private function connect()
     {

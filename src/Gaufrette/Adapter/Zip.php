@@ -2,6 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Exception\StorageFailure;
 use ZipArchive;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
@@ -43,7 +45,7 @@ class Zip implements Adapter
     public function read($key)
     {
         if (false === ($content = $this->zipArchive->getFromName($key, 0))) {
-            return false;
+            throw new FileNotFound($key);
         }
 
         return $content;
@@ -55,14 +57,12 @@ class Zip implements Adapter
     public function write($key, $content)
     {
         if (!$this->zipArchive->addFromString($key, $content)) {
-            return false;
+            throw StorageFailure::unexpectedFailure('write', ['key' => $key]);
         }
 
         if (!$this->save()) {
-            return false;
+            throw StorageFailure::unexpectedFailure('write', ['key' => $key]);
         }
-
-        return Util\Size::fromContent($content);
     }
 
     /**
@@ -104,7 +104,11 @@ class Zip implements Adapter
     {
         $stat = $this->getStat($key);
 
-        return isset($stat['mtime']) ? $stat['mtime'] : false;
+        if (!isset($stat['mtime'])) {
+            throw new FileNotFound($key);
+        }
+
+        return $stat['mtime'];
     }
 
     /**
@@ -113,10 +117,12 @@ class Zip implements Adapter
     public function delete($key)
     {
         if (!$this->zipArchive->deleteName($key)) {
-            return false;
+            throw new FileNotFound($key);
         }
 
-        return $this->save();
+        if ($this->save() === false) {
+            throw StorageFailure::unexpectedFailure('delete', ['key' => $key]);
+        }
     }
 
     /**
@@ -125,10 +131,15 @@ class Zip implements Adapter
     public function rename($sourceKey, $targetKey)
     {
         if (!$this->zipArchive->renameName($sourceKey, $targetKey)) {
-            return false;
+            throw new FileNotFound($sourceKey);
         }
 
-        return $this->save();
+        if ($this->save() === false) {
+            throw StorageFailure::unexpectedFailure('rename', [
+                'sourceKey' => $sourceKey,
+                'targetKey' => $targetKey,
+            ]);
+        }
     }
 
     /**

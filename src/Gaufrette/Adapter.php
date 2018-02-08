@@ -3,6 +3,7 @@
 namespace Gaufrette;
 
 use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Exception\InvalidKey;
 use Gaufrette\Exception\StorageFailure;
 
 /**
@@ -21,6 +22,7 @@ interface Adapter
      * @return string
      *
      * @throws FileNotFound
+     * @throws InvalidKey     If $key is malformed
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function read($key);
@@ -31,8 +33,7 @@ interface Adapter
      * @param string $key
      * @param string $content
      *
-     * @return int The number of bytes that were written into the file
-     *
+     * @throws InvalidKey     If $key is malformed
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function write($key, $content);
@@ -44,6 +45,7 @@ interface Adapter
      *
      * @return bool
      *
+     * @throws InvalidKey     If $key is malformed
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function exists($key);
@@ -64,7 +66,8 @@ interface Adapter
      *
      * @return int An UNIX like timestamp
      *
-     * @throws FileNotFound
+     * @throws FileNotFound   If the file does not exist
+     * @throws InvalidKey     If $key is invalid or malformed
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function mtime($key);
@@ -74,7 +77,8 @@ interface Adapter
      *
      * @param string $key
      *
-     * @throws FileNotFound
+     * @throws FileNotFound   If the file does not exist.
+     * @throws InvalidKey     If $key is malformed
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function delete($key);
@@ -86,6 +90,7 @@ interface Adapter
      * @param string $targetKey
      *
      * @throws FileNotFound
+     * @throws InvalidKey     If $sourceKey and/or $targetKey are malformed
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function rename($sourceKey, $targetKey);
@@ -97,7 +102,10 @@ interface Adapter
      *
      * @return bool
      *
+     * @throws InvalidKey     If $key is malformed
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
+     *
+     * @TODO: remove this method
      */
     public function isDirectory($key);
 }

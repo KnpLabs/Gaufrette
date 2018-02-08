@@ -3,6 +3,8 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Exception\StorageFailure;
 use Gaufrette\File;
 use Gaufrette\FilesystemInterface;
 use phpseclib\Net\SFTP as SecLibSFTP;
@@ -34,7 +36,11 @@ class PhpseclibSftp implements Adapter,
      */
     public function read($key)
     {
-        return $this->sftp->get($this->computePath($key));
+        if (false === $content = $this->sftp->get($this->computePath($key))) {
+            throw StorageFailure::fromErrorMessage('read', ['key' => $key], $this->sftp->getLastError());
+        }
+
+        return $content;
     }
 
     /**
@@ -49,7 +55,12 @@ class PhpseclibSftp implements Adapter,
 
         $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath), true);
 
-        return $this->sftp->rename($sourcePath, $targetPath);
+        if (!$this->sftp->rename($sourcePath, $targetPath)) {
+            throw StorageFailure::fromErrorMessage('rename', [
+                'sourceKey' => $sourceKey,
+                'targetKey' => $targetKey,
+            ], $this->sftp->getLastError());
+        }
     }
 
     /**
@@ -61,11 +72,10 @@ class PhpseclibSftp implements Adapter,
 
         $path = $this->computePath($key);
         $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($path), true);
-        if ($this->sftp->put($path, $content)) {
-            return $this->sftp->size($path);
-        }
 
-        return false;
+        if (!$this->sftp->put($path, $content)) {
+            throw StorageFailure::fromErrorMessage('write', ['key' => $key], $this->sftp->getLastError());
+        }
     }
 
     /**
@@ -141,7 +151,11 @@ class PhpseclibSftp implements Adapter,
 
         $stat = $this->sftp->stat($this->computePath($key));
 
-        return isset($stat['mtime']) ? $stat['mtime'] : false;
+        if (!isset($stat['mtime'])) {
+            throw new FileNotFound($key);
+        }
+
+        return $stat['mtime'];
     }
 
     /**
@@ -149,7 +163,9 @@ class PhpseclibSftp implements Adapter,
      */
     public function delete($key)
     {
-        return $this->sftp->delete($this->computePath($key), false);
+        if (!$this->sftp->delete($this->computePath($key), false)) {
+            throw StorageFailure::fromErrorMessage('delete', ['key' => $key], $this->sftp->getLastError());
+        }
     }
 
     /**
@@ -186,6 +202,7 @@ class PhpseclibSftp implements Adapter,
     protected function ensureDirectoryExists($directory, $create)
     {
         $pwd = $this->sftp->pwd();
+
         if ($this->sftp->chdir($directory)) {
             $this->sftp->chdir($pwd);
         } elseif ($create) {

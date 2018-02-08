@@ -1,7 +1,9 @@
 <?php
 
 namespace Gaufrette\Adapter;
+
 use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Exception\InvalidKey;
 use Gaufrette\Exception\StorageFailure;
 
 /**
@@ -18,7 +20,8 @@ interface SizeCalculator
      *
      * @return int
      *
-     * @throws FileNotFound
+     * @throws InvalidKey     If the key is invalid or malformed.
+     * @throws FileNotFound   If the key does not exist.
      * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
      */
     public function size($key);

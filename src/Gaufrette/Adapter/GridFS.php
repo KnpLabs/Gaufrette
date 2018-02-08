@@ -3,6 +3,8 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Exception\StorageFailure;
 use MongoDB\BSON\Regex;
 use MongoDB\GridFS\Bucket;
 use MongoDB\GridFS\Exception\FileNotFoundException;
@@ -41,11 +43,15 @@ class GridFS implements Adapter,
         try {
             $stream = $this->bucket->openDownloadStreamByName($key);
         } catch (FileNotFoundException $e) {
-            return false;
+            throw new FileNotFound($key);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('read', ['key' => $key], $e);
         }
 
         try {
             return stream_get_contents($stream);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('read', ['key' => $key], $e);
         } finally {
             fclose($stream);
         }
@@ -56,15 +62,14 @@ class GridFS implements Adapter,
      */
     public function write($key, $content)
     {
-        $stream = $this->bucket->openUploadStream($key, ['metadata' => $this->getMetadata($key)]);
-
         try {
-            return fwrite($stream, $content);
-        } finally {
-            fclose($stream);
-        }
+            $stream = $this->bucket->openUploadStream($key, ['metadata' => $this->getMetadata($key)]);
 
-        return false;
+            fwrite($stream, $content);
+            fclose($stream);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('write', ['key' => $key], $e);
+        }
     }
 
     /**
@@ -81,19 +86,20 @@ class GridFS implements Adapter,
     public function rename($sourceKey, $targetKey)
     {
         $metadata = $this->getMetadata($sourceKey);
-        $writable = $this->bucket->openUploadStream($targetKey, ['metadata' => $metadata]);
 
         try {
+            $writable = $this->bucket->openUploadStream($targetKey, ['metadata' => $metadata]);
             $this->bucket->downloadToStreamByName($sourceKey, $writable);
+
             $this->setMetadata($targetKey, $metadata);
             $this->delete($sourceKey);
-        } catch (FileNotFoundException $e) {
-            return false;
-        } finally {
-            fclose($writable);
-        }
 
-        return true;
+            fclose($writable);
+        } catch (FileNotFoundException $e) {
+            throw new FileNotFound($sourceKey);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('rename', ['sourceKey' => $sourceKey, 'targetKey' => $targetKey], $e);
+        }
     }
 
     /**
@@ -101,7 +107,11 @@ class GridFS implements Adapter,
      */
     public function exists($key)
     {
-        return (boolean) $this->bucket->findOne(['filename' => $key]);
+        try {
+            return $this->bucket->findOne(['filename' => $key]) !== null;
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('exists', ['key' => $key], $e);
+        }
     }
 
     /**
@@ -110,7 +120,12 @@ class GridFS implements Adapter,
     public function keys()
     {
         $keys = [];
-        $cursor = $this->bucket->find([], ['projection' => ['filename' => 1]]);
+
+        try {
+            $cursor = $this->bucket->find([], ['projection' => ['filename' => 1]]);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('keys', [], $e);
+        }
 
         foreach ($cursor as $file) {
             $keys[] = $file['filename'];
@@ -124,9 +139,17 @@ class GridFS implements Adapter,
      */
     public function mtime($key)
     {
-        $file = $this->bucket->findOne(['filename' => $key], ['projection' => ['uploadDate' => 1]]);
+        try {
+            $file = $this->bucket->findOne(['filename' => $key], ['projection' => ['uploadDate' => 1]]);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('mtime', ['key' => $key], $e);
+        }
 
-        return $file ? (int) $file['uploadDate']->toDateTime()->format('U') : false;
+        if ($file === null) {
+            throw new FileNotFound($key);
+        }
+
+        return (int) $file['uploadDate']->toDateTime()->format('U');
     }
 
     /**
@@ -134,9 +157,17 @@ class GridFS implements Adapter,
      */
     public function checksum($key)
     {
-        $file = $this->bucket->findOne(['filename' => $key], ['projection' => ['md5' => 1]]);
+        try {
+            $file = $this->bucket->findOne(['filename' => $key], ['projection' => ['md5' => 1]]);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('checksum', ['key' => $key], $e);
+        }
 
-        return $file ? $file['md5'] : false;
+        if ($file === null) {
+            throw new FileNotFound($key);
+        }
+
+        return $file['md5'];
     }
 
     /**
@@ -144,13 +175,22 @@ class GridFS implements Adapter,
      */
     public function delete($key)
     {
-        if (null === $file = $this->bucket->findOne(['filename' => $key], ['projection' => ['_id' => 1]])) {
-            return false;
+
+        try {
+            $file = $this->bucket->findOne(['filename' => $key], ['projection' => ['_id' => 1]]);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('delete', ['key' => $key], $e);
         }
 
-        $this->bucket->delete($file['_id']);
+        if ($file === null) {
+            throw new FileNotFound($key);
+        }
 
-        return true;
+        try {
+            $this->bucket->delete($file['_id']);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('delete', ['key' => $key], $e);
+        }
     }
 
     /**
@@ -193,7 +233,13 @@ class GridFS implements Adapter,
         }
 
         $regex = new Regex(sprintf('^%s', $prefix), '');
-        $files = $this->bucket->find(['filename' => $regex], ['projection' => ['filename' => 1]]);
+
+        try {
+            $files = $this->bucket->find(['filename' => $regex], ['projection' => ['filename' => 1]]);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('listKeys', ['prefix' => $prefix]);
+        }
+
         $result = [
             'dirs' => [],
             'keys' => [],

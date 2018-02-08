@@ -31,8 +31,8 @@ abstract class FunctionalTestCase extends TestCase
      */
     public function shouldWriteAndRead()
     {
-        $this->assertEquals(12, $this->filesystem->write('foo', 'Some content'));
-        $this->assertEquals(13, $this->filesystem->write('test/subdir/foo', 'Some content1', true));
+        $this->filesystem->write('foo', 'Some content');
+        $this->filesystem->write('test/subdir/foo', 'Some content1', true);
 
         $this->assertEquals('Some content', $this->filesystem->read('foo'));
         $this->assertEquals('Some content1', $this->filesystem->read('test/subdir/foo'));

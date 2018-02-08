@@ -122,7 +122,7 @@ class AwsS3 implements Adapter,
         try {
             $this->service->copyObject(array_merge($options, $this->getMetadata($targetKey)));
 
-            return $this->delete($sourceKey);
+            $this->delete($sourceKey);
         } catch (\Exception $e) {
             if ($e instanceof S3Exception && $e->getResponse()->getStatusCode() === 404) {
                 throw new FileNotFound($sourceKey);
@@ -154,12 +154,6 @@ class AwsS3 implements Adapter,
 
         try {
             $this->service->putObject($options);
-
-            if (is_resource($content)) {
-                return Util\Size::fromResource($content);
-            }
-
-            return Util\Size::fromContent($content);
         } catch (\Exception $e) {
             throw StorageFailure::unexpectedFailure(
                 'write',
@@ -260,8 +254,6 @@ class AwsS3 implements Adapter,
     {
         try {
             $this->service->deleteObject($this->getOptions($key));
-
-            return true;
         } catch (\Exception $e) {
             if ($e instanceof S3Exception && $e->getResponse()->getStatusCode() === 404) {
                 throw new FileNotFound($key);
