@@ -8,3 +8,4 @@ vendor/
 .env
 composer.lock
 phpunit.xml
+secrets/
