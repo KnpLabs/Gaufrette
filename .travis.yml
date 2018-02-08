@@ -43,4 +43,4 @@ install:
 
 script:
   - php vendor/bin/phpspec run -fpretty --verbose
-  - php vendor/bin/phpunit --verbose
+  - find tests/ -name "*Test.php" | vendor/bin/fastest -vvv "vendor/bin/phpunit --verbose {};"

@@ -36,7 +36,8 @@
         "mongodb/mongodb": "^1.1",
         "microsoft/windowsazure": "~0.4",
         "microsoft/azure-storage": "~0.15.0",
-        "akeneo/phpspec-skip-example-extension": "^3.0"
+        "akeneo/phpspec-skip-example-extension": "^3.0",
+        "liuggio/fastest": "^1.6"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony",

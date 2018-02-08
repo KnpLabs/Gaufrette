@@ -2,7 +2,7 @@
 
 namespace spec\Gaufrette\Util;
 
-use PHPSpec\ObjectBehavior;
+use PhpSpec\ObjectBehavior;
 
 class ChecksumSpec extends ObjectBehavior
 {
