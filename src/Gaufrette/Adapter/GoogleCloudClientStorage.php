@@ -4,6 +4,12 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Adapter\MetadataSupporter;
 use Gaufrette\Adapter\ListKeysAware;
+use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Exception\StorageFailure;
+use Google\Cloud\Exception\NotFoundException;
+use Google\Cloud\Storage\Bucket;
+use Google\Cloud\Storage\StorageClient;
+use Google\Cloud\Storage\StorageObject;
 
 /**
  * Google Cloud Storage adapter using the Google Cloud Client Library for PHP
@@ -12,24 +18,29 @@ use Gaufrette\Adapter\ListKeysAware;
  * @package Gaufrette
  * @author  Lech Buszczynski <lecho@phatcat.eu>
  */
-class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ListKeysAware
+final class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ListKeysAware
 {
-    protected $storageClient;
-    protected $bucket;
-    protected $bucketValidated;
-    protected $options      = array();
-    protected $metadata     = array();
-    protected $resources    = array();
+    /**
+     * @var StorageClient
+     */
+    private $storageClient;
 
     /**
-     * @param Google\Cloud\Storage\StorageClient    $service    Authenticated storage client class
-     * @param string                                $bucketName Name of the bucket
-     * @param array                                 $options    Options are: "directory" and "acl" (see https://cloud.google.com/storage/docs/access-control/lists)
+     * @var Bucket
      */
-    public function __construct(\Google\Cloud\Storage\StorageClient $storageClient, $bucketName, $options = array())
+    private $bucket;
+    private $options      = array();
+    private $metadata     = array();
+
+    /**
+     * @param StorageClient    $service    Authenticated storage client class
+     * @param string           $bucketName Name of the bucket
+     * @param array            $options    Options are: "directory" and "acl" (see https://cloud.google.com/storage/docs/access-control/lists)
+     */
+    public function __construct(StorageClient $storageClient, $bucketName, $options = array())
     {
         $this->storageClient = $storageClient;
-        $this->setBucket($bucketName);
+        $this->initBucket($bucketName);
         $this->options = array_replace_recursive(
             array(
                 'directory' => '',
@@ -39,10 +50,10 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ListKeysAw
         );
         $this->options['directory'] = rtrim($this->options['directory'], '/');
     }
-    
+
     /**
      * Get adapter options
-     * 
+     *
      * @return  array
      */
     public function getOptions()
@@ -52,102 +63,70 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ListKeysAw
 
     /**
      * Set adapter options
-     * 
+     *
      * @param   array   $options
      */
     public function setOptions($options)
     {
         $this->options = array_replace($this->options, $options);
     }
-    
-    protected function computePath($key = null)
-    {
-        if (strlen($this->options['directory']))
-        {
-            return $this->options['directory'].'/'.$key;
-        }
-        return $key;
-    }
-    
-    protected function isBucket()
-    {
-        if ($this->bucketValidated === true)
-        {
-            return true;
-        } elseif (!$this->bucket->exists()) {
-            throw new \RuntimeException(sprintf('Bucket %s does not exist.', $this->bucket->name()));
-        }
-        $this->bucketValidated = true;
-        return true;
-    }
-    
-    public function setBucket($name)
-    {
-        $this->bucketValidated = null;
-        $this->bucket = $this->storageClient->bucket($name);       
-        $this->isBucket();
-    }
-    
+
+    /**
+     * @return Bucket
+     */
     public function getBucket()
     {
         return $this->bucket;
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function read($key)
-    {   
-        $this->isBucket();     
+    {
         $object = $this->bucket->object($this->computePath($key));
+
         try {
-            $info = $object->info();
-            $this->setResources($key, $info);
             return $object->downloadAsString();
         } catch (\Exception $e) {
-            return false;
+            if ($e instanceof NotFoundException) {
+                throw new FileNotFound($key);
+            }
+
+            throw StorageFailure::unexpectedFailure('read', ['key' => $key], $e);
         }
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function write($key, $content)
     {
-        $this->isBucket();
-        
         $options = array(
             'resumable'     => true,
             'name'          => $this->computePath($key),
-            'metadata'      => $this->getMetadata($key),
         );
 
-        $this->bucket->upload(
-            $content,
-            $options
-        );
-        
-        $this->updateKeyProperties($key,
-            array(
-                'acl'       => $this->options['acl'],
-                'metadata'  => $this->getMetadata($key)
-            )
-        );
+        try {
+            $object = $this->bucket->upload(
+                $content,
+                $options
+            );
 
-        $size = $this->getResourceByName($key, 'size');
-        return $size === null ? false : $size;
+            $this->setAcl($object);
+        } catch (\Exception $e) {
+            throw StorageFailure::unexpectedFailure('write', ['key' => $key, 'content' => $content], $e);
+        }
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function exists($key)
     {
-        $this->isBucket();
-        $object = $this->bucket->object($this->computePath($key));
-        return $object->exists();
+        return $this->bucket->object($this->computePath($key))->exists();
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -155,23 +134,23 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ListKeysAw
     {
         return $this->exists($this->computePath(rtrim($key, '/')).'/');
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function listKeys($prefix = null)
     {
-        $this->isBucket();        
         $keys = array();
-        
-        foreach ($this->bucket->objects(array('prefix' => $this->computePath($prefix))) as $e)
-        {
+
+        foreach ($this->bucket->objects(array('prefix' => $this->computePath($prefix))) as $e) {
             $keys[] = $e->name();
         }
+
         sort($keys);
+
         return $keys;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -185,69 +164,55 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ListKeysAw
      */
     public function mtime($key)
     {
-        $this->isBucket();
-        $object = $object = $this->bucket->object($this->computePath($key));
-        $info = $object->info();
-        $this->setResources($key, $info);
+        $info = $this->bucket->object($this->computePath($key))->info();
+
         return strtotime($info['updated']);
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function delete($key)
     {
-        $this->isBucket();
         try {
-            $object = $this->bucket->object($this->computePath($key));
-            $object->delete();
-            $this->setMetadata($key, null);
+            $this->bucket->object($this->computePath($key))->delete();
         } catch (\Exception $e) {
-            return false;
+            if ($e instanceof NotFoundException) {
+                throw new FileNotFound($key);
+            }
+
+            throw StorageFailure::unexpectedFailure('delete', ['key' => $key], $e);
         }
-        return true;
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function rename($sourceKey, $targetKey)
     {
-        $this->isBucket();
-        
         $pathedSourceKey = $this->computePath($sourceKey);
         $pathedTargetKey = $this->computePath($targetKey);
-                
-        $object = $this->bucket->object($pathedSourceKey);
-        
-        $copiedObject = $object->copy($this->bucket,
-            array(
-                'name' => $pathedTargetKey
-            )
-        );
-        
-        if ($copiedObject->exists())
-        {
-            $this->updateKeyProperties($targetKey,
+
+        try {
+            $object = $this->bucket->object($pathedSourceKey);
+
+            $copy = $object->copy($this->bucket,
                 array(
-                    'acl'       => $this->options['acl'],
-                    'metadata'  => $this->getMetadata($sourceKey)
+                    'name' => $pathedTargetKey
                 )
             );
-            $this->setMetadata($targetKey, $this->getMetadata($sourceKey));
-            $this->setMetadata($sourceKey, null);
+
+            $this->setAcl($copy);
+            $this->setMetadata($pathedTargetKey, $this->getMetadata($pathedSourceKey));
+
             $object->delete();
-            return true;
+        } catch (\Exception $e) {
+            if ($e instanceof NotFoundException) {
+                throw new FileNotFound($key);
+            }
+
+            throw StorageFailure::unexpectedFailure('rename', ['sourceKey' => $sourceKey, 'targetKey' => $targetKey], $e);
         }
-        return false;
-    }
-    
-    /**
-     * {@inheritdoc}
-     */
-    public function setMetadata($key, $metadata)
-    {
-        $this->metadata[$this->computePath($key)] = $metadata;
     }
 
     /**
@@ -255,77 +220,71 @@ class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ListKeysAw
      */
     public function getMetadata($key)
     {
-        $pathedKey = $this->computePath($key);
-        if (!isset($this->metadata[$pathedKey]) && $this->exists($pathedKey))
-        {
-            $data = $this->bucket->object($pathedKey)->info();
-            if (isset($data['metadata']))
-            {
-                $this->metadata[$pathedKey] = $data['metadata'];
+        try {
+            $infos = $this->bucket->object($this->computePath($key))->info();
+
+            return isset($infos['metadata'])
+                ? $infos['metadata']
+                : []
+            ;
+        } catch (\Exception $e) {
+            if ($e instanceof NotFoundException) {
+                throw new FileNotFound($key);
             }
+
+            throw StorageFailure::unexpectedFailure('getMetadata', ['key' => $key], $e);
         }
-        return isset($this->metadata[$pathedKey]) ? $this->metadata[$pathedKey] : array();
     }
-    
+
     /**
      * {@inheritdoc}
      */
-    public function setResources($key, $data)
+    public function setMetadata($key, $metadata)
     {
-        $this->resources[$this->computePath($key)] = $data;
-    }
-    
-    /**
-     * {@inheritdoc}
-     */
-    public function getResources($key)
-    {
-        $pathedKey = $this->computePath($key);
-        return isset($this->resources[$pathedKey]) ? $this->resources[$pathedKey] : array();
-    }
-    
-    /**
-     * {@inheritdoc}
-     */
-    public function getResourceByName($key, $resourceName)
-    {
-        $pathedKey = $this->computePath($key);
-        return isset($this->resources[$pathedKey][$resourceName]) ? $this->resources[$pathedKey][$resourceName] : null;
-    }
-    
-    /**
-     * Sets ACL and metadata information.
-     * 
-     * @param   string  $key
-     * @param   array   $options    Can contain "acl" and/or "metadata" arrays.
-     * @return  boolean
-     */
-    protected function updateKeyProperties($key, $options = array())
-    {
-        if ($this->exists($key) === false)
-        {
-            return false;
+        try {
+            $this->bucket->object($this->computePath($key))->update(array('metadata' => $metadata));
+        } catch (\Exception $e) {
+            if ($e instanceof NotFoundException) {
+                throw new FileNotFound($key);
+            }
+
+            throw StorageFailure::unexpectedFailure('setMetadata', ['key' => $key], $e);
         }
-      
-        $object = $this->bucket->object($this->computePath($key));
-        
-        $properties = array_replace_recursive(
-            array(
-                'acl'       => array(),
-                'metadata'  => array()
-            ), $options
-        );
+    }
+
+    private function computePath($key = null)
+    {
+        if (strlen($this->options['directory'])) {
+            return $this->options['directory'].'/'.$key;
+        }
+
+        return $key;
+    }
+
+    private function initBucket($bucketName)
+    {
+        $this->bucket = $this->storageClient->bucket($name);
+
+        if (!$this->bucket->exists()) {
+            throw new StorageFailure(sprintf('Bucket %s does not exist.', $bucketName));
+        }
+    }
+
+    /**
+     * Set the ACLs received in the options (if any) to the given $object.
+     *
+     * @param StorageObject $object
+     */
+    private function setAcl(StorageObject $object)
+    {
+        if (!isset($this->options['acl']) || empty($this->options['acl'])) {
+            return;
+        }
 
         $acl = $object->acl();
-        foreach ($properties['acl'] as $k => $v)
-        {
-            $acl->add($k, $v);
+
+        foreach ($this->options['acl'] as $key => $value) {
+            $acl->add($key, $value);
         }
-        $object->update(array('metadata' => $properties['metadata']));
-
-        $info = $object->info();
-
-        $this->setResources($key, $info);
-        return true;
     }
 }
