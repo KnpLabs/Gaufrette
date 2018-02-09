@@ -44,7 +44,7 @@ final class GoogleCloudClientStorage implements Adapter, MetadataSupporter, List
         $this->options = array_replace_recursive(
             array(
                 'directory' => '',
-                'acl'       => array()
+                'acl'       => array(),
             ),
             $options
         );
@@ -140,10 +140,14 @@ final class GoogleCloudClientStorage implements Adapter, MetadataSupporter, List
      */
     public function listKeys($prefix = null)
     {
+        // @FIXME : the list should not return the root directory in the keys
         $keys = array();
 
         foreach ($this->bucket->objects(array('prefix' => $this->computePath($prefix))) as $e) {
-            $keys[] = $e->name();
+            $keys[] = strlen($this->options['directory'])
+                ? substr($e->name(), strlen($this->options['directory'] . '/'))
+                : $e->name()
+            ;
         }
 
         sort($keys);
@@ -195,6 +199,7 @@ final class GoogleCloudClientStorage implements Adapter, MetadataSupporter, List
 
         try {
             $object = $this->bucket->object($pathedSourceKey);
+            $metadata = $this->getMetadata($sourceKey);
 
             $copy = $object->copy($this->bucket,
                 array(
@@ -203,7 +208,7 @@ final class GoogleCloudClientStorage implements Adapter, MetadataSupporter, List
             );
 
             $this->setAcl($copy);
-            $this->setMetadata($pathedTargetKey, $this->getMetadata($pathedSourceKey));
+            $this->setMetadata($targetKey, $metadata);
 
             $object->delete();
         } catch (\Exception $e) {
@@ -263,7 +268,7 @@ final class GoogleCloudClientStorage implements Adapter, MetadataSupporter, List
 
     private function initBucket($bucketName)
     {
-        $this->bucket = $this->storageClient->bucket($name);
+        $this->bucket = $this->storageClient->bucket($bucketName);
 
         if (!$this->bucket->exists()) {
             throw new StorageFailure(sprintf('Bucket %s does not exist.', $bucketName));

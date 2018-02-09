@@ -1,94 +1,102 @@
 <?php
-/**
- * Functional tests for the GoogleCloudClientStorage adapter.
- * Edit the phpunit.xml.dist Google Cloud Client adapter section for configuration
- * @author  Lech Buszczynski <lecho@phatcat.eu>
- */
 
 namespace Gaufrette\Functional\Adapter;
 
+use Gaufrette\Adapter\GoogleCloudClientStorage;
+use Gaufrette\Exception\FileNotFound;
+use Gaufrette\Filesystem;
+use Google\Cloud\Storage\Acl;
+use Google\Cloud\Storage\StorageClient;
+
+/**
+ * Functional tests for the GoogleCloudClientStorage adapter.
+ * Edit the phpunit.xml.dist Google Cloud Client adapter section for configuration
+ *
+ * @author  Lech Buszczynski <lecho@phatcat.eu>
+ */
 class GoogleCloudClientStorageTest extends FunctionalTestCase
-{   
-    private $string     = 'Yeah mate. No worries, I uploaded just fine. Meow!';
-    private $directory  = 'tests';
-    
+{
+    private $string    = 'Yeah mate. No worries, I uploaded just fine. Meow!';
+    private $directory = 'tests';
+    private $bucketName;
+    private $sdkOptions;
+    private $bucketOptions;
+
     public function setUp()
     {
-        $gccs_project_id         = getenv('GCCS_PROJECT_ID');
-        $gccs_bucket_name        = getenv('GCCS_BUCKET_NAME');
-        $gccs_json_key_file_path = getenv('GCCS_JSON_KEY_FILE_PATH');
+        $gccsProjectId   = getenv('GCCS_PROJECT_ID');
+        $gccsBucketName  = getenv('GCCS_BUCKET_NAME');
+        $gccsJsonKeyFile = getenv('GCCS_JSON_KEY_FILE');
 
-        if (empty($gccs_project_id) || empty($gccs_bucket_name) || empty($gccs_json_key_file_path))
-        {
-            $this->markTestSkipped('Required enviroment variables are not defined.');
-        } elseif (!is_readable($gccs_json_key_file_path)) {
-            $this->markTestSkipped(sprintf('Cannot read JSON key file from "%s".', $gccs_json_key_file_path));
+        if (empty($gccsProjectId) || empty($gccsBucketName) || empty($gccsJsonKeyFile)) {
+            $this->markTestSkipped('Either GCCS_PROJECT_ID, GCCS_BUCKET_NAME and/or GCCS_JSON_KEY_FILE env vars are missing.');
         }
-        
-        $storage = new \Google\Cloud\Storage\StorageClient(
-            array(
-                'projectId'     => $gccs_project_id,
-                'keyFilePath'   => $gccs_json_key_file_path
-            )
+
+        $this->directory = uniqid($this->directory);
+        $this->bucketName = $gccsBucketName;
+        $this->sdkOptions = array(
+            'projectId' => $gccsProjectId,
         );
 
-        $adapter = new \Gaufrette\Adapter\GoogleCloudClientStorage($storage, $gccs_bucket_name,
-            array(
-                'directory' => $this->directory,
-                'acl'       => array(
-                    'allUsers' => \Google\Cloud\Storage\Acl::ROLE_READER
-                )
-            )
+        if ($this->isJsonString($gccsJsonKeyFile)) {
+            $this->sdkOptions['keyFile'] = json_decode($gccsJsonKeyFile, true);
+        } else {
+            if (!is_readable($gccsJsonKeyFile)) {
+                $this->markTestSkipped(sprintf('Cannot read JSON key file from "%s".', $gccsJsonKeyFile));
+            }
+
+            $this->sdkOptions['keyFilePath'] = $gccsJsonKeyFile;
+        }
+
+        $this->bucketOptions = array(
+            'directory' => $this->directory,
+            'acl'       => array(
+                'allUsers' => Acl::ROLE_READER,
+            ),
         );
 
-        $this->filesystem = new \Gaufrette\Filesystem($adapter);
+        $storage = new StorageClient($this->sdkOptions);
+
+        $adapter = new GoogleCloudClientStorage($storage, $this->bucketName, $this->bucketOptions);
+
+        $this->filesystem = new Filesystem($adapter);
     }
-    
+
+    public function tearDown()
+    {
+        // make an other filesystem w/o custom root directory
+        // (ie the root directory will be the bucket root directory)
+        // to remove the uniqid'ed directory created by this test
+        $storage = new StorageClient($this->sdkOptions);
+
+        $adapter = new GoogleCloudClientStorage($storage, $this->bucketName, array_merge(
+            $this->bucketOptions,
+            array(
+                'directory' => '',
+            )
+        ));
+
+        $this->filesystem = new Filesystem($adapter);
+
+        array_map(function ($key) {
+            $this->filesystem->delete($key);
+        }, $this->filesystem->keys());
+    }
+
     /**
      * @test
      * @group functional
      * @group gccs
-     * 
-     * @expectedException \RuntimeException
+     *
+     * @expectedException \Gaufrette\Exception\StorageFailure
      */
     public function shouldFailIfBucketIsNotAccessible()
     {
-        /** @var \Gaufrette\Adapter\GoogleCloudClientStorage $adapter */
-        $adapter = $this->filesystem->getAdapter();
-        $adapter->setBucket('meow_'.mt_rand());
-    }
-    
-    /**
-     * @test
-     * @group functional
-     * @group gccs
-     */
-    public function shouldListBucketContent()
-    {
-        $this->assertEquals(strlen($this->string), $this->filesystem->write('Phat/Cat.txt', $this->string, true));
-        $keys = $this->filesystem->keys();
-        $file = $this->directory ? $this->directory.'/Phat/Cat.txt' : 'Phat/Cat.txt';
-        $this->assertTrue(in_array($file, $keys));
-        $this->filesystem->delete('Phat/Cat.txt');
-    }
-    
-    /**
-     * @test
-     * @group functional
-     * @group gccs
-     */
-    public function shouldWriteAndReadFile()
-    {
-        $this->assertEquals(strlen($this->string), $this->filesystem->write('Phat/Cat.txt', $this->string, true));
-        $this->assertEquals(strlen($this->string), $this->filesystem->write('Phatter/Cat.txt', $this->string, true));
+        $storage = new StorageClient($this->sdkOptions);
 
-        $this->assertEquals($this->string, $this->filesystem->read('Phat/Cat.txt'));
-        $this->assertEquals($this->string, $this->filesystem->read('Phatter/Cat.txt'));
-
-        $this->filesystem->delete('Phat/Cat.txt');
-        $this->filesystem->delete('Phatter/Cat.txt');
+        new GoogleCloudClientStorage($storage, 'unexisting', $this->bucketOptions);
     }
-    
+
     /**
      * @test
      * @group functional
@@ -98,31 +106,37 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
     {
         /** @var \Gaufrette\Adapter\GoogleCloudClientStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
-        $file   = 'PhatCat/Cat.txt';       
+        $file   = 'PhatCat/Cat.txt';
+
+        $this->filesystem->write($file, $this->string, true);
         $adapter->setMetadata($file, array('OhMy' => 'I am a cat file!'));
-        $this->assertEquals(strlen($this->string), $this->filesystem->write($file, $this->string, true));
         $info = $adapter->getMetadata($file);
+
         $this->assertEquals($info['OhMy'], 'I am a cat file!');
+
         $this->filesystem->delete($file);
     }
-    
+
     /**
      * @test
      * @group functional
      * @group gccs
      */
-    public function shouldWriteAndRenameFile()
+    public function shouldTransfertMetadataWhenRenamingAFile()
     {
         /** @var \Gaufrette\Adapter\GoogleCloudClientStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
-        $file   = 'Cat.txt';       
+        $file   = 'Cat.txt';
+
+        $this->filesystem->write($file, $this->string, true);
         $adapter->setMetadata($file, array('OhMy' => 'I am a cat file!'));
-        $this->assertEquals(strlen($this->string), $this->filesystem->write($file, $this->string, true));
-        $adapter->rename('Cat.txt', 'Kitten.txt');      
-        $this->assertEquals($adapter->getMetadata('Kitten.txt'), $adapter->getResourceByName('Kitten.txt', 'metadata'));
+        $adapter->rename('Cat.txt', 'Kitten.txt');
+
+        $this->assertEquals($adapter->getMetadata('Kitten.txt'), array('OhMy' => 'I am a cat file!'));
+
         $this->filesystem->delete('Kitten.txt');
     }
-    
+
     /**
      * @test
      * @group functional
@@ -132,18 +146,21 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
     {
         /** @var \Gaufrette\Adapter\GoogleCloudClientStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
-        $file   = 'Cat.txt';       
-        $this->assertEquals(strlen($this->string), $this->filesystem->write($file, $this->string, true));
+        $file   = 'Cat.txt';
+        $this->filesystem->write($file, $this->string, true);
 
-        if ($this->directory)
-        {
-            $public_link = sprintf('https://storage.googleapis.com/%s/%s/Cat.txt', $adapter->getBucket()->name(), $this->directory);
-        } else {
-            $public_link = sprintf('https://storage.googleapis.com/%s/Cat.txt', $adapter->getBucket()->name());
-        }
+        $publicLink = sprintf('https://storage.googleapis.com/%s/%s/Cat.txt', $adapter->getBucket()->name(), $this->directory);
 
-        $headers = @get_headers($public_link);       
-        $this->assertEquals($headers[0], 'HTTP/1.0 200 OK');       
+        $headers = @get_headers($publicLink);
+        $this->assertEquals($headers[0], 'HTTP/1.0 200 OK');
+
         $this->filesystem->delete('Cat.txt');
-    }    
+    }
+
+
+    private function isJsonString($content) {
+        json_decode($content);
+
+        return json_last_error() === JSON_ERROR_NONE;
+    }
 }
