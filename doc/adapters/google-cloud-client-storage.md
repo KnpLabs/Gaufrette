@@ -10,7 +10,7 @@ For more details see:
 http://googlecloudplatform.github.io/google-cloud-php/
 https://console.cloud.google.com/
 
-In order to get started: 
+In order to get started:
 
 1) Create a project in [Google Cloud Platform](https://console.cloud.google.com/).
 2) Create a bucket for the project in Storage.
@@ -36,7 +36,7 @@ $storage = new StorageClient(array(
 # The example below gives read access to the uploaded files to anyone in the world
 # Note that the public URL of the file IS NOT the bucket's file url,
 # see https://cloud.google.com/storage/docs/access-public-data for details
- 
+
 $adapter = new GoogleCloudClientStorage($storage, 'bucket_name',
     array(
         'directory' => 'bucket_directory',
@@ -48,17 +48,16 @@ $adapter = new GoogleCloudClientStorage($storage, 'bucket_name',
 
 $key = 'myAmazingFile.txt';
 
+$filesystem = new Filesystem($adapter);
+
+$filesystem->write($key, 'Uploaded at: '.date('Y-m-d @ H:i:s'), true);
+
 # optional
 $adapter->setMetadata($key,
     array(
         'FileDescription' => 'This is my file. There are many like it, but this one is mine.'
     )
 );
-
-$filesystem = new Filesystem($adapter);
-
-$filesystem->write($key, 'Uploaded at: '.date('Y-m-d @ H:i:s'), true);
-
 ```
 
 Here you can find some more info regarding ACL:
