@@ -39,13 +39,13 @@ install:
   - IF EXIST c:\php (SET PHP=0) ELSE (mkdir c:\php)
   - cd c:\php
   - IF %PHP%==1 cinst -y OpenSSL.Light
-  - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/archives/php-5.6.17-nts-Win32-VC11-x86.zip
-  - IF %PHP%==1 7z x php-5.6.17-nts-Win32-VC11-x86.zip -y >nul
+  - IF %PHP%==1 curl -fsSL -o php-5.6.33-Win32-VC11-x86.zip https://windows.php.net/downloads/releases/archives/php-5.6.33-Win32-VC11-x86.zip
+  - IF %PHP%==1 7z x php-5.6.33-Win32-VC11-x86.zip -y >nul
   - IF %PHP%==1 del /Q *.zip
-  - IF %PHP%==1 appveyor DownloadFile http://curl.haxx.se/ca/cacert.pem
+  - IF %PHP%==1 curl -fsSL -o cacert.pem https://curl.haxx.se/ca/cacert.pem
   - IF %PHP%==1 cd ext
-  - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/pecl/releases/mongodb/1.2.9/php_mongodb-1.2.9-5.6-nts-vc11-x86.zip
-  - IF %PHP%==1 7z x php_mongodb-1.2.9-5.6-nts-vc11-x86.zip php_mongodb.dll -y >nul
+  - IF %PHP%==1 curl -fsSL -o php_mongodb-1.2.9-5.6-ts-vc11-x86.zip https://windows.php.net/downloads/pecl/releases/mongodb/1.2.9/php_mongodb-1.2.9-5.6-ts-vc11-x86.zip
+  - IF %PHP%==1 7z x php_mongodb-1.2.9-5.6-ts-vc11-x86.zip php_mongodb.dll -y >nul
   - IF %PHP%==1 del /Q *.zip
   - IF %PHP%==1 cd ..
   - IF %PHP%==1 copy php.ini-production php.ini /Y
@@ -59,7 +59,7 @@ install:
   - IF %PHP%==1 echo extension=php_curl.dll >> php.ini
   - IF %PHP%==1 echo openssl.cafile=c:\php\cacert.pem >> php.ini
   - cd C:\projects\gaufrette
-  - appveyor DownloadFile https://getcomposer.org/composer.phar
+  - curl -fsSL -o composer.phar https://getcomposer.org/composer.phar
   - php composer.phar update --prefer-dist --no-interaction --no-progress --no-suggest --ansi
 
 test_script:
