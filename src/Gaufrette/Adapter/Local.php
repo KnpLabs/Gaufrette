@@ -61,7 +61,7 @@ class Local implements Adapter,
         $path = $this->computePath($key);
         $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($key));
 
-        if (!@file_put_contents($path, $content)) {
+        if (false === @file_put_contents($path, $content)) {
             throw StorageFailure::unexpectedFailure('write', ['key' => $key]);
         }
     }
