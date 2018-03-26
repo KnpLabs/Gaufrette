@@ -212,7 +212,7 @@ class AzureMultiContainerBlobStorageTest extends TestCase
      * @test
      * @group functional
      */
-    public function shouldWrtieToSameFile()
+    public function shouldWriteToSameFile()
     {
         $path = $this->createUniqueContainerName('container') . '/somefile';
 
@@ -222,7 +222,7 @@ class AzureMultiContainerBlobStorageTest extends TestCase
         $FileObjectB = $this->filesystem->createFile($path);
         $FileObjectB->setContent('DEF');
 
-        $this->assertEquals('DEF', $FileObjectB->getContent());
+        $this->assertEquals('DEF', $FileObjectA->getContent());
     }
 
     private function createUniqueContainerName($prefix)
