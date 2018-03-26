@@ -4,14 +4,10 @@ currentMenu: azure-blob-storage
 
 # AzureBlobStorage
 
-First, you will need to install the adapter:
+Azure Blob Storage is the storage service provided by Microsoft Windows Azure cloud environment. First, you will need to install the adapter:
 ```bash
 composer require gaufrette/azure-blob-storage-adapter
 ```
-
-Azure Blob Storage is the storage service provided by Microsoft Windows Azure cloud environment. To use this adapter
-you need to install the [Azure SDK for php](http://www.windowsazure.com/en-us/develop/php/common-tasks/download-php-sdk/)
-into your project.
 
 To instantiate the `AzureBlobStorage` adapter you need a `BlobProxyFactoryInterface` instance (you can use the default
 `BlobProxyFactory` class) and a connection string. The connection string should follow this prototype:

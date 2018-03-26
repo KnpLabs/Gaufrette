@@ -211,6 +211,6 @@ EOF
         $FileObjectB = $this->filesystem->createFile('somefile');
         $FileObjectB->setContent('DEF');
 
-        $this->assertEquals('DEF', $FileObjectB->getContent());
+        $this->assertEquals('DEF', $FileObjectA->getContent());
     }
 }
