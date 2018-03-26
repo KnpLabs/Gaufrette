@@ -8,7 +8,6 @@ use Gaufrette\Exception\InvalidKey;
 use Gaufrette\Exception\StorageFailure;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
 use MicrosoftAzure\Storage\Blob\Models\Blob;
-use MicrosoftAzure\Storage\Blob\Models\CreateBlobOptions;
 use MicrosoftAzure\Storage\Blob\Models\CreateBlockBlobOptions;
 use MicrosoftAzure\Storage\Blob\Models\CreateContainerOptions;
 use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
@@ -182,12 +181,7 @@ class AzureBlobStorage implements Adapter,
         $this->init();
         list($containerName, $key) = $this->tokenizeKey($key);
 
-        if (class_exists(CreateBlockBlobOptions::class)) {
-            $options = new CreateBlockBlobOptions();
-        } else {
-            // for microsoft/azure-storage < 1.0
-            $options = new CreateBlobOptions();
-        }
+        $options = new CreateBlockBlobOptions();
 
         if ($this->detectContentType) {
             $contentType = $this->guessContentType($content);
