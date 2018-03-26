@@ -1,3 +1,15 @@
+v0.6
+====
+
+## Changes
+- Add support for major release of Azure Blob Storage SDK [#558](https://github.com/KnpLabs/Gaufrette/pull/558)
+
+## Fixes
+- Fix Dockerfile for php 7.0 [aaa66dc](https://github.com/KnpLabs/Gaufrette/commit/aaa66dcf298d313e7ae3f525714923fcfd787e94)
+- Fix appveyor build [#562](https://github.com/KnpLabs/Gaufrette/pull/562)
+
+Thank you @nicolasmure, @NiR- and @z38 for your contributions!
+
 v0.5
 ====
 
