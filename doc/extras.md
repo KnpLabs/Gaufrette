@@ -24,13 +24,13 @@ Filesystem decorator providing `resolve()` method to resolve an object path into
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\AwsS3;
 use Gaufrette\Extras\Resolvable\ResolvableFilesystem;
-use Gaufrette\Extras\Resolvable\Resolver\AwsS3PresignedResolver;
+use Gaufrette\Extras\Resolvable\Resolver\AwsS3PublicUrlResolver;
 
 $client     = // AwsS3 client instantiation
 $decorated  = new Filesystem(new AwsS3($client, 'my_bucket', ['directory' => 'root/dir']));
 $filesystem = new ResolvableFilesystem(
     $decorated,
-    new AwsS3PresignedUrlResolver($client, 'my_bucket', 'root/dir')
+    new AwsS3PublicUrlResolver($client, 'my_bucket', 'root/dir')
 );
 
 // should return something like "https://eu-west-1.blabla.aws.com/my_bucket/root/dir/foo/bar.png?token
