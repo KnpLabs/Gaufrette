@@ -50,7 +50,7 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function exists($key)
     {
-        return $this->adapter->has($key);
+        return (bool) $this->adapter->has($key);
     }
 
     /**
