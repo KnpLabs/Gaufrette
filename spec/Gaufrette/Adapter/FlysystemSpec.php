@@ -45,6 +45,13 @@ class FlysystemSpec extends ObjectBehavior
         $this->exists('filename')->shouldReturn(true);
     }
 
+    function it_checks_if_file_exists_when_flysystem_returns_array(AdapterInterface $adapter)
+    {
+        $adapter->has('filename')->willReturn(['type' => 'file']);
+
+        $this->exists('filename')->shouldReturn(true);
+    }
+
     function it_fetches_keys(AdapterInterface $adapter)
     {
         $adapter->listContents()->willReturn([[
