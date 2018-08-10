@@ -75,6 +75,7 @@ class LocalSpec extends ObjectBehavior
 
     function it_deletes_file()
     {
+        $this->delete('dir')->shouldReturn(true);
         $this->delete('filename')->shouldReturn(true);
         $this->delete('filename1')->shouldReturn(false);
     }

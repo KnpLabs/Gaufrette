@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Functional\LocalDirectoryDeletor;
 use Gaufrette\Util;
 use Gaufrette\Adapter;
 use Gaufrette\Stream;
@@ -53,6 +54,10 @@ class Local implements Adapter,
      */
     public function read($key)
     {
+        if ($this->isDirectory($key)) {
+            return false;
+        }
+
         return file_get_contents($this->computePath($key));
     }
 
@@ -148,7 +153,9 @@ class Local implements Adapter,
     public function delete($key)
     {
         if ($this->isDirectory($key)) {
-            return rmdir($this->computePath($key));
+            LocalDirectoryDeletor::deleteDirectory($this->computePath($key));
+
+            return true;
         }
 
         return unlink($this->computePath($key));
