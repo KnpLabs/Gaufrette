@@ -25,11 +25,15 @@ env:
     FTP_BASE_DIR=/gaufrette/
 
 matrix:
+  allow_failures:
+    - php: nightly
+
   include:
     - php: '5.6'
     - php: '7.0'
     - php: '7.1'
     - php: '7.2'
+    - php: nightly
 
 before_install:
   - echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
