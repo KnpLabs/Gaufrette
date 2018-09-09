@@ -28,6 +28,7 @@ matrix:
   include:
     - php: '7.0'
     - php: '7.1'
+    - php: '7.2'
 
 before_install:
   - echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
