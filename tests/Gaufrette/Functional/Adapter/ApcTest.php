@@ -11,7 +11,7 @@ class ApcTest extends FunctionalTestCase
     {
         if (!extension_loaded('apc')) {
             return $this->markTestSkipped('The APC extension is not available.');
-        } elseif (!ini_get('apc.enabled') || !ini_get('apc.enable_cli')) {
+        } elseif (!filter_var(ini_get('apc.enabled'), FILTER_VALIDATE_BOOLEAN) || !filter_var(ini_get('apc.enable_cli'), FILTER_VALIDATE_BOOLEAN)) {
             return $this->markTestSkipped('The APC extension is available, but not enabled.');
         }
 
