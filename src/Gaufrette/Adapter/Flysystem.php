@@ -84,7 +84,7 @@ class Flysystem implements Adapter, ListKeysAware
     public function exists($key)
     {
         try {
-            return $this->adapter->has($key);
+            return (bool) $this->adapter->has($key);
         } catch (\Exception $e) {
             throw StorageFailure::unexpectedFailure('exists', ['key' => $key], $e);
         }
