@@ -38,7 +38,7 @@ init:
 install:
   - IF EXIST c:\php (SET PHP=0) ELSE (mkdir c:\php)
   - cd c:\php
-  - IF %PHP%==1 cinst -y OpenSSL.Light
+  - IF %PHP%==1 cinst -y OpenSSL.Light --version 1.1.1
   - IF %PHP%==1 curl -fsSL -o php-5.6.33-Win32-VC11-x86.zip https://windows.php.net/downloads/releases/archives/php-5.6.33-Win32-VC11-x86.zip
   - IF %PHP%==1 7z x php-5.6.33-Win32-VC11-x86.zip -y >nul
   - IF %PHP%==1 del /Q *.zip
