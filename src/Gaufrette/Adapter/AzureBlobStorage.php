@@ -22,7 +22,8 @@ use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
  */
 class AzureBlobStorage implements Adapter,
                                   MetadataSupporter,
-                                  SizeCalculator
+                                  SizeCalculator,
+                                  ChecksumCalculator
 
 {
     /**
@@ -332,6 +333,26 @@ class AzureBlobStorage implements Adapter,
             return false;
         }
 
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function checksum($key)
+    {
+        $this->init();
+        list($containerName, $key) = $this->tokenizeKey($key);
+
+        try {
+            $properties = $this->blobProxy->getBlobProperties($containerName, $key);
+            $checksumBase64 = $properties->getProperties()->getContentMD5();
+
+            return \bin2hex(\base64_decode($checksumBase64, true));
+        } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, sprintf('read content MD5 for key "%s"', $key), $containerName);
+
+            return false;
+        }
     }
 
     /**
