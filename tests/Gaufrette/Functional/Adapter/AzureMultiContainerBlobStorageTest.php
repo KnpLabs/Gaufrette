@@ -111,6 +111,20 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
     /**
      * @test
      * @group functional
+     */
+    public function shouldGetMd5Hash()
+    {
+        $path = $this->createUniqueContainerName('container') . '/foo';
+
+        $content = 'Some content';
+        $this->filesystem->write($path, $content);
+
+        $this->assertEquals(\md5($content), $this->filesystem->checksum($path));
+    }
+
+    /**
+     * @test
+     * @group functional
      * @expectedException \RuntimeException
      * @expectedMessage Could not get mtime for the "foo" key
      */
