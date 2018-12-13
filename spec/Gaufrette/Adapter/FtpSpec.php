@@ -153,17 +153,11 @@ class FtpSpec extends ObjectBehavior
         $this->shouldThrow(StorageFailure::class)->duringDelete('invalid');
     }
 
-    /**
-     * @param \Gaufrette\FilesystemInterface $filesystem
-     */
     function it_creates_file(Filesystem $filesystem)
     {
         $this->createFile('filename', $filesystem)->shouldReturnAnInstanceOf('\Gaufrette\File');
     }
 
-    /**
-     * @param \Gaufrette\FilesystemInterface $filesystem
-     */
     function it_creates_file_in_not_existing_directory(Filesystem $filesystem)
     {
         $this->createFile('bb/cc/dd/filename', $filesystem)->shouldReturnAnInstanceOf('\Gaufrette\File');

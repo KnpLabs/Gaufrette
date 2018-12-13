@@ -38,14 +38,14 @@ init:
 install:
   - IF EXIST c:\php (SET PHP=0) ELSE (mkdir c:\php)
   - cd c:\php
-  - IF %PHP%==1 cinst -y OpenSSL.Light
-  - IF %PHP%==1 curl -fsSL -o php-7.0.27-Win32-VC14-x86.zip https://windows.php.net/downloads/releases/archives/php-7.0.27-Win32-VC14-x86.zip
-  - IF %PHP%==1 7z x php-7.0.27-Win32-VC14-x86.zip -y >nul
+  - IF %PHP%==1 cinst -y OpenSSL.Light --version 1.1.1
+  - IF %PHP%==1 curl -fsSL -o php-7.2.12-Win32-VC15-x86.zip https://windows.php.net/downloads/releases/archives/php-7.2.12-Win32-VC15-x86.zip
+  - IF %PHP%==1 7z x php-7.2.12-Win32-VC15-x86.zip -y >nul
   - IF %PHP%==1 del /Q *.zip
   - IF %PHP%==1 curl -fsSL -o cacert.pem https://curl.haxx.se/ca/cacert.pem
   - IF %PHP%==1 cd ext
-  - IF %PHP%==1 curl -fsSL -o php_mongodb-1.4.2-7.0-ts-vc14-x86.zip https://windows.php.net/downloads/pecl/releases/mongodb/1.4.2/php_mongodb-1.4.2-7.0-ts-vc14-x86.zip
-  - IF %PHP%==1 7z x php_mongodb-1.4.2-7.0-ts-vc14-x86.zip php_mongodb.dll -y >nul
+  - IF %PHP%==1 curl -fsSL -o php_mongodb-1.5.3-7.2-ts-vc15-x86.zip https://windows.php.net/downloads/pecl/releases/mongodb/1.5.3/php_mongodb-1.5.3-7.2-ts-vc15-x86.zip
+  - IF %PHP%==1 7z x php_mongodb-1.5.3-7.2-ts-vc15-x86.zip php_mongodb.dll -y >nul
   - IF %PHP%==1 del /Q *.zip
   - IF %PHP%==1 cd ..
   - IF %PHP%==1 copy php.ini-production php.ini /Y
