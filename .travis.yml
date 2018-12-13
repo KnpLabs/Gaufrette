@@ -26,10 +26,9 @@ env:
 
 matrix:
   include:
-    - php: '5.6'
-    - php: '7.0'
     - php: '7.1'
     - php: '7.2'
+    - php: '7.3'
 
 before_install:
   - echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
@@ -37,8 +36,6 @@ before_install:
   - docker run -p ${SFTP_PORT}:22 -d atmoz/sftp:alpine ${SFTP_USER}:${SFTP_PASSWORD}:::${SFTP_BASE_DIR}
   - docker run -d --name ftpd_server -p ${FTP_PORT}:21 -p 30000-30009:30000-30009 -e "PUBLICHOST=${FTP_HOST}" stilliard/pure-ftpd
   - docker exec -it ftpd_server sh -c "(echo ${FTP_PASSWORD}; echo ${FTP_PASSWORD}) | pure-pw useradd ${FTP_USER} -f /etc/pure-ftpd/passwd/pureftpd.passwd -m -u ftpuser -d /home/ftpusers/${FTP_USER}"
-  - if [[ ${TRAVIS_PHP_VERSION} = 5.* ]]; then sudo apt-get -qq update && sudo apt-get install -y libssh2-1-dev; fi
-  - if [[ ${TRAVIS_PHP_VERSION} = 5.* ]]; then yes | pecl install -f ssh2 && composer require herzult/php-ssh --no-update --no-scripts; fi
 
 install:
   - composer update --prefer-dist --no-progress --no-suggest --ansi

@@ -2,6 +2,7 @@
 
 namespace spec\Gaufrette;
 
+use Gaufrette\Filesystem;
 use PhpSpec\ObjectBehavior;
 
 class FilesystemMapSpec extends ObjectBehavior
@@ -14,7 +15,7 @@ class FilesystemMapSpec extends ObjectBehavior
     /**
      * @param Gaufrette\Filesystem $filesystem
      */
-    function it_checks_if_has_mapped_filesystem($filesystem)
+    function it_checks_if_has_mapped_filesystem(Filesystem $filesystem)
     {
         $this->set('some', $filesystem);
         $this->has('some')->shouldReturn(true);
@@ -24,7 +25,7 @@ class FilesystemMapSpec extends ObjectBehavior
     /**
      * @param Gaufrette\Filesystem $filesystem
      */
-    function it_sets_mapped_filesystem($filesystem)
+    function it_sets_mapped_filesystem(Filesystem $filesystem)
     {
         $this->set('some', $filesystem);
         $this->get('some')->shouldReturn($filesystem);
@@ -41,7 +42,7 @@ class FilesystemMapSpec extends ObjectBehavior
     /**
      * @param Gaufrette\Filesystem $filesystem
      */
-    function it_removes_mapped_filesystem($filesystem)
+    function it_removes_mapped_filesystem(Filesystem $filesystem)
     {
         $this->set('some', $filesystem);
         $this->remove('some');
@@ -60,7 +61,7 @@ class FilesystemMapSpec extends ObjectBehavior
     /**
      * @param Gaufrette\Filesystem $filesystem
      */
-    function it_removes_all_filesystems($filesystem)
+    function it_removes_all_filesystems(Filesystem $filesystem)
     {
         $this->set('some', $filesystem);
         $this->set('other', $filesystem);

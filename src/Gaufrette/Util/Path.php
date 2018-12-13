@@ -27,13 +27,13 @@ class Path
         foreach ($parts as $part) {
             switch ($part) {
                 case '.':
-                    continue;
+                    continue 2;
                 case '..':
                     if (0 !== count($tokens)) {
                         array_pop($tokens);
-                        continue;
+                        continue 2;
                     } elseif (!empty($prefix)) {
-                        continue;
+                        continue 2;
                     }
                 default:
                     $tokens[] = $part;

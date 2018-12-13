@@ -3,8 +3,9 @@
 namespace Gaufrette\Functional\FileStream;
 
 use Gaufrette\StreamWrapper;
+use PHPUnit\Framework\TestCase;
 
-class FunctionalTestCase extends \PHPUnit_Framework_TestCase
+class FunctionalTestCase extends TestCase
 {
     protected $filesystem;
 

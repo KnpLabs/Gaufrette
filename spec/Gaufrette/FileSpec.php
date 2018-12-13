@@ -2,14 +2,19 @@
 
 namespace spec\Gaufrette;
 
+use Gaufrette\Filesystem;
 use PhpSpec\ObjectBehavior;
+
+interface MetadataAdapter extends \Gaufrette\Adapter,
+                                  \Gaufrette\Adapter\MetadataSupporter
+{}
 
 class FileSpec extends ObjectBehavior
 {
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function let($filesystem)
+    function let(Filesystem $filesystem)
     {
         $this->beConstructedWith('filename', $filesystem);
     }
@@ -27,7 +32,7 @@ class FileSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_gets_content($filesystem)
+    function it_gets_content(Filesystem $filesystem)
     {
         $filesystem->read('filename')->shouldBeCalled()->willReturn('Some content');
 
@@ -37,7 +42,7 @@ class FileSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_gets_mtime($filesystem)
+    function it_gets_mtime(Filesystem $filesystem)
     {
         $filesystem->mtime('filename')->shouldBeCalled()->willReturn(1358797854);
 
@@ -48,7 +53,7 @@ class FileSpec extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
-    function it_pass_metadata_when_write_content($filesystem, $adapter)
+    function it_pass_metadata_when_write_content(Filesystem $filesystem, MetadataAdapter $adapter)
     {
         $metadata = array('id' => '123');
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
@@ -62,7 +67,7 @@ class FileSpec extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
-    function it_pass_metadata_when_read_content($filesystem, $adapter)
+    function it_pass_metadata_when_read_content(Filesystem $filesystem, MetadataAdapter $adapter)
     {
         $metadata = array('id' => '123');
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
@@ -76,7 +81,7 @@ class FileSpec extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
-    function it_pass_metadata_when_delete_content($filesystem, $adapter)
+    function it_pass_metadata_when_delete_content(Filesystem $filesystem, MetadataAdapter $adapter)
     {
         $metadata = array('id' => '123');
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
@@ -90,7 +95,7 @@ class FileSpec extends ObjectBehavior
      * @param \Gaufrette\Filesystem $filesystem
      * @param \spec\Gaufrette\MetadataAdapter $adapter
      */
-    function it_sets_content_of_file($filesystem, $adapter)
+    function it_sets_content_of_file(Filesystem $filesystem, MetadataAdapter $adapter)
     {
         $adapter->setMetadata('filename', array())->shouldNotBeCalled();
         $filesystem->getAdapter()->willReturn($adapter);
@@ -114,7 +119,7 @@ class FileSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_sets_size_for_new_file($filesystem)
+    function it_sets_size_for_new_file(Filesystem $filesystem)
     {
         $filesystem->write('filename', 'some content', true)->shouldBeCalled()->willReturn(21);
 
@@ -125,7 +130,7 @@ class FileSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_calculates_size_from_filesystem($filesystem)
+    function it_calculates_size_from_filesystem(Filesystem $filesystem)
     {
         $filesystem->size('filename')->shouldBeCalled()->willReturn(12);
 
@@ -135,7 +140,7 @@ class FileSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_allows_to_set_size($filesystem)
+    function it_allows_to_set_size(Filesystem $filesystem)
     {
         $filesystem->read('filename')->shouldNotBeCalled();
 
@@ -146,7 +151,7 @@ class FileSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_gets_zero_size_when_file_not_found($filesystem)
+    function it_gets_zero_size_when_file_not_found(Filesystem $filesystem)
     {
         $filesystem->size('filename')->willThrow(new \Gaufrette\Exception\FileNotFound('filename'));
 
@@ -156,7 +161,7 @@ class FileSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_check_if_file_with_key_exists_in_filesystem($filesystem)
+    function it_check_if_file_with_key_exists_in_filesystem(Filesystem $filesystem)
     {
         $filesystem->has('filename')->willReturn(true);
         $this->exists()->shouldReturn(true);
@@ -168,19 +173,18 @@ class FileSpec extends ObjectBehavior
     /**
      * @param \Gaufrette\Filesystem $filesystem
      */
-    function it_deletes_file_from_filesystem($filesystem)
+    function it_deletes_file_from_filesystem(Filesystem $filesystem)
     {
         $filesystem->delete('filename')->shouldBeCalled()->willReturn(true);
         $this->delete()->shouldReturn(true);
     }
 
-    function it_renames_file_from_filesystem($filesystem)
+    /**
+     * @param \Gaufrette\Filesystem $filesystem
+     */
+    function it_renames_file_from_filesystem(Filesystem $filesystem)
     {
         $filesystem->rename('filename', 'newname')->shouldBeCalled();
         $this->rename('newname');
     }
 }
-
-interface MetadataAdapter extends \Gaufrette\Adapter,
-                                  \Gaufrette\Adapter\MetadataSupporter
-{}

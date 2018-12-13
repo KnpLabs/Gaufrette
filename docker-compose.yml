@@ -1,36 +1,6 @@
 version: '3'
 
 services:
-  php56:
-    build:
-      context: .
-      dockerfile: ./Dockerfile-php56
-    volumes:
-      - './spec:/usr/src/gaufrette/spec:rw'
-      - './src:/usr/src/gaufrette/src:ro'
-      - './tests:/usr/src/gaufrette/tests:rw'
-      - './bin/tests:/usr/src/gaufrette/bin/tests:ro'
-    depends_on:
-      - mongodb
-      - sftp
-      - ftp
-    env_file: .env
-
-  php70:
-    build:
-      context: .
-      dockerfile: ./Dockerfile-php70
-    volumes:
-      - './spec:/usr/src/gaufrette/spec:rw'
-      - './src:/usr/src/gaufrette/src:ro'
-      - './tests:/usr/src/gaufrette/tests:rw'
-      - './bin/tests:/usr/src/gaufrette/bin/tests:ro'
-    depends_on:
-      - mongodb
-      - sftp
-      - ftp
-    env_file: .env
-
   php71:
     build:
       context: .
