@@ -4,7 +4,6 @@ namespace Gaufrette\Functional\FileStream;
 
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local as LocalAdapter;
-use Gaufrette\Functional\LocalDirectoryDeletor;
 
 class LocalTest extends FunctionalTestCase
 {
@@ -35,7 +34,15 @@ class LocalTest extends FunctionalTestCase
 
     public function tearDown()
     {
-        LocalDirectoryDeletor::deleteDirectory($this->directory);
+        $adapter = $this->filesystem->getAdapter();
+
+        foreach ($this->filesystem->keys() as $key) {
+            $adapter->delete($key);
+        }
+
+        $this->filesystem = null;
+
+        rmdir($this->directory);
     }
 
     /**
