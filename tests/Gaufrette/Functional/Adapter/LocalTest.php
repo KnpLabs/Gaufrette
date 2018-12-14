@@ -4,7 +4,6 @@ namespace Gaufrette\Functional\Adapter;
 
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
-use Gaufrette\Functional\LocalDirectoryDeletor;
 
 class LocalTest extends FunctionalTestCase
 {
@@ -25,7 +24,7 @@ class LocalTest extends FunctionalTestCase
     {
         $this->filesystem = null;
 
-        LocalDirectoryDeletor::deleteDirectory($this->directory);
+        Local::deleteDirectory($this->directory);
     }
 
     /**

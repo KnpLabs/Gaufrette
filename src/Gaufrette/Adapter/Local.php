@@ -53,6 +53,10 @@ class Local implements Adapter,
      */
     public function read($key)
     {
+        if ($this->isDirectory($key)) {
+            return false;
+        }
+
         return file_get_contents($this->computePath($key));
     }
 
@@ -148,7 +152,9 @@ class Local implements Adapter,
     public function delete($key)
     {
         if ($this->isDirectory($key)) {
-            return rmdir($this->computePath($key));
+            self::deleteDirectory($this->computePath($key));
+
+            return true;
         }
 
         return unlink($this->computePath($key));
@@ -307,6 +313,33 @@ class Local implements Adapter,
     {
         if (!@mkdir($directory, $this->mode, true) && !is_dir($directory)) {
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
+        }
+    }
+
+    public static function deleteDirectory($directory)
+    {
+        if ($directory === '/') {
+            throw new \InvalidArgumentException('Deleting "/" is disallowed.');
+        }
+
+        if (file_exists($directory)) {
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator(
+                    $directory,
+                    \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
+                ),
+                \RecursiveIteratorIterator::CHILD_FIRST
+            );
+
+            foreach ($iterator as $item) {
+                if ($item->isDir()) {
+                    rmdir(strval($item));
+                } else {
+                    unlink(strval($item));
+                }
+            }
+
+            rmdir($directory);
         }
     }
 }

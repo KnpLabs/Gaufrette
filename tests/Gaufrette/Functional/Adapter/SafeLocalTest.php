@@ -2,9 +2,9 @@
 
 namespace Gaufrette\Functional\Adapter;
 
+use Gaufrette\Adapter\Local;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\SafeLocal;
-use Gaufrette\Functional\LocalDirectoryDeletor;
 
 class SafeLocalTest extends FunctionalTestCase
 {
@@ -21,7 +21,7 @@ class SafeLocalTest extends FunctionalTestCase
     {
         $this->filesystem = null;
 
-        LocalDirectoryDeletor::deleteDirectory($this->getDirectory());
+        Local::deleteDirectory($this->getDirectory());
     }
 
     private function getDirectory()
