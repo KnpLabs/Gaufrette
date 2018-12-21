@@ -3,8 +3,8 @@
 namespace spec\Gaufrette;
 
 use Gaufrette\Adapter;
-use Gaufrette\File;
 use Gaufrette\Exception\StorageFailure;
+use Gaufrette\File;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
