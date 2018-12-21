@@ -1,3 +1,41 @@
+v0.8
+====
+
+## New features
+
+- Implement `ChecksumCalculator` interface for `AzureBlobStorage` adapter #594
+
+## Changes
+
+In #593 :
+- Drop support for EOL php versions (5.6 and 7.0)
+- Minimim requirement is now php 7.1
+- Add support for php 7.3
+
+## Fixes
+
+- fix opencloud tests #579
+- fix appveyor build #589
+- Fix `ini_get()` for boolean values #595
+
+Thank you @andreybolonin, @damijank, @deguif and @nicolasmure for your
+contributions !
+
+v0.7
+====
+
+## Changes
+- `FilesystemMap::set()` should expect `FilesystemInterface` instead of
+`Filesystem` #576
+
+## Fixes
+
+- Add PutObjectAcl in the required permission #566
+- Ensure correct return type from Flysystem adapter "exists" method #572
+
+Thank you @andreybolonin, @clement-michelet, @jakob-stoeck, @nicolasmure,
+@teohhanhui, @tristanbes for your contributions !
+
 v0.6
 ====
 
