@@ -256,7 +256,7 @@ class GoogleCloudStorage implements Adapter,
 
         try {
             $this->service->objects->copy($this->bucket, $sourcePath, $this->bucket, $targetPath, $object);
-            $this->delete($sourcePath);
+            $this->service->objects->delete($this->bucket, $sourcePath);
         } catch (\Google_Service_Exception $e) {
             return false;
         }
