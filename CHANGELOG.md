@@ -1,3 +1,12 @@
+v0.8.1
+======
+
+## Fixes
+
+- Fix `rename` with `GoogleCloudStorage` adapter [#598](https://github.com/KnpLabs/Gaufrette/pull/598)
+
+Thank you @jerome-arzel for your contribution !
+
 v0.8
 ====
 
