@@ -8,6 +8,9 @@ use MongoDB\Client;
 
 class GridFSTest extends FunctionalTestCase
 {
+    
+    private $bucket;
+
     public function setUp()
     {
         $uri = getenv('MONGO_URI');
@@ -21,8 +24,8 @@ class GridFSTest extends FunctionalTestCase
         $db = $client->selectDatabase($dbname);
         $bucket = $db->selectGridFSBucket();
         $bucket->drop();
-
-        $this->filesystem = new Filesystem(new GridFS($bucket));
+        $this->bucket = $bucket;
+        $this->filesystem = new Filesystem(new GridFS($this->bucket));
     }
 
     /**
@@ -88,5 +91,13 @@ class GridFSTest extends FunctionalTestCase
         $this->filesystem->write('metadatatest', 'test');
         
         $this->assertEquals($this->filesystem->getAdapter()->getMetadata('metadatatest'), $fileadpt->getMetadata('metadatatest'));
+    }
+
+    public function testRetrieveWithoutMetadata()
+    {
+        $resource = $this->bucket->openUploadStream("test1.test");
+        fwrite($resource, "test");
+        fclose($resource);
+        $this->assertEquals($this->filesystem->getAdapter()->getMetadata('test1.test'), array());
     }
 }

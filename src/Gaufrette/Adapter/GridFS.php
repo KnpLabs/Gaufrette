@@ -170,7 +170,7 @@ class GridFS implements Adapter,
             return $this->metadata[$key];
         } else {
             $meta = $this->bucket->findOne(['filename' => $key], ['projection' => ['metadata' => 1,'_id' => 0]]);
-            if ($meta === null) {
+            if ($meta === null || !isset($meta['metadata'])) {
                 return array();
             }
             $this->metadata[$key] = iterator_to_array($meta['metadata']);
