@@ -17,7 +17,8 @@ use MongoDB\GridFS\Exception\FileNotFoundException;
 class GridFS implements Adapter,
                         ChecksumCalculator,
                         MetadataSupporter,
-                        ListKeysAware
+                        ListKeysAware,
+                        SizeCalculator
 {
     /** @var array */
     private $metadata = [];
@@ -205,4 +206,18 @@ class GridFS implements Adapter,
 
         return $result;
     }
+    
+    public function size($key)
+    {
+        if (!$this->exists($key)) {
+            return false;
+        }
+        $size = $this->bucket->findOne(['filename' => $key], ['projection' => ['length' => 1,'_id' => 0]]);
+        if (!isset($size['length'])) {
+            return false;
+        }
+
+        return $size['length'];
+    }
+    
 }
