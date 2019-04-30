@@ -366,7 +366,14 @@ class Ftp implements Adapter,
             return true;
         }
 
-        if (!@is_dir('ftp://' . $this->username . ':' . $this->password . '@' . $this->host . ':' . $this->port . $directory)) {
+        // Build the FTP URL that will be used to check if the path is a directory or not
+        $url = 'ftp://' . $this->username . ':' . $this->password . '@' . $this->host;
+
+        if($this->port) {
+            $url .= ':' . $this->port;
+        }
+
+        if (!@is_dir($url . $directory)) {
             return false;
         }
 
