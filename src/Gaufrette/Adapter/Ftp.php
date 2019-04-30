@@ -366,7 +366,7 @@ class Ftp implements Adapter,
             return true;
         }
 
-        if (!@ftp_chdir($this->getConnection(), $directory)) {
+        if (!@is_dir('ftp://' . $this->username . ':' . $this->password . '@' . $this->host . ':' . $this->port . $directory)) {
             return false;
         }
 
