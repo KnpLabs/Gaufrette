@@ -74,7 +74,7 @@ class GridFSTest extends FunctionalTestCase
             $keys['keys'],
             '', 0, 10, true);
     }
-    
+
     /**
      * @test
      * Tests metadata written to GridFS can be retrieved after writing
@@ -83,10 +83,10 @@ class GridFSTest extends FunctionalTestCase
     {
         //Create local copy of fileadapter
         $fileadpt = clone $this->filesystem->getAdapter();
-        
+
         $this->filesystem->getAdapter()->setMetadata('metadatatest', array('testing'  =>  true));
         $this->filesystem->write('metadatatest', 'test');
-        
+
         $this->assertEquals($this->filesystem->getAdapter()->getMetadata('metadatatest'), $fileadpt->getMetadata('metadatatest'));
     }
 
@@ -98,5 +98,16 @@ class GridFSTest extends FunctionalTestCase
     {
         $this->filesystem->write('sizetest.txt', 'data');
         $this->assertEquals(4, $this->filesystem->size('sizetest.txt'));
+    }
+
+    /**
+     * @test
+     * Should retrieve empty metadata w/o errors
+     */
+    public function testRetrieveWithoutMetadata()
+    {
+        $this->filesystem->write('no-metadata.txt', 'content');
+
+        $this->assertEquals(array(), $this->filesystem->getAdapter()->getMetadata('no-metadata.txt'));
     }
 }
