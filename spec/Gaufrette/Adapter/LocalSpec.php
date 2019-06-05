@@ -79,6 +79,11 @@ class LocalSpec extends ObjectBehavior
         $this->delete('filename1')->shouldReturn(false);
     }
 
+    function it_deletes_dir()
+    {
+        $this->delete('dir')->shouldReturn(true);
+    }
+
     function it_checks_if_given_key_is_directory()
     {
         $this->isDirectory('dir')->shouldReturn(true);
