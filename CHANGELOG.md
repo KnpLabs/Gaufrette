@@ -1,3 +1,16 @@
+v0.8.2
+======
+
+## New features
+
+- Declare a FilesystemMapInterface (#604)
+- Add SizeCalculator support to GridFS (#603)
+- Local Adapter: directory deletion (#610)
+
+## Fixes
+
+- GridFS : return empty array when object has no metadata (#609)
+
 v0.8.1
 ======
 
