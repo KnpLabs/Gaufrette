@@ -1,3 +1,12 @@
+v0.8.3
+======
+
+## Changes
+
+- Change Filesystem to FilesystemInterface in File's constructor (#608)
+
+Thank you @athlan for your contribution !
+
 v0.8.2
 ======
 
@@ -10,6 +19,8 @@ v0.8.2
 ## Fixes
 
 - GridFS : return empty array when object has no metadata (#609)
+
+Thank you @athos7933, @bsperduto and @nicolasmure for your contributions !
 
 v0.8.1
 ======
