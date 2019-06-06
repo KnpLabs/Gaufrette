@@ -2,6 +2,7 @@
 
 namespace spec\Gaufrette\Adapter;
 
+use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Exception\InvalidKey;
 use Gaufrette\Exception\StorageFailure;
 use org\bovigo\vfs\vfsStream;
@@ -79,7 +80,13 @@ class LocalSpec extends ObjectBehavior
     function it_deletes_file()
     {
         $this->shouldNotThrow(StorageFailure::class)->duringDelete('filename');
-        $this->shouldThrow(StorageFailure::class)->duringDelete('filename1');
+
+        $this->shouldThrow(FileNotFound::class)->duringDelete('do-no-exist');
+    }
+
+    function it_deletes_dir()
+    {
+        $this->shouldNotThrow(StorageFailure::class)->duringDelete('dir');
     }
 
     function it_checks_if_given_key_is_directory()

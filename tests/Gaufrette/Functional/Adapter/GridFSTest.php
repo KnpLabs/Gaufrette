@@ -95,4 +95,26 @@ class GridFSTest extends FunctionalTestCase
 
         $this->assertEquals($this->filesystem->getAdapter()->getMetadata('metadatatest'), $fileadpt->getMetadata('metadatatest'));
     }
+
+    /**
+     * @test
+     * Should indicate the object size
+     */
+    public function testSize()
+    {
+        $this->filesystem->write('sizetest.txt', 'data');
+
+        $this->assertEquals(4, $this->filesystem->size('sizetest.txt'));
+    }
+
+    /**
+     * @test
+     * Should retrieve empty metadata w/o errors
+     */
+    public function testRetrieveWithoutMetadata()
+    {
+        $this->filesystem->write('no-metadata.txt', 'content');
+
+        $this->assertEquals(array(), $this->filesystem->getAdapter()->getMetadata('no-metadata.txt'));
+    }
 }
