@@ -73,18 +73,21 @@ RUN apk add --no-cache \
         autoconf \
         g++\
         git \
-        libssh2-dev \
+        # libssh2-dev \
+        libzip-dev \
         make \
         zlib-dev \
     && pecl install \
-        mongodb \
-        ssh2-1.1.2
+        mongodb
+        # ssh2-1.1.2
+        # ssh2 extension is not availble yet for php7.3
+        # see https://serverpilot.io/docs/how-to-install-the-php-ssh2-extension
 
 RUN docker-php-ext-install \
         zip \
     && docker-php-ext-enable \
-        mongodb \
-        ssh2
+        mongodb
+        # ssh2
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_HOME /var/cache/composer

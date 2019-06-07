@@ -93,8 +93,9 @@ You can also use a different php version, simply set the `PHP_VERSION` env var
 to any of these values when calling a make target :
 - `7.1`
 - `7.2` (default)
-- `7.3` (the docker setup for php 7.3 is available, however the image fails
-to build for now as the [ssh2 extension is not available for php 7/3 yet](https://serverpilot.io/docs/how-to-install-the-php-ssh2-extension))
+- `7.3` (the docker setup for php 7.3 is available, however the ssh2 extension
+is not installed [as it is not available for php 7.3 yet](https://serverpilot.io/docs/how-to-install-the-php-ssh2-extension))
+
 See the [`docker-compose.yml`](/docker-compose.yml) file for more details.
 
 You'll need to clear the previously installed dependencies when switching from
