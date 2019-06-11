@@ -37,7 +37,7 @@ final class GoogleCloudClientStorage implements Adapter, MetadataSupporter, List
      * @param string           $bucketName Name of the bucket
      * @param array            $options    Options are: "directory" and "acl" (see https://cloud.google.com/storage/docs/access-control/lists)
      */
-    public function __construct(StorageClient $storageClient, $bucketName, $options = array())
+    public function __construct(StorageClient $storageClient, string $bucketName, $options = array())
     {
         $this->storageClient = $storageClient;
         $this->initBucket($bucketName);
@@ -197,17 +197,18 @@ final class GoogleCloudClientStorage implements Adapter, MetadataSupporter, List
      */
     public function rename($sourceKey, $targetKey)
     {
-        $pathedSourceKey = $this->computePath($sourceKey);
-        $pathedTargetKey = $this->computePath($targetKey);
+        $sourcePath = $this->computePath($sourceKey);
+        $targetPath = $this->computePath($targetKey);
 
         try {
-            $object = $this->bucket->object($pathedSourceKey);
+            $object = $this->bucket->object($sourcePath);
             $metadata = $this->getMetadata($sourceKey);
 
-            $copy = $object->copy($this->bucket,
-                array(
-                    'name' => $pathedTargetKey
-                )
+            $copy = $object->copy(
+                $this->bucket,
+                [
+                    'name' => $targetPath,
+                ]
             );
 
             $this->setAcl($copy);
@@ -231,10 +232,7 @@ final class GoogleCloudClientStorage implements Adapter, MetadataSupporter, List
         try {
             $infos = $this->bucket->object($this->computePath($key))->info();
 
-            return isset($infos['metadata'])
-                ? $infos['metadata']
-                : []
-            ;
+            return $infos['metadata'] ?? [];
         } catch (\Exception $e) {
             if ($e instanceof NotFoundException) {
                 throw new FileNotFound($key);
@@ -250,7 +248,9 @@ final class GoogleCloudClientStorage implements Adapter, MetadataSupporter, List
     public function setMetadata($key, $metadata)
     {
         try {
-            $this->bucket->object($this->computePath($key))->update(array('metadata' => $metadata));
+            $this->bucket->object($this->computePath($key))
+                ->update(['metadata' => $metadata])
+            ;
         } catch (\Exception $e) {
             if ($e instanceof NotFoundException) {
                 throw new FileNotFound($key);
