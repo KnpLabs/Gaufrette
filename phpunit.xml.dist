@@ -10,39 +10,7 @@
          stopOnFailure="false"
          bootstrap="vendor/autoload.php"
 >
-
-    <php>
-        <!-- Parameters for GridFS adapter -->
-        <!--<env name="MONGO_URI" value="mongodb://localhost:27017" />
-        <env name="MONGO_DBNAME" value="gridfs_test" />-->
-
-        <!-- Configuration for AwsS3 adapter -->
-        <!--<env name="AWS_KEY" value="" />
-        <env name="AWS_SECRET" value="" />
-        <env name="AWS_BUCKET" value="" />-->
-
-        <!-- Configuration for PhpseclibSftp adapter -->
-        <!--<env name="SFTP_HOST" value="" />
-        <env name="SFTP_PORT" value="" />
-        <env name="SFTP_USER" value="" />
-        <env name="SFTP_PASSWORD" value="" />-->
-
-        <!-- Configuration for Ftp adapter -->
-        <!--<env name="FTP_HOST" value="" />
-        <env name="FTP_USER" value="" />
-        <env name="FTP_PASSWORD" value="" />
-        <env name="FTP_BASE_DIR" value="" />-->
-
-        <!-- Configuration for Azure adapter -->
-        <!--<env name="AZURE_ACCOUNT" value="" />
-        <env name="AZURE_KEY" value="" />
-        <env name="AZURE_CONTAINER" value="" />-->
-
-        <!-- Configuration for OpenCloud/Rackspace adapter -->
-        <!--<env name="RACKSPACE_USER" value="" />
-        <env name="RACKSPACE_APIKEY" value="" />
-        <env name="RACKSPACE_CONTAINER" value="" />-->
-    </php>
+    <!-- The env vars are defined in the .env file -->
 
     <testsuites>
         <testsuite name="Gaufrette Test Suite">
