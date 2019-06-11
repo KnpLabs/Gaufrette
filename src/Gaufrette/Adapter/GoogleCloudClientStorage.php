@@ -140,10 +140,13 @@ final class GoogleCloudClientStorage implements Adapter, MetadataSupporter, List
      */
     public function listKeys($prefix = null)
     {
-        // @FIXME : the list should not return the root directory in the keys
-        $keys = array();
+        $keys = [];
 
-        foreach ($this->bucket->objects(array('prefix' => $this->computePath($prefix))) as $e) {
+        $filter = [
+            'prefix' => $this->computePath($prefix),
+        ];
+
+        foreach ($this->bucket->objects($filter) as $e) {
             $keys[] = strlen($this->options['directory'])
                 ? substr($e->name(), strlen($this->options['directory'] . '/'))
                 : $e->name()

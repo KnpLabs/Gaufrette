@@ -113,8 +113,6 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
         $info = $adapter->getMetadata($file);
 
         $this->assertEquals($info['OhMy'], 'I am a cat file!');
-
-        $this->filesystem->delete($file);
     }
 
     /**
@@ -133,8 +131,6 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
         $adapter->rename('Cat.txt', 'Kitten.txt');
 
         $this->assertEquals($adapter->getMetadata('Kitten.txt'), array('OhMy' => 'I am a cat file!'));
-
-        $this->filesystem->delete('Kitten.txt');
     }
 
     /**
@@ -153,10 +149,26 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
 
         $headers = @get_headers($publicLink);
         $this->assertEquals($headers[0], 'HTTP/1.0 200 OK');
-
-        $this->filesystem->delete('Cat.txt');
     }
 
+    /**
+     * @test
+     * @group functional
+     * @group gccs
+     */
+    public function shouldListKeys()
+    {
+        // empty bucket, no keys
+        $this->assertEquals([], $this->filesystem->listKeys());
+
+        // one item, one key
+        $this->filesystem->write('file.txt', 'content');
+        $this->assertEquals(['file.txt'], $this->filesystem->listKeys());
+
+        // list only keys with the given prefix
+        $this->filesystem->write('prefix/file.txt', 'content');
+        $this->assertEquals(['prefix/file.txt'], $this->filesystem->listKeys('prefix'));
+    }
 
     private function isJsonString($content) {
         json_decode($content);
