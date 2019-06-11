@@ -18,7 +18,7 @@ use Google\Cloud\Storage\StorageObject;
  * @package Gaufrette
  * @author  Lech Buszczynski <lecho@phatcat.eu>
  */
-final class GoogleCloudClientStorage implements Adapter, MetadataSupporter, ListKeysAware
+final class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
 {
     /**
      * @var StorageClient

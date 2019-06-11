@@ -2,19 +2,19 @@
 
 namespace Gaufrette\Functional\Adapter;
 
-use Gaufrette\Adapter\GoogleCloudClientStorage;
+use Gaufrette\Adapter\GoogleCloudStorage;
 use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Filesystem;
 use Google\Cloud\Storage\Acl;
 use Google\Cloud\Storage\StorageClient;
 
 /**
- * Functional tests for the GoogleCloudClientStorage adapter.
- * Edit the phpunit.xml.dist Google Cloud Client adapter section for configuration
+ * Functional tests for the GoogleCloudStorage adapter.
+ * Edit the phpunit.xml.dist Google Cloud Storage adapter section for configuration
  *
  * @author  Lech Buszczynski <lecho@phatcat.eu>
  */
-class GoogleCloudClientStorageTest extends FunctionalTestCase
+class GoogleCloudStorageTest extends FunctionalTestCase
 {
     private $string    = 'Yeah mate. No worries, I uploaded just fine. Meow!';
     private $directory = 'tests';
@@ -24,28 +24,28 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
 
     public function setUp()
     {
-        $gccsProjectId   = getenv('GCCS_PROJECT_ID');
-        $gccsBucketName  = getenv('GCCS_BUCKET_NAME');
-        $gccsJsonKeyFile = getenv('GCCS_JSON_KEY_FILE');
+        $gcsProjectId   = getenv('GCS_PROJECT_ID');
+        $gcsBucketName  = getenv('GCS_BUCKET_NAME');
+        $gcsJsonKeyFile = getenv('GCS_JSON_KEY_FILE');
 
-        if (empty($gccsProjectId) || empty($gccsBucketName) || empty($gccsJsonKeyFile)) {
-            $this->markTestSkipped('Either GCCS_PROJECT_ID, GCCS_BUCKET_NAME and/or GCCS_JSON_KEY_FILE env vars are missing.');
+        if (empty($gcsProjectId) || empty($gcsBucketName) || empty($gcsJsonKeyFile)) {
+            $this->markTestSkipped('Either GCS_PROJECT_ID, GCS_BUCKET_NAME and/or GCS_JSON_KEY_FILE env vars are missing.');
         }
 
         $this->directory = uniqid($this->directory);
-        $this->bucketName = $gccsBucketName;
+        $this->bucketName = $gcsBucketName;
         $this->sdkOptions = array(
-            'projectId' => $gccsProjectId,
+            'projectId' => $gcsProjectId,
         );
 
-        if ($this->isJsonString($gccsJsonKeyFile)) {
-            $this->sdkOptions['keyFile'] = json_decode($gccsJsonKeyFile, true);
+        if ($this->isJsonString($gcsJsonKeyFile)) {
+            $this->sdkOptions['keyFile'] = json_decode($gcsJsonKeyFile, true);
         } else {
-            if (!is_readable($gccsJsonKeyFile)) {
-                $this->markTestSkipped(sprintf('Cannot read JSON key file from "%s".', $gccsJsonKeyFile));
+            if (!is_readable($gcsJsonKeyFile)) {
+                $this->markTestSkipped(sprintf('Cannot read JSON key file from "%s".', $gcsJsonKeyFile));
             }
 
-            $this->sdkOptions['keyFilePath'] = $gccsJsonKeyFile;
+            $this->sdkOptions['keyFilePath'] = $gcsJsonKeyFile;
         }
 
         $this->bucketOptions = array(
@@ -57,7 +57,7 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
 
         $storage = new StorageClient($this->sdkOptions);
 
-        $adapter = new GoogleCloudClientStorage($storage, $this->bucketName, $this->bucketOptions);
+        $adapter = new GoogleCloudStorage($storage, $this->bucketName, $this->bucketOptions);
 
         $this->filesystem = new Filesystem($adapter);
     }
@@ -69,7 +69,7 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
         // to remove the uniqid'ed directory created by this test
         $storage = new StorageClient($this->sdkOptions);
 
-        $adapter = new GoogleCloudClientStorage($storage, $this->bucketName, array_merge(
+        $adapter = new GoogleCloudStorage($storage, $this->bucketName, array_merge(
             $this->bucketOptions,
             array(
                 'directory' => '',
@@ -86,7 +86,7 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
     /**
      * @test
      * @group functional
-     * @group gccs
+     * @group gcs
      *
      * @expectedException \Gaufrette\Exception\StorageFailure
      */
@@ -94,17 +94,17 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
     {
         $storage = new StorageClient($this->sdkOptions);
 
-        new GoogleCloudClientStorage($storage, 'unexisting', $this->bucketOptions);
+        new GoogleCloudStorage($storage, 'unexisting', $this->bucketOptions);
     }
 
     /**
      * @test
      * @group functional
-     * @group gccs
+     * @group gcs
      */
     public function shouldWriteAndReadFileMetadata()
     {
-        /** @var \Gaufrette\Adapter\GoogleCloudClientStorage $adapter */
+        /** @var \Gaufrette\Adapter\GoogleCloudStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
         $file   = 'PhatCat/Cat.txt';
 
@@ -118,11 +118,11 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
     /**
      * @test
      * @group functional
-     * @group gccs
+     * @group gcs
      */
     public function shouldTransfertMetadataWhenRenamingAFile()
     {
-        /** @var \Gaufrette\Adapter\GoogleCloudClientStorage $adapter */
+        /** @var \Gaufrette\Adapter\GoogleCloudStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
         $file   = 'Cat.txt';
 
@@ -136,11 +136,11 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
     /**
      * @test
      * @group functional
-     * @group gccs
+     * @group gcs
      */
     public function shouldWriteAndReadPublicFile()
     {
-        /** @var \Gaufrette\Adapter\GoogleCloudClientStorage $adapter */
+        /** @var \Gaufrette\Adapter\GoogleCloudStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
         $file   = 'Cat.txt';
         $this->filesystem->write($file, $this->string, true);
@@ -154,7 +154,7 @@ class GoogleCloudClientStorageTest extends FunctionalTestCase
     /**
      * @test
      * @group functional
-     * @group gccs
+     * @group gcs
      */
     public function shouldListKeys()
     {

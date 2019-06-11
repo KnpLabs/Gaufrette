@@ -52,7 +52,7 @@
         "gaufrette/opencloud-adapter": "to use Opencloud adapter",
         "gaufrette/zip-adapter": "to use Zip adapter",
         "gaufrette/gridfs-adapter": "to use GridFS adapter",
-        "google/cloud-storage": "to use GoogleCloudClientStorage adapter",
+        "google/cloud-storage": "to use GoogleCloudStorage adapter",
         "ext-curl": "*",
         "ext-mbstring": "*",
         "ext-fileinfo": "This extension is used to automatically detect the content-type of a file in the AwsS3, OpenCloud, AzureBlogStorage and GoogleCloudStorage adapters",

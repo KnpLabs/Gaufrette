@@ -1,10 +1,11 @@
 ---
-currentMenu: google-cloud-client-storage
+currentMenu: google-cloud-storage
 ---
 
-# Google Cloud Client Storage
+# Google Cloud Storage
 
-This adapter requires an instance of Google\Cloud\Storage\StorageClient that has proper access rights to the bucket you want to use.
+This adapter requires an instance of `Google\Cloud\Storage\StorageClient`
+that has proper access rights to the bucket you want to use.
 
 For more details see:
 http://googlecloudplatform.github.io/google-cloud-php/
@@ -24,7 +25,8 @@ In order to get started:
 <?php
 
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\GoogleCloudClientStorage;
+use Gaufrette\Adapter\GoogleCloudStorage;
+use Google\Cloud\Storage\StorageClient;
 
 $storage = new StorageClient(array(
     'projectId'     => 'your-project-id',
@@ -37,7 +39,7 @@ $storage = new StorageClient(array(
 # Note that the public URL of the file IS NOT the bucket's file url,
 # see https://cloud.google.com/storage/docs/access-public-data for details
 
-$adapter = new GoogleCloudClientStorage($storage, 'bucket_name',
+$adapter = new GoogleCloudStorage($storage, 'bucket_name',
     array(
         'directory' => 'bucket_directory',
         'acl'       => array(

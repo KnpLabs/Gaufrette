@@ -43,10 +43,10 @@
         <env name="RACKSPACE_APIKEY" value="" />
         <env name="RACKSPACE_CONTAINER" value="" />-->
 
-        <!-- Configuration for Google Cloud Client adapter -->
-        <!--<env name="GCCS_PROJECT_ID" value="" />
-        <env name="GCCS_BUCKET_NAME" value="" />
-        <env name="GCCS_JSON_KEY_FILE" value="" />-->
+        <!-- Configuration for Google Cloud Storage adapter -->
+        <!--<env name="GCS_PROJECT_ID" value="" />
+        <env name="GCS_BUCKET_NAME" value="" />
+        <env name="GCS_JSON_KEY_FILE" value="" />-->
     </php>
 
     <testsuites>
