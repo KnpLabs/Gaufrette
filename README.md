@@ -72,7 +72,7 @@ Requires the latest versions of :
 ```bash
 $ make dev
 ```
-and configure it as you want.
+and fill it with the credentials of the backend you want to use.
 
 2) Build the php docker image :
 ```bash
