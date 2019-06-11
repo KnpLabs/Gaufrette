@@ -28,7 +28,7 @@ class FilesystemMapSpec extends ObjectBehavior
     function it_fails_when_get_filesystem_which_was_not_mapped()
     {
         $this
-            ->shouldThrow(new \InvalidArgumentException('There is no filesystem defined for the "some" domain.'))
+            ->shouldThrow(new \InvalidArgumentException('There is no filesystem named "some".'))
             ->duringGet('some')
         ;
     }

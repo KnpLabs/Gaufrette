@@ -1,0 +1,15 @@
+#!/bin/bash
+# Usage: run-task SERVICE [CMD...]
+
+set -o nounset
+
+# env var used by the `docker-compose` command
+COMPOSE_FILE="$(dirname $0)/docker-compose.yml"
+
+docker-compose run --rm "${@}"
+EXIT_CODE="${?}"
+
+# stop the other services linked to the task
+docker-compose down
+
+exit "${EXIT_CODE}"

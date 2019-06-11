@@ -9,6 +9,7 @@ use MongoDB\GridFS\Bucket;
 use MongoDB\GridFS\Exception\FileNotFoundException;
 use MongoDB\Model\BSONDocument;
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 
 class GridFSSpec extends ObjectBehavior
 {
@@ -161,5 +162,30 @@ class GridFSSpec extends ObjectBehavior
         ;
 
         $this->checksum('filename')->shouldReturn('md5123');
+    }
+
+    function it_throws_file_not_found_when_getting_the_size_of_unexisting_object($bucket)
+    {
+        $bucket->findOne(Argument::type('array'))->willReturn(null);
+
+        $this->shouldThrow(FileNotFound::class)->duringSize('do-not-exists');
+    }
+
+    function it_throws_storage_failure_when_backend_does_not_specify_the_object_size($bucket)
+    {
+        $bucket->findOne(['filename' => 'file'], Argument::any())
+            ->willReturn([])
+        ;
+
+        $this->shouldThrow(StorageFailure::class)->duringSize('file');
+    }
+
+    function it_should_retrieve_the_object_size($bucket)
+    {
+        $bucket->findOne(['filename' => 'file'], Argument::any())
+            ->willReturn(['length' => 42])
+        ;
+
+        $this->size('file')->shouldReturn(42);
     }
 }

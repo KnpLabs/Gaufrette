@@ -46,6 +46,14 @@ class Local implements Adapter,
      */
     public function read($key)
     {
+        if ($this->isDirectory($key)) {
+            throw StorageFailure::unexpectedFailure(
+                'read',
+                ['key' => $key],
+                new InvalidKey(sprintf('Cannot read "%s" as it is a directory', $key))
+            );
+        }
+
         if (false === $content = @file_get_contents($this->computePath($key))) {
             throw StorageFailure::unexpectedFailure('read', ['key' => $key]);
         }
@@ -130,20 +138,30 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      *
+     * Can also delete a directory recursively when the given $key matches a
+     * directory.
      */
     public function delete($key)
     {
         if ($this->isDirectory($key)) {
-            if (!rmdir($this->computePath($key))) {
+            try {
+                if (!$this->deleteDirectory($this->computePath($key))) {
+                    throw StorageFailure::unexpectedFailure('delete', ['key' => $key]);
+                }
+            } catch (\InvalidArgumentException $e) {
+                throw StorageFailure::unexpectedFailure('delete', ['key' => $key], $e);
+            }
+
+            return;
+        } elseif ($this->exists($key)) {
+            if (!unlink($this->computePath($key))) {
                 throw StorageFailure::unexpectedFailure('delete', ['key' => $key]);
             }
 
             return;
         }
 
-        if (!unlink($this->computePath($key))) {
-            throw StorageFailure::unexpectedFailure('delete', ['key' => $key]);
-        }
+        throw new FileNotFound($key);
     }
 
     /**
@@ -293,5 +311,46 @@ class Local implements Adapter,
         if (!@mkdir($directory, $this->mode, true) && !is_dir($directory)) {
             throw new StorageFailure(sprintf('The directory "%s" could not be created.', $key));
         }
+    }
+
+    /**
+     * @param string The directory's path to delete
+     *
+     * @throws \InvalidArgumentException When attempting to delete the root
+     * directory of this adapter.
+     *
+     * @return bool Wheter the operation succeeded or not
+     */
+    private function deleteDirectory($directory)
+    {
+        if ($this->directory === $directory) {
+            throw new \InvalidArgumentException(
+                sprintf('Impossible to delete the root directory of this Local adapter ("%s").', $directory)
+            );
+        }
+
+        $status = true;
+
+        if (file_exists($directory)) {
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator(
+                    $directory,
+                    \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
+                ),
+                \RecursiveIteratorIterator::CHILD_FIRST
+            );
+
+            foreach ($iterator as $item) {
+                if ($item->isDir()) {
+                    $status = $status && rmdir(strval($item));
+                } else {
+                    $status = $status && unlink(strval($item));
+                }
+            }
+
+            $status = $status && rmdir($directory);
+        }
+
+        return $status;
     }
 }

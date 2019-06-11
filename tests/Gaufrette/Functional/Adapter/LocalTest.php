@@ -4,7 +4,6 @@ namespace Gaufrette\Functional\Adapter;
 
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local;
-use Gaufrette\Functional\LocalDirectoryDeletor;
 
 class LocalTest extends FunctionalTestCase
 {
@@ -23,9 +22,26 @@ class LocalTest extends FunctionalTestCase
 
     public function tearDown()
     {
+        $adapter = $this->filesystem->getAdapter();
+
+        $keys = $this->filesystem->keys();
+
+        // sort keys by length DESC
+        usort($keys, static function ($a, $b) {
+            if ($a === $b) {
+                return 0;
+            }
+
+            return strlen($a) > strlen($b) ? -1 : 1;
+        });
+
+        foreach ($keys as $key) {
+            $adapter->delete($key);
+        }
+
         $this->filesystem = null;
 
-        LocalDirectoryDeletor::deleteDirectory($this->directory);
+        rmdir($this->directory);
     }
 
     /**
@@ -45,11 +61,12 @@ class LocalTest extends FunctionalTestCase
         @unlink($linkname);
         symlink($dirname, $linkname);
 
-        $this->filesystem = new Filesystem(new Local($linkname));
-        $this->filesystem->write('test.txt', 'abc 123');
+        $fs = new Filesystem(new Local($linkname));
+        $fs->write('test.txt', 'abc 123');
 
-        $this->assertSame('abc 123', $this->filesystem->read('test.txt'));
-        $this->filesystem->delete('test.txt');
+        $this->assertSame('abc 123', $fs->read('test.txt'));
+        $fs->delete('test.txt');
+
         @unlink($linkname);
         @rmdir($dirname);
     }
@@ -61,13 +78,6 @@ class LocalTest extends FunctionalTestCase
      */
     public function shouldListingOnlyGivenDirectory()
     {
-        $dirname = sprintf(
-            '%s/localDir',
-            $this->directory
-        );
-        @mkdir($dirname);
-
-        $this->filesystem = new Filesystem(new Local($this->directory));
         $this->filesystem->write('aaa.txt', 'some content');
         $this->filesystem->write('localDir/test.txt', 'some content');
 
@@ -83,10 +93,6 @@ class LocalTest extends FunctionalTestCase
         $this->assertCount(2, $dirs['keys']);
         $this->assertEquals('aaa.txt', $dirs['keys'][0]);
         $this->assertEquals('localDir/test.txt', $dirs['keys'][1]);
-
-        @unlink($dirname.DIRECTORY_SEPARATOR.'test.txt');
-        @unlink($this->directory.DIRECTORY_SEPARATOR.'aaa.txt');
-        @rmdir($dirname);
     }
 
     /**
@@ -96,29 +102,15 @@ class LocalTest extends FunctionalTestCase
      */
     public function shouldListingAllKeys()
     {
-        $dirname = sprintf(
-            '%s/localDir',
-            $this->directory
-        );
-        @mkdir($dirname);
-
-        $this->filesystem = new Filesystem(new Local($this->directory));
         $this->filesystem->write('aaa.txt', 'some content');
         $this->filesystem->write('localDir/dir1/dir2/dir3/test.txt', 'some content');
 
         $keys = $this->filesystem->keys();
         $dirs = $this->filesystem->listKeys();
+
         $this->assertCount(6, $keys);
         $this->assertCount(4, $dirs['dirs']);
         $this->assertEquals('localDir/dir1/dir2/dir3/test.txt', $dirs['keys'][1]);
-
-        foreach ($dirs['keys'] as $item) {
-            @unlink($item);
-        }
-        $reversed = array_reverse($dirs['dirs']);
-        foreach ($reversed as $item) {
-            @rmdir($item);
-        }
     }
 
     /**
@@ -127,12 +119,6 @@ class LocalTest extends FunctionalTestCase
      */
     public function shouldBeAbleToClearCache()
     {
-        $dirname = sprintf('%s/bbb', $this->directory);
-
-        @mkdir($dirname);
-
-        $this->filesystem = new Filesystem(new Local($dirname));
-
         $this->filesystem->get('test.txt', true);
         $this->filesystem->write('test.txt', '123', true);
 
@@ -152,9 +138,41 @@ class LocalTest extends FunctionalTestCase
         $fsRegister = $fsReflection->getProperty('fileRegister');
         $fsRegister->setAccessible(true);
         $this->assertCount(0, $fsRegister->getValue($this->filesystem));
+    }
 
-        $this->filesystem->delete('test.txt');
-        $this->filesystem->delete('test2.txt');
-        @rmdir($dirname);
+    /**
+     * @test
+     * @group functional
+     * @expectedException Gaufrette\Exception\StorageFailure
+     */
+    public function shouldThrowWhenTryingToReadADirectory()
+    {
+        $this->filesystem->getAdapter()->read('/');
+    }
+
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldDeleteDirectory()
+    {
+        $path = $this->directory . DIRECTORY_SEPARATOR . 'delete-me.d';
+        mkdir($path);
+
+        $this->assertTrue(is_dir($path));
+
+        $this->filesystem->getAdapter()->delete('delete-me.d');
+
+        $this->assertFalse(is_dir($path));
+    }
+
+    /**
+     * @test
+     * @group functional
+     * @expectedException Gaufrette\Exception\StorageFailure
+     */
+    public function shouldNotDeleteTheAdapterRootDirectory()
+    {
+        $this->filesystem->getAdapter()->delete('/');
     }
 }

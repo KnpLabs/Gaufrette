@@ -1,16 +1,43 @@
-version: '2'
+version: '3.4'
 
 services:
-  php71:
+  php7.1:
     build:
       context: .
-      dockerfile: ./Dockerfile-php71
-    volumes:
-      - './spec:/usr/src/gaufrette/spec:rw'
-      - './src:/usr/src/gaufrette/src:ro'
-      - './tests:/usr/src/gaufrette/tests:rw'
-      - './bin/tests:/usr/src/gaufrette/bin/tests:ro'
+      dockerfile: docker/php/Dockerfile
+      target: php7.1
     env_file: .env
+    volumes:
+      - './:/app'
+      - './docker/php/php.ini:/usr/local/etc/php/php.ini:ro'
+    depends_on:
+      - mongodb
+      - sftp
+      - ftp
+
+  php7.2:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: php7.2
+    env_file: .env
+    volumes:
+      - './:/app'
+      - './docker/php/php.ini:/usr/local/etc/php/php.ini:ro'
+    depends_on:
+      - mongodb
+      - sftp
+      - ftp
+
+  php7.3:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: php7.3
+    env_file: .env
+    volumes:
+      - './:/app'
+      - './docker/php/php.ini:/usr/local/etc/php/php.ini:ro'
     depends_on:
       - mongodb
       - sftp
@@ -25,7 +52,6 @@ services:
 
   ftp:
     build:
-      context: docker
-      dockerfile: Dockerfile-ftp
+      context: ./docker/ftp
     environment:
       PUBLICHOST: 'ftp'
