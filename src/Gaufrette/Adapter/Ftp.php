@@ -379,7 +379,7 @@ class Ftp implements Adapter,
 
         $chDirResult = false;
         try {
-            $chDirResult = ftp_chdir($this->getConnection(), $directory)
+            $chDirResult = ftp_chdir($this->getConnection(), $directory);
         }
         catch(Exception $e) {
             $this->passive = true;
