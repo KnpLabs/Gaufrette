@@ -356,6 +356,17 @@ class Ftp implements Adapter,
     }
 
     /**
+     * @return string
+     */
+    private function createConnectionUrl() {
+        $url = $this->ssl ? 'sftp://' : 'ftp://';
+        $url .= $this->username . ':' . $this->password . '@' . $this->host;
+        $url .= $this->port ? ':' . $this->port : '';
+
+        return $url;
+    }
+
+    /**
      * @param string $directory - full directory path
      *
      * @return bool
@@ -366,12 +377,22 @@ class Ftp implements Adapter,
             return true;
         }
 
-        // Build the FTP URL that will be used to check if the path is a directory or not
-        $url = $this->ssl ? 'sftp://' : 'ftp://';
-        $url .= $this->username . ':' . $this->password . '@' . $this->host;
-        $url .= $this->port ? ':' . $this->port : '';
+        $chDirResult = false;
+        try {
+            $chDirResult = ftp_chdir($this->getConnection(), $directory)
+        }
+        catch(Exception $e) {
+            $this->passive = true;
 
-        if (!@is_dir($url . $directory)) {
+            // Build the FTP URL that will be used to check if the path is a directory or not
+            $url = $this->createConnectionUrl();
+
+            if (!@is_dir($url . $directory)) {
+                return false;
+            }
+        }
+
+        if (!$chDirResult) {
             return false;
         }
 
