@@ -358,7 +358,8 @@ class Ftp implements Adapter,
     /**
      * @return string
      */
-    private function createConnectionUrl() {
+    private function createConnectionUrl()
+    {
         $url = $this->ssl ? 'sftp://' : 'ftp://';
         $url .= $this->username . ':' . $this->password . '@' . $this->host;
         $url .= $this->port ? ':' . $this->port : '';
@@ -379,25 +380,34 @@ class Ftp implements Adapter,
 
         $chDirResult = false;
         try {
-            $chDirResult = ftp_chdir($this->getConnection(), $directory);
-        }
-        catch(Exception $e) {
-            $this->passive = true;
+            $chDirResult = ftp_chdir($this->getConnection(), $this->directory);
+
+            // change directory again to return in the base directory
+            ftp_chdir($this->getConnection(), $this->directory);
+        } catch(\Exception $e) {
+
+            // Cache the actual value of the passive mode
+            $actualPassiveMode  = $this->passive;
+            $this->passive      = true;
 
             // Build the FTP URL that will be used to check if the path is a directory or not
             $url = $this->createConnectionUrl();
 
             if (!@is_dir($url . $directory)) {
+
+                // Revert back the value of the passive mode.
+                $this->passive = $actualPassiveMode;
+
                 return false;
             }
+
+            // Revert back the value of the passive mode.
+            $this->passive = $actualPassiveMode;
         }
 
         if (!$chDirResult) {
             return false;
         }
-
-        // change directory again to return in the base directory
-        ftp_chdir($this->getConnection(), $this->directory);
 
         return true;
     }
