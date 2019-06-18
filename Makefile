@@ -19,3 +19,21 @@ tests:
 .PHONY: clear-deps
 clear-deps:
 	rm -rf vendor/ composer.lock
+
+.PHONY: php-cs-compare
+php-cs-compare:
+	docker run --rm -u $$(id -u):$$(id -g) -v $$(pwd):/project \
+		herloct/php-cs-fixer fix \
+		--config=/project/.php_cs.dist \
+		--diff \
+		--dry-run \
+		--show-progress=none \
+		--verbose \
+		src spec tests
+
+.PHONY: php-cs-fix
+php-cs-fix:
+	docker run --rm -u $$(id -u):$$(id -g) -v $$(pwd):/project \
+		herloct/php-cs-fixer fix \
+		--config=/project/.php_cs.dist \
+		src spec tests
