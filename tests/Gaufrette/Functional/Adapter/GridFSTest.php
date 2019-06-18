@@ -52,25 +52,25 @@ class GridFSTest extends FunctionalTestCase
 
         $keys = $this->filesystem->listKeys('foo/foob');
         $this->assertEquals(
-            array('foo/foobar/bar.txt'),
+            ['foo/foobar/bar.txt'],
             $keys['keys'],
             '', 0, 10, true);
 
         $keys = $this->filesystem->listKeys('foo/');
         $this->assertEquals(
-            array('foo/foobar/bar.txt', 'foo/bar/buzz.txt'),
+            ['foo/foobar/bar.txt', 'foo/bar/buzz.txt'],
             $keys['keys'],
             '', 0, 10, true);
 
         $keys = $this->filesystem->listKeys('foo');
         $this->assertEquals(
-            array('foo/foobar/bar.txt', 'foo/bar/buzz.txt', 'foobarbuz.txt', 'foo'),
+            ['foo/foobar/bar.txt', 'foo/bar/buzz.txt', 'foobarbuz.txt', 'foo'],
             $keys['keys'],
             '', 0, 10, true);
 
         $keys = $this->filesystem->listKeys('fooz');
         $this->assertEquals(
-            array(),
+            [],
             $keys['keys'],
             '', 0, 10, true);
     }
@@ -84,7 +84,7 @@ class GridFSTest extends FunctionalTestCase
         //Create local copy of fileadapter
         $fileadpt = clone $this->filesystem->getAdapter();
 
-        $this->filesystem->getAdapter()->setMetadata('metadatatest', array('testing'  =>  true));
+        $this->filesystem->getAdapter()->setMetadata('metadatatest', ['testing' => true]);
         $this->filesystem->write('metadatatest', 'test');
 
         $this->assertEquals($this->filesystem->getAdapter()->getMetadata('metadatatest'), $fileadpt->getMetadata('metadatatest'));
@@ -108,6 +108,6 @@ class GridFSTest extends FunctionalTestCase
     {
         $this->filesystem->write('no-metadata.txt', 'content');
 
-        $this->assertEquals(array(), $this->filesystem->getAdapter()->getMetadata('no-metadata.txt'));
+        $this->assertEquals([], $this->filesystem->getAdapter()->getMetadata('no-metadata.txt'));
     }
 }

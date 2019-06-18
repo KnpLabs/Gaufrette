@@ -11,10 +11,7 @@ use Gaufrette\Filesystem;
  *
  * @author  Antoine Hérault <antoine.herault@gmail.com>
  */
-class Ftp implements Adapter,
-                     FileFactory,
-                     ListKeysAware,
-                     SizeCalculator
+class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
 {
     protected $connection = null;
     protected $directory;
@@ -27,7 +24,7 @@ class Ftp implements Adapter,
     protected $mode;
     protected $ssl;
     protected $timeout;
-    protected $fileData = array();
+    protected $fileData = [];
     protected $utf8;
 
     /**
@@ -35,7 +32,7 @@ class Ftp implements Adapter,
      * @param string $host      The host of the ftp server
      * @param array  $options   The options like port, username, password, passive, create, mode
      */
-    public function __construct($directory, $host, $options = array())
+    public function __construct($directory, $host, $options = [])
     {
         if (!extension_loaded('ftp')) {
             throw new \RuntimeException('Unable to use Gaufrette\Adapter\Ftp as the FTP extension is not available.');
@@ -43,15 +40,15 @@ class Ftp implements Adapter,
 
         $this->directory = (string) $directory;
         $this->host = $host;
-        $this->port = isset($options['port']) ? $options['port'] : 21;
-        $this->username = isset($options['username']) ? $options['username'] : null;
-        $this->password = isset($options['password']) ? $options['password'] : null;
-        $this->passive = isset($options['passive']) ? $options['passive'] : false;
-        $this->create = isset($options['create']) ? $options['create'] : false;
-        $this->mode = isset($options['mode']) ? $options['mode'] : FTP_BINARY;
-        $this->ssl = isset($options['ssl']) ? $options['ssl'] : false;
-        $this->timeout = isset($options['timeout']) ? $options['timeout'] : 90;
-        $this->utf8 = isset($options['utf8']) ? $options['utf8'] : false;
+        $this->port = $options['port'] ?? 21;
+        $this->username = $options['username'] ?? null;
+        $this->password = $options['password'] ?? null;
+        $this->passive = $options['passive'] ?? false;
+        $this->create = $options['create'] ?? false;
+        $this->mode = $options['mode'] ?? FTP_BINARY;
+        $this->ssl = $options['ssl'] ?? false;
+        $this->timeout = $options['timeout'] ?? 90;
+        $this->utf8 = $options['utf8'] ?? false;
     }
 
     /**
@@ -123,14 +120,14 @@ class Ftp implements Adapter,
     {
         $this->ensureDirectoryExists($this->directory, $this->create);
 
-        $file  = $this->computePath($key);
+        $file = $this->computePath($key);
         $lines = ftp_rawlist($this->getConnection(), '-al ' . \Gaufrette\Util\Path::dirname($file));
 
         if (false === $lines) {
             return false;
         }
 
-        $pattern = '{(?<!->) '.preg_quote(basename($file)).'( -> |$)}m';
+        $pattern = '{(?<!->) ' . preg_quote(basename($file)) . '( -> |$)}m';
         foreach ($lines as $line) {
             if (preg_match($pattern, $line)) {
                 return true;
@@ -168,9 +165,9 @@ class Ftp implements Adapter,
             return $keys;
         }
 
-        $filteredKeys = array();
-        foreach (array('keys', 'dirs') as $hash) {
-            $filteredKeys[$hash] = array();
+        $filteredKeys = [];
+        foreach (['keys', 'dirs'] as $hash) {
+            $filteredKeys[$hash] = [];
             foreach ($keys[$hash] as $key) {
                 if (0 === strpos($key, $prefix)) {
                     $filteredKeys[$hash][] = $key;
@@ -237,21 +234,21 @@ class Ftp implements Adapter,
         $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
 
         $items = $this->parseRawlist(
-            ftp_rawlist($this->getConnection(), '-al '.$this->directory.$directory) ?: array()
+            ftp_rawlist($this->getConnection(), '-al ' . $this->directory . $directory) ?: []
         );
 
-        $fileData = $dirs = array();
+        $fileData = $dirs = [];
         foreach ($items as $itemData) {
             if ('..' === $itemData['name'] || '.' === $itemData['name']) {
                 continue;
             }
 
-            $item = array(
+            $item = [
                 'name' => $itemData['name'],
-                'path' => trim(($directory ? $directory.'/' : '').$itemData['name'], '/'),
+                'path' => trim(($directory ? $directory . '/' : '') . $itemData['name'], '/'),
                 'time' => $itemData['time'],
                 'size' => $itemData['size'],
-            );
+            ];
 
             if ('-' === substr($itemData['perms'], 0, 1)) {
                 $fileData[$item['path']] = $item;
@@ -262,10 +259,10 @@ class Ftp implements Adapter,
 
         $this->fileData = array_merge($fileData, $this->fileData);
 
-        return array(
+        return [
            'keys' => array_keys($fileData),
            'dirs' => $dirs,
-        );
+        ];
     }
 
     /**
@@ -380,28 +377,28 @@ class Ftp implements Adapter,
     {
         $directory = preg_replace('/^[\/]*([^\/].*)$/', '/$1', $directory);
 
-        $lines = ftp_rawlist($this->getConnection(), '-alR '.$this->directory.$directory);
+        $lines = ftp_rawlist($this->getConnection(), '-alR ' . $this->directory . $directory);
 
         if (false === $lines) {
-            return array('keys' => array(), 'dirs' => array());
+            return ['keys' => [], 'dirs' => []];
         }
 
-        $regexDir = '/'.preg_quote($this->directory.$directory, '/').'\/?(.+):$/u';
+        $regexDir = '/' . preg_quote($this->directory . $directory, '/') . '\/?(.+):$/u';
         $regexItem = '/^(?:([d\-\d])\S+)\s+\S+(?:(?:\s+\S+){5})?\s+(\S+)\s+(.+?)$/';
 
         $prevLine = null;
-        $directories = array();
-        $keys = array('keys' => array(), 'dirs' => array());
+        $directories = [];
+        $keys = ['keys' => [], 'dirs' => []];
 
         foreach ((array) $lines as $line) {
             if ('' === $prevLine && preg_match($regexDir, $line, $match)) {
                 $directory = $match[1];
                 unset($directories[$directory]);
                 if ($onlyKeys) {
-                    $keys = array(
+                    $keys = [
                         'keys' => array_merge($keys['keys'], $keys['dirs']),
-                        'dirs' => array(),
-                    );
+                        'dirs' => [],
+                    ];
                 }
             } elseif (preg_match($regexItem, $line, $tokens)) {
                 $name = $tokens[3];
@@ -410,7 +407,7 @@ class Ftp implements Adapter,
                     continue;
                 }
 
-                $path = ltrim($directory.'/'.$name, '/');
+                $path = ltrim($directory . '/' . $name, '/');
 
                 if ('d' === $tokens[1] || '<dir>' === $tokens[2]) {
                     $keys['dirs'][] = $path;
@@ -423,10 +420,10 @@ class Ftp implements Adapter,
         }
 
         if ($onlyKeys) {
-            $keys = array(
+            $keys = [
                 'keys' => array_merge($keys['keys'], $keys['dirs']),
-                'dirs' => array(),
-            );
+                'dirs' => [],
+            ];
         }
 
         foreach (array_keys($directories) as $directory) {
@@ -445,30 +442,30 @@ class Ftp implements Adapter,
      */
     private function parseRawlist(array $rawlist)
     {
-        $parsed = array();
+        $parsed = [];
         foreach ($rawlist as $line) {
             $infos = preg_split("/[\s]+/", $line, 9);
 
             if ($this->isLinuxListing($infos)) {
-                $infos[7] = (strrpos($infos[7], ':') != 2) ? ($infos[7].' 00:00') : (date('Y').' '.$infos[7]);
+                $infos[7] = (strrpos($infos[7], ':') != 2) ? ($infos[7] . ' 00:00') : (date('Y') . ' ' . $infos[7]);
                 if ('total' !== $infos[0]) {
-                    $parsed[] = array(
+                    $parsed[] = [
                         'perms' => $infos[0],
                         'num' => $infos[1],
                         'size' => $infos[4],
-                        'time' => strtotime($infos[5].' '.$infos[6].'. '.$infos[7]),
+                        'time' => strtotime($infos[5] . ' ' . $infos[6] . '. ' . $infos[7]),
                         'name' => $infos[8],
-                    );
+                    ];
                 }
             } elseif (count($infos) >= 4) {
                 $isDir = (boolean) ('<dir>' === $infos[2]);
-                $parsed[] = array(
+                $parsed[] = [
                     'perms' => $isDir ? 'd' : '-',
                     'num' => '',
                     'size' => $isDir ? '' : $infos[2],
-                    'time' => strtotime($infos[0].' '.$infos[1]),
+                    'time' => strtotime($infos[0] . ' ' . $infos[1]),
                     'name' => $infos[3],
-                );
+                ];
             }
         }
 
@@ -482,7 +479,7 @@ class Ftp implements Adapter,
      */
     private function computePath($key)
     {
-        return rtrim($this->directory, '/').'/'.$key;
+        return rtrim($this->directory, '/') . '/' . $key;
     }
 
     /**
@@ -542,18 +539,20 @@ class Ftp implements Adapter,
         // login ftp user
         if (!@ftp_login($this->connection, $username, $password)) {
             $this->close();
+
             throw new \RuntimeException(sprintf('Could not login as %s.', $username));
         }
 
         // switch to passive mode if needed
         if ($this->passive && !ftp_pasv($this->connection, true)) {
             $this->close();
+
             throw new \RuntimeException('Could not turn passive mode on.');
         }
 
         // enable utf8 mode if configured
-        if($this->utf8 == true) {
-            ftp_raw($this->connection, "OPTS UTF8 ON");
+        if ($this->utf8 == true) {
+            ftp_raw($this->connection, 'OPTS UTF8 ON');
         }
 
         // ensure the adapter's directory exists
@@ -562,12 +561,14 @@ class Ftp implements Adapter,
                 $this->ensureDirectoryExists($this->directory, $this->create);
             } catch (\RuntimeException $e) {
                 $this->close();
+
                 throw $e;
             }
 
             // change the current directory for the adapter's directory
             if (!ftp_chdir($this->connection, $this->directory)) {
                 $this->close();
+
                 throw new \RuntimeException(sprintf('Could not change current directory for the \'%s\' directory.', $this->directory));
             }
         }

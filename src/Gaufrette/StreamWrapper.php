@@ -243,25 +243,25 @@ class StreamWrapper
     protected function createStream($path)
     {
         $parts = array_merge(
-            array(
+            [
                 'scheme' => null,
                 'host' => null,
                 'path' => null,
                 'query' => null,
                 'fragment' => null,
-            ),
-            parse_url($path) ?: array()
+            ],
+            parse_url($path) ?: []
         );
 
         $domain = $parts['host'];
         $key = substr($parts['path'], 1);
 
         if (null !== $parts['query']) {
-            $key .= '?'.$parts['query'];
+            $key .= '?' . $parts['query'];
         }
 
         if (null !== $parts['fragment']) {
-            $key .= '#'.$parts['fragment'];
+            $key .= '#' . $parts['fragment'];
         }
 
         if (empty($domain) || empty($key)) {

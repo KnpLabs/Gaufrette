@@ -9,7 +9,7 @@ namespace Gaufrette;
  */
 class FilesystemMap implements FilesystemMapInterface
 {
-    private $filesystems = array();
+    private $filesystems = [];
 
     /**
      * Returns an array of all the registered filesystems where the key is the
@@ -88,6 +88,6 @@ class FilesystemMap implements FilesystemMapInterface
      */
     public function clear()
     {
-        $this->filesystems = array();
+        $this->filesystems = [];
     }
 }

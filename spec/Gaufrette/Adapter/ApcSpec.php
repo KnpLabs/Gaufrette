@@ -17,7 +17,7 @@ class ApcSpec extends ObjectBehavior
         $this->beConstructedWith('prefix-apc-test/');
     }
 
-    function letgo()
+    function letGo()
     {
         global $extensionLoaded;
         $extensionLoaded = null;

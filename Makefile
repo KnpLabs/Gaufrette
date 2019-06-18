@@ -22,18 +22,12 @@ clear-deps:
 
 .PHONY: php-cs-compare
 php-cs-compare:
-	docker run --rm -u $$(id -u):$$(id -g) -v $$(pwd):/project \
-		herloct/php-cs-fixer fix \
-		--config=/project/.php_cs.dist \
+	docker/run-task php${PHP_VERSION} vendor/bin/php-cs-fixer fix \
 		--diff \
 		--dry-run \
 		--show-progress=none \
-		--verbose \
-		src spec tests
+		--verbose
 
 .PHONY: php-cs-fix
 php-cs-fix:
-	docker run --rm -u $$(id -u):$$(id -g) -v $$(pwd):/project \
-		herloct/php-cs-fixer fix \
-		--config=/project/.php_cs.dist \
-		src spec tests
+	docker/run-task php${PHP_VERSION} vendor/bin/php-cs-fixer fix

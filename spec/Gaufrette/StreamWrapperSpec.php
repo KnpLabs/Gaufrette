@@ -200,21 +200,21 @@ class StreamWrapperSpec extends ObjectBehavior
      */
     function it_stats_file(Stream $stream)
     {
-        $stat = array(
-            'dev'   => 1,
-            'ino'   => 12,
-            'mode'  => 0777,
+        $stat = [
+            'dev' => 1,
+            'ino' => 12,
+            'mode' => 0777,
             'nlink' => 0,
-            'uid'   => 123,
-            'gid'   => 1,
-            'rdev'  => 0,
-            'size'  => 666,
+            'uid' => 123,
+            'gid' => 1,
+            'rdev' => 0,
+            'size' => 666,
             'atime' => 1348030800,
             'mtime' => 1348030800,
             'ctime' => 1348030800,
             'blksize' => 5,
-            'blocks'  => 1,
-        );
+            'blocks' => 1,
+        ];
         $stream->open(Argument::any())->willReturn(true);
         $stream->stat()->willReturn($stat);
 
@@ -227,21 +227,21 @@ class StreamWrapperSpec extends ObjectBehavior
      */
     function it_should_stat_from_url(Stream $stream)
     {
-        $stat = array(
-            'dev'   => 1,
-            'ino'   => 12,
-            'mode'  => 0777,
+        $stat = [
+            'dev' => 1,
+            'ino' => 12,
+            'mode' => 0777,
             'nlink' => 0,
-            'uid'   => 123,
-            'gid'   => 1,
-            'rdev'  => 0,
-            'size'  => 666,
+            'uid' => 123,
+            'gid' => 1,
+            'rdev' => 0,
+            'size' => 666,
             'atime' => 1348030800,
             'mtime' => 1348030800,
             'ctime' => 1348030800,
             'blksize' => 5,
-            'blocks'  => 1,
-        );
+            'blocks' => 1,
+        ];
         $stream->open(Argument::any())->willReturn(true);
         $stream->stat()->willReturn($stat);
 
@@ -256,8 +256,8 @@ class StreamWrapperSpec extends ObjectBehavior
     {
         $filesystem->createStream('dir/')->willReturn($stream);
         $stream->open(Argument::any())->willThrow(new \RuntimeException);
-        $stream->stat(Argument::any())->willReturn(array('mode' => 16893));
-        $this->url_stat('gaufrette://some/dir/', STREAM_URL_STAT_LINK)->shouldReturn(array('mode' => 16893));
+        $stream->stat(Argument::any())->willReturn(['mode' => 16893]);
+        $this->url_stat('gaufrette://some/dir/', STREAM_URL_STAT_LINK)->shouldReturn(['mode' => 16893]);
     }
 
     /**

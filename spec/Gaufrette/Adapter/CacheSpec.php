@@ -33,15 +33,14 @@ class CacheSpec extends ObjectBehavior
     function it_handles_metadata_when_cached_adapters_supports_metadata(
         CacheTestExtendedAdapter $extendedSource,
         CacheTestExtendedAdapter $extendedCache
-    )
-    {
-        $extendedSource->setMetadata('filename', array('metadata'))->shouldBeCalled();
-        $extendedCache->setMetadata('filename', array('metadata'))->shouldBeCalled();
-        $extendedSource->getMetadata('filename')->shouldBeCalled()->willReturn(array('someMetadata'));
+    ) {
+        $extendedSource->setMetadata('filename', ['metadata'])->shouldBeCalled();
+        $extendedCache->setMetadata('filename', ['metadata'])->shouldBeCalled();
+        $extendedSource->getMetadata('filename')->shouldBeCalled()->willReturn(['someMetadata']);
         $this->beConstructedWith($extendedSource, $extendedCache);
 
-        $this->setMetadata('filename', array('metadata'));
-        $this->getMetadata('filename')->shouldReturn(array('someMetadata'));
+        $this->setMetadata('filename', ['metadata']);
+        $this->getMetadata('filename')->shouldReturn(['someMetadata']);
     }
 
     /**
@@ -146,9 +145,9 @@ class CacheSpec extends ObjectBehavior
      */
     function it_get_keys_from_source(Adapter $source)
     {
-        $source->keys()->willReturn(array('filename2', 'filename1', 'filename'));
+        $source->keys()->willReturn(['filename2', 'filename1', 'filename']);
 
-        $this->keys()->shouldReturn(array('filename', 'filename1', 'filename2'));
+        $this->keys()->shouldReturn(['filename', 'filename1', 'filename2']);
     }
 }
 
@@ -156,5 +155,4 @@ interface CacheTestExtendedAdapter extends \Gaufrette\Adapter,
                                            \Gaufrette\Adapter\ChecksumCalculator,
                                            \Gaufrette\Adapter\MetadataSupporter
 {
-
 }

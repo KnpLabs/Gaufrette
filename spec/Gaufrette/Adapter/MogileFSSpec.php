@@ -8,7 +8,7 @@ class MogileFSSpec extends ObjectBehavior
 {
     function let()
     {
-        $this->beConstructedWith('http://domain.com', array('localhost'));
+        $this->beConstructedWith('http://domain.com', ['localhost']);
     }
 
     function it_is_adapter()

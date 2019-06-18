@@ -11,11 +11,7 @@ use Gaufrette\Util;
  *
  * @author  Michael Dowling <mtdowling@gmail.com>
  */
-class AwsS3 implements Adapter,
-                       MetadataSupporter,
-                       ListKeysAware,
-                       SizeCalculator,
-                       MimeTypeProvider
+class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator, MimeTypeProvider
 {
     /** @var S3Client */
     protected $service;
@@ -79,7 +75,7 @@ class AwsS3 implements Adapter,
         return $this->service->getObjectUrl(
             $this->bucket,
             $this->computePath($key),
-            isset($options['expires']) ? $options['expires'] : null,
+            $options['expires'] ?? null,
             $options
         );
     }
@@ -138,7 +134,7 @@ class AwsS3 implements Adapter,
         $this->ensureBucketExists();
         $options = $this->getOptions(
             $targetKey,
-            ['CopySource' => $this->bucket.'/'.$this->computePath($sourceKey)]
+            ['CopySource' => $this->bucket . '/' . $this->computePath($sourceKey)]
         );
 
         try {
@@ -267,7 +263,7 @@ class AwsS3 implements Adapter,
     {
         $result = $this->service->listObjects([
             'Bucket' => $this->bucket,
-            'Prefix' => rtrim($this->computePath($key), '/').'/',
+            'Prefix' => rtrim($this->computePath($key), '/') . '/',
             'MaxKeys' => 1,
         ]);
         if (isset($result['Contents'])) {
@@ -307,7 +303,7 @@ class AwsS3 implements Adapter,
 
         $this->service->createBucket([
             'Bucket' => $this->bucket,
-            'LocationConstraint' => $this->service->getRegion()
+            'LocationConstraint' => $this->service->getRegion(),
         ]);
         $this->bucketExists = true;
 
@@ -370,6 +366,7 @@ class AwsS3 implements Adapter,
     {
         try {
             $result = $this->service->headObject($this->getOptions($key));
+
             return ($result['ContentType']);
         } catch (\Exception $e) {
             return false;

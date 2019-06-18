@@ -38,7 +38,7 @@ class GoogleCloudStorageTest extends FunctionalTestCase
         /** @var \Gaufrette\Adapter\GoogleCloudStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
         $oldOptions = $adapter->getOptions();
-        $adapter->setOptions(array('directory' => 'Gaufrette'));
+        $adapter->setOptions(['directory' => 'Gaufrette']);
 
         $this->assertEquals(12, $this->filesystem->write('foo', 'Some content'));
         $this->assertEquals(13, $this->filesystem->write('test/subdir/foo', 'Some content1', true));
@@ -60,28 +60,28 @@ class GoogleCloudStorageTest extends FunctionalTestCase
         /** @var \Gaufrette\Adapter\GoogleCloudStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
 
-        $adapter->setMetadata('metadata.txt', array(
+        $adapter->setMetadata('metadata.txt', [
             'CacheControl' => 'public, maxage=7200',
             'ContentDisposition' => 'attachment; filename="test.txt"',
             'ContentEncoding' => 'identity',
             'ContentLanguage' => 'en',
             'Colour' => 'Yellow',
-        ));
+        ]);
 
         $this->assertEquals(12, $this->filesystem->write('metadata.txt', 'Some content', true));
 
         $reflectionObject = new \ReflectionObject($adapter);
         $reflectionMethod = $reflectionObject->getMethod('getObjectData');
         $reflectionMethod->setAccessible(true);
-        $metadata = $reflectionMethod->invoke($adapter, array('metadata.txt'));
+        $metadata = $reflectionMethod->invoke($adapter, ['metadata.txt']);
 
         $this->assertEquals('public, maxage=7200', $metadata->cacheControl);
         $this->assertEquals('attachment; filename="test.txt"', $metadata->contentDisposition);
         $this->assertEquals('identity', $metadata->contentEncoding);
         $this->assertEquals('en', $metadata->contentLanguage);
-        $this->assertEquals(array(
+        $this->assertEquals([
             'Colour' => 'Yellow',
-        ), $metadata->metadata);
+        ], $metadata->metadata);
 
         $this->filesystem->delete('metadata.txt');
     }

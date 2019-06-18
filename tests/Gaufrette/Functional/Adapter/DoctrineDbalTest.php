@@ -21,10 +21,10 @@ class DoctrineDbalTest extends FunctionalTestCase
         $schema = $this->connection->getSchemaManager()->createSchema();
 
         $table = $schema->createTable('gaufrette');
-        $table->addColumn('key', 'string', array('unique' => true));
+        $table->addColumn('key', 'string', ['unique' => true]);
         $table->addColumn('content', 'blob');
         $table->addColumn('mtime', 'integer');
-        $table->addColumn('checksum', 'string', array('length' => 32));
+        $table->addColumn('checksum', 'string', ['length' => 32]);
 
         // Generates the SQL from the defined schema and execute each line
         array_map([$this->connection, 'exec'], $schema->toSql($this->connection->getDatabasePlatform()));
@@ -42,8 +42,8 @@ class DoctrineDbalTest extends FunctionalTestCase
     }
 
     /**
-    * @test
-    */
+     * @test
+     */
     public function shouldListKeys()
     {
         $this->filesystem->write('foo/foobar/bar.txt', 'data');
@@ -68,25 +68,25 @@ class DoctrineDbalTest extends FunctionalTestCase
 
         $keys = $this->filesystem->listKeys('foo/foob');
         $this->assertEquals(
-            array('foo/foobar/bar.txt'),
+            ['foo/foobar/bar.txt'],
             $keys['keys'],
             '', 0, 10, true);
 
         $keys = $this->filesystem->listKeys('foo/');
         $this->assertEquals(
-            array('foo/foobar/bar.txt', 'foo/bar/buzz.txt'),
+            ['foo/foobar/bar.txt', 'foo/bar/buzz.txt'],
             $keys['keys'],
             '', 0, 10, true);
 
         $keys = $this->filesystem->listKeys('foo');
         $this->assertEquals(
-            array('foo/foobar/bar.txt', 'foo/bar/buzz.txt', 'foobarbuz.txt', 'foo'),
+            ['foo/foobar/bar.txt', 'foo/bar/buzz.txt', 'foobarbuz.txt', 'foo'],
             $keys['keys'],
             '', 0, 10, true);
 
         $keys = $this->filesystem->listKeys('fooz');
         $this->assertEquals(
-            array(),
+            [],
             $keys['keys'],
             '', 0, 10, true);
     }

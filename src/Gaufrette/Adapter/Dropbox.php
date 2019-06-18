@@ -8,7 +8,7 @@ use Gaufrette\Exception;
 use Dropbox_API as DropboxApi;
 use Dropbox_Exception_NotFound as DropboxNotFoundException;
 
-@trigger_error('The '.__NAMESPACE__.'\Dropbox adapter is deprecated since version 0.4 and will be removed in 1.0. You can move to our Flysystem adapter and use their Dropbox adapter if needed.', E_USER_DEPRECATED);
+@trigger_error('The ' . __NAMESPACE__ . '\Dropbox adapter is deprecated since version 0.4 and will be removed in 1.0. You can move to our Flysystem adapter and use their Dropbox adapter if needed.', E_USER_DEPRECATED);
 
 /**
  * Dropbox adapter.
@@ -134,10 +134,10 @@ class Dropbox implements Adapter
     {
         $metadata = $this->client->getMetaData('/', true);
         if (!isset($metadata['contents'])) {
-            return array();
+            return [];
         }
 
-        $keys = array();
+        $keys = [];
         foreach ($metadata['contents'] as $value) {
             $file = ltrim($value['path'], '/');
             $keys[] = $file;

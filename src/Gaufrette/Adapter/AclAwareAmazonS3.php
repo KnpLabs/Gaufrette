@@ -5,7 +5,7 @@ namespace Gaufrette\Adapter;
 use AmazonS3 as AmazonClient;
 use Gaufrette\Adapter;
 
-@trigger_error('The '.__NAMESPACE__.'\AclAwareAmazonS3 adapter is deprecated since version 0.4 and will be removed in 1.0. Use the AwsS3 adapter instead.', E_USER_DEPRECATED);
+@trigger_error('The ' . __NAMESPACE__ . '\AclAwareAmazonS3 adapter is deprecated since version 0.4 and will be removed in 1.0. Use the AwsS3 adapter instead.', E_USER_DEPRECATED);
 
 /**
  * Makes the AmazonS3 adapter ACL aware. Uses the AWS SDK for PHP v1.x.
@@ -18,14 +18,13 @@ use Gaufrette\Adapter;
  *
  * @deprecated The AclAwareAmazonS3 adapter is deprecated since version 0.4 and will be removed in 1.0. Use the AwsS3 adapter instead.
  */
-class AclAwareAmazonS3 implements Adapter,
-                                  MetadataSupporter
+class AclAwareAmazonS3 implements Adapter, MetadataSupporter
 {
     protected $delegate;
     protected $s3;
     protected $bucketName;
     protected $aclConstant = AmazonClient::ACL_PRIVATE;
-    protected $users = array();
+    protected $users = [];
 
     public function __construct(Adapter $delegate, AmazonClient $s3, $bucketName)
     {
@@ -36,7 +35,7 @@ class AclAwareAmazonS3 implements Adapter,
 
     public function setAclConstant($constant)
     {
-        if (!defined($constant = 'AmazonS3::ACL_'.strtoupper($constant))) {
+        if (!defined($constant = 'AmazonS3::ACL_' . strtoupper($constant))) {
             throw new \InvalidArgumentException(sprintf('The ACL constant "%s" does not exist on AmazonS3.', $constant));
         }
 
@@ -45,20 +44,20 @@ class AclAwareAmazonS3 implements Adapter,
 
     public function setUsers(array $users)
     {
-        $this->users = array();
+        $this->users = [];
 
         foreach ($users as $user) {
             if (!isset($user['permission'])) {
                 throw new \InvalidArgumentException(sprintf('setUsers() expects an array where each item contains a "permission" key, but got %s.', json_encode($user)));
             }
 
-            if (!defined($constant = 'AmazonS3::GRANT_'.strtoupper($user['permission']))) {
+            if (!defined($constant = 'AmazonS3::GRANT_' . strtoupper($user['permission']))) {
                 throw new \InvalidArgumentException('The permission must be the suffix for one of the AmazonS3::GRANT_ constants.');
             }
             $user['permission'] = constant($constant);
 
             if (isset($user['group'])) {
-                if (!defined($constant = 'AmazonS3::USERS_'.strtoupper($user['group']))) {
+                if (!defined($constant = 'AmazonS3::USERS_' . strtoupper($user['group']))) {
                     throw new \InvalidArgumentException('The group must be the suffix for one of the AmazonS3::USERS_ constants.');
                 }
                 $user['id'] = constant($constant);
@@ -166,7 +165,7 @@ class AclAwareAmazonS3 implements Adapter,
             return $this->delegate->getMetadata($key);
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -190,7 +189,7 @@ class AclAwareAmazonS3 implements Adapter,
     {
         $response = $this->s3->set_object_acl($this->bucketName, $key, $this->getAcl());
         if (200 != $response->status) {
-            throw new \RuntimeException('S3-ACL change failed: '.print_r($response, true));
+            throw new \RuntimeException('S3-ACL change failed: ' . print_r($response, true));
         }
     }
 }

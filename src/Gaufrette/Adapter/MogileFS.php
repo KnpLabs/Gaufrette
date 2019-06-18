@@ -5,7 +5,7 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 
-@trigger_error('The '.__NAMESPACE__.'\MogileFS adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
+@trigger_error('The ' . __NAMESPACE__ . '\MogileFS adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
 
 /**
  * Adapter for the MogileFS filesystem.
@@ -67,6 +67,7 @@ class MogileFS implements Adapter
                 }
 
                 fclose($fh);
+
                 break;
             }
         }
@@ -82,7 +83,7 @@ class MogileFS implements Adapter
         $closeres = false;
 
         if (mb_strlen($content) > 0) {
-            $res = $this->doRequest('CREATE_OPEN', array('key' => $key, 'class' => $metadata['mogile_class']));
+            $res = $this->doRequest('CREATE_OPEN', ['key' => $key, 'class' => $metadata['mogile_class']]);
 
             if ($res && preg_match('/^http:\/\/([a-z0-9.-]*):([0-9]*)\/(.*)$/', $res['path'], $matches)) {
                 $host = $matches[1];
@@ -92,8 +93,8 @@ class MogileFS implements Adapter
                 $status = $this->putFile($res['path'], $content);
 
                 if ($status) {
-                    $params = array('key' => $key, 'class' => $metadata['mogile_class'], 'devid' => $res['devid'],
-                                    'fid' => $res['fid'], 'path' => urldecode($res['path']), );
+                    $params = ['key' => $key, 'class' => $metadata['mogile_class'], 'devid' => $res['devid'],
+                                    'fid' => $res['fid'], 'path' => urldecode($res['path']), ];
                     $closeres = $this->doRequest('CREATE_CLOSE', $params);
                 }
             }
@@ -111,7 +112,7 @@ class MogileFS implements Adapter
      */
     public function delete($key)
     {
-        $this->doRequest('DELETE', array('key' => $key));
+        $this->doRequest('DELETE', ['key' => $key]);
 
         return true;
     }
@@ -121,10 +122,10 @@ class MogileFS implements Adapter
      */
     public function rename($sourceKey, $targetKey)
     {
-        $this->doRequest('RENAME', array(
+        $this->doRequest('RENAME', [
             'from_key' => $sourceKey,
             'to_key' => $targetKey,
-        ));
+        ]);
 
         return true;
     }
@@ -152,7 +153,7 @@ class MogileFS implements Adapter
             $result = $this->doRequest('LIST_KEYS');
         } catch (\RuntimeException $e) {
             if (self::ERR_NONE_MATCH === $e->getCode()) {
-                return array();
+                return [];
             }
 
             throw $e;
@@ -191,18 +192,18 @@ class MogileFS implements Adapter
             return false;
         }
 
-        $domains = array();
+        $domains = [];
 
         for ($i = 1; $i <= $res['domains']; ++$i) {
-            $dom = 'domain'.$i;
-            $classes = array();
+            $dom = 'domain' . $i;
+            $classes = [];
 
             // Associate classes to current domain (class name => mindevcount)
-            for ($j = 1; $j <= $res[$dom.'classes']; ++$j) {
-                $classes[$res[$dom.'class'.$j.'name']] = $res[$dom.'class'.$j.'mindevcount'];
+            for ($j = 1; $j <= $res[$dom . 'classes']; ++$j) {
+                $classes[$res[$dom . 'class' . $j . 'name']] = $res[$dom . 'class' . $j . 'mindevcount'];
             }
 
-            $domains[] = array('name' => $res[$dom], 'classes' => $classes);
+            $domains[] = ['name' => $res[$dom], 'classes' => $classes];
         }
 
         return $domains;
@@ -259,7 +260,7 @@ class MogileFS implements Adapter
      *
      * @return mixed Array on success, false on failure
      */
-    private function doRequest($cmd, $args = array())
+    private function doRequest($cmd, $args = [])
     {
         clearstatcache();
         $args['domain'] = $this->domain;
@@ -280,15 +281,19 @@ class MogileFS implements Adapter
             switch ($errorName) {
                 case 'unknown_key':
                     $errorCode = static::ERR_UNKNOWN_KEY;
+
                     break;
                 case 'empty_file':
                     $errorCode = static::ERR_EMPTY_FILE;
+
                     break;
                 case 'none_match':
                     $errorCode = static::ERR_NONE_MATCH;
+
                     break;
                 case 'key_exists':
                     $errorCode = static::ERR_KEY_EXISTS;
+
                     break;
                 default:
                     $errorCode = static::ERR_OTHER;
@@ -312,7 +317,7 @@ class MogileFS implements Adapter
      */
     private function getPaths($key)
     {
-        $res = $this->doRequest('GET_PATHS', array('key' => $key));
+        $res = $this->doRequest('GET_PATHS', ['key' => $key]);
         unset($res['paths']);
 
         return $res;
@@ -342,11 +347,11 @@ class MogileFS implements Adapter
         stream_set_blocking($fp, true);
         stream_set_timeout($fp, 30, 200000);
 
-        $out = 'PUT '.$url['path'].' HTTP/1.1'.$b;
-        $out .= 'Host: '.$url['host'].$b;
-        $out .= 'Content-Length: '.Util\Size::fromContent($data).$b.$b;
+        $out = 'PUT ' . $url['path'] . ' HTTP/1.1' . $b;
+        $out .= 'Host: ' . $url['host'] . $b;
+        $out .= 'Content-Length: ' . Util\Size::fromContent($data) . $b . $b;
         $out .= $data;
-        $out .= $b.$b;
+        $out .= $b . $b;
         fwrite($fp, $out);
         fflush($fp);
 

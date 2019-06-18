@@ -7,7 +7,6 @@ use MongoDB\GridFS\Bucket;
 use MongoDB\GridFS\Exception\FileNotFoundException;
 use MongoDB\Model\BSONDocument;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class GridFSSpec extends ObjectBehavior
 {

@@ -1,49 +1,34 @@
 <?php
 
-/**
- * @see https://gist.github.com/codfish/c77d348820c1c6b4ebe4a66dc2291c74
- *
- * Rules we follow are from PSR-2 as well as the rectified PSR-2 guide.
- *
- * - https://github.com/FriendsOfPHP/PHP-CS-Fixer
- * - https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
- * - https://github.com/php-fig-rectified/fig-rectified-standards/blob/master/PSR-2-R-coding-style-guide-additions.md
- *
- * If something isn't addressed in either of those, some other common community rules are
- * used that might not be addressed explicitly in PSR-2 in order to improve code quality
- * (so that devs don't need to comment on them in Code Reviews).
- *
- * For instance: removing trailing white space, removing extra line breaks where
- * they're not needed (back to back, beginning or end of function/class, etc.),
- * adding trailing commas in the last line of an array, etc.
- */
-
-$finder = PhpCsFixer\Finder::create()
-    ->exclude('node_modules')
-    ->exclude('vendor')
-    ->in(__DIR__)
-;
-
 return PhpCsFixer\Config::create()
+    ->setFinder(PhpCsFixer\Finder::create()
+        ->exclude('vendor')
+        ->in(__DIR__)
+    )
     ->setRules([
+        '@PSR1' => true,
         '@PSR2' => true,
         'array_syntax' => [ 'syntax' => 'short' ],
         'binary_operator_spaces' => [ 'align_equals' => false, 'align_double_arrow' => false ],
+        'blank_line_before_statement' => true,
         'cast_spaces' => true,
         'combine_consecutive_unsets' => true,
         'concat_space' => [ 'spacing' => 'one' ],
         'linebreak_after_opening_tag' => true,
+        'method_argument_space' => ['ensure_fully_multiline' => false],
         'no_blank_lines_after_class_opening' => true,
         'no_blank_lines_after_phpdoc' => true,
+        'no_break_comment' => false,
         'no_extra_consecutive_blank_lines' => true,
-        'no_trailing_comma_in_singleline_array' => true,
-        'no_whitespace_in_blank_line' => true,
         'no_spaces_around_offset' => true,
+        'no_trailing_comma_in_singleline_array' => true,
         'no_unused_imports' => true,
         'no_useless_else' => true,
         'no_useless_return' => true,
         'no_whitespace_before_comma_in_array' => true,
+        'no_whitespace_in_blank_line' => true,
         'normalize_index_brace' => true,
+        'PedroTroller/phpspec' => true,
         'phpdoc_indent' => true,
         'phpdoc_to_comment' => true,
         'phpdoc_trim' => true,
@@ -51,9 +36,6 @@ return PhpCsFixer\Config::create()
         'ternary_to_null_coalescing' => true,
         'trailing_comma_in_multiline_array' => true,
         'trim_array_spaces' => true,
-        'method_argument_space' => ['ensure_fully_multiline' => false],
-        'no_break_comment' => false,
-        'blank_line_before_statement' => true,
     ])
-    ->setFinder($finder)
+    ->registerCustomFixers(new PedroTroller\CS\Fixer\Fixers())
 ;

@@ -17,8 +17,7 @@ use OpenCloud\ObjectStore\Exception\ObjectNotFoundException;
  * @author  James Watson <james@sitepulse.org>
  * @author  Daniel Richter <nexyz9@gmail.com>
  */
-class OpenCloud implements Adapter,
-                           ChecksumCalculator
+class OpenCloud implements Adapter, ChecksumCalculator
 {
     /**
      * @var Service
@@ -141,7 +140,7 @@ class OpenCloud implements Adapter,
     public function keys()
     {
         $objectList = $this->getContainer()->objectList();
-        $keys = array();
+        $keys = [];
 
         while ($object = $objectList->next()) {
             $keys[] = $object->getName();

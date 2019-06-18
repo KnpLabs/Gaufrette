@@ -5,7 +5,7 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 
-@trigger_error('The '.__NAMESPACE__.'\Apc adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
+@trigger_error('The ' . __NAMESPACE__ . '\Apc adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
 
 /**
  * Apc adapter, a non-persistent adapter for when this sort of thing is appropriate.
@@ -75,10 +75,10 @@ class Apc implements Adapter
         $cachedKeys = $this->getCachedKeysIterator();
 
         if (null === $cachedKeys) {
-            return array();
+            return [];
         }
 
-        $keys = array();
+        $keys = [];
         foreach ($cachedKeys as $key => $value) {
             $pattern = sprintf('/^%s/', preg_quote($this->prefix, '/'));
             $keys[] = preg_replace($pattern, '', $key);
@@ -135,7 +135,7 @@ class Apc implements Adapter
      */
     public function computePath($key)
     {
-        return $this->prefix.$key;
+        return $this->prefix . $key;
     }
 
     /**
@@ -146,7 +146,7 @@ class Apc implements Adapter
      */
     protected function getCachedKeysIterator($key = '', $format = APC_ITER_NONE)
     {
-        $pattern = sprintf('/^%s/', preg_quote($this->prefix.$key, '/'));
+        $pattern = sprintf('/^%s/', preg_quote($this->prefix . $key, '/'));
 
         return new \APCIterator('user', $pattern, $format);
     }

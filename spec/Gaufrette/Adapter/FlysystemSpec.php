@@ -3,7 +3,6 @@
 namespace spec\Gaufrette\Adapter;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 
@@ -33,9 +32,9 @@ class FlysystemSpec extends ObjectBehavior
 
     function it_writes_file(AdapterInterface $adapter, Config $config)
     {
-        $adapter->write('filename', 'Hello.', $config)->willReturn(array());
+        $adapter->write('filename', 'Hello.', $config)->willReturn([]);
 
-        $this->write('filename', 'Hello.')->shouldReturn(array());
+        $this->write('filename', 'Hello.')->shouldReturn([]);
     }
 
     function it_checks_if_file_exists(AdapterInterface $adapter)

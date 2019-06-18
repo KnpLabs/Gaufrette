@@ -33,8 +33,8 @@ class BlobProxyFactory implements BlobProxyFactoryInterface
         if (class_exists(ServicesBuilder::class)) {
             // for microsoft/azure-storage < 1.0
             return ServicesBuilder::getInstance()->createBlobService($this->connectionString);
-        } else {
-            return BlobRestProxy::createBlobService($this->connectionString);
         }
+
+        return BlobRestProxy::createBlobService($this->connectionString);
     }
 }

@@ -60,20 +60,20 @@ class DropboxSpec extends ObjectBehavior
     {
         $dropbox
             ->getMetaData('filename', false)
-            ->willReturn(array(
-                "size"         => "225.4KB",
-                "rev"          => "35e97029684fe",
-                "thumb_exists" => false,
-                "bytes"        => 230783,
-                "modified"     => "Tue, 19 Jul 2011 21:55:38 +0000",
-                "client_mtime" => "Mon, 18 Jul 2011 18:04:35 +0000",
-                "path"         => "/filename",
-                "is_dir"       => false,
-                "icon"         => "page_white_acrobat",
-                "root"         => "dropbox",
-                "mime_type"    => "application/pdf",
-                "revision"     => 220823
-            ));
+            ->willReturn([
+                'size' => '225.4KB',
+                'rev' => '35e97029684fe',
+                'thumb_exists' => false,
+                'bytes' => 230783,
+                'modified' => 'Tue, 19 Jul 2011 21:55:38 +0000',
+                'client_mtime' => 'Mon, 18 Jul 2011 18:04:35 +0000',
+                'path' => '/filename',
+                'is_dir' => false,
+                'icon' => 'page_white_acrobat',
+                'root' => 'dropbox',
+                'mime_type' => 'application/pdf',
+                'revision' => 220823,
+            ]);
 
         $this->exists('filename')->shouldReturn(true);
 
@@ -85,7 +85,7 @@ class DropboxSpec extends ObjectBehavior
 
         $dropbox
             ->getMetaData('filename', false)
-            ->willReturn(array("is_deleted" => true));
+            ->willReturn(['is_deleted' => true]);
 
         $this->exists('filename')->shouldReturn(false);
     }
@@ -109,14 +109,14 @@ class DropboxSpec extends ObjectBehavior
     {
         $dropbox
             ->getMetaData('/', true)
-            ->willReturn(array(
-                'contents' => array(
-                    array('path' => '/filename'),
-                    array('path' => '/aaa/filename')
-                )
-            ));
+            ->willReturn([
+                'contents' => [
+                    ['path' => '/filename'],
+                    ['path' => '/aaa/filename'],
+                ],
+            ]);
 
-        $this->keys()->shouldReturn(array('aaa', 'aaa/filename', 'filename'));
+        $this->keys()->shouldReturn(['aaa', 'aaa/filename', 'filename']);
     }
 
     /**
@@ -139,18 +139,18 @@ class DropboxSpec extends ObjectBehavior
     {
         $dropbox
             ->getMetaData('filename', false)
-            ->willReturn(array(
-                "is_dir" => true
-            ))
+            ->willReturn([
+                'is_dir' => true,
+            ])
         ;
 
         $this->isDirectory('filename')->shouldReturn(true);
 
         $dropbox
             ->getMetaData('filename', false)
-            ->willReturn(array(
-                "is_dir" => false
-            ));
+            ->willReturn([
+                'is_dir' => false,
+            ]);
 
         $this->isDirectory('filename')->shouldReturn(false);
     }
@@ -240,9 +240,9 @@ class DropboxSpec extends ObjectBehavior
     {
         $dropbox
             ->getMetaData('filename', false)
-            ->willReturn(array(
-                "modified"     => "Tue, 19 Jul 2011 21:55:38 +0000",
-            ))
+            ->willReturn([
+                'modified' => 'Tue, 19 Jul 2011 21:55:38 +0000',
+            ])
         ;
 
         $this->mtime('filename')->shouldReturn(1311112538);

@@ -31,7 +31,6 @@ matrix:
     - php: '7.3'
 
 before_install:
-  - make php-cs-compare
   - echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
   - phpenv config-rm xdebug.ini || echo "xdebug not available"
   - docker run -p ${SFTP_PORT}:22 -d atmoz/sftp:alpine ${SFTP_USER}:${SFTP_PASSWORD}:::${SFTP_BASE_DIR}
@@ -42,5 +41,6 @@ install:
   - composer update --prefer-dist --no-progress --no-suggest --ansi
 
 script:
+  - php vendor/bin/php-cs-fixer fix --diff --dry-run --show-progress=none --verbose
   - php vendor/bin/phpspec run -fpretty --verbose
   - php vendor/bin/phpunit --verbose

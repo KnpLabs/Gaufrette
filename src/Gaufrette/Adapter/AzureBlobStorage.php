@@ -20,11 +20,7 @@ use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
  * @author Luciano Mammino <lmammino@oryzone.com>
  * @author Paweł Czyżewski <pawel.czyzewski@enginewerk.com>
  */
-class AzureBlobStorage implements Adapter,
-                                  MetadataSupporter,
-                                  SizeCalculator,
-                                  ChecksumCalculator
-
+class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, ChecksumCalculator
 {
     /**
      * Error constants.
@@ -271,9 +267,11 @@ class AzureBlobStorage implements Adapter,
         try {
             if ($this->multiContainerMode) {
                 $containersList = $this->blobProxy->listContainers();
+
                 return call_user_func_array('array_merge', array_map(
-                    function(Container $container) {
+                    function (Container $container) {
                         $containerName = $container->getName();
+
                         return $this->fetchBlobs($containerName, $containerName);
                     },
                     $containersList->getContainers()
@@ -332,7 +330,6 @@ class AzureBlobStorage implements Adapter,
 
             return false;
         }
-
     }
 
     /**
@@ -564,12 +561,14 @@ class AzureBlobStorage implements Adapter,
     private function fetchBlobs($containerName, $prefix = null)
     {
         $blobList = $this->blobProxy->listBlobs($containerName);
+
         return array_map(
             function (Blob $blob) use ($prefix) {
                 $name = $blob->getName();
                 if (null !== $prefix) {
-                    $name = $prefix .'/'. $name;
+                    $name = $prefix . '/' . $name;
                 }
+
                 return $name;
             },
             $blobList->getBlobs()
