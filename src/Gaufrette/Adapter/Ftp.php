@@ -386,23 +386,18 @@ class Ftp implements Adapter,
             ftp_chdir($this->getConnection(), $this->directory);
         } catch(\Exception $e) {
 
-            // Cache the actual value of the passive mode
-            $actualPassiveMode  = $this->passive;
-            $this->passive      = true;
-
             // Build the FTP URL that will be used to check if the path is a directory or not
             $url = $this->createConnectionUrl();
 
-            if (!@is_dir($url . $directory)) {
-
-                // Revert back the value of the passive mode.
-                $this->passive = $actualPassiveMode;
-
-                return false;
+            // is_dir is only available in passive mode.
+            // See https://php.net/manual/en/wrappers.ftp.php for more details.
+            if(!$this->passive) {
+                throw new \BadFunctionCallException('is_dir can only be used in passive mode.');
             }
 
-            // Revert back the value of the passive mode.
-            $this->passive = $actualPassiveMode;
+            if (!@is_dir($url . $directory)) {
+                return false;
+            }
         }
 
         if (!$chDirResult) {
