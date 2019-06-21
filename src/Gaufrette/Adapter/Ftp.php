@@ -378,30 +378,27 @@ class Ftp implements Adapter,
             return true;
         }
 
-        $chDirResult = false;
         try {
+            $chDirResult = false;
             $chDirResult = ftp_chdir($this->getConnection(), $this->directory);
 
             // change directory again to return in the base directory
             ftp_chdir($this->getConnection(), $this->directory);
-        } catch(\Exception $e) {
+            return $chDirResult;
+        } catch (\Exception $e) {
+            // is_dir is only available in passive mode.
+            // See https://php.net/manual/en/wrappers.ftp.php for more details.
+            if (!$this->passive) {
+                throw new \RuntimeException(
+                    \sprintf('Not able to determine whether "%s" is a directory or not. Please try again using a passive FTP connection if your backend supports it, by setting the "passive" option of this adapter to true.', $directory),
+                    $e->getCode(),
+                    $e
+                );
+            }
 
             // Build the FTP URL that will be used to check if the path is a directory or not
             $url = $this->createConnectionUrl();
-
-            // is_dir is only available in passive mode.
-            // See https://php.net/manual/en/wrappers.ftp.php for more details.
-            if(!$this->passive) {
-                throw new \BadFunctionCallException('is_dir can only be used in passive mode.');
-            }
-
-            if (!@is_dir($url . $directory)) {
-                return false;
-            }
-        }
-
-        if (!$chDirResult) {
-            return false;
+            return @is_dir($url . $directory);
         }
 
         return true;
