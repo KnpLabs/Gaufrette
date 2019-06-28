@@ -1,10 +1,11 @@
 bin/*
 !bin/tests
 !bin/tests-all
+composer.lock
 doc/.couscous
+.env
+.php_cs.cache
+phpunit.xml
 tests/adapters/*
 !tests/adapters/*.dist
 vendor/
-.env
-composer.lock
-phpunit.xml

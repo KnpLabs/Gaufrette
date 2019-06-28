@@ -10,7 +10,7 @@ class LocalSpec extends ObjectBehavior
     function let()
     {
         vfsStream::setup('test');
-        vfsStream::copyFromFileSystem(__DIR__.'/MockFilesystem');
+        vfsStream::copyFromFileSystem(__DIR__ . '/MockFilesystem');
         $this->beConstructedWith(vfsStream::url('test'));
     }
 
@@ -62,7 +62,7 @@ class LocalSpec extends ObjectBehavior
 
     function it_fetches_keys()
     {
-        $expectedKeys = array('filename', 'dir', 'dir/file');
+        $expectedKeys = ['filename', 'dir', 'dir/file'];
         sort($expectedKeys);
         $this->keys()->shouldReturn($expectedKeys);
     }

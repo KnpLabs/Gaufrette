@@ -41,5 +41,6 @@ install:
   - composer update --prefer-dist --no-progress --no-suggest --ansi
 
 script:
+  - php vendor/bin/php-cs-fixer fix --diff --dry-run --show-progress=none --verbose
   - php vendor/bin/phpspec run -fpretty --verbose
   - php vendor/bin/phpunit --verbose

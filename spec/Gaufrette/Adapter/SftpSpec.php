@@ -41,10 +41,10 @@ class SftpSpec extends ObjectBehavior
         ;
         $sftp
             ->listDirectory('/home/l3l0', true)
-            ->willReturn(array('files' => array('/home/l3l0/filename', '/home/l3l0/filename1', '/home/l3l0/aaa/filename')))
+            ->willReturn(['files' => ['/home/l3l0/filename', '/home/l3l0/filename1', '/home/l3l0/aaa/filename']])
         ;
 
-        $this->keys()->shouldReturn(array('aaa', 'aaa/filename', 'filename', 'filename1'));
+        $this->keys()->shouldReturn(['aaa', 'aaa/filename', 'filename', 'filename1']);
     }
 
     /**

@@ -7,7 +7,8 @@ use PhpSpec\ObjectBehavior;
 
 interface MetadataAdapter extends \Gaufrette\Adapter,
                                   \Gaufrette\Adapter\MetadataSupporter
-{}
+{
+}
 
 class FileSpec extends ObjectBehavior
 {
@@ -55,7 +56,7 @@ class FileSpec extends ObjectBehavior
      */
     function it_pass_metadata_when_write_content(Filesystem $filesystem, MetadataAdapter $adapter)
     {
-        $metadata = array('id' => '123');
+        $metadata = ['id' => '123'];
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
         $filesystem->write('filename', 'some content', true)->willReturn(12);
         $filesystem->getAdapter()->willReturn($adapter);
@@ -69,7 +70,7 @@ class FileSpec extends ObjectBehavior
      */
     function it_pass_metadata_when_read_content(Filesystem $filesystem, MetadataAdapter $adapter)
     {
-        $metadata = array('id' => '123');
+        $metadata = ['id' => '123'];
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
         $filesystem->read('filename')->willReturn('some content');
         $filesystem->getAdapter()->willReturn($adapter);
@@ -83,7 +84,7 @@ class FileSpec extends ObjectBehavior
      */
     function it_pass_metadata_when_delete_content(Filesystem $filesystem, MetadataAdapter $adapter)
     {
-        $metadata = array('id' => '123');
+        $metadata = ['id' => '123'];
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
         $filesystem->delete('filename')->willReturn(true);
         $filesystem->getAdapter()->willReturn($adapter);
@@ -97,7 +98,7 @@ class FileSpec extends ObjectBehavior
      */
     function it_sets_content_of_file(Filesystem $filesystem, MetadataAdapter $adapter)
     {
-        $adapter->setMetadata('filename', array())->shouldNotBeCalled();
+        $adapter->setMetadata('filename', [])->shouldNotBeCalled();
         $filesystem->getAdapter()->willReturn($adapter);
         $filesystem->write('filename', 'some content', true)->shouldBeCalled()->willReturn(21);
 

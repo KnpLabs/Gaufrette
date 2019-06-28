@@ -10,7 +10,7 @@ class SafeLocalSpec extends ObjectBehavior
     function let()
     {
         vfsStream::setup('test');
-        vfsStream::copyFromFileSystem(__DIR__.'/MockFilesystem');
+        vfsStream::copyFromFileSystem(__DIR__ . '/MockFilesystem');
         $this->beConstructedWith(vfsStream::url('test'));
     }
 
@@ -21,12 +21,12 @@ class SafeLocalSpec extends ObjectBehavior
 
     function it_computes_path_using_base64()
     {
-        rename(vfsStream::url('test/filename'), vfsStream::url('test/'.base64_encode('filename')));
+        rename(vfsStream::url('test/filename'), vfsStream::url('test/' . base64_encode('filename')));
         $this->read('filename')->shouldReturn("content\n");
     }
 
     function it_computes_key_back_using_base64()
     {
-        $this->keys()->shouldReturn(array(base64_decode('dir'), base64_decode('dir/file'), base64_decode('filename')));
+        $this->keys()->shouldReturn([base64_decode('dir'), base64_decode('dir/file'), base64_decode('filename')]);
     }
 }

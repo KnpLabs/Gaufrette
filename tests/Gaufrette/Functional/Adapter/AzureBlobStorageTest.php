@@ -30,8 +30,8 @@ class AzureBlobStorageTest extends FunctionalTestCase
 
         $connection = sprintf('BlobEndpoint=http://%1$s.blob.core.windows.net/;AccountName=%1$s;AccountKey=%2$s', $account, $key);
 
-        $this->container  = uniqid($containerName);
-        $this->adapter    = new AzureBlobStorage(new BlobProxyFactory($connection), $this->container, true);
+        $this->container = uniqid($containerName);
+        $this->adapter = new AzureBlobStorage(new BlobProxyFactory($connection), $this->container, true);
         $this->filesystem = new Filesystem($this->adapter);
     }
 

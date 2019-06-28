@@ -2,8 +2,6 @@
 
 namespace Gaufrette\Functional\Adapter;
 
-use Gaufrette\Adapter\MogileFS;
-
 class MogileFSTest extends FunctionalTestCase
 {
     /**

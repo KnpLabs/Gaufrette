@@ -31,12 +31,12 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_reads_file(AmazonS3 $service)
     {
-        $options = array(
+        $options = [
             'range' => 12,
-            'response' => array(
-                'content-language' => 'pl-pl'
-            )
-        );
+            'response' => [
+                'content-language' => 'pl-pl',
+            ],
+        ];
 
         $service
             ->if_bucket_exists('bucketName')
@@ -71,7 +71,7 @@ class AmazonS3Spec extends ObjectBehavior
             ->get_object(
                 'bucketName',
                 'filename',
-                array()
+                []
             )
             ->shouldBeCalled()
             ->willReturn(new \CFResponse('header', 'some content', 500))
@@ -94,7 +94,7 @@ class AmazonS3Spec extends ObjectBehavior
             ->get_object(
                 'bucketName',
                 'filename',
-                array()
+                []
             )
             ->willThrow(new \RuntimeException('read'))
         ;
@@ -114,15 +114,15 @@ class AmazonS3Spec extends ObjectBehavior
         ;
         $service
             ->copy_object(
-                array(
-                    'bucket'   => 'bucketName',
+                [
+                    'bucket' => 'bucketName',
                     'filename' => 'filename1',
-                ),
-                array(
-                    'bucket'   => 'bucketName',
-                    'filename' => 'filename2'
-                ),
-                array('acl' => \AmazonS3::ACL_OWNER_READ)
+                ],
+                [
+                    'bucket' => 'bucketName',
+                    'filename' => 'filename2',
+                ],
+                ['acl' => \AmazonS3::ACL_OWNER_READ]
             )
             ->shouldBeCalled()
             ->willReturn(new \CFResponse('header', 'some content', 200))
@@ -134,10 +134,10 @@ class AmazonS3Spec extends ObjectBehavior
                 Argument::any()
             )
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), 'some', 200))
+            ->willReturn(new \CFResponse([], 'some', 200))
         ;
 
-        $this->setMetadata('filename1', array('acl' => \AmazonS3::ACL_OWNER_READ));
+        $this->setMetadata('filename1', ['acl' => \AmazonS3::ACL_OWNER_READ]);
         $this->rename('filename1', 'filename2')->shouldReturn(true);
     }
 
@@ -156,7 +156,7 @@ class AmazonS3Spec extends ObjectBehavior
             ->willThrow(new \RuntimeException('rename'))
         ;
 
-       $this->shouldThrow(new \RuntimeException('rename'))->duringRename('filename', 'filename1');
+        $this->shouldThrow(new \RuntimeException('rename'))->duringRename('filename', 'filename1');
     }
 
     /**
@@ -171,15 +171,15 @@ class AmazonS3Spec extends ObjectBehavior
         ;
         $service
             ->copy_object(
-                array(
-                    'bucket'   => 'bucketName',
+                [
+                    'bucket' => 'bucketName',
                     'filename' => 'filename1',
-                ),
-                array(
-                    'bucket'   => 'bucketName',
-                    'filename' => 'filename2'
-                ),
-                array()
+                ],
+                [
+                    'bucket' => 'bucketName',
+                    'filename' => 'filename2',
+                ],
+                []
             )
             ->shouldBeCalled()
             ->willReturn(new \CFResponse('header', 'some content', 500))
@@ -202,16 +202,16 @@ class AmazonS3Spec extends ObjectBehavior
             ->create_object(
                 'bucketName',
                 'filename',
-                array(
+                [
                     'acl' => \AmazonS3::ACL_PRIVATE,
-                    'body' => 'some content'
-                )
+                    'body' => 'some content',
+                ]
             )
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array('x-aws-requestheaders' => array('Content-Length' => 12)), 'some content', 200))
+            ->willReturn(new \CFResponse(['x-aws-requestheaders' => ['Content-Length' => 12]], 'some content', 200))
         ;
 
-        $this->setMetadata('filename', array('acl' => \AmazonS3::ACL_PRIVATE, 'body' => 'other content'));
+        $this->setMetadata('filename', ['acl' => \AmazonS3::ACL_PRIVATE, 'body' => 'other content']);
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
@@ -229,13 +229,13 @@ class AmazonS3Spec extends ObjectBehavior
             ->create_object(
                 'bucketName',
                 'filename',
-                array(
+                [
                     'acl' => \AmazonS3::ACL_PUBLIC,
-                    'body' => 'some content'
-                )
+                    'body' => 'some content',
+                ]
             )
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array('x-aws-requestheaders' => array('Content-Length' => 12)), 'some content', 500))
+            ->willReturn(new \CFResponse(['x-aws-requestheaders' => ['Content-Length' => 12]], 'some content', 500))
         ;
 
         $this->write('filename', 'some content')->shouldReturn(false);
@@ -256,7 +256,7 @@ class AmazonS3Spec extends ObjectBehavior
             ->willThrow(new \RuntimeException('write'))
         ;
 
-       $this->shouldThrow(new \RuntimeException('write'))->duringWrite('filename', 'some content');
+        $this->shouldThrow(new \RuntimeException('write'))->duringWrite('filename', 'some content');
     }
 
     /**
@@ -292,7 +292,7 @@ class AmazonS3Spec extends ObjectBehavior
             ->willThrow(new \RuntimeException('exists'))
         ;
 
-       $this->shouldThrow(new \RuntimeException('exists'))->duringExists('filename');
+        $this->shouldThrow(new \RuntimeException('exists'))->duringExists('filename');
     }
 
     /**
@@ -300,7 +300,7 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_should_get_file_mtime(AmazonS3 $service)
     {
-        $metadata = array('acl' => \AmazonS3::ACL_PUBLIC);
+        $metadata = ['acl' => \AmazonS3::ACL_PUBLIC];
         $service
             ->if_bucket_exists('bucketName')
             ->shouldBeCalled()
@@ -314,7 +314,7 @@ class AmazonS3Spec extends ObjectBehavior
                 $metadata
             )
             ->shouldBeCalled()
-            ->willReturn(array('Headers' => array('last-modified' => '2012-01-01 23:10:10')))
+            ->willReturn(['Headers' => ['last-modified' => '2012-01-01 23:10:10']])
         ;
 
         $this->setMetadata('filename', $metadata);
@@ -336,13 +336,13 @@ class AmazonS3Spec extends ObjectBehavior
             ->get_object_metadata(
                 'bucketName',
                 'filename',
-                array()
+                []
             )
             ->shouldBeCalled()
-            ->willReturn(array('Headers' => array()))
+            ->willReturn(['Headers' => []])
         ;
 
-       $this->mtime('filename')->shouldReturn(false);
+        $this->mtime('filename')->shouldReturn(false);
     }
 
     /**
@@ -360,7 +360,7 @@ class AmazonS3Spec extends ObjectBehavior
             ->willThrow(new \RuntimeException('mtime'))
         ;
 
-       $this->shouldThrow(new \RuntimeException('mtime'))->duringMtime('filename');
+        $this->shouldThrow(new \RuntimeException('mtime'))->duringMtime('filename');
     }
 
     /**
@@ -368,7 +368,7 @@ class AmazonS3Spec extends ObjectBehavior
      */
     function it_should_delete_file(AmazonS3 $service)
     {
-        $metadata = array('acl' => \AmazonS3::ACL_PRIVATE);
+        $metadata = ['acl' => \AmazonS3::ACL_PRIVATE];
 
         $service
             ->if_bucket_exists('bucketName')
@@ -381,7 +381,7 @@ class AmazonS3Spec extends ObjectBehavior
                 'filename',
                 $metadata
             )
-            ->willReturn(new \CFResponse(array(), 'some', 200))
+            ->willReturn(new \CFResponse([], 'some', 200))
         ;
 
         $this->setMetadata('filename', $metadata);
@@ -406,7 +406,7 @@ class AmazonS3Spec extends ObjectBehavior
             ->willThrow(new \RuntimeException('delete'))
         ;
 
-       $this->shouldThrow(new \RuntimeException('delete'))->duringDelete('filename');
+        $this->shouldThrow(new \RuntimeException('delete'))->duringDelete('filename');
     }
 
     /**
@@ -423,9 +423,9 @@ class AmazonS3Spec extends ObjectBehavior
             ->delete_object(
                 'bucketName',
                 'filename',
-                array()
+                []
             )
-            ->willReturn(new \CFResponse(array(), 'some', 500))
+            ->willReturn(new \CFResponse([], 'some', 500))
         ;
 
         $this->delete('filename')->shouldReturn(false);
@@ -444,10 +444,10 @@ class AmazonS3Spec extends ObjectBehavior
         $service
             ->get_object_list('bucketName')
             ->shouldBeCalled()
-            ->willReturn(array('filename2', 'aaa/filename', 'filename1'))
+            ->willReturn(['filename2', 'aaa/filename', 'filename1'])
         ;
 
-        $this->keys()->shouldReturn(array('aaa', 'aaa/filename', 'filename1', 'filename2'));
+        $this->keys()->shouldReturn(['aaa', 'aaa/filename', 'filename1', 'filename2']);
     }
 
     /**
@@ -464,7 +464,7 @@ class AmazonS3Spec extends ObjectBehavior
             ->willThrow(new \RuntimeException('keys'))
         ;
 
-       $this->shouldThrow(new \RuntimeException('keys'))->duringKeys();
+        $this->shouldThrow(new \RuntimeException('keys'))->duringKeys();
     }
 
     /**
@@ -543,18 +543,18 @@ class AmazonS3Spec extends ObjectBehavior
             ->if_bucket_exists('bucketName')
             ->willReturn(false)
         ;
-		$service->hostname = \AmazonS3::REGION_US_E1;
+        $service->hostname = \AmazonS3::REGION_US_E1;
         $service
             ->create_bucket('bucketName', \AmazonS3::REGION_US_E1)
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), 'created', 201))
+            ->willReturn(new \CFResponse([], 'created', 201))
         ;
         $service
             ->if_object_exists('bucketName', 'filename')
             ->willReturn(false)
         ;
 
-        $this->beConstructedWith($service, 'bucketName', array('create' => true));
+        $this->beConstructedWith($service, 'bucketName', ['create' => true]);
         $this->exists('filename');
     }
 
@@ -570,10 +570,10 @@ class AmazonS3Spec extends ObjectBehavior
         $service
             ->create_bucket('bucketName', Argument::any())
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), 'created', 500))
+            ->willReturn(new \CFResponse([], 'created', 500))
         ;
 
-        $this->beConstructedWith($service, 'bucketName', array('create' => true));
+        $this->beConstructedWith($service, 'bucketName', ['create' => true]);
         $this
             ->shouldThrow(new \RuntimeException('Failed to create the configured bucket "bucketName".'))
             ->duringExists('filename')
@@ -598,7 +598,7 @@ class AmazonS3Spec extends ObjectBehavior
             ->willReturn(true)
         ;
 
-        $this->beConstructedWith($service, 'bucketName', array('region' => \AmazonS3::REGION_EU_W1));
+        $this->beConstructedWith($service, 'bucketName', ['region' => \AmazonS3::REGION_EU_W1]);
         $this->exists('filename');
     }
 
@@ -615,14 +615,14 @@ class AmazonS3Spec extends ObjectBehavior
         $service
             ->create_bucket('bucketName', \AmazonS3::REGION_EU_W1)
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), 'created', 201))
+            ->willReturn(new \CFResponse([], 'created', 201))
         ;
         $service
             ->if_object_exists('bucketName', 'filename')
             ->willReturn(false)
         ;
 
-        $this->beConstructedWith($service, 'bucketName', array('create' => true, 'region' => \AmazonS3::REGION_EU_W1));
+        $this->beConstructedWith($service, 'bucketName', ['create' => true, 'region' => \AmazonS3::REGION_EU_W1]);
         $this->exists('filename');
     }
 
@@ -641,13 +641,13 @@ class AmazonS3Spec extends ObjectBehavior
             ->create_object(
                 'bucketName',
                 'filename',
-                array(
+                [
                     'acl' => '123abc',
-                    'body' => 'some content'
-                )
+                    'body' => 'some content',
+                ]
             )
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array('x-aws-requestheaders' => array('Content-Length' => 12)), 'some content', 200))
+            ->willReturn(new \CFResponse(['x-aws-requestheaders' => ['Content-Length' => 12]], 'some content', 200))
         ;
 
         $this->write('filename', 'some content')->shouldReturn(12);
@@ -669,16 +669,16 @@ class AmazonS3Spec extends ObjectBehavior
             ->create_object(
                 'bucketName',
                 'filename',
-                array(
+                [
                     'acl' => 'more important acl',
-                    'body' => 'some content'
-                )
+                    'body' => 'some content',
+                ]
             )
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array('x-aws-requestheaders' => array('Content-Length' => 12)), 'some content', 200))
+            ->willReturn(new \CFResponse(['x-aws-requestheaders' => ['Content-Length' => 12]], 'some content', 200))
         ;
 
-        $this->setMetadata('filename', array('acl' => 'more important acl'));
+        $this->setMetadata('filename', ['acl' => 'more important acl']);
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 }

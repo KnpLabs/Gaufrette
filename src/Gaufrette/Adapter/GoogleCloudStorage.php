@@ -10,15 +10,13 @@ use GuzzleHttp;
  *
  * @author  Patrik Karisch <patrik@karisch.guru>
  */
-class GoogleCloudStorage implements Adapter,
-                                    MetadataSupporter,
-                                    ListKeysAware
+class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
 {
     protected $service;
     protected $bucket;
     protected $options;
     protected $bucketExists;
-    protected $metadata = array();
+    protected $metadata = [];
     protected $detectContentType;
 
     /**
@@ -31,16 +29,16 @@ class GoogleCloudStorage implements Adapter,
     public function __construct(
         \Google_Service_Storage $service,
         $bucket,
-        array $options = array(),
+        array $options = [],
         $detectContentType = false
     ) {
         $this->service = $service;
         $this->bucket = $bucket;
         $this->options = array_replace(
-            array(
+            [
                 'directory' => '',
                 'acl' => 'private',
-            ),
+            ],
             $options
         );
 
@@ -126,10 +124,10 @@ class GoogleCloudStorage implements Adapter,
         $path = $this->computePath($key);
 
         $metadata = $this->getMetadata($key);
-        $options = array(
+        $options = [
             'uploadType' => 'multipart',
             'data' => $content,
-        );
+        ];
 
         /*
          * If the ContentType was not already set in the metadata, then we autodetect
@@ -269,7 +267,7 @@ class GoogleCloudStorage implements Adapter,
      */
     public function isDirectory($key)
     {
-        if ($this->exists($key.'/')) {
+        if ($this->exists($key . '/')) {
             return true;
         }
 
@@ -283,7 +281,7 @@ class GoogleCloudStorage implements Adapter,
     {
         $this->ensureBucketExists();
 
-        $options = array();
+        $options = [];
         if ((string) $prefix != '') {
             $options['prefix'] = $this->computePath($prefix);
         } elseif (!empty($this->options['directory'])) {
@@ -291,7 +289,7 @@ class GoogleCloudStorage implements Adapter,
         }
 
         $list = $this->service->objects->listObjects($this->bucket, $options);
-        $keys = array();
+        $keys = [];
 
         // FIXME: Temporary workaround for google/google-api-php-client#375
         $reflectionClass = new \ReflectionClass('Google_Service_Storage_Objects');
@@ -326,7 +324,7 @@ class GoogleCloudStorage implements Adapter,
     {
         $path = $this->computePath($key);
 
-        return isset($this->metadata[$path]) ? $this->metadata[$path] : array();
+        return isset($this->metadata[$path]) ? $this->metadata[$path] : [];
     }
 
     /**
@@ -372,7 +370,7 @@ class GoogleCloudStorage implements Adapter,
      *
      * @return bool|\Google_Service_Storage_StorageObject
      */
-    private function getObjectData($path, $options = array())
+    private function getObjectData($path, $options = [])
     {
         try {
             return $this->service->objects->get($this->bucket, $path, $options);

@@ -48,7 +48,7 @@ class AclAwareAmazonS3Spec extends ObjectBehavior
         $service
             ->set_object_acl('bucketName', 'filename2', \AmazonS3::ACL_PRIVATE)
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), '', 200))
+            ->willReturn(new \CFResponse([], '', 200))
         ;
         $adapter
             ->rename('filename', 'filename2')
@@ -72,7 +72,7 @@ class AclAwareAmazonS3Spec extends ObjectBehavior
         $service
             ->set_object_acl('bucketName', 'filename2', \AmazonS3::ACL_PRIVATE)
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), '', 500));
+            ->willReturn(new \CFResponse([], '', 500));
         $adapter
             ->rename('filename', 'filename2')
             ->shouldBeCalled()
@@ -91,16 +91,16 @@ class AclAwareAmazonS3Spec extends ObjectBehavior
     function it_updates_acl_with_users_array_when_rename(Adapter $adapter, AmazonS3 $service)
     {
         $service
-            ->set_object_acl('bucketName', 'filename2', array(array('id' => 'someId', 'permission' => \AmazonS3::GRANT_READ)))
+            ->set_object_acl('bucketName', 'filename2', [['id' => 'someId', 'permission' => \AmazonS3::GRANT_READ]])
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), '', 200))
+            ->willReturn(new \CFResponse([], '', 200))
         ;
         $adapter
             ->rename('filename', 'filename2')
             ->willReturn(true)
         ;
 
-        $this->setUsers(array(array('id' => 'someId', 'permission' => 'read')));
+        $this->setUsers([['id' => 'someId', 'permission' => 'read']]);
         $this->rename('filename', 'filename2')->shouldReturn(true);
     }
 
@@ -113,7 +113,7 @@ class AclAwareAmazonS3Spec extends ObjectBehavior
         $service
             ->set_object_acl('bucketName', 'filename', \AmazonS3::ACL_PRIVATE)
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), '', 200))
+            ->willReturn(new \CFResponse([], '', 200))
         ;
         $adapter
             ->write('filename', 'some content')
@@ -137,7 +137,7 @@ class AclAwareAmazonS3Spec extends ObjectBehavior
         $service
             ->set_object_acl('bucketName', 'filename', \AmazonS3::ACL_PRIVATE)
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), '', 500))
+            ->willReturn(new \CFResponse([], '', 500))
         ;
         $adapter
             ->write('filename', 'some content')
@@ -159,16 +159,16 @@ class AclAwareAmazonS3Spec extends ObjectBehavior
     function it_updates_acl_with_users_array_when_write(Adapter $adapter, AmazonS3 $service)
     {
         $service
-            ->set_object_acl('bucketName', 'filename', array(array('id' => 'someId', 'permission' => \AmazonS3::GRANT_READ)))
+            ->set_object_acl('bucketName', 'filename', [['id' => 'someId', 'permission' => \AmazonS3::GRANT_READ]])
             ->shouldBeCalled()
-            ->willReturn(new \CFResponse(array(), '', 200))
+            ->willReturn(new \CFResponse([], '', 200))
         ;
         $adapter
             ->write('filename', 'some content')
             ->willReturn(12)
         ;
 
-        $this->setUsers(array(array('id' => 'someId', 'permission' => 'read')));
+        $this->setUsers([['id' => 'someId', 'permission' => 'read']]);
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
@@ -213,9 +213,9 @@ class AclAwareAmazonS3Spec extends ObjectBehavior
      */
     function it_delegates_keys(Adapter $adapter)
     {
-        $adapter->keys()->willReturn(array('filename', 'filename2'));
+        $adapter->keys()->willReturn(['filename', 'filename2']);
 
-        $this->keys()->shouldReturn(array('filename', 'filename2'));
+        $this->keys()->shouldReturn(['filename', 'filename2']);
     }
 
     /**
@@ -226,11 +226,11 @@ class AclAwareAmazonS3Spec extends ObjectBehavior
     {
         $this->beConstructedWith($extendedAdapter, $service, 'bucketName');
 
-        $extendedAdapter->setMetadata('filename', array('some'))->shouldBeCalled();
-        $extendedAdapter->getMetadata('filename')->shouldBeCalled()->willReturn(array('some2'));
+        $extendedAdapter->setMetadata('filename', ['some'])->shouldBeCalled();
+        $extendedAdapter->getMetadata('filename')->shouldBeCalled()->willReturn(['some2']);
 
-        $this->setMetadata('filename', array('some'));
-        $this->getMetadata('filename')->shouldReturn(array('some2'));
+        $this->setMetadata('filename', ['some']);
+        $this->getMetadata('filename')->shouldReturn(['some2']);
     }
 }
 

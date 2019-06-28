@@ -5,7 +5,7 @@ namespace Gaufrette\Adapter;
 use AmazonS3 as AmazonClient;
 use Gaufrette\Adapter;
 
-@trigger_error('The '.__NAMESPACE__.'\AmazonS3 adapter is deprecated since version 0.4 and will be removed in 1.0. Use the AwsS3 adapter instead.', E_USER_DEPRECATED);
+@trigger_error('The ' . __NAMESPACE__ . '\AmazonS3 adapter is deprecated since version 0.4 and will be removed in 1.0. Use the AwsS3 adapter instead.', E_USER_DEPRECATED);
 
 /**
  * Amazon S3 adapter using the AWS SDK for PHP v1.x.
@@ -17,8 +17,7 @@ use Gaufrette\Adapter;
  *
  * @deprecated The AmazonS3 adapter is deprecated since version 0.4 and will be removed in 1.0. Use the AwsS3 adapter instead.
  */
-class AmazonS3 implements Adapter,
-                          MetadataSupporter
+class AmazonS3 implements Adapter, MetadataSupporter
 {
     protected $service;
     protected $bucket;
@@ -26,12 +25,12 @@ class AmazonS3 implements Adapter,
     protected $metadata;
     protected $options;
 
-    public function __construct(AmazonClient $service, $bucket, $options = array())
+    public function __construct(AmazonClient $service, $bucket, $options = [])
     {
         $this->service = $service;
         $this->bucket = $bucket;
         $this->options = array_replace_recursive(
-            array('directory' => '', 'create' => false, 'region' => $service->hostname, 'acl' => AmazonClient::ACL_PUBLIC),
+            ['directory' => '', 'create' => false, 'region' => $service->hostname, 'acl' => AmazonClient::ACL_PUBLIC],
             $options
         );
     }
@@ -93,7 +92,7 @@ class AmazonS3 implements Adapter,
     {
         $path = $this->computePath($key);
 
-        return isset($this->metadata[$path]) ? $this->metadata[$path] : array();
+        return isset($this->metadata[$path]) ? $this->metadata[$path] : [];
     }
 
     /**
@@ -124,14 +123,14 @@ class AmazonS3 implements Adapter,
         $this->ensureBucketExists();
 
         $response = $this->service->copy_object(
-            array( // source
+            [ // source
                 'bucket' => $this->bucket,
                 'filename' => $this->computePath($sourceKey),
-            ),
-            array( // target
+            ],
+            [ // target
                 'bucket' => $this->bucket,
                 'filename' => $this->computePath($targetKey),
-            ),
+            ],
             $this->getMetadata($sourceKey)
         );
 
@@ -146,9 +145,9 @@ class AmazonS3 implements Adapter,
         $this->ensureBucketExists();
 
         $opt = array_replace_recursive(
-            array('acl' => $this->options['acl']),
+            ['acl' => $this->options['acl']],
             $this->getMetadata($key),
-            array('body' => $content)
+            ['body' => $content]
         );
 
         $response = $this->service->create_object(
@@ -202,7 +201,7 @@ class AmazonS3 implements Adapter,
 
         $list = $this->service->get_object_list($this->bucket);
 
-        $keys = array();
+        $keys = [];
         foreach ($list as $file) {
             if ('.' !== $dirname = \Gaufrette\Util\Path::dirname($file)) {
                 $keys[] = $dirname;
@@ -235,7 +234,7 @@ class AmazonS3 implements Adapter,
      */
     public function isDirectory($key)
     {
-        if ($this->exists($key.'/')) {
+        if ($this->exists($key . '/')) {
             return true;
         }
 

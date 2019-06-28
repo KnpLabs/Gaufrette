@@ -14,11 +14,7 @@ use MongoDB\GridFS\Exception\FileNotFoundException;
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class GridFS implements Adapter,
-                        ChecksumCalculator,
-                        MetadataSupporter,
-                        ListKeysAware,
-                        SizeCalculator
+class GridFS implements Adapter, ChecksumCalculator, MetadataSupporter, ListKeysAware, SizeCalculator
 {
     /** @var array */
     private $metadata = [];
@@ -169,17 +165,16 @@ class GridFS implements Adapter,
     {
         if (isset($this->metadata[$key])) {
             return $this->metadata[$key];
-        } else {
-            $meta = $this->bucket->findOne(['filename' => $key], ['projection' => ['metadata' => 1,'_id' => 0]]);
-
-            if ($meta === null || !isset($meta['metadata'])) {
-                return array();
-            }
-
-            $this->metadata[$key] = iterator_to_array($meta['metadata']);
-
-            return $this->metadata[$key];
         }
+        $meta = $this->bucket->findOne(['filename' => $key], ['projection' => ['metadata' => 1,'_id' => 0]]);
+
+        if ($meta === null || !isset($meta['metadata'])) {
+            return [];
+        }
+
+        $this->metadata[$key] = iterator_to_array($meta['metadata']);
+
+        return $this->metadata[$key];
     }
 
     /**
@@ -222,5 +217,4 @@ class GridFS implements Adapter,
 
         return $size['length'];
     }
-
 }

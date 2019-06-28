@@ -36,6 +36,7 @@ class Local implements Stream
         if ($mode->allowsWrite() && !is_dir($baseDirPath)) {
             @mkdir($baseDirPath, $this->mkdirMode, true);
         }
+
         try {
             $fileHandle = @fopen($this->path, $mode->getMode());
         } catch (\Exception $e) {

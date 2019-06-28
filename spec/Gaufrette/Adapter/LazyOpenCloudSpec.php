@@ -7,7 +7,6 @@ use OpenCloud\ObjectStore\Exception\ObjectNotFoundException;
 use OpenCloud\ObjectStore\Resource\Container;
 use OpenCloud\ObjectStore\Service;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * LazyOpenCloudSpec
@@ -38,12 +37,11 @@ class LazyOpenCloudSpec extends ObjectBehavior
         ObjectStoreFactoryInterface $objectStoreFactory,
         Service $objectStore,
         Container $container
-    )
-    {
+    ) {
         $objectStoreFactory->getObjectStore()->shouldBeCalled()->willReturn($objectStore);
-        $objectStore->getContainer("test-container-name")->shouldBeCalled()->willReturn($container);
-        $container->getObject("test-file-name")->willThrow(new ObjectNotFoundException());
+        $objectStore->getContainer('test-container-name')->shouldBeCalled()->willReturn($container);
+        $container->getObject('test-file-name')->willThrow(new ObjectNotFoundException());
 
-        $this->read("test-file-name");
+        $this->read('test-file-name');
     }
 }

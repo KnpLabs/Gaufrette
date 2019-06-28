@@ -13,7 +13,8 @@ interface ExtendedAdapter extends \Gaufrette\Adapter,
                           \Gaufrette\Adapter\ChecksumCalculator,
                           \Gaufrette\Adapter\MetadataSupporter,
                           \Gaufrette\Adapter\MimeTypeProvider
-{}
+{
+}
 
 class FilesystemSpec extends ObjectBehavior
 {
@@ -280,7 +281,7 @@ class FilesystemSpec extends ObjectBehavior
      */
     function it_should_get_all_keys(Adapter $adapter)
     {
-        $keys = array('filename', 'filename1', 'filename2');
+        $keys = ['filename', 'filename1', 'filename2'];
         $adapter->keys()->willReturn($keys);
 
         $this->keys()->shouldReturn($keys);
@@ -291,28 +292,28 @@ class FilesystemSpec extends ObjectBehavior
      */
     function it_match_listed_keys_using_specified_pattern(Adapter $adapter)
     {
-        $keys = array('filename', 'filename1', 'filename2', 'testKey', 'KeyTest', 'testkey');
+        $keys = ['filename', 'filename1', 'filename2', 'testKey', 'KeyTest', 'testkey'];
 
         $adapter->keys()->willReturn($keys);
         $adapter->isDirectory(Argument::any())->willReturn(false);
 
         $this->listKeys()->shouldReturn(
-            array(
-                'keys' => array('filename', 'filename1', 'filename2', 'testKey', 'KeyTest', 'testkey'),
-                'dirs' => array()
-            )
+            [
+                'keys' => ['filename', 'filename1', 'filename2', 'testKey', 'KeyTest', 'testkey'],
+                'dirs' => [],
+            ]
         );
         $this->listKeys('filename')->shouldReturn(
-            array(
-                'keys' => array('filename', 'filename1', 'filename2'),
-                'dirs' => array()
-            )
+            [
+                'keys' => ['filename', 'filename1', 'filename2'],
+                'dirs' => [],
+            ]
         );
         $this->listKeys('Key')->shouldReturn(
-            array(
-                'keys' => array('KeyTest'),
-                'dirs' => array()
-            )
+            [
+                'keys' => ['KeyTest'],
+                'dirs' => [],
+            ]
         );
     }
 
@@ -321,7 +322,7 @@ class FilesystemSpec extends ObjectBehavior
      */
     function it_listing_directories_using_adapter_is_directory_method(Adapter $adapter)
     {
-        $keys = array('filename', 'filename1', 'filename2', 'testKey', 'KeyTest', 'testkey');
+        $keys = ['filename', 'filename1', 'filename2', 'testKey', 'KeyTest', 'testkey'];
 
         $adapter->keys()->willReturn($keys);
         $adapter->isDirectory('filename')->willReturn(false);
@@ -333,22 +334,22 @@ class FilesystemSpec extends ObjectBehavior
         $adapter->isDirectory('testKey')->willReturn(true);
 
         $this->listKeys()->shouldReturn(
-            array(
-                'keys' => array('filename', 'filename2', 'KeyTest', 'testkey'),
-                'dirs' => array('filename1', 'testKey')
-            )
+            [
+                'keys' => ['filename', 'filename2', 'KeyTest', 'testkey'],
+                'dirs' => ['filename1', 'testKey'],
+            ]
         );
         $this->listKeys('filename')->shouldReturn(
-            array(
-                'keys' => array('filename', 'filename2'),
-                'dirs' => array('filename1')
-            )
+            [
+                'keys' => ['filename', 'filename2'],
+                'dirs' => ['filename1'],
+            ]
         );
         $this->listKeys('Key')->shouldReturn(
-            array(
-                'keys' => array('KeyTest'),
-                'dirs' => array()
-            )
+            [
+                'keys' => ['KeyTest'],
+                'dirs' => [],
+            ]
         );
     }
 

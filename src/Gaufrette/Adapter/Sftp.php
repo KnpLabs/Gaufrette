@@ -5,13 +5,12 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Ssh\Sftp as SftpClient;
 
-@trigger_error('The '.__NAMESPACE__.'\Sftp adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
+@trigger_error('The ' . __NAMESPACE__ . '\Sftp adapter is deprecated since version 0.4 and will be removed in 1.0.', E_USER_DEPRECATED);
 
 /**
  * @deprecated The Sftp adapter is deprecated since version 0.4 and will be removed in 1.0.
  */
-class Sftp implements Adapter,
-                      ChecksumCalculator
+class Sftp implements Adapter, ChecksumCalculator
 {
     protected $sftp;
     protected $directory;
@@ -102,9 +101,9 @@ class Sftp implements Adapter,
     {
         $this->initialize();
         $results = $this->sftp->listDirectory($this->directory, true);
-        $files = array_map(array($this, 'computeKey'), $results['files']);
+        $files = array_map([$this, 'computeKey'], $results['files']);
 
-        $dirs = array();
+        $dirs = [];
         foreach ($files as $file) {
             if ('.' !== $dirname = \Gaufrette\Util\Path::dirname($file)) {
                 $dirs[] = $dirname;
@@ -176,7 +175,7 @@ class Sftp implements Adapter,
      */
     protected function computePath($key)
     {
-        return $this->directory.'/'.ltrim($key, '/');
+        return $this->directory . '/' . ltrim($key, '/');
     }
 
     /**
