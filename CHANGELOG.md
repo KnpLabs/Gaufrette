@@ -1,3 +1,12 @@
+v1.0.0
+======
+
+## New features
+
+- Google Cloud Storage Adapter (#557)
+
+Thank you @nicolasmure and @PanzerLlama for your contributions !
+
 v0.8.3
 ======
 
