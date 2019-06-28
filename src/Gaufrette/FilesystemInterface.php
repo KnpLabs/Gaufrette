@@ -35,7 +35,6 @@ interface FilesystemInterface
      */
     public function rename($sourceKey, $targetKey);
 
-
     /**
      * Returns the file matching the specified key.
      *

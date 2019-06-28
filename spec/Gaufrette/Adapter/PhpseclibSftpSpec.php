@@ -50,21 +50,21 @@ class PhpseclibSftpSpec extends ObjectBehavior
             ->willReturn(true);
         $sftp
             ->rawlist('/home/l3l0/')
-            ->willReturn(array(
-                'filename' => array('type' => NET_SFTP_TYPE_REGULAR),
-                'filename1' => array('type' => NET_SFTP_TYPE_REGULAR),
-                'aaa' => array('type' => NET_SFTP_TYPE_DIRECTORY)
-            ));
+            ->willReturn([
+                'filename' => ['type' => NET_SFTP_TYPE_REGULAR],
+                'filename1' => ['type' => NET_SFTP_TYPE_REGULAR],
+                'aaa' => ['type' => NET_SFTP_TYPE_DIRECTORY],
+            ]);
         $sftp
             ->file_exists('/home/l3l0/aaa')
             ->willReturn(true);
         $sftp
             ->rawlist('/home/l3l0/aaa')
-            ->willReturn(array(
-                'filename' => array('type' => NET_SFTP_TYPE_REGULAR),
-            ));
+            ->willReturn([
+                'filename' => ['type' => NET_SFTP_TYPE_REGULAR],
+            ]);
 
-        $this->keys()->shouldReturn(array('filename', 'filename1', 'aaa', 'aaa/filename'));
+        $this->keys()->shouldReturn(['filename', 'filename1', 'aaa', 'aaa/filename']);
     }
 
     function it_reads_file(SFTP $sftp)
@@ -100,9 +100,9 @@ class PhpseclibSftpSpec extends ObjectBehavior
     {
         $sftp->pwd()->willReturn('/home/l3l0');
         $sftp->chdir('/home/l3l0')->willReturn(true);
-        $sftp->stat('/home/l3l0/filename')->willReturn(array(
-            'name' => '/home/l3l0/filename'
-        ));
+        $sftp->stat('/home/l3l0/filename')->willReturn([
+            'name' => '/home/l3l0/filename',
+        ]);
         $sftp->stat('/home/l3l0/filename1')->willReturn(false);
 
         $this->exists('filename')->shouldReturn(true);
@@ -122,10 +122,10 @@ class PhpseclibSftpSpec extends ObjectBehavior
 
     function it_should_create_file(SFTP $sftp, Filesystem $filesystem)
     {
-        $sftp->stat('/home/l3l0/filename')->willReturn(array(
+        $sftp->stat('/home/l3l0/filename')->willReturn([
             'name' => '/home/l3l0/filename',
             'size' => '30',
-        ));
+        ]);
 
         $this->createFile('filename', $filesystem)->beAnInstanceOf('Gaufrette\File');
     }

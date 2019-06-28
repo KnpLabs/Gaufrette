@@ -54,7 +54,7 @@ class FlysystemSpec extends ObjectBehavior
 
     function it_writes_file(AdapterInterface $adapter, Config $config)
     {
-        $adapter->write('filename', 'Hello.', $config)->willReturn(array());
+        $adapter->write('filename', 'Hello.', $config)->willReturn([]);
 
         $this->write('filename', 'Hello.')->shouldReturn(null);
     }

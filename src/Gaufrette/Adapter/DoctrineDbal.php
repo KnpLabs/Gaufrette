@@ -15,9 +15,7 @@ use Doctrine\DBAL\Connection;
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class DoctrineDbal implements Adapter,
-                              ChecksumCalculator,
-                              ListKeysAware
+class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
 {
     protected $connection;
     protected $table;

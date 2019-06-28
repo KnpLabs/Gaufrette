@@ -207,14 +207,14 @@ class FunctionalTestCase extends TestCase
 
     public static function modesProvider()
     {
-        return array(
-            array('w'),
-            array('a+'),
-            array('w+'),
-            array('ab+'),
-            array('wb'),
-            array('wb+')
-        );
+        return [
+            ['w'],
+            ['a+'],
+            ['w+'],
+            ['ab+'],
+            ['wb'],
+            ['wb+'],
+        ];
     }
 
     protected function registerLocalFilesystemInStream()

@@ -105,6 +105,17 @@ $ make clear-deps
 $ PHP_VERSION=<the_version_you_want_to_use> make build install-deps
 ```
 
+5) Apply Coding Standards
+
+You should check for CS violations by using
+```bash
+$ make php-cs-compare
+```
+and fix them with 
+```bash
+$ make php-cs-fix
+```
+
 ### Note
 
 This project does not have any stable release yet but we do not want to break BC now.

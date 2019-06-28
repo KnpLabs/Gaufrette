@@ -18,11 +18,7 @@ use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
  * @author Luciano Mammino <lmammino@oryzone.com>
  * @author Paweł Czyżewski <pawel.czyzewski@enginewerk.com>
  */
-class AzureBlobStorage implements Adapter,
-                                  MetadataSupporter,
-                                  SizeCalculator,
-                                  ChecksumCalculator
-
+class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, ChecksumCalculator
 {
     /**
      * Error constants.
@@ -358,7 +354,6 @@ class AzureBlobStorage implements Adapter,
                 'key' => $key,
             ], $e);
         }
-
     }
 
     /**
@@ -568,11 +563,12 @@ class AzureBlobStorage implements Adapter,
     {
         $blobList = $this->blobProxy->listBlobs($containerName);
 
-        return array_map(function (Blob $blob) use ($prefix) {
+        return array_map(
+            function (Blob $blob) use ($prefix) {
                 $name = $blob->getName();
 
                 if (null !== $prefix) {
-                    $name = $prefix .'/'. $name;
+                    $name = $prefix . '/' . $name;
                 }
 
                 return $name;

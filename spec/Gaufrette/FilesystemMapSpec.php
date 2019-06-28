@@ -57,6 +57,6 @@ class FilesystemMapSpec extends ObjectBehavior
 
         $this->has('some')->shouldReturn(false);
         $this->has('other')->shouldReturn(false);
-        $this->all()->shouldReturn(array());
+        $this->all()->shouldReturn([]);
     }
 }
