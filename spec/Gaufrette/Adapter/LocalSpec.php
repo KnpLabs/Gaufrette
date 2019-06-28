@@ -33,6 +33,13 @@ class LocalSpec extends ObjectBehavior
         $this->shouldHaveType('Gaufrette\Adapter\MimeTypeProvider');
     }
 
+    function it_throws_when_the_base_directory_does_not_exist()
+    {
+        $this->beConstructedWith('/do-no-exists');
+
+        $this->shouldThrow(StorageFailure::class)->duringInstantiation();
+    }
+
     function it_gets_the_file_mime_type()
     {
         $this->mimeType('filename')->shouldReturn('text/plain');
