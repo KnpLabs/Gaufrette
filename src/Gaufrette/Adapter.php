@@ -2,6 +2,7 @@
 
 namespace Gaufrette;
 
+use Gaufrette\Exception\FileAlreadyExists;
 use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Exception\InvalidKey;
 use Gaufrette\Exception\StorageFailure;
@@ -90,8 +91,9 @@ interface Adapter
      * @param string $targetKey
      *
      * @throws FileNotFound
-     * @throws InvalidKey     If $sourceKey and/or $targetKey are malformed
-     * @throws StorageFailure If the underlying storage fails (adapter should not leak exceptions)
+     * @throws FileAlreadyExists
+     * @throws InvalidKey        If $sourceKey and/or $targetKey are malformed
+     * @throws StorageFailure    If the underlying storage fails (adapter should not leak exceptions)
      */
     public function rename($sourceKey, $targetKey);
 

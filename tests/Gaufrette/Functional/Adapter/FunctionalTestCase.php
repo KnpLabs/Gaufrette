@@ -62,7 +62,6 @@ abstract class FunctionalTestCase extends TestCase
 
         $this->assertTrue($this->filesystem->has('foo'));
         $this->assertFalse($this->filesystem->has('test/somefile'));
-        $this->assertFalse($this->filesystem->has('test/somefile'));
     }
 
     /**
