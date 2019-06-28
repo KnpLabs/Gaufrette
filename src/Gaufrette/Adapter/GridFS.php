@@ -172,7 +172,6 @@ class GridFS implements Adapter, ChecksumCalculator, MetadataSupporter, ListKeys
      */
     public function delete($key)
     {
-
         try {
             $file = $this->bucket->findOne(['filename' => $key], ['projection' => ['_id' => 1]]);
         } catch (\Exception $e) {

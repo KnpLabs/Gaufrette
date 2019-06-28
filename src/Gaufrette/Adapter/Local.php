@@ -24,7 +24,6 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
     /**
      * @param string $directory Directory where the filesystem is located
      * @param int    $mode      Mode of directory created by the adapter.
-     *
      */
     public function __construct($directory, $mode = 0777)
     {
@@ -260,7 +259,7 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      */
     protected function computePath($key)
     {
-        return $this->normalizePath($this->directory.'/'.$key);
+        return $this->normalizePath($this->directory . '/' . $key);
     }
 
     /**

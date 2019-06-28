@@ -10,8 +10,8 @@ class InMemorySpec extends ObjectBehavior
     function let()
     {
         $this->beConstructedWith([
-            'filename'  => ['mtime' => 12345, 'content' => 'content'],
-            'filename2' => 'other content'
+            'filename' => ['mtime' => 12345, 'content' => 'content'],
+            'filename2' => 'other content',
         ]);
     }
 
@@ -42,10 +42,10 @@ class InMemorySpec extends ObjectBehavior
 
     function it_renames_file()
     {
-         $this->rename('filename', 'aaa/filename2');
+        $this->rename('filename', 'aaa/filename2');
 
-         $this->exists('filename')->shouldReturn(false);
-         $this->exists('aaa/filename2')->shouldReturn(true);
+        $this->exists('filename')->shouldReturn(false);
+        $this->exists('aaa/filename2')->shouldReturn(true);
     }
 
     function it_checks_if_file_exists()

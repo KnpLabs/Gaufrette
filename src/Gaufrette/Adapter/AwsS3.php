@@ -7,7 +7,6 @@ use Gaufrette\Adapter;
 use Aws\S3\S3Client;
 use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Exception\StorageFailure;
-use Gaufrette\Util;
 
 /**
  * Amazon S3 adapter using the AWS SDK for PHP v2.x.

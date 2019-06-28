@@ -90,6 +90,7 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
 
         if (!ftp_fput($this->getConnection(), $path, $temp, $this->mode)) {
             fclose($temp);
+
             throw StorageFailure::unexpectedFailure('write', ['key' => $this->computePath($key)]);
         }
 

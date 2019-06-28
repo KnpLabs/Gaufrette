@@ -6,7 +6,6 @@ use Gaufrette\Adapter;
 use Gaufrette\Exception\FileAlreadyExists;
 use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Exception\StorageFailure;
-use Gaufrette\Util;
 use OpenStack\Common\Error\BadResponseError;
 use OpenStack\ObjectStore\v1\Models\Container;
 use OpenStack\ObjectStore\v1\Models\StorageObject;
@@ -22,12 +21,7 @@ use OpenStack\ObjectStore\v1\Service;
  * @see http://docs.os.php-opencloud.com/en/latest/services/object-store/v1/objects.html
  * @see http://refdocs.os.php-opencloud.com/OpenStack/OpenStack.html
  */
-final class OpenStack implements Adapter,
-                           ChecksumCalculator,
-                           ListKeysAware,
-                           MetadataSupporter,
-                           MimeTypeProvider,
-                           SizeCalculator
+final class OpenStack implements Adapter, ChecksumCalculator, ListKeysAware, MetadataSupporter, MimeTypeProvider, SizeCalculator
 {
     /**
      * @var Service
@@ -88,7 +82,7 @@ final class OpenStack implements Adapter,
     public function read($key)
     {
         try {
-            /** @var \Psr\Http\Message\StreamInterface $stream */
+            /* @var \Psr\Http\Message\StreamInterface $stream */
             // @WARNING: This could attempt to load a large amount of data into memory.
             return (string) $this->getObject($key)->download();
         } catch (BadResponseError $e) {
@@ -140,7 +134,7 @@ final class OpenStack implements Adapter,
             return array_map(function (StorageObject $object) {
                 return $object->name;
             }, iterator_to_array($this->getContainer()->listObjects()));
-        } catch (BadResponseError $e ) {
+        } catch (BadResponseError $e) {
             throw StorageFailure::unexpectedFailure('keys', [], $e);
         }
     }
@@ -200,7 +194,7 @@ final class OpenStack implements Adapter,
             throw new FileNotFound($sourceKey);
         }
 
-        if($this->exists($targetKey)) {
+        if ($this->exists($targetKey)) {
             throw new FileAlreadyExists($targetKey);
         }
 

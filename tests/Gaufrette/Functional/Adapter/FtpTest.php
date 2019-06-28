@@ -25,11 +25,11 @@ class FtpTest extends FunctionalTestCase
         $baseDir = rtrim($baseDir, '/') . DIRECTORY_SEPARATOR . uniqid();
 
         $adapter = new Ftp($baseDir, $host, [
-            'port'     => $port,
+            'port' => $port,
             'username' => $user,
             'password' => $password,
-            'passive'  => true,
-            'create'   => true
+            'passive' => true,
+            'create' => true,
         ]);
         $this->filesystem = new Filesystem($adapter);
     }

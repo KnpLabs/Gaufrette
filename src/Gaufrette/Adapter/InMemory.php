@@ -4,7 +4,6 @@ namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
 use Gaufrette\Exception\FileNotFound;
-use Gaufrette\Util;
 
 /**
  * In memory adapter.

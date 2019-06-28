@@ -6,7 +6,6 @@ use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Exception\StorageFailure;
 use ZipArchive;
 use Gaufrette\Adapter;
-use Gaufrette\Util;
 
 /**
  * ZIP Archive adapter.

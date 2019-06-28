@@ -3,7 +3,6 @@
 namespace Gaufrette\Functional\Adapter;
 
 use Gaufrette\Adapter\GoogleCloudStorage;
-use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Filesystem;
 use Google\Cloud\Storage\Acl;
 use Google\Cloud\Storage\StorageClient;
@@ -16,7 +15,7 @@ use Google\Cloud\Storage\StorageClient;
  */
 class GoogleCloudStorageTest extends FunctionalTestCase
 {
-    private $string    = 'Yeah mate. No worries, I uploaded just fine. Meow!';
+    private $string = 'Yeah mate. No worries, I uploaded just fine. Meow!';
     private $directory = 'tests';
     private $bucketName;
     private $sdkOptions;
@@ -24,8 +23,8 @@ class GoogleCloudStorageTest extends FunctionalTestCase
 
     public function setUp()
     {
-        $gcsProjectId   = getenv('GCS_PROJECT_ID');
-        $gcsBucketName  = getenv('GCS_BUCKET_NAME');
+        $gcsProjectId = getenv('GCS_PROJECT_ID');
+        $gcsBucketName = getenv('GCS_BUCKET_NAME');
         $gcsJsonKeyFile = getenv('GCS_JSON_KEY_FILE');
 
         if (empty($gcsProjectId) || empty($gcsBucketName) || empty($gcsJsonKeyFile)) {
@@ -34,9 +33,9 @@ class GoogleCloudStorageTest extends FunctionalTestCase
 
         $this->directory = uniqid($this->directory);
         $this->bucketName = $gcsBucketName;
-        $this->sdkOptions = array(
+        $this->sdkOptions = [
             'projectId' => $gcsProjectId,
-        );
+        ];
 
         if ($this->isJsonString($gcsJsonKeyFile)) {
             $this->sdkOptions['keyFile'] = json_decode($gcsJsonKeyFile, true);
@@ -48,12 +47,12 @@ class GoogleCloudStorageTest extends FunctionalTestCase
             $this->sdkOptions['keyFilePath'] = $gcsJsonKeyFile;
         }
 
-        $this->bucketOptions = array(
+        $this->bucketOptions = [
             'directory' => $this->directory,
-            'acl'       => array(
+            'acl' => [
                 'allUsers' => Acl::ROLE_READER,
-            ),
-        );
+            ],
+        ];
 
         $storage = new StorageClient($this->sdkOptions);
 
@@ -71,9 +70,9 @@ class GoogleCloudStorageTest extends FunctionalTestCase
 
         $adapter = new GoogleCloudStorage($storage, $this->bucketName, array_merge(
             $this->bucketOptions,
-            array(
+            [
                 'directory' => '',
-            )
+            ]
         ));
 
         $this->filesystem = new Filesystem($adapter);
@@ -106,10 +105,10 @@ class GoogleCloudStorageTest extends FunctionalTestCase
     {
         /** @var \Gaufrette\Adapter\GoogleCloudStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
-        $file   = 'PhatCat/Cat.txt';
+        $file = 'PhatCat/Cat.txt';
 
         $this->filesystem->write($file, $this->string, true);
-        $adapter->setMetadata($file, array('OhMy' => 'I am a cat file!'));
+        $adapter->setMetadata($file, ['OhMy' => 'I am a cat file!']);
         $info = $adapter->getMetadata($file);
 
         $this->assertEquals($info['OhMy'], 'I am a cat file!');
@@ -124,13 +123,13 @@ class GoogleCloudStorageTest extends FunctionalTestCase
     {
         /** @var \Gaufrette\Adapter\GoogleCloudStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
-        $file   = 'Cat.txt';
+        $file = 'Cat.txt';
 
         $this->filesystem->write($file, $this->string, true);
-        $adapter->setMetadata($file, array('OhMy' => 'I am a cat file!'));
+        $adapter->setMetadata($file, ['OhMy' => 'I am a cat file!']);
         $adapter->rename('Cat.txt', 'Kitten.txt');
 
-        $this->assertEquals($adapter->getMetadata('Kitten.txt'), array('OhMy' => 'I am a cat file!'));
+        $this->assertEquals($adapter->getMetadata('Kitten.txt'), ['OhMy' => 'I am a cat file!']);
     }
 
     /**
@@ -142,7 +141,7 @@ class GoogleCloudStorageTest extends FunctionalTestCase
     {
         /** @var \Gaufrette\Adapter\GoogleCloudStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
-        $file   = 'Cat.txt';
+        $file = 'Cat.txt';
         $this->filesystem->write($file, $this->string, true);
 
         $publicLink = sprintf('https://storage.googleapis.com/%s/%s/Cat.txt', $adapter->getBucket()->name(), $this->directory);
@@ -170,7 +169,8 @@ class GoogleCloudStorageTest extends FunctionalTestCase
         $this->assertEquals(['prefix/file.txt'], $this->filesystem->listKeys('prefix'));
     }
 
-    private function isJsonString($content) {
+    private function isJsonString($content)
+    {
         json_decode($content);
 
         return json_last_error() === JSON_ERROR_NONE;
