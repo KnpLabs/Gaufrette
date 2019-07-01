@@ -1,6 +1,17 @@
 1.0
 ===
 
+**Gaufrette\Adapter\AzureblobStorage:**
+As container management is out of Gaufrette scope (see #618), this adapter has
+the following BC breaks :
+* The `createContainer` public method has been removed.
+* The `deleteContainer` public method has been removed.
+* The `getCreateContainerOptions` public method has been removed.
+* The `setCreateContainerOptions` public method has been removed.
+* Drop support for [multi continer mode](https://github.com/KnpLabs/Gaufrette/blob/b488cf8f595c3c7a35005f72b60692e14c69398c/doc/adapters/azure-blob-storage.md#multi-container-mode).
+* The constructor's `create` parameter has been removed.
+* The constructor's `containerName` parameter is now mandatory (string).
+
 **Gaufrette\Adapter\OpenStackCloudFiles\ObjectStoreFactory:**
 * This factory has been removed
 

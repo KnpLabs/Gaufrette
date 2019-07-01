@@ -10,12 +10,17 @@ which is the latest supported version of the SDK for OpenStack instead of
 https://github.com/rackspace/php-opencloud (#533).
 - Google Cloud Storage Adapter (#557)
 
-## Removed
+## Removed (introduces BC breaks)
 
 - The [OpenCloud adapter](https://github.com/KnpLabs/Gaufrette/blob/v0.5.0/src/Gaufrette/Adapter/OpenCloud.php)
 has been removed.
 - The [ObjectStoreFactory](https://github.com/KnpLabs/Gaufrette/blob/v0.5.0/src/Gaufrette/Adapter/OpenStackCloudFiles/ObjectStoreFactory.php)
 has been removed.
+
+## Changes (introduces BC breaks)
+
+- Gaufrette is no longer responsible for bucket / container creation. This
+should be done prior to any adapter usage (#618).
 
 Thank you @nicolasmure and @PanzerLlama for your contributions !
 
