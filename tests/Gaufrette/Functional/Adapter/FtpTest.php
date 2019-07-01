@@ -12,11 +12,11 @@ class FtpTest extends FunctionalTestCase
 
     public function setUp()
     {
-        $host     = getenv('FTP_HOST');
-        $port     = getenv('FTP_PORT');
-        $user     = getenv('FTP_USER');
+        $host = getenv('FTP_HOST');
+        $port = getenv('FTP_PORT');
+        $user = getenv('FTP_USER');
         $password = getenv('FTP_PASSWORD');
-        $baseDir  = getenv('FTP_BASE_DIR');
+        $baseDir = getenv('FTP_BASE_DIR');
 
         if ($user === false || $password === false || $host === false || $baseDir === false) {
             $this->markTestSkipped('Either FTP_HOST, FTP_USER, FTP_PASSWORD and/or FTP_BASE_DIR env variables are not defined.');
@@ -25,11 +25,11 @@ class FtpTest extends FunctionalTestCase
         $baseDir = rtrim($baseDir, '/') . DIRECTORY_SEPARATOR . uniqid();
 
         $adapter = new Ftp($baseDir, $host, [
-            'port'     => $port,
+            'port' => $port,
             'username' => $user,
             'password' => $password,
-            'passive'  => true,
-            'create'   => true
+            'passive' => true,
+            'create' => true,
         ]);
         $this->filesystem = new Filesystem($adapter);
     }

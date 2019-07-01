@@ -7,18 +7,13 @@ use Gaufrette\Adapter;
 use Aws\S3\S3Client;
 use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Exception\StorageFailure;
-use Gaufrette\Util;
 
 /**
  * Amazon S3 adapter using the AWS SDK for PHP v2.x.
  *
  * @author  Michael Dowling <mtdowling@gmail.com>
  */
-class AwsS3 implements Adapter,
-                       MetadataSupporter,
-                       ListKeysAware,
-                       SizeCalculator,
-                       MimeTypeProvider
+class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator, MimeTypeProvider
 {
     /** @var S3Client */
     protected $service;
@@ -116,7 +111,7 @@ class AwsS3 implements Adapter,
         $this->ensureBucketExists();
         $options = $this->getOptions(
             $targetKey,
-            ['CopySource' => $this->bucket.'/'.$this->computePath($sourceKey)]
+            ['CopySource' => $this->bucket . '/' . $this->computePath($sourceKey)]
         );
 
         try {
@@ -270,7 +265,7 @@ class AwsS3 implements Adapter,
     {
         $result = $this->service->listObjects([
             'Bucket' => $this->bucket,
-            'Prefix' => rtrim($this->computePath($key), '/').'/',
+            'Prefix' => rtrim($this->computePath($key), '/') . '/',
             'MaxKeys' => 1,
         ]);
         if (isset($result['Contents'])) {
@@ -310,7 +305,7 @@ class AwsS3 implements Adapter,
 
         $this->service->createBucket([
             'Bucket' => $this->bucket,
-            'LocationConstraint' => $this->service->getRegion()
+            'LocationConstraint' => $this->service->getRegion(),
         ]);
         $this->bucketExists = true;
 
@@ -373,6 +368,7 @@ class AwsS3 implements Adapter,
     {
         try {
             $result = $this->service->headObject($this->getOptions($key));
+
             return ($result['ContentType']);
         } catch (\Exception $e) {
             if ($e instanceof S3Exception && $e->getResponse()->getStatusCode() === 404) {

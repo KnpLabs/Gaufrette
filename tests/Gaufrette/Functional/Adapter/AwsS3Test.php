@@ -11,7 +11,7 @@ class AwsS3Test extends FunctionalTestCase
     use FileNotFoundTests;
 
     /** @var int */
-    static private $SDK_VERSION;
+    private static $SDK_VERSION;
 
     /** @var string */
     private $bucket;
@@ -66,6 +66,7 @@ class AwsS3Test extends FunctionalTestCase
 
         if (!$result->hasKey('Contents')) {
             $this->client->deleteBucket(['Bucket' => $this->bucket]);
+
             return;
         }
 

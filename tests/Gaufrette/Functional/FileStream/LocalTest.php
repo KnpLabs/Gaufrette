@@ -13,7 +13,7 @@ class LocalTest extends FunctionalTestCase
     {
         $this->directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('gaufrette-tests');
 
-        @mkdir($this->directory.DIRECTORY_SEPARATOR.'subdir', 0777, true);
+        @mkdir($this->directory . DIRECTORY_SEPARATOR . 'subdir', 0777, true);
         umask(0002);
         $this->filesystem = new Filesystem(new LocalAdapter($this->directory, 0770));
 

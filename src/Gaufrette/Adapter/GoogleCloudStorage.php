@@ -2,8 +2,6 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-use Gaufrette\Adapter\MetadataSupporter;
-use Gaufrette\Adapter\ListKeysAware;
 use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Exception\StorageFailure;
 use Google\Cloud\Exception\NotFoundException;
@@ -29,23 +27,23 @@ final class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAw
      * @var Bucket
      */
     private $bucket;
-    private $options      = array();
-    private $metadata     = array();
+    private $options = [];
+    private $metadata = [];
 
     /**
      * @param StorageClient    $service    Authenticated storage client class
      * @param string           $bucketName Name of the bucket
      * @param array            $options    Options are: "directory" and "acl" (see https://cloud.google.com/storage/docs/access-control/lists)
      */
-    public function __construct(StorageClient $storageClient, string $bucketName, $options = array())
+    public function __construct(StorageClient $storageClient, string $bucketName, $options = [])
     {
         $this->storageClient = $storageClient;
         $this->initBucket($bucketName);
         $this->options = array_replace_recursive(
-            array(
+            [
                 'directory' => '',
-                'acl'       => array(),
-            ),
+                'acl' => [],
+            ],
             $options
         );
         $this->options['directory'] = rtrim($this->options['directory'], '/');
@@ -102,10 +100,10 @@ final class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAw
      */
     public function write($key, $content)
     {
-        $options = array(
-            'resumable'     => true,
-            'name'          => $this->computePath($key),
-        );
+        $options = [
+            'resumable' => true,
+            'name' => $this->computePath($key),
+        ];
 
         try {
             $object = $this->bucket->upload(
@@ -132,7 +130,7 @@ final class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAw
      */
     public function isDirectory($key)
     {
-        return $this->exists($this->computePath(rtrim($key, '/')).'/');
+        return $this->exists($this->computePath(rtrim($key, '/')) . '/');
     }
 
     /**
@@ -263,7 +261,7 @@ final class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAw
     private function computePath($key = null)
     {
         if (strlen($this->options['directory'])) {
-            return $this->options['directory'].'/'.$key;
+            return $this->options['directory'] . '/' . $key;
         }
 
         return $key;

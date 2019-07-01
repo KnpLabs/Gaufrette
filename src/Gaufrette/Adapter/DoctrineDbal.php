@@ -15,25 +15,23 @@ use Doctrine\DBAL\Connection;
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class DoctrineDbal implements Adapter,
-                              ChecksumCalculator,
-                              ListKeysAware
+class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
 {
     protected $connection;
     protected $table;
-    protected $columns = array(
+    protected $columns = [
         'key' => 'key',
         'content' => 'content',
         'mtime' => 'mtime',
         'checksum' => 'checksum',
-    );
+    ];
 
     /**
      * @param Connection $connection The DBAL connection
      * @param string     $table      The files table
      * @param array      $columns    The column names
      */
-    public function __construct(Connection $connection, $table, array $columns = array())
+    public function __construct(Connection $connection, $table, array $columns = [])
     {
         $this->connection = $connection;
         $this->table = $table;
@@ -66,8 +64,8 @@ class DoctrineDbal implements Adapter,
         try {
             $updated = $this->connection->update(
                 $this->table,
-                array($this->getQuotedColumn('key') => $targetKey),
-                array($this->getQuotedColumn('key') => $sourceKey)
+                [$this->getQuotedColumn('key') => $targetKey],
+                [$this->getQuotedColumn('key') => $sourceKey]
             );
         } catch (\Exception $e) {
             throw StorageFailure::unexpectedFailure('rename', [
@@ -130,7 +128,7 @@ class DoctrineDbal implements Adapter,
                     $this->getQuotedTable(),
                     $this->getQuotedColumn('key')
                 ),
-                array('key' => $key)
+                ['key' => $key]
             );
         } catch (\Exception $e) {
             throw StorageFailure::unexpectedFailure('exists', ['key' => $key], $e);
@@ -163,7 +161,7 @@ class DoctrineDbal implements Adapter,
         try {
             $deleted = $this->connection->delete(
                 $this->table,
-                array($this->getQuotedColumn('key') => $key)
+                [$this->getQuotedColumn('key') => $key]
             );
         } catch (\Exception $e) {
             throw StorageFailure::unexpectedFailure('delete', ['key' => $key], $e);
@@ -179,11 +177,11 @@ class DoctrineDbal implements Adapter,
      */
     public function write($key, $content)
     {
-        $values = array(
+        $values = [
             $this->getQuotedColumn('content') => $content,
             $this->getQuotedColumn('mtime') => time(),
             $this->getQuotedColumn('checksum') => Util\Checksum::fromContent($content),
-        );
+        ];
 
         try {
             $this->upsert($key, $values);
@@ -202,7 +200,7 @@ class DoctrineDbal implements Adapter,
             $this->connection->update(
                 $this->table,
                 $values,
-                array($this->getQuotedColumn('key') => $key)
+                [$this->getQuotedColumn('key') => $key]
             );
         } else {
             $values[$this->getQuotedColumn('key')] = $key;
@@ -229,7 +227,7 @@ class DoctrineDbal implements Adapter,
                 $this->getQuotedTable(),
                 $this->getQuotedColumn('key')
             ),
-            array('key' => $key)
+            ['key' => $key]
         );
 
         return $value;
@@ -249,16 +247,16 @@ class DoctrineDbal implements Adapter,
                 $this->getQuotedTable(),
                 $this->getQuotedColumn('key')
             ),
-            array('pattern' => sprintf('%s%%', $prefix))
+            ['pattern' => sprintf('%s%%', $prefix)]
         );
 
-        return array(
-            'dirs' => array(),
+        return [
+            'dirs' => [],
             'keys' => array_map(function ($value) {
-                    return $value['_key'];
-                },
+                return $value['_key'];
+            },
                 $keys),
-        );
+        ];
     }
 
     private function getQuotedTable()

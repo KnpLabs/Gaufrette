@@ -9,18 +9,13 @@ use Gaufrette\Util;
 use Gaufrette\Adapter;
 use Gaufrette\Stream;
 
-
 /**
  * Adapter for the local filesystem.
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class Local implements Adapter,
-    StreamFactory,
-    ChecksumCalculator,
-    SizeCalculator,
-    MimeTypeProvider
+class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculator, MimeTypeProvider
 {
     protected $directory;
     private $create;
@@ -29,7 +24,6 @@ class Local implements Adapter,
     /**
      * @param string $directory Directory where the filesystem is located
      * @param int    $mode      Mode of directory created by the adapter.
-     *
      */
     public function __construct($directory, $mode = 0777)
     {
@@ -265,7 +259,7 @@ class Local implements Adapter,
      */
     protected function computePath($key)
     {
-        return $this->normalizePath($this->directory.'/'.$key);
+        return $this->normalizePath($this->directory . '/' . $key);
     }
 
     /**

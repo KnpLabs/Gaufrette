@@ -20,7 +20,7 @@ class Filesystem implements FilesystemInterface
      *
      * @var array
      */
-    protected $fileRegister = array();
+    protected $fileRegister = [];
 
     /**
      * @param Adapter $adapter A configured Adapter instance
@@ -159,8 +159,8 @@ class Filesystem implements FilesystemInterface
             return $this->adapter->listKeys($prefix);
         }
 
-        $dirs = array();
-        $keys = array();
+        $dirs = [];
+        $keys = [];
 
         foreach ($this->keys() as $key) {
             if (empty($prefix) || 0 === strpos($key, $prefix)) {
@@ -172,10 +172,10 @@ class Filesystem implements FilesystemInterface
             }
         }
 
-        return array(
+        return [
             'keys' => $keys,
             'dirs' => $dirs,
-        );
+        ];
     }
 
     /**
@@ -303,7 +303,7 @@ class Filesystem implements FilesystemInterface
      */
     public function clearFileRegister()
     {
-        $this->fileRegister = array();
+        $this->fileRegister = [];
     }
 
     /**

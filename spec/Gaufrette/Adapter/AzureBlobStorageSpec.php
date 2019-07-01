@@ -19,19 +19,19 @@ use Psr\Http\Message\ResponseInterface;
 
 class AzureBlobStorageSpec extends ObjectBehavior
 {
-    public function let(BlobProxyFactoryInterface $blobFactory)
+    function let(BlobProxyFactoryInterface $blobFactory)
     {
         $this->beConstructedWith($blobFactory, 'containerName');
     }
 
-    public function it_should_be_initializable()
+    function it_should_be_initializable()
     {
         $this->shouldHaveType('Gaufrette\Adapter\AzureBlobStorage');
         $this->shouldHaveType('Gaufrette\Adapter');
         $this->shouldHaveType('Gaufrette\Adapter\MetadataSupporter');
     }
 
-    public function it_reads_file(BlobProxyFactoryInterface $blobFactory, IBlob $blob, GetBlobResult $blobContent)
+    function it_reads_file(BlobProxyFactoryInterface $blobFactory, IBlob $blob, GetBlobResult $blobContent)
     {
         $blobFactory->create()->willReturn($blob);
 
@@ -39,13 +39,13 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $blobContent
             ->getContentStream()
             //azure blob content is handled as stream so we need to fake it
-            ->willReturn(fopen('data://text/plain,some content','r'))
+            ->willReturn(fopen('data://text/plain,some content', 'r'))
         ;
 
         $this->read('filename')->shouldReturn('some content');
     }
 
-    public function it_throws_storage_failure_if_it_fails_to_read_file(
+    function it_throws_storage_failure_if_it_fails_to_read_file(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         ServiceException $azureException,
@@ -60,7 +60,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(StorageFailure::class)->duringRead('filename');
     }
 
-    public function it_throws_file_not_found_if_read_file_does_not_exist(
+    function it_throws_file_not_found_if_read_file_does_not_exist(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         ServiceException $azureException,
@@ -75,7 +75,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(FileNotFound::class)->duringRead('filename');
     }
 
-    public function it_renames_file(BlobProxyFactoryInterface $blobFactory, IBlob $blob)
+    function it_renames_file(BlobProxyFactoryInterface $blobFactory, IBlob $blob)
     {
         $blobFactory->create()->willReturn($blob);
 
@@ -85,7 +85,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldNotThrow(\Exception::class)->duringRename('filename1', 'filename2');
     }
 
-    public function it_throws_storage_failure_when_rename_fail(
+    function it_throws_storage_failure_when_rename_fail(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         ServiceException $azureException,
@@ -103,7 +103,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(StorageFailure::class)->duringRename('filename1', 'filename2');
     }
 
-    public function it_throws_file_not_found_when_renamed_file_does_not_exist(
+    function it_throws_file_not_found_when_renamed_file_does_not_exist(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         ServiceException $azureException,
@@ -121,7 +121,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(FileNotFound::class)->duringRename('filename1', 'filename2');
     }
 
-    public function it_writes_file(BlobProxyFactoryInterface $blobFactory, IBlob $blob)
+    function it_writes_file(BlobProxyFactoryInterface $blobFactory, IBlob $blob)
     {
         $blobFactory->create()->willReturn($blob);
 
@@ -133,7 +133,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldNotThrow(StorageFailure::class)->duringWrite('filename', 'some content');
     }
 
-    public function it_throws_storage_failure_when_write_fail(
+    function it_throws_storage_failure_when_write_fail(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         ServiceException $azureException,
@@ -150,7 +150,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(StorageFailure::class)->duringWrite('filename', 'some content');
     }
 
-    public function it_checks_if_file_exists(
+    function it_checks_if_file_exists(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         GetBlobResult $blobContent,
@@ -168,7 +168,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->exists('filename2')->shouldReturn(true);
     }
 
-    public function it_throws_storage_failure_when_it_fails_to_assert_if_a_file_exists(
+    function it_throws_storage_failure_when_it_fails_to_assert_if_a_file_exists(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         ServiceException $azureException,
@@ -186,7 +186,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(StorageFailure::class)->duringExists('filename');
     }
 
-    public function it_gets_file_mtime(
+    function it_gets_file_mtime(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         GetBlobPropertiesResult $blobPropertiesResult,
@@ -201,7 +201,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->mtime('filename')->shouldReturn(strtotime('1987-12-28 20:00:00'));
     }
 
-    public function it_throws_storage_failure_when_it_fails_to_get_file_mtime(
+    function it_throws_storage_failure_when_it_fails_to_get_file_mtime(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         ServiceException $azureException,
@@ -216,7 +216,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(StorageFailure::class)->duringMtime('filename');
     }
 
-    public function it_throws_file_not_found_when_it_fails_to_get_file_mtime(
+    function it_throws_file_not_found_when_it_fails_to_get_file_mtime(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         ServiceException $azureException,
@@ -231,7 +231,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(FileNotFound::class)->duringMtime('filename');
     }
 
-    public function it_deletes_file(BlobProxyFactoryInterface $blobFactory, IBlob $blob)
+    function it_deletes_file(BlobProxyFactoryInterface $blobFactory, IBlob $blob)
     {
         $blobFactory->create()->willReturn($blob);
 
@@ -240,7 +240,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldNotThrow(StorageFailure::class)->duringDelete('filename');
     }
 
-    public function it_throws_storage_failure_when_it_fails_to_delete_file(
+    function it_throws_storage_failure_when_it_fails_to_delete_file(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         ServiceException $azureException,
@@ -255,7 +255,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(StorageFailure::class)->duringDelete('filename');
     }
 
-    public function it_throws_file_not_found_when_it_fails_to_delete_file(
+    function it_throws_file_not_found_when_it_fails_to_delete_file(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         ServiceException $azureException,
@@ -270,7 +270,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(FileNotFound::class)->duringDelete('filename');
     }
 
-    public function it_should_get_keys(
+    function it_should_get_keys(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         Blob $blobFooBar,
@@ -288,7 +288,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->keys()->shouldReturn(['foo/bar', 'baz']);
     }
 
-    public function it_throws_storage_failure_when_it_fails_to_get_keys(
+    function it_throws_storage_failure_when_it_fails_to_get_keys(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         ServiceException $azureException,
@@ -303,7 +303,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(StorageFailure::class)->duringKeys();
     }
 
-    public function it_creates_container(BlobProxyFactoryInterface $blobFactory, IBlob $blob)
+    function it_creates_container(BlobProxyFactoryInterface $blobFactory, IBlob $blob)
     {
         $blobFactory->create()->willReturn($blob);
 
@@ -312,7 +312,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->createContainer('containerName');
     }
 
-    public function it_throws_storage_failure_when_it_fails_to_create_container(
+    function it_throws_storage_failure_when_it_fails_to_create_container(
         BlobProxyFactoryInterface $blobFactory,
         IBlob $blob,
         ServiceException $azureException,
