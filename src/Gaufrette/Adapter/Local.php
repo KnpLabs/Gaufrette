@@ -18,7 +18,6 @@ use Gaufrette\Stream;
 class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculator, MimeTypeProvider
 {
     protected $directory;
-    private $create;
     private $mode;
 
     /**
@@ -32,6 +31,12 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
 
         if (is_link($this->directory)) {
             $this->directory = realpath($this->directory);
+        }
+
+        if (!is_dir($this->directory)) {
+            throw new StorageFailure(
+                sprintf('Directory "%s" does not exist.', $directory)
+            );
         }
     }
 
