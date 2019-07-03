@@ -31,6 +31,13 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldHaveType('Gaufrette\Adapter\MetadataSupporter');
     }
 
+    function it_should_require_a_container_name(BlobProxyFactoryInterface $blobFactory)
+    {
+        $this->beConstructedWith($blobFactory);
+
+        $this->shouldThrow(\ArgumentCountError::class)->duringInstantiation();
+    }
+
     function it_reads_file(BlobProxyFactoryInterface $blobFactory, IBlob $blob, GetBlobResult $blobContent)
     {
         $blobFactory->create()->willReturn($blob);
@@ -301,30 +308,5 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $response->getStatusCode()->willReturn(500);
 
         $this->shouldThrow(StorageFailure::class)->duringKeys();
-    }
-
-    function it_creates_container(BlobProxyFactoryInterface $blobFactory, IBlob $blob)
-    {
-        $blobFactory->create()->willReturn($blob);
-
-        $blob->createContainer('containerName', null)->shouldBeCalled();
-
-        $this->createContainer('containerName');
-    }
-
-    function it_throws_storage_failure_when_it_fails_to_create_container(
-        BlobProxyFactoryInterface $blobFactory,
-        IBlob $blob,
-        ServiceException $azureException,
-        ResponseInterface $response
-    ) {
-        $blobFactory->create()->willReturn($blob);
-
-        $blob->createContainer('containerName', null)->willThrow($azureException->getWrappedObject());
-        $azureException->getResponse()->willReturn($response);
-        $response->getBody()->willReturn('<Code>SomeErrorCode</Code>');
-        $azureException->getErrorText()->willReturn(Argument::type('string'));
-
-        $this->shouldThrow(StorageFailure::class)->duringCreateContainer('containerName');
     }
 }

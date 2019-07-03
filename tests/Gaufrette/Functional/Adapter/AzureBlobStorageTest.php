@@ -18,6 +18,9 @@ class AzureBlobStorageTest extends FunctionalTestCase
     /** @var AzureBlobStorage */
     private $adapter;
 
+    /** @var \MicrosoftAzure\Storage\Blob\Internal\IBlob */
+    private $blobProxy;
+
     public function setUp()
     {
         $account = getenv('AZURE_ACCOUNT');
@@ -30,8 +33,13 @@ class AzureBlobStorageTest extends FunctionalTestCase
 
         $connection = sprintf('BlobEndpoint=http://%1$s.blob.core.windows.net/;AccountName=%1$s;AccountKey=%2$s', $account, $key);
 
+        $blobProxyFactory = new BlobProxyFactory($connection);
+        $this->blobProxy = $blobProxyFactory->create();
+
         $this->container = uniqid($containerName);
-        $this->adapter = new AzureBlobStorage(new BlobProxyFactory($connection), $this->container, true);
+        $this->blobProxy->createContainer($this->container);
+
+        $this->adapter = new AzureBlobStorage($blobProxyFactory, $this->container);
         $this->filesystem = new Filesystem($this->adapter);
     }
 
@@ -41,6 +49,21 @@ class AzureBlobStorageTest extends FunctionalTestCase
             return;
         }
 
-        $this->adapter->deleteContainer($this->container);
+        $this->blobProxy->deleteContainer($this->container);
+    }
+
+    /**
+     * @test
+     * @group functional
+     * @expectedException \Gaufrette\Exception\StorageFailure
+     */
+    public function shouldThrowWhenUsingAnUnexistingContainer()
+    {
+        $this->blobProxy->deleteContainer($this->container);
+
+        $this->filesystem->write('foo', 'Some content');
+
+        // will not delete the container again, see self::tearDown function
+        $this->adapter = null;
     }
 }

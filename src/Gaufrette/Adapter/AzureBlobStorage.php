@@ -9,7 +9,6 @@ use Gaufrette\Exception\StorageFailure;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
 use MicrosoftAzure\Storage\Blob\Models\Blob;
 use MicrosoftAzure\Storage\Blob\Models\CreateBlockBlobOptions;
-use MicrosoftAzure\Storage\Blob\Models\CreateContainerOptions;
 use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
 
 /**
@@ -47,103 +46,17 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     protected $blobProxy;
 
     /**
-     * @var bool
-     */
-    protected $multiContainerMode = false;
-
-    /**
-     * @var CreateContainerOptions
-     */
-    protected $createContainerOptions;
-
-    /**
      * @param AzureBlobStorage\BlobProxyFactoryInterface $blobProxyFactory
-     * @param string|null                                $containerName
-     * @param bool                                       $create
+     * @param string                                     $containerName
      * @param bool                                       $detectContentType
      *
      * @throws \RuntimeException
      */
-    public function __construct(BlobProxyFactoryInterface $blobProxyFactory, $containerName = null, $create = false, $detectContentType = true)
+    public function __construct(BlobProxyFactoryInterface $blobProxyFactory, string $containerName, bool $detectContentType = true)
     {
         $this->blobProxyFactory = $blobProxyFactory;
         $this->containerName = $containerName;
         $this->detectContentType = $detectContentType;
-
-        if (null === $containerName) {
-            $this->multiContainerMode = true;
-        } elseif ($create) {
-            $this->createContainer($containerName);
-        }
-    }
-
-    /**
-     * @return CreateContainerOptions
-     */
-    public function getCreateContainerOptions()
-    {
-        return $this->createContainerOptions;
-    }
-
-    /**
-     * @param CreateContainerOptions $options
-     */
-    public function setCreateContainerOptions(CreateContainerOptions $options)
-    {
-        $this->createContainerOptions = $options;
-    }
-
-    /**
-     * Creates a new container.
-     *
-     * @param string                                                     $containerName
-     * @param \MicrosoftAzure\Storage\Blob\Models\CreateContainerOptions $options
-     *
-     * @throws StorageFailure if cannot create the container
-     */
-    public function createContainer($containerName, CreateContainerOptions $options = null)
-    {
-        $this->init();
-
-        if (null === $options) {
-            $options = $this->getCreateContainerOptions();
-        }
-
-        try {
-            $this->blobProxy->createContainer($containerName, $options);
-        } catch (ServiceException $e) {
-            $errorCode = $this->getErrorCodeFromServiceException($e);
-
-            // We don't care if the container was created between check and creation attempt
-            // it might be due to a parallel execution creating it.
-            if ($errorCode !== self::ERROR_CONTAINER_ALREADY_EXISTS) {
-                throw StorageFailure::unexpectedFailure('createContainer', [
-                    'containerName' => $containerName,
-                    'options' => $options,
-                ], $e);
-            }
-        }
-    }
-
-    /**
-     * Deletes a container.
-     *
-     * @param string                 $containerName
-     * @param DeleteContainerOptions $options
-     *
-     * @throws StorageFailure if cannot delete the container
-     */
-    public function deleteContainer($containerName, DeleteContainerOptions $options = null)
-    {
-        $this->init();
-
-        try {
-            $this->blobProxy->deleteContainer($containerName, $options);
-        } catch (ServiceException $e) {
-            throw StorageFailure::unexpectedFailure('deleteContainer', [
-                'containerName' => $containerName,
-            ], $e);
-        }
     }
 
     /**
@@ -187,10 +100,6 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
         }
 
         try {
-            if ($this->multiContainerMode) {
-                $this->createContainer($containerName);
-            }
-
             $this->blobProxy->createBlockBlob($containerName, $key, $content, $options);
         } catch (ServiceException $e) {
             throw StorageFailure::unexpectedFailure('write', [
@@ -231,76 +140,10 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     {
         $this->init();
 
-        if ($this->multiContainerMode) {
-            return $this->keysForMultiContainerMode();
-        }
-
-        return $this->keysForSingleContainerMode();
-    }
-
-    /**
-     * List objects stored when the adapter is used in multi container mode.
-     *
-     * @return array
-     *
-     * @throws \RuntimeException
-     */
-    private function keysForMultiContainerMode()
-    {
-        try {
-            $containersList = $this->blobProxy->listContainers()->getContainers();
-            $lists = [];
-
-            foreach ($containersList as $container) {
-                $lists[] = $this->fetchContainerKeysAndIgnore404($container->getName());
-            }
-
-            return !empty($lists) ? array_merge(...$lists) : [];
-        } catch (ServiceException $e) {
-            throw StorageFailure::unexpectedFailure('keys', [
-                'multiContainerMode' => $this->multiContainerMode,
-                'containerName' => $this->containerName,
-            ], $e);
-        }
-    }
-
-    /**
-     * List the keys in a container and ignore any 404 error.
-     *
-     * This prevent race conditions happening when a container is deleted after calling listContainers() and
-     * before the container keys are fetched.
-     *
-     * @param string $containerName
-     *
-     * @return array
-     */
-    private function fetchContainerKeysAndIgnore404($containerName)
-    {
-        try {
-            return $this->fetchBlobs($containerName, $containerName);
-        } catch (ServiceException $e) {
-            if ($e->getResponse()->getStatusCode() === 404) {
-                return [];
-            }
-
-            throw $e;
-        }
-    }
-
-    /**
-     * List objects stored when the adapter is not used in multi container mode.
-     *
-     * @return array
-     *
-     * @throws \RuntimeException
-     */
-    private function keysForSingleContainerMode()
-    {
         try {
             return $this->fetchBlobs($this->containerName);
         } catch (ServiceException $e) {
             throw StorageFailure::unexpectedFailure('keys', [
-                'multiContainerMode' => $this->multiContainerMode,
                 'containerName' => $this->containerName,
             ], $e);
         }
@@ -413,10 +256,6 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
         list($targetContainerName, $targetKey) = $this->tokenizeKey($targetKey);
 
         try {
-            if ($this->multiContainerMode) {
-                $this->createContainer($targetContainerName);
-            }
-
             $this->blobProxy->copyBlob($targetContainerName, $targetKey, $sourceContainerName, $sourceKey);
             $this->blobProxy->deleteBlob($sourceContainerName, $sourceKey);
         } catch (ServiceException $e) {
@@ -535,22 +374,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
      */
     private function tokenizeKey($key)
     {
-        $containerName = $this->containerName;
-        if (false === $this->multiContainerMode) {
-            return [$containerName, $key];
-        }
-
-        if (false === ($index = strpos($key, '/'))) {
-            throw new InvalidKey(sprintf(
-                'Failed to establish container name from key "%s", container name is required in multi-container mode',
-                $key
-            ));
-        }
-
-        $containerName = substr($key, 0, $index);
-        $key = substr($key, $index + 1);
-
-        return [$containerName, $key];
+        return [$this->containerName, $key];
     }
 
     /**
