@@ -379,7 +379,6 @@ class Ftp implements Adapter,
         }
 
         try {
-            $chDirResult = false;
             $chDirResult = ftp_chdir($this->getConnection(), $this->directory);
 
             // change directory again to return in the base directory
@@ -400,8 +399,6 @@ class Ftp implements Adapter,
             $url = $this->createConnectionUrl();
             return @is_dir($url . $directory);
         }
-
-        return true;
     }
 
     private function fetchKeys($directory = '', $onlyKeys = true)
