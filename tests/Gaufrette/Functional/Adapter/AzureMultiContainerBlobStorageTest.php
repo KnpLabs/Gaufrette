@@ -17,7 +17,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
 
     private $containers = [];
 
-    public function setUp()
+    protected function setUp()
     {
         $this->markTestSkipped(__CLASS__ . ' is flaky.');
 
@@ -247,7 +247,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
         return $container;
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         foreach ($this->containers as $container) {
             $this->adapter->deleteContainer($container);

@@ -14,7 +14,7 @@ class PhpseclibSftpTest extends FunctionalTestCase
     /** @var string */
     private $baseDir;
 
-    public function setUp()
+    protected function setUp()
     {
         $host = getenv('SFTP_HOST');
         $port = getenv('SFTP_PORT') ?: 22;
@@ -34,7 +34,7 @@ class PhpseclibSftpTest extends FunctionalTestCase
         $this->filesystem = new Filesystem(new PhpseclibSftp($this->sftp, $this->baseDir, true));
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         if (!isset($this->sftp)) {
             return;

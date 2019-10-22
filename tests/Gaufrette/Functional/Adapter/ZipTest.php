@@ -7,7 +7,7 @@ use Gaufrette\Filesystem;
 
 class ZipTest extends FunctionalTestCase
 {
-    public function setUp()
+    protected function setUp()
     {
         if (!extension_loaded('zip')) {
             return $this->markTestSkipped('The zip extension is not available.');
@@ -20,7 +20,7 @@ class ZipTest extends FunctionalTestCase
         $this->filesystem = new Filesystem(new Zip(__DIR__ . '/test.zip'));
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         parent::tearDown();
 

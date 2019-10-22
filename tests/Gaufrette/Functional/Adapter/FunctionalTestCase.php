@@ -25,7 +25,7 @@ abstract class FunctionalTestCase extends TestCase
         return $matches[1];
     }
 
-    public function setUp()
+    protected function setUp()
     {
         $basename = $this->getAdapterName();
         $filename = sprintf(
@@ -48,7 +48,7 @@ EOF
         $this->filesystem = new Filesystem($adapter);
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         if (null === $this->filesystem) {
             return;

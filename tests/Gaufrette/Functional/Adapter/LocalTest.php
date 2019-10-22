@@ -9,7 +9,7 @@ class LocalTest extends FunctionalTestCase
 {
     private $directory;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->directory = sprintf('%s/filesystem', str_replace('\\', '/', __DIR__));
 
@@ -20,7 +20,7 @@ class LocalTest extends FunctionalTestCase
         $this->filesystem = new Filesystem(new Local($this->directory));
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         $adapter = $this->filesystem->getAdapter();
 

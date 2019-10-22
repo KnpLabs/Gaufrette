@@ -8,7 +8,7 @@ use MongoDB\Client;
 
 class GridFSTest extends FunctionalTestCase
 {
-    public function setUp()
+    protected function setUp()
     {
         $uri = getenv('MONGO_URI');
         $dbname = getenv('MONGO_DBNAME');
@@ -79,7 +79,7 @@ class GridFSTest extends FunctionalTestCase
      * @test
      * Tests metadata written to GridFS can be retrieved after writing
      */
-    public function testMetadataRetrieveAfterWrite()
+    public function shouldRetrieveMetadataAfterWrite()
     {
         //Create local copy of fileadapter
         $fileadpt = clone $this->filesystem->getAdapter();
@@ -94,7 +94,7 @@ class GridFSTest extends FunctionalTestCase
      * @test
      * Test to see if filesize works
      */
-    public function testSize()
+    public function shouldGetSize()
     {
         $this->filesystem->write('sizetest.txt', 'data');
         $this->assertEquals(4, $this->filesystem->size('sizetest.txt'));
@@ -104,7 +104,7 @@ class GridFSTest extends FunctionalTestCase
      * @test
      * Should retrieve empty metadata w/o errors
      */
-    public function testRetrieveWithoutMetadata()
+    public function shouldRetrieveEmptyMetadata()
     {
         $this->filesystem->write('no-metadata.txt', 'content');
 
