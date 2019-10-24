@@ -7,7 +7,7 @@ use Gaufrette\Filesystem;
 
 class FtpTest extends FunctionalTestCase
 {
-    public function setUp()
+    protected function setUp()
     {
         $host = getenv('FTP_HOST');
         $port = getenv('FTP_PORT');
@@ -23,7 +23,7 @@ class FtpTest extends FunctionalTestCase
         $this->filesystem = new Filesystem($adapter);
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         if (null === $this->filesystem) {
             return;

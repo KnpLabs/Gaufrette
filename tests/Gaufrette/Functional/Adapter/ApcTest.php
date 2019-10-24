@@ -7,7 +7,7 @@ use Gaufrette\Filesystem;
 
 class ApcTest extends FunctionalTestCase
 {
-    public function setUp()
+    protected function setUp()
     {
         if (!extension_loaded('apc')) {
             return $this->markTestSkipped('The APC extension is not available.');
@@ -20,7 +20,7 @@ class ApcTest extends FunctionalTestCase
         $this->filesystem = new Filesystem(new Apc('gaufrette-test.'));
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         parent::tearDown();
         if (extension_loaded('apc')) {

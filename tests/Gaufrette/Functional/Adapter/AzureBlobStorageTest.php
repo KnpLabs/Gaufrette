@@ -18,7 +18,7 @@ class AzureBlobStorageTest extends FunctionalTestCase
     /** @var AzureBlobStorage */
     private $adapter;
 
-    public function setUp()
+    protected function setUp()
     {
         $account = getenv('AZURE_ACCOUNT');
         $key = getenv('AZURE_KEY');
@@ -35,7 +35,7 @@ class AzureBlobStorageTest extends FunctionalTestCase
         $this->filesystem = new Filesystem($this->adapter);
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         if ($this->adapter === null) {
             return;

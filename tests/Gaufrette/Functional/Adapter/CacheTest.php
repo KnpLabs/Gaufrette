@@ -8,7 +8,7 @@ use Gaufrette\Adapter\InMemory;
 
 class CacheTest extends FunctionalTestCase
 {
-    public function setUp()
+    protected function setUp()
     {
         $this->filesystem = new Filesystem(new Cache(new InMemory(), new InMemory()));
     }

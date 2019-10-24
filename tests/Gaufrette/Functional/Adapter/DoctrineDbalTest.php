@@ -11,7 +11,7 @@ class DoctrineDbalTest extends FunctionalTestCase
     /** @var  \Doctrine\DBAL\Connection */
     private $connection;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->connection = DriverManager::getConnection([
             'driver' => 'pdo_sqlite',
@@ -32,7 +32,7 @@ class DoctrineDbalTest extends FunctionalTestCase
         $this->filesystem = new Filesystem(new DoctrineDbal($this->connection, 'gaufrette'));
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         $schemaManager = $this->connection->getSchemaManager();
 
