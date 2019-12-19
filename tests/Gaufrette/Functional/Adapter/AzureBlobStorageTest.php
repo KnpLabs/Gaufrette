@@ -45,7 +45,7 @@ class AzureBlobStorageTest extends FunctionalTestCase
         $content = 'Some content';
         $this->filesystem->write($path, $content);
 
-        $this->assertEquals("text/plain", $this->filesystem->mimeType($path));
+        $this->assertEquals('text/plain', $this->filesystem->mimeType($path));
     }
 
     protected function tearDown()
