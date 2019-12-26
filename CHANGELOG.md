@@ -1,3 +1,19 @@
+v0.9.0
+======
+
+## New features
+
+- Add MimeTypeProvider to AzureBlobStorage (#630)
+
+## Fixes
+
+- Fix docker setup for dev env (#580)
+- Define env vars in .env file only (#615)
+- Add PHP Coding Standard check step on CI (#617)
+- PHPUnit tests enhancement (#627)
+
+Thank you @nicolasmure, @peter279k and @rgembalik for your contributions!
+
 v0.8.3
 ======
 
