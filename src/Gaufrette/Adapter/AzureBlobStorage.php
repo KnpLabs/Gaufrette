@@ -20,7 +20,7 @@ use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
  * @author Luciano Mammino <lmammino@oryzone.com>
  * @author Paweł Czyżewski <pawel.czyzewski@enginewerk.com>
  */
-class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, ChecksumCalculator
+class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, ChecksumCalculator, MimeTypeProvider
 {
     /**
      * Error constants.
@@ -327,6 +327,25 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
             return $properties->getProperties()->getContentLength();
         } catch (ServiceException $e) {
             $this->failIfContainerNotFound($e, sprintf('read content length for key "%s"', $key), $containerName);
+
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function mimeType($key)
+    {
+        $this->init();
+        list($containerName, $key) = $this->tokenizeKey($key);
+
+        try {
+            $properties = $this->blobProxy->getBlobProperties($containerName, $key);
+
+            return $properties->getProperties()->getContentType();
+        } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, sprintf('read content mime type for key "%s"', $key), $containerName);
 
             return false;
         }

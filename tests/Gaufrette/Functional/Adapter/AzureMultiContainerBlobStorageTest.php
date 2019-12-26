@@ -27,7 +27,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
             $this->markTestSkipped('Either AZURE_ACCOUNT and/or AZURE_KEY env variables are not defined.');
         }
 
-        $connection = sprintf('BlobEndpoint=http://%1$s.blob.core.windows.net/;AccountName=%1$s;AccountKey=%2$s', $account, $key);
+        $connection = sprintf('BlobEndpoint=https://%1$s.blob.core.windows.net/;AccountName=%1$s;AccountKey=%2$s', $account, $key);
 
         $this->adapter = new AzureBlobStorage(new BlobProxyFactory($connection));
         $this->filesystem = new Filesystem($this->adapter);
@@ -120,6 +120,20 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
         $this->filesystem->write($path, $content);
 
         $this->assertEquals(\md5($content), $this->filesystem->checksum($path));
+    }
+
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldGetContentType()
+    {
+        $path = $this->createUniqueContainerName('container') . '/foo';
+
+        $content = 'Some content';
+        $this->filesystem->write($path, $content);
+
+        $this->assertEquals('text/plain', $this->filesystem->mimeType($path));
     }
 
     /**
