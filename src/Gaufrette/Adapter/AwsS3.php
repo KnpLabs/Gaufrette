@@ -68,8 +68,8 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
     public function getUrl($key, array $options = [])
     {
         @trigger_error(
-            E_USER_DEPRECATED,
-            'Using AwsS3::getUrl() method was deprecated since v0.4. Please chek gaufrette/extras package if you want this feature'
+            'Using AwsS3::getUrl() method was deprecated since v0.4. Please chek gaufrette/extras package if you want this feature',
+            E_USER_DEPRECATED
         );
 
         return $this->service->getObjectUrl(
