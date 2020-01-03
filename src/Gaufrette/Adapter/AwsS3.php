@@ -2,8 +2,9 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Adapter;
+use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
+use Gaufrette\Adapter;
 use Gaufrette\Util;
 
 /**
@@ -13,6 +14,12 @@ use Gaufrette\Util;
  */
 class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator, MimeTypeProvider
 {
+    /*
+     * Amazon S3 does not not allow uploads > 5Go
+     */
+    const MAX_CONTENT_SIZE = 5368709120;
+    const DEFAULT_PART_SIZE = 5242880;
+
     /** @var S3Client */
     protected $service;
     /** @var string */
@@ -25,6 +32,10 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
     protected $metadata = [];
     /** @var bool */
     protected $detectContentType;
+    /** @var int */
+    protected $sizeLimit = self::MAX_CONTENT_SIZE;
+    /** @var int */
+    protected $partSize = self::DEFAULT_PART_SIZE;
 
     /**
      * @param S3Client $service
@@ -36,6 +47,15 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
     {
         $this->service = $service;
         $this->bucket = $bucket;
+
+        if (isset($options['size_limit']) && $options['size_limit'] <= self::MAX_CONTENT_SIZE) {
+            $this->sizeLimit = $options['size_limit'];
+        }
+
+        if (isset($options['part_size']) && $options['part_size'] >= self::DEFAULT_PART_SIZE) {
+            $this->partSize = $options['part_size'];
+        }
+
         $this->options = array_replace(
             [
                 'create' => false,
@@ -62,7 +82,6 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
      *
      * @deprecated 1.0 Resolving object path into URLs is out of the scope of this repository since v0.4. gaufrette/extras
      *                 provides a Filesystem decorator with a regular resolve() method. You should use it instead.
-     *
      * @see https://github.com/Gaufrette/extras
      */
     public function getUrl($key, array $options = [])
@@ -162,14 +181,28 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
             $options['ContentType'] = $this->guessContentType($content);
         }
 
-        try {
-            $this->service->putObject($options);
+        if ($isResource = is_resource($content)) {
+            $size = Util\Size::fromResource($content);
+        } else {
+            $size = Util\Size::fromContent($content);
+        }
 
-            if (is_resource($content)) {
-                return Util\Size::fromResource($content);
+        try {
+            $success = true;
+
+            if ($size >= $this->sizeLimit && $isResource) {
+                $success = $this->multipartUpload($key, $content);
+            } elseif ($size <= $this->sizeLimit) {
+                $this->service->putObject($options);
+            } else {
+                /*
+                 * content is a string & too big to be uploaded in one shot
+                 * We may want to throw an exception here ?
+                 */
+                return false;
             }
 
-            return Util\Size::fromContent($content);
+            return $success ? $size : false;
         } catch (\Exception $e) {
             return false;
         }
@@ -295,10 +328,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
         }
 
         if (!$this->options['create']) {
-            throw new \RuntimeException(sprintf(
-                'The configured bucket "%s" does not exist.',
-                $this->bucket
-            ));
+            throw new \RuntimeException(sprintf('The configured bucket "%s" does not exist.', $this->bucket));
         }
 
         $this->service->createBucket([
@@ -335,11 +365,111 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
     }
 
     /**
+     * MultiPart upload for big files (exceeding size_limit)
+     *
+     * @param string   $key
+     * @param resource $content
+     *
+     * @return bool
+     */
+    protected function multipartUpload($key, $content)
+    {
+        $uploadId = $this->initiateMultipartUpload($key);
+
+        $parts = [];
+        $partNumber = 1;
+
+        rewind($content);
+
+        try {
+            while (!feof($content)) {
+                $result = $this->uploadNextPart($key, $content, $uploadId, $partNumber);
+                $parts[] = [
+                    'PartNumber' => $partNumber++,
+                    'ETag' => $result['ETag'],
+                ];
+            }
+        } catch (S3Exception $e) {
+            $this->abortMultipartUpload($key, $uploadId);
+
+            return false;
+        }
+
+        $this->completeMultipartUpload($key, $uploadId, $parts);
+
+        return true;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return string
+     */
+    protected function initiateMultipartUpload($key)
+    {
+        $options = $this->getOptions($key);
+        $result = $this->service->createMultipartUpload($options);
+
+        return $result['UploadId'];
+    }
+
+    /**
+     * @param string $key
+     * @param string $content
+     * @param string $uploadId
+     * @param int    $partNumber
+     *
+     * @return \Aws\Result
+     */
+    protected function uploadNextPart($key, $content, $uploadId, $partNumber)
+    {
+        $options = $this->getOptions(
+            $key,
+            [
+                'UploadId' => $uploadId,
+                'PartNumber' => $partNumber,
+                'Body' => fread($content, $this->partSize),
+            ]
+        );
+
+        $options = $this->getOptions($key, $options);
+
+        return $this->service->uploadPart($options);
+    }
+
+    /**
+     * @param string $key
+     * @param string $uploadId
+     * @param array  $parts
+     */
+    protected function completeMultipartUpload($key, $uploadId, $parts)
+    {
+        $options = $this->getOptions(
+           $key,
+           [
+               'UploadId' => $uploadId,
+               'MultipartUpload' => ['Parts' => $parts],
+           ]
+        );
+        $this->service->completeMultipartUpload($options);
+    }
+
+    /**
+     * @param string $key
+     * @param string $uploadId
+     */
+    protected function abortMultipartUpload($key, $uploadId)
+    {
+        $options = $this->getOptions($key, ['UploadId' => $uploadId]);
+        $this->service->abortMultipartUpload($options);
+    }
+
+    /**
      * Computes the key from the specified path.
      *
      * @param string $path
      *
-     * return string
+     * @return string
      */
     protected function computeKey($path)
     {
@@ -362,12 +492,17 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
         return $fileInfo->buffer($content);
     }
 
+    /**
+     * @param string $key
+     *
+     * @return string
+     */
     public function mimeType($key)
     {
         try {
             $result = $this->service->headObject($this->getOptions($key));
 
-            return ($result['ContentType']);
+            return $result['ContentType'];
         } catch (\Exception $e) {
             return false;
         }

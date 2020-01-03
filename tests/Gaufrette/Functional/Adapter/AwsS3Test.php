@@ -5,6 +5,7 @@ namespace Gaufrette\Functional\Adapter;
 use Aws\S3\S3Client;
 use Gaufrette\Adapter\AwsS3;
 use Gaufrette\Filesystem;
+use Gaufrette\Util;
 
 class AwsS3Test extends FunctionalTestCase
 {
@@ -16,6 +17,12 @@ class AwsS3Test extends FunctionalTestCase
 
     /** @var S3Client */
     private $client;
+
+    /** @var string */
+    private $bigFileName;
+
+    /** @ver resource */
+    private $bigFile;
 
     protected function setUp()
     {
@@ -31,6 +38,8 @@ class AwsS3Test extends FunctionalTestCase
         }
 
         $this->bucket = uniqid(getenv('AWS_BUCKET'));
+        $this->bigFileName = null;
+        $this->bigFile = null;
 
         if (self::$SDK_VERSION === 3) {
             // New way of instantiating S3Client for aws-sdk-php v3
@@ -73,11 +82,33 @@ class AwsS3Test extends FunctionalTestCase
         }
 
         $this->client->deleteBucket(['Bucket' => $this->bucket]);
+
+        if (is_resource($this->bigFile)) {
+            fclose($this->bigFile);
+        }
+
+        if ($this->bigFileName !== null) {
+            unlink($this->bigFileName);
+        }
     }
 
     private function createFilesystem(array $adapterOptions = [])
     {
         $this->filesystem = new Filesystem(new AwsS3($this->client, $this->bucket, $adapterOptions));
+    }
+
+    private function createBigFile()
+    {
+        $this->bigFileName = sys_get_temp_dir() . '/' . uniqid();
+        $this->bigFile = fopen($this->bigFileName, 'w+');
+        $i = 0;
+
+        // create 6Mo file.
+        while ($i < 1048576) {
+            $i++;
+            fwrite($this->bigFile, 'foobar');
+        }
+        rewind($this->bigFile);
     }
 
     /**
@@ -187,5 +218,29 @@ class AwsS3Test extends FunctionalTestCase
         $this->filesystem->write('foo', '<html></html>');
 
         $this->assertEquals('text/html', $this->filesystem->mimeType('foo'));
+    }
+
+    /**
+     * @test
+     */
+    public function shouldMultipartUploadFile()
+    {
+        $this->createFilesystem(['create' => true, 'size_limit' => AwsS3::DEFAULT_PART_SIZE, 'part_size' => AwsS3::DEFAULT_PART_SIZE]);
+        $this->createBigFile();
+        $size = Util\Size::fromResource($this->bigFile);
+        $this->assertLessThan($size, AwsS3::DEFAULT_PART_SIZE);
+        $this->assertEquals($size, $this->filesystem->write('bigfoo', $this->bigFile));
+    }
+
+    /**
+     * @test
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Could not write the "bigfoo_error" key content.
+     */
+    public function shouldNotUploadOversizedString()
+    {
+        $this->createFilesystem(['create' => true, 'size_limit' => AwsS3::DEFAULT_PART_SIZE, 'part_size' => AwsS3::DEFAULT_PART_SIZE]);
+        $this->createBigFile();
+        $this->filesystem->write('bigfoo_error', fread($this->bigFile, Util\Size::fromResource($this->bigFile)));
     }
 }
