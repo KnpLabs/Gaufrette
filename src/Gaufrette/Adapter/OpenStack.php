@@ -262,7 +262,7 @@ final class OpenStack implements Adapter, ChecksumCalculator, ListKeysAware, Met
     public function setMetadata($key, $content)
     {
         try {
-            $this->getObject($key)->resetMetadata($content);
+       //     $this->getObject($key)->resetMetadata($content);
         } catch (BadResponseError $e) {
             if (404 === $e->getResponse()->getStatusCode()) {
                 throw new FileNotFound($key);
