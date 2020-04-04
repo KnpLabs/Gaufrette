@@ -2,9 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use Gaufrette\Exception\FileNotFound;
-use Gaufrette\Exception\InvalidKey;
-use Gaufrette\Exception\StorageFailure;
 use Gaufrette\Util;
 use Gaufrette\Adapter;
 use Gaufrette\Stream;
@@ -18,72 +15,74 @@ use Gaufrette\Stream;
 class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculator, MimeTypeProvider
 {
     protected $directory;
+    private $create;
     private $mode;
 
     /**
      * @param string $directory Directory where the filesystem is located
-     * @param int    $mode      Mode of directory created by the adapter.
+     * @param bool   $create    Whether to create the directory if it does not
+     *                          exist (default FALSE)
+     * @param int    $mode      Mode for mkdir
+     *
+     * @throws \RuntimeException if the specified directory does not exist and
+     *                          could not be created
      */
-    public function __construct($directory, $mode = 0777)
+    public function __construct($directory, $create = false, $mode = 0777)
     {
         $this->directory = Util\Path::normalize($directory);
-        $this->mode = $mode;
 
         if (is_link($this->directory)) {
             $this->directory = realpath($this->directory);
         }
 
-        if (!is_dir($this->directory)) {
-            throw new StorageFailure(
-                sprintf('Directory "%s" does not exist.', $directory)
-            );
-        }
+        $this->create = $create;
+        $this->mode = $mode;
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function read($key)
     {
         if ($this->isDirectory($key)) {
-            throw StorageFailure::unexpectedFailure(
-                'read',
-                ['key' => $key],
-                new InvalidKey(sprintf('Cannot read "%s" as it is a directory', $key))
-            );
+            return false;
         }
 
-        if (false === $content = @file_get_contents($this->computePath($key))) {
-            throw StorageFailure::unexpectedFailure('read', ['key' => $key]);
-        }
-
-        return $content;
+        return file_get_contents($this->computePath($key));
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function write($key, $content)
     {
         $path = $this->computePath($key);
-        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($key));
+        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($path), true);
 
-        if (false === @file_put_contents($path, $content)) {
-            throw StorageFailure::unexpectedFailure('write', ['key' => $key]);
-        }
+        return file_put_contents($path, $content);
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function rename($sourceKey, $targetKey)
     {
         $targetPath = $this->computePath($targetKey);
-        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetKey));
+        $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath), true);
 
-        if (!@rename($this->computePath($sourceKey), $targetPath)) {
-            throw StorageFailure::unexpectedFailure('rename', ['sourceKey' => $sourceKey, 'targetKey' => $targetKey]);
-        }
+        return rename($this->computePath($sourceKey), $targetPath);
     }
 
     /**
@@ -96,10 +95,14 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function keys()
     {
-        $this->ensureDirectoryExists($this->directory);
+        $this->ensureDirectoryExists($this->directory, $this->create);
 
         try {
             $files = new \RecursiveIteratorIterator(
@@ -124,14 +127,14 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function mtime($key)
     {
-        if (false === $mtime = filemtime($this->computePath($key))) {
-            throw StorageFailure::unexpectedFailure('mtime', ['key' => $key]);
-        }
-
-        return $mtime;
+        return filemtime($this->computePath($key));
     }
 
     /**
@@ -143,24 +146,12 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
     public function delete($key)
     {
         if ($this->isDirectory($key)) {
-            try {
-                if (!$this->deleteDirectory($this->computePath($key))) {
-                    throw StorageFailure::unexpectedFailure('delete', ['key' => $key]);
-                }
-            } catch (\InvalidArgumentException $e) {
-                throw StorageFailure::unexpectedFailure('delete', ['key' => $key], $e);
-            }
-
-            return;
+            return $this->deleteDirectory($this->computePath($key));
         } elseif ($this->exists($key)) {
-            if (!unlink($this->computePath($key))) {
-                throw StorageFailure::unexpectedFailure('delete', ['key' => $key]);
-            }
-
-            return;
+            return unlink($this->computePath($key));
         }
 
-        throw new FileNotFound($key);
+        return false;
     }
 
     /**
@@ -168,7 +159,9 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      *
      * @return bool
      *
-     * @throws InvalidKey If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function isDirectory($key)
     {
@@ -189,62 +182,51 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function checksum($key)
     {
-        if (!$this->exists($key)) {
-            throw new FileNotFound($key);
-        }
-
-        if (false === $checksum = Util\Checksum::fromFile($this->computePath($key))) {
-            throw StorageFailure::unexpectedFailure('checksum', ['key' => $key]);
-        }
-
-        return $checksum;
+        return Util\Checksum::fromFile($this->computePath($key));
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function size($key)
     {
-        if (!$this->exists($key)) {
-            throw new FileNotFound($key);
-        }
-
-        if (false === $size = Util\Size::fromFile($this->computePath($key))) {
-            throw StorageFailure::unexpectedFailure('size', ['key' => $key]);
-        }
-
-        return $size;
+        return Util\Size::fromFile($this->computePath($key));
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function mimeType($key)
     {
-        if (!$this->exists($key)) {
-            throw new FileNotFound($key);
-        }
-
         $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
 
-        if (false === $mimeType = $fileInfo->file($this->computePath($key))) {
-            throw StorageFailure::unexpectedFailure('mimeType', ['key' => $key]);
-        }
-
-        return $mimeType;
+        return $fileInfo->file($this->computePath($key));
     }
 
     /**
      * Computes the key from the specified path.
      *
-     * @param string $path
-     *
+     * @param $path
      * @return string
      *
-     * @throws InvalidKey If the computed path is out of the directory
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
      */
     public function computeKey($path)
     {
@@ -260,10 +242,14 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      *
      * @return string A path
      *
-     * @throws InvalidKey If the computed path is out of the base directory
+     * @throws \InvalidArgumentException If the directory already exists
+     * @throws \OutOfBoundsException     If the computed path is out of the directory
+     * @throws \RuntimeException         If directory does not exists and cannot be created
      */
     protected function computePath($key)
     {
+        $this->ensureDirectoryExists($this->directory, $this->create);
+
         return $this->normalizePath($this->directory . '/' . $key);
     }
 
@@ -273,15 +259,15 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      * @param string $path
      *
      * @return string
-     *
-     * @throws InvalidKey If the computed path is out of the base directory
+     * @throws \OutOfBoundsException If the computed path is out of the
+     *                              directory
      */
     protected function normalizePath($path)
     {
         $path = Util\Path::normalize($path);
 
         if (0 !== strpos($path, $this->directory)) {
-            throw new InvalidKey(sprintf('The path "%s" is out of the filesystem.', $path));
+            throw new \OutOfBoundsException(sprintf('The path "%s" is out of the filesystem.', $path));
         }
 
         return $path;
@@ -290,25 +276,37 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
     /**
      * Ensures the specified directory exists, creates it if it does not.
      *
-     * @param string $key Path of the directory to test, relative to the base directory of the adapter.
+     * @param string $directory Path of the directory to test
+     * @param bool   $create    Whether to create the directory if it does
+     *                          not exist
      *
-     * @throws InvalidKey     When the $key is not valid.
-     * @throws StorageFailure When the directory creation failed.
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException if the directory does not exists and could not
+     *                          be created
      */
-    protected function ensureDirectoryExists($key)
+    protected function ensureDirectoryExists($directory, $create = false)
     {
-        if (file_exists($key)) {
-            if (!is_dir($key)) {
-                throw new StorageFailure(sprintf('Could not create directory "%s" because it\'s a file.', $key));
+        if (!is_dir($directory)) {
+            if (!$create) {
+                throw new \RuntimeException(sprintf('The directory "%s" does not exist.', $directory));
             }
 
-            return;
+            $this->createDirectory($directory);
         }
+    }
 
-        $directory = $this->computePath($key);
-
+    /**
+     * Creates the specified directory and its parents.
+     *
+     * @param string $directory Path of the directory to create
+     *
+     * @throws \InvalidArgumentException if the directory already exists
+     * @throws \RuntimeException         if the directory could not be created
+     */
+    protected function createDirectory($directory)
+    {
         if (!@mkdir($directory, $this->mode, true) && !is_dir($directory)) {
-            throw new StorageFailure(sprintf('The directory "%s" could not be created.', $key));
+            throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
         }
     }
 
