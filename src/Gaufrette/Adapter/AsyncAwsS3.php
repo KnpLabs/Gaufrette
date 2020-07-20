@@ -77,7 +77,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
         $path = $this->computePath($key);
 
         if (isset($options['expires'])) {
-            $date = new \DateTimeImmutable('@'.$options['expires']);
+            $date = new \DateTimeImmutable('@' . $options['expires']);
             $input = GetObjectRequest::create(array_merge($options, ['Bucket' => $this->bucket, 'Key' => $path]));
 
             return $this->service->presign($input, $date);
@@ -307,7 +307,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
             return true;
         }
 
-        if ($this->bucketExists = $this->service->bucketExists(['Bucket'=>$this->bucket])->isSuccess()) {
+        if ($this->bucketExists = $this->service->bucketExists(['Bucket' => $this->bucket])->isSuccess()) {
             return true;
         }
 
@@ -319,7 +319,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
         }
 
         $this->service->createBucket([
-            'Bucket' => $this->bucket
+            'Bucket' => $this->bucket,
         ]);
         $this->bucketExists = true;
 
