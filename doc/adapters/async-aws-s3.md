@@ -17,7 +17,7 @@ In order to use this adapter you'll need an access key and a secret key.
 <?php
 
 use AsyncAws\SimpleS3\SimpleS3Client;
-use Gaufrette\Adapter\AwsS3 as AwsS3Adapter;
+use Gaufrette\Adapter\AsyncAwsS3 as AwsS3Adapter;
 use Gaufrette\Filesystem;
 
 $s3client = new SimpleS3Client([
