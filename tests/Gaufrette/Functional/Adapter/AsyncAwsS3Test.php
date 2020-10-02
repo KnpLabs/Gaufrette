@@ -36,7 +36,13 @@ class AsyncAwsS3Test extends FunctionalTestCase
 
     protected function tearDown()
     {
-        // TODO delete bucket
+        if ($this->client === null) {
+            return;
+        }
+
+        try {
+            $this->client->deleteBucket(['Bucket' => $this->bucket]);
+        } catch (\Throwable $e) {}
     }
 
     private function createFilesystem(array $adapterOptions = [])
@@ -71,13 +77,6 @@ class AsyncAwsS3Test extends FunctionalTestCase
         $this->assertTrue($this->filesystem->has('foo'));
     }
 
-    /**
-     * @test
-     */
-    public function shouldGetObjectUrls()
-    {
-        $this->assertNotEmpty($this->filesystem->getAdapter()->getUrl('foo'));
-    }
 
     /**
      * @test
@@ -88,15 +87,6 @@ class AsyncAwsS3Test extends FunctionalTestCase
         $this->filesystem->write('foo', '');
 
         $this->assertTrue($this->filesystem->has('foo'));
-    }
-
-    /**
-     * @test
-     */
-    public function shouldGetObjectUrlsWithDirectory()
-    {
-        $this->createFilesystem(['directory' => 'bar']);
-        $this->assertNotEmpty($this->filesystem->getAdapter()->getUrl('foo'));
     }
 
     /**
