@@ -2,7 +2,6 @@
 
 namespace Gaufrette\Adapter;
 
-use AsyncAws\S3\Input\GetObjectRequest;
 use AsyncAws\SimpleS3\SimpleS3Client;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
