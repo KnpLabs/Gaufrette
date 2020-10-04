@@ -42,7 +42,8 @@ class AsyncAwsS3Test extends FunctionalTestCase
 
         try {
             $this->client->deleteBucket(['Bucket' => $this->bucket]);
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
     }
 
     private function createFilesystem(array $adapterOptions = [])
@@ -76,7 +77,6 @@ class AsyncAwsS3Test extends FunctionalTestCase
         $this->filesystem->write('foo', '');
         $this->assertTrue($this->filesystem->has('foo'));
     }
-
 
     /**
      * @test
