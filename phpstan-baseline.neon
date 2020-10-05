@@ -1,21 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Strict comparison using \\=\\=\\= between null and string will always evaluate to false\\.$#"
-			count: 1
-			path: src/Gaufrette/Adapter/AmazonS3.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between null and APCIterator will always evaluate to false\\.$#"
-			count: 1
-			path: src/Gaufrette/Adapter/Apc.php
-
-		-
-			message: "#^Method Aws\\\\S3\\\\S3Client\\:\\:getObjectUrl\\(\\) invoked with 4 parameters, 2 required\\.$#"
-			count: 1
-			path: src/Gaufrette/Adapter/AwsS3.php
-
-		-
 			message: "#^Call to function is_resource\\(\\) with string will always evaluate to false\\.$#"
 			count: 2
 			path: src/Gaufrette/Adapter/AwsS3.php
@@ -91,11 +76,6 @@ parameters:
 			path: src/Gaufrette/Adapter/AzureBlobStorage.php
 
 		-
-			message: "#^Method Gaufrette\\\\Adapter\\\\Cache\\:\\:getMetadata\\(\\) should return array but returns false\\.$#"
-			count: 1
-			path: src/Gaufrette/Adapter/Cache.php
-
-		-
 			message: "#^Property Gaufrette\\\\Adapter\\\\Flysystem\\:\\:\\$config has unknown class Gaufrette\\\\Adapter\\\\Config as its type\\.$#"
 			count: 1
 			path: src/Gaufrette/Adapter/Flysystem.php
@@ -121,19 +101,64 @@ parameters:
 			path: src/Gaufrette/Adapter/Ftp.php
 
 		-
-			message: "#^Reflection error\\: Google_Task_Retryable not found\\.$#"
-			count: 2
+			message: "#^Call to function is_resource\\(\\) with string will always evaluate to false\\.$#"
+			count: 1
 			path: src/Gaufrette/Adapter/GoogleCloudStorage.php
 
 		-
-			message: "#^Class MongoDB\\\\Driver\\\\Exception\\\\RuntimeException not found\\.$#"
+			message: "#^Property Gaufrette\\\\Adapter\\\\GridFS\\:\\:\\$bucket has unknown class MongoDB\\\\GridFS\\\\Bucket as its type\\.$#"
+			count: 1
+			path: src/Gaufrette/Adapter/GridFS.php
+
+		-
+			message: "#^Parameter \\$bucket of method Gaufrette\\\\Adapter\\\\GridFS\\:\\:__construct\\(\\) has invalid typehint type MongoDB\\\\GridFS\\\\Bucket\\.$#"
 			count: 2
 			path: src/Gaufrette/Adapter/GridFS.php
 
 		-
-			message: "#^Negated boolean expression is always false\\.$#"
+			message: "#^Call to method openDownloadStreamByName\\(\\) on an unknown class MongoDB\\\\GridFS\\\\Bucket\\.$#"
 			count: 1
-			path: src/Gaufrette/Adapter/LazyOpenCloud.php
+			path: src/Gaufrette/Adapter/GridFS.php
+
+		-
+			message: "#^Caught class MongoDB\\\\GridFS\\\\Exception\\\\FileNotFoundException not found\\.$#"
+			count: 2
+			path: src/Gaufrette/Adapter/GridFS.php
+
+		-
+			message: "#^Call to method openUploadStream\\(\\) on an unknown class MongoDB\\\\GridFS\\\\Bucket\\.$#"
+			count: 2
+			path: src/Gaufrette/Adapter/GridFS.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: src/Gaufrette/Adapter/GridFS.php
+
+		-
+			message: "#^Call to method downloadToStreamByName\\(\\) on an unknown class MongoDB\\\\GridFS\\\\Bucket\\.$#"
+			count: 1
+			path: src/Gaufrette/Adapter/GridFS.php
+
+		-
+			message: "#^Call to method findOne\\(\\) on an unknown class MongoDB\\\\GridFS\\\\Bucket\\.$#"
+			count: 6
+			path: src/Gaufrette/Adapter/GridFS.php
+
+		-
+			message: "#^Call to method find\\(\\) on an unknown class MongoDB\\\\GridFS\\\\Bucket\\.$#"
+			count: 2
+			path: src/Gaufrette/Adapter/GridFS.php
+
+		-
+			message: "#^Call to method delete\\(\\) on an unknown class MongoDB\\\\GridFS\\\\Bucket\\.$#"
+			count: 1
+			path: src/Gaufrette/Adapter/GridFS.php
+
+		-
+			message: "#^Method Gaufrette\\\\Adapter\\\\GridFS\\:\\:size\\(\\) should return int but returns false\\.$#"
+			count: 2
+			path: src/Gaufrette/Adapter/GridFS.php
 
 		-
 			message: "#^PHPDoc tag @param has invalid value \\(\\$path\\)\\: Unexpected token \"\\$path\", expected type at offset 74$#"
@@ -144,51 +169,6 @@ parameters:
 			message: "#^PHPDoc tag @param has invalid value \\(string The directory's path to delete\\)\\: Unexpected token \"The\", expected variable at offset 25$#"
 			count: 1
 			path: src/Gaufrette/Adapter/Local.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(domain MogileFS domain\\)\\: Unexpected token \"MogileFS\", expected variable at offset 25$#"
-			count: 1
-			path: src/Gaufrette/Adapter/MogileFS.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(hosts  Array of MogileFS trackers\\)\\: Unexpected token \"Array\", expected variable at offset 62$#"
-			count: 1
-			path: src/Gaufrette/Adapter/MogileFS.php
-
-		-
-			message: "#^Return typehint of method Gaufrette\\\\Adapter\\\\MogileFS\\:\\:connect\\(\\) has invalid type Gaufrette\\\\Adapter\\\\Socket\\.$#"
-			count: 1
-			path: src/Gaufrette/Adapter/MogileFS.php
-
-		-
-			message: "#^Parameter \\#2 \\$port of function fsockopen expects int, string given\\.$#"
-			count: 1
-			path: src/Gaufrette/Adapter/MogileFS.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(args Array of arguments\\)\\: Unexpected token \"Array\", expected variable at offset 98$#"
-			count: 1
-			path: src/Gaufrette/Adapter/MogileFS.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(cmd Command\\)\\: Unexpected token \"Command\", expected variable at offset 71$#"
-			count: 1
-			path: src/Gaufrette/Adapter/MogileFS.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(key File key\\)\\: Unexpected token \"File\", expected variable at offset 87$#"
-			count: 1
-			path: src/Gaufrette/Adapter/MogileFS.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(data Data to save\\)\\: Unexpected token \"Data\", expected variable at offset 108$#"
-			count: 1
-			path: src/Gaufrette/Adapter/MogileFS.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(path Save path at server\\)\\: Unexpected token \"Save\", expected variable at offset 69$#"
-			count: 1
-			path: src/Gaufrette/Adapter/MogileFS.php
 
 		-
 			message: "#^If condition is always true\\.$#"
@@ -219,21 +199,6 @@ parameters:
 			message: "#^Constant NET_SFTP_TYPE_DIRECTORY not found\\.$#"
 			count: 1
 			path: src/Gaufrette/Adapter/PhpseclibSftp.php
-
-		-
-			message: "#^Parameter \\$sftp of method Gaufrette\\\\Adapter\\\\Sftp\\:\\:__construct\\(\\) has invalid typehint type Ssh\\\\Sftp\\.$#"
-			count: 2
-			path: src/Gaufrette/Adapter/Sftp.php
-
-		-
-			message: "#^Method Gaufrette\\\\Adapter\\\\Sftp\\:\\:checksum\\(\\) should return string but returns false\\.$#"
-			count: 1
-			path: src/Gaufrette/Adapter/Sftp.php
-
-		-
-			message: "#^PHPDoc tag @throws with type Gaufrette\\\\Adapter\\\\RuntimeException is not subtype of Throwable$#"
-			count: 1
-			path: src/Gaufrette/Adapter/Sftp.php
 
 		-
 			message: "#^PHPDoc tag @param has invalid value \\(\\$key\\)\\: Unexpected token \"\\$key\", expected type at offset 161$#"

@@ -22,36 +22,12 @@
         "microsoft/windowsazure": "<0.4.3"
     },
     "require-dev": {
-        "aws/aws-sdk-php": "^2.4.12||~3",
-        "rackspace/php-opencloud"  : "^1.9.2",
-        "google/apiclient": "~1.1.3",
-        "phpspec/phpspec": "~5.1",
-        "phpseclib/phpseclib": "^2.0",
-        "doctrine/dbal": ">=2.3",
+        "phpspec/phpspec": "^5.1 || ^6.2",
         "phpunit/phpunit": "~7.5",
-        "mikey179/vfsstream": "~1.2.0",
-        "league/flysystem": "~1.0",
-        "mongodb/mongodb": "^1.1",
-        "microsoft/azure-storage-blob": "^1.0",
-        "akeneo/phpspec-skip-example-extension": "^4.0",
-        "pedrotroller/php-cs-custom-fixer": "^2.17"
+        "mikey179/vfsstream": "v1.x-dev as 1.7.0"
     },
     "suggest": {
-        "knplabs/knp-gaufrette-bundle": "to use with Symfony2",
-        "gaufrette/azure-blob-storage-adapter": "to use AzureBlobStorage adapter",
-        "gaufrette/flysystem-adapter": "to use Flysystem adapter",
-        "gaufrette/doctrine-dbal-adapter": "to use DBAL adapter",
-        "gaufrette/phpseclib-sftp-adapter": "to use PhpseclibSftp adapter",
-        "gaufrette/ftp-adapter": "to use Ftp adapter",
-        "gaufrette/aws-s3-adapter": "to use AwsS3 adapter (supports SDK v2 and v3)",
-        "gaufrette/in-memory-adapter": "to use InMemory adapter",
-        "gaufrette/local-adapter": "to use Local adapter",
-        "gaufrette/opencloud-adapter": "to use Opencloud adapter",
-        "gaufrette/zip-adapter": "to use Zip adapter",
-        "gaufrette/gridfs-adapter": "to use GridFS adapter",
-        "google/apiclient": "to use GoogleCloudStorage adapter",
-        "ext-curl": "*",
-        "ext-mbstring": "*",
+        "knplabs/knp-gaufrette-bundle": "to use with Symfony",
         "ext-fileinfo": "This extension is used to automatically detect the content-type of a file in the AwsS3, OpenCloud, AzureBlogStorage and GoogleCloudStorage adapters"
     },
     "autoload": {

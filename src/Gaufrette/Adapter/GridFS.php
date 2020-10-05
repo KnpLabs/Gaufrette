@@ -27,6 +27,9 @@ class GridFS implements Adapter, ChecksumCalculator, MetadataSupporter, ListKeys
      */
     public function __construct(Bucket $bucket)
     {
+        if (!class_exists(Bucket::class)) {
+            throw new \LogicException('You need to install package "mongodb/mongodb" to use this adapter');
+        }
         $this->bucket = $bucket;
     }
 

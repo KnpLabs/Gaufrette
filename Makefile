@@ -31,3 +31,25 @@ php-cs-compare:
 .PHONY: php-cs-fix
 php-cs-fix:
 	docker/run-task php${PHP_VERSION} vendor/bin/php-cs-fixer fix
+
+remove-phpspec:
+	rm spec/Gaufrette/Adapter/AwsS3Spec.php
+	rm spec/Gaufrette/Adapter/OpenCloudSpec.php
+	rm spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php
+	rm spec/Gaufrette/Adapter/DoctrineDbalSpec.php
+	rm spec/Gaufrette/Adapter/FlysystemSpec.php
+	rm -r spec/Gaufrette/Adapter/AzureBlobStorage
+	rm spec/Gaufrette/Adapter/GridFSSpec.php
+	rm spec/Gaufrette/Adapter/PhpseclibSftpSpec.php
+
+require-all:
+	composer require --no-update \
+		aws/aws-sdk-php:^3.158 \
+		rackspace/php-opencloud:^1.9.2 \
+		google/apiclient:^1.1.3 \
+		doctrine/dbal:^2.3 \
+		league/flysystem:^1.0 \
+		microsoft/azure-storage-blob:^1.0 \
+		phpseclib/phpseclib:^2.0 \
+		mongodb/mongodb:^1.1 \
+

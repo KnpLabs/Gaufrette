@@ -68,6 +68,9 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
      */
     public function __construct(BlobProxyFactoryInterface $blobProxyFactory, $containerName = null, $create = false, $detectContentType = true)
     {
+        if (!class_exists(Blob::class)) {
+            throw new \LogicException('You need to install package "microsoft/azure-storage-blob" to use this adapter');
+        }
         $this->blobProxyFactory = $blobProxyFactory;
         $this->containerName = $containerName;
         $this->detectContentType = $detectContentType;

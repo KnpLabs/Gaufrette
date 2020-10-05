@@ -22,6 +22,9 @@ class BlobProxyFactory implements BlobProxyFactoryInterface
      */
     public function __construct($connectionString)
     {
+        if (!class_exists(ServicesBuilder::class)) {
+            throw new \LogicException('You need to install package "microsoft/azure-storage-blob" to use this adapter');
+        }
         $this->connectionString = $connectionString;
     }
 

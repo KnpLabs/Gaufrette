@@ -34,6 +34,9 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
      */
     public function __construct(S3Client $service, $bucket, array $options = [], $detectContentType = false)
     {
+        if (!class_exists(S3Client::class)) {
+            throw new \LogicException('You need to install package "aws/aws-sdk-php" to use this adapter');
+        }
         $this->service = $service;
         $this->bucket = $bucket;
         $this->options = array_replace(

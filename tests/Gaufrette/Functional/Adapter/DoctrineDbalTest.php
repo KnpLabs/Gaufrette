@@ -11,6 +11,14 @@ class DoctrineDbalTest extends FunctionalTestCase
     /** @var  \Doctrine\DBAL\Connection */
     private $connection;
 
+    public static function setUpBeforeClass()
+    {
+        if (!class_exists(\DriverManager::class)) {
+            self::markTestSkipped('Package doctrine/dbal is not installed');
+        }
+        parent::setUpBeforeClass();
+    }
+
     protected function setUp()
     {
         $this->connection = DriverManager::getConnection([

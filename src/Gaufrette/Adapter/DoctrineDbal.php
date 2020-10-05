@@ -31,6 +31,10 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
      */
     public function __construct(Connection $connection, $table, array $columns = [])
     {
+        if (!class_exists(Connection::class)) {
+            throw new \LogicException('You need to install package "doctrine/dbal" to use this adapter');
+        }
+
         $this->connection = $connection;
         $this->table = $table;
         $this->columns = array_replace($this->columns, $columns);

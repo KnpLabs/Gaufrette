@@ -46,6 +46,9 @@ class OpenCloud implements Adapter, ChecksumCalculator
      */
     public function __construct(Service $objectStore, $containerName, $createContainer = false)
     {
+        if (!class_exists(Service::class)) {
+            throw new \LogicException('You need to install package "rackspace/php-opencloud" to use this adapter');
+        }
         $this->objectStore = $objectStore;
         $this->containerName = $containerName;
         $this->createContainer = $createContainer;
