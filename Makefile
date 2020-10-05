@@ -52,4 +52,5 @@ require-all:
 		microsoft/azure-storage-blob:^1.0 \
 		phpseclib/phpseclib:^2.0 \
 		mongodb/mongodb:^1.1 \
+		symfony/event-dispatcher:^4.4
 
