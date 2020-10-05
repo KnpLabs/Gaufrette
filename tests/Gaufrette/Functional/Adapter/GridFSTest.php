@@ -110,4 +110,17 @@ class GridFSTest extends FunctionalTestCase
 
         $this->assertEquals([], $this->filesystem->getAdapter()->getMetadata('no-metadata.txt'));
     }
+
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldGetMtime()
+    {
+        if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
+            $this->markTestSkipped('Not working on Windows.');
+        } else {
+            parent::shouldGetMtime();
+        }
+    }
 }
