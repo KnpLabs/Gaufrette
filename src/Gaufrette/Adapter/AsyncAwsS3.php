@@ -176,24 +176,16 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
      */
     public function size($key)
     {
-        try {
-            $result = $this->service->headObject($this->getOptions($key));
+        $result = $this->service->headObject($this->getOptions($key));
 
-            return (int) $result->getContentLength();
-        } catch (\Exception $e) {
-            return false;
-        }
+        return (int) $result->getContentLength();
     }
 
     public function mimeType($key)
     {
-        try {
-            $result = $this->service->headObject($this->getOptions($key));
+        $result = $this->service->headObject($this->getOptions($key));
 
-            return $result->getContentType();
-        } catch (\Exception $e) {
-            return false;
-        }
+        return $result->getContentType();
     }
 
     /**
