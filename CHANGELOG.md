@@ -1,6 +1,10 @@
 
-v0.10.0 - UNRELEASED
-====================
+v0.10.0
+=======
+
+## Added
+
+- Support for AsyncAws
 
 ## Removed
 
