@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="3.16@d03e5ef057d6adc656c0ff7e166c50b73b4f48f3">
+  <file src="src/Gaufrette/Adapter/AclAwareAmazonS3.php">
+    <ParamNameMismatch occurrences="3">
+      <code>$key</code>
+      <code>$metadata</code>
+      <code>$new</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="src/Gaufrette/Adapter/AmazonS3.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$metadata</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="src/Gaufrette/Adapter/Apc.php">
+    <UndefinedClass occurrences="2">
+      <code>$cachedKeys</code>
+      <code>\APCIterator</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="1">
+      <code>\APCIterator</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="src/Gaufrette/Adapter/AwsS3.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$metadata</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="src/Gaufrette/Adapter/AzureBlobStorage.php">
+    <UndefinedClass occurrences="1">
+      <code>DeleteContainerOptions</code>
+    </UndefinedClass>
+  </file>
+  <file src="src/Gaufrette/Adapter/Cache.php">
+    <ParamNameMismatch occurrences="3">
+      <code>$key</code>
+      <code>$metadata</code>
+      <code>$new</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="src/Gaufrette/Adapter/Dropbox.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>\OAuthException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="src/Gaufrette/Adapter/Flysystem.php">
+    <UndefinedDocblockClass occurrences="2">
+      <code>Config</code>
+      <code>Config|array|null</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="src/Gaufrette/Adapter/Ftp.php">
+    <UndefinedDocblockClass occurrences="3">
+      <code>RuntimeException</code>
+      <code>RuntimeException</code>
+      <code>RuntimeException</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="src/Gaufrette/Adapter/GridFS.php">
+    <MissingDependency occurrences="2">
+      <code>FileNotFoundException</code>
+      <code>FileNotFoundException</code>
+    </MissingDependency>
+    <ParamNameMismatch occurrences="1">
+      <code>$metadata</code>
+    </ParamNameMismatch>
+    <UndefinedClass occurrences="3">
+      <code>$cursor</code>
+      <code>$files</code>
+      <code>Regex</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="2">
+      <code>$this-&gt;bucket-&gt;find(['filename' =&gt; $regex], ['projection' =&gt; ['filename' =&gt; 1]])</code>
+      <code>$this-&gt;bucket-&gt;find([], ['projection' =&gt; ['filename' =&gt; 1]])</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="src/Gaufrette/Adapter/MogileFS.php">
+    <UndefinedDocblockClass occurrences="1">
+      <code>Socket</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="src/Gaufrette/Adapter/PhpseclibSftp.php">
+    <UndefinedConstant occurrences="1">
+      <code>NET_SFTP_TYPE_DIRECTORY</code>
+    </UndefinedConstant>
+  </file>
+  <file src="src/Gaufrette/Adapter/Sftp.php">
+    <UndefinedClass occurrences="12">
+      <code>$this-&gt;sftp</code>
+      <code>$this-&gt;sftp</code>
+      <code>$this-&gt;sftp</code>
+      <code>$this-&gt;sftp</code>
+      <code>$this-&gt;sftp</code>
+      <code>$this-&gt;sftp</code>
+      <code>$this-&gt;sftp</code>
+      <code>$this-&gt;sftp</code>
+      <code>$this-&gt;sftp</code>
+      <code>$this-&gt;sftp</code>
+      <code>$this-&gt;sftp</code>
+      <code>\Ssh\Sftp</code>
+    </UndefinedClass>
+    <UndefinedDocblockClass occurrences="1">
+      <code>RuntimeException</code>
+    </UndefinedDocblockClass>
+  </file>
+</files>
