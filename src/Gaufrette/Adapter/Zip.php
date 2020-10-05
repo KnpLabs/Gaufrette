@@ -27,10 +27,7 @@ class Zip implements Adapter
     public function __construct($zipFile)
     {
         if (!extension_loaded('zip')) {
-            throw new \RuntimeException(sprintf(
-                'Unable to use %s as the ZIP extension is not available.',
-                __CLASS__
-            ));
+            throw new \RuntimeException(sprintf('Unable to use %s as the ZIP extension is not available.', __CLASS__));
         }
 
         $this->zipFile = $zipFile;

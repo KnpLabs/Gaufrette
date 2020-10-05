@@ -32,6 +32,10 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
         array $options = [],
         $detectContentType = false
     ) {
+        if (!class_exists(\Google_Service_Storage::class)) {
+            throw new \LogicException('You need to install package "google/apiclient" to use this adapter');
+        }
+
         $this->service = $service;
         $this->bucket = $bucket;
         $this->options = array_replace(

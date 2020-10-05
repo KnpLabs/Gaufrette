@@ -22,6 +22,9 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
      */
     public function __construct(SecLibSFTP $sftp, $directory = null, $create = false)
     {
+        if (!class_exists(SecLibSFTP::class)) {
+            throw new \LogicException('You need to install package "phpseclib/phpseclib" to use this adapter');
+        }
         $this->sftp = $sftp;
         $this->directory = $directory;
         $this->create = $create;

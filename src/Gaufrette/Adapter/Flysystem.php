@@ -25,6 +25,10 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function __construct(AdapterInterface $adapter, $config = null)
     {
+        if (!interface_exists(AdapterInterface::class)) {
+            throw new \LogicException('You need to install package "league/flysystem" to use this adapter');
+        }
+
         $this->adapter = $adapter;
         $this->config = Util::ensureConfig($config);
     }
