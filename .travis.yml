@@ -39,7 +39,7 @@ before_install:
   - docker exec -it ftpd_server sh -c "(echo ${FTP_PASSWORD}; echo ${FTP_PASSWORD}) | pure-pw useradd ${FTP_USER} -f /etc/pure-ftpd/passwd/pureftpd.passwd -m -u ftpuser -d /home/ftpusers/${FTP_USER}"
 
 install:
-  - make require-all
+  - make require-all-legacy
   - composer update --prefer-dist --no-progress --no-suggest --ansi
 
 script:

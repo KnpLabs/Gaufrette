@@ -42,6 +42,7 @@ jobs:
       max-parallel: 10
       matrix:
         run:
+          - { php: '7.3', packages: 'async-aws/simple-s3:^0.1.1', phpspec: 'spec/Gaufrette/Adapter/AsyncAwsS3Spec.php' }
           - { php: '7.3', packages: 'aws/aws-sdk-php:^2.4.12', phpspec: 'spec/Gaufrette/Adapter/AwsS3Spec.php' }
           - { php: '7.4', packages: 'aws/aws-sdk-php:^3.158', phpspec: 'spec/Gaufrette/Adapter/AwsS3Spec.php' }
           - { php: '7.4', packages: 'rackspace/php-opencloud:^1.9.2', phpspec: 'spec/Gaufrette/Adapter/OpenCloudSpec.php' }

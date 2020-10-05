@@ -47,6 +47,7 @@ your issue or pull request in a timely manner, ping us:
 
 | Adapter            | Referent                    |
 |--------------------|-----------------------------|
+| AsyncAws S3        | @Nyholm                     |
 | AwsS3              | @NiR-                       |
 | AzureBlobStorage   | @NiR-                       |
 | DoctrineDbal       | @pedrotroller, @NicolasNSSM |
