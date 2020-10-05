@@ -110,29 +110,12 @@ class AwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldGetObjectUrls()
-    {
-        $this->assertNotEmpty($this->filesystem->getAdapter()->getUrl('foo'));
-    }
-
-    /**
-     * @test
-     */
     public function shouldCheckForObjectExistenceWithDirectory()
     {
         $this->createFilesystem(['directory' => 'bar', 'create' => true]);
         $this->filesystem->write('foo', '');
 
         $this->assertTrue($this->filesystem->has('foo'));
-    }
-
-    /**
-     * @test
-     */
-    public function shouldGetObjectUrlsWithDirectory()
-    {
-        $this->createFilesystem(['directory' => 'bar']);
-        $this->assertNotEmpty($this->filesystem->getAdapter()->getUrl('foo'));
     }
 
     /**
