@@ -55,15 +55,15 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     /**
      * {@inheritdoc}
      */
-    public function setMetadata($key, $metadata)
+    public function setMetadata($key, $content)
     {
         // BC with AmazonS3 adapter
-        if (isset($metadata['contentType'])) {
-            $metadata['ContentType'] = $metadata['contentType'];
-            unset($metadata['contentType']);
+        if (isset($content['contentType'])) {
+            $content['ContentType'] = $content['contentType'];
+            unset($content['contentType']);
         }
 
-        $this->metadata[$key] = $metadata;
+        $this->metadata[$key] = $content;
     }
 
     /**
@@ -120,6 +120,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
 
     /**
      * {@inheritdoc}
+     * @param string|resource $content
      */
     public function write($key, $content)
     {
@@ -139,7 +140,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
             $this->service->upload($this->bucket, $this->computePath($key), $content, $options);
 
             if (is_resource($content)) {
-                return Util\Size::fromResource($content);
+                return (int) Util\Size::fromResource($content);
             }
 
             return Util\Size::fromContent($content);
@@ -178,7 +179,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
         try {
             $result = $this->service->headObject($this->getOptions($key));
 
-            return $result->getContentLength();
+            return (int) $result->getContentLength();
         } catch (\Exception $e) {
             return false;
         }
@@ -329,7 +330,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     }
 
     /**
-     * @param string $content
+     * @param string|resource $content
      *
      * @return string
      */
