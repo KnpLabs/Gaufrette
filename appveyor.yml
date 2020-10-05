@@ -61,9 +61,9 @@ install:
   - IF %PHP%==1 echo openssl.cafile=c:\php\cacert.pem >> php.ini
   - cd C:\projects\gaufrette
   - curl -fsSL -o composer.phar https://getcomposer.org/composer.phar
+  - make require-all
   - php composer.phar update --prefer-dist --no-interaction --no-progress --no-suggest --ansi
 
 test_script:
   - cd C:\projects\gaufrette
-  - vendor\bin\phpspec run -fpretty --verbose
   - vendor\bin\phpunit --verbose -c phpunit.xml.dist
