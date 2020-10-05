@@ -1,3 +1,21 @@
+
+v0.10.0 - UNRELEASED
+====================
+
+## Removed
+
+The following adapters were deprecated and have now been removed. 
+
+- AclAwareAmazonS3
+- AmazonS3
+- Cache
+- Dropbox
+- LazyOpenCloud
+- MogileFS
+- Sftp
+
+We also removed the deprecated function `AwsS3::getUrl()`.
+
 v0.9.0
 ======
 
