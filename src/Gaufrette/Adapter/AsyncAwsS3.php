@@ -35,6 +35,9 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
      */
     public function __construct(SimpleS3Client $service, $bucket, array $options = [], $detectContentType = false)
     {
+        if (!class_exists(SimpleS3Client::class)) {
+            throw new \LogicException('You need to install package "async-aws/simple-s3" to use this adapter');
+        }
         $this->service = $service;
         $this->bucket = $bucket;
         $this->options = array_replace(

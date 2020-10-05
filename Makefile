@@ -33,6 +33,7 @@ php-cs-fix:
 	docker/run-task php${PHP_VERSION} vendor/bin/php-cs-fixer fix
 
 remove-phpspec:
+	rm spec/Gaufrette/Adapter/AsyncAwsS3Spec.php
 	rm spec/Gaufrette/Adapter/AwsS3Spec.php
 	rm spec/Gaufrette/Adapter/OpenCloudSpec.php
 	rm spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php
@@ -44,6 +45,7 @@ remove-phpspec:
 
 require-all:
 	composer require --no-update \
+		async-aws/simple-s3:^0.1.1 \
 		aws/aws-sdk-php:^3.158 \
 		rackspace/php-opencloud:^1.9.2 \
 		google/apiclient:^1.1.3 \
