@@ -43,7 +43,7 @@ remove-phpspec:
 	rm spec/Gaufrette/Adapter/GridFSSpec.php
 	rm spec/Gaufrette/Adapter/PhpseclibSftpSpec.php
 
-require-all:
+require-all-legacy:
 	composer require --no-update \
 		aws/aws-sdk-php:^3.158 \
 		rackspace/php-opencloud:^1.9.2 \
@@ -54,4 +54,8 @@ require-all:
 		phpseclib/phpseclib:^2.0 \
 		mongodb/mongodb:^1.1 \
 		symfony/event-dispatcher:^4.4
+
+
+require-all: require-all-legacy
+	composer require --no-update async-aws/simple-s3:^0.1.1
 
