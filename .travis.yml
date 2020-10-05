@@ -11,7 +11,8 @@ services:
   - docker
 
 env:
-  - SFTP_HOST=localhost
+  - MONGO_URI="mongodb://127.0.0.1:27017"
+    MONGO_DBNAME="gridfs_test"
     SFTP_PORT=2222
     SFTP_USER=gaufrette
     SFTP_PASSWORD=gaufrette
@@ -30,6 +31,7 @@ matrix:
     - php: '7.4'
 
 before_install:
+  - echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
   - phpenv config-rm xdebug.ini || echo "xdebug not available"
   - docker run -p ${SFTP_PORT}:22 -d atmoz/sftp:alpine ${SFTP_USER}:${SFTP_PASSWORD}:::${SFTP_BASE_DIR}
   - docker run -d --name ftpd_server -p ${FTP_PORT}:21 -p 30000-30009:30000-30009 -e "PUBLICHOST=${FTP_HOST}" stilliard/pure-ftpd
