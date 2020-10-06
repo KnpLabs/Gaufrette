@@ -17,6 +17,9 @@ class AsyncAwsS3Test extends FunctionalTestCase
 
     protected function setUp()
     {
+        if (!class_exists(SimpleS3Client::class)) {
+            $this->markTestSkipped('You need to install async-aws/simple-s3 to run this test.');
+        }
         $key = getenv('AWS_KEY');
         $secret = getenv('AWS_SECRET');
 
