@@ -171,4 +171,16 @@ class AwsS3Test extends FunctionalTestCase
 
         $this->assertEquals('text/html', $this->filesystem->mimeType('foo'));
     }
+
+    /**
+     * @test
+     */
+    public function shouldRenameAnObject()
+    {
+        $this->filesystem->write('foo', '');
+        $this->filesystem->rename('foo', 'foo%_encode');
+
+        $this->assertFalse($this->filesystem->has('foo'));
+        $this->assertTrue($this->filesystem->has('foo%_encode'));
+    }
 }
