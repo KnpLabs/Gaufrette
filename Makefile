@@ -39,6 +39,7 @@ remove-phpspec:
 	rm spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php
 	rm spec/Gaufrette/Adapter/DoctrineDbalSpec.php
 	rm spec/Gaufrette/Adapter/FlysystemSpec.php
+	rm spec/Gaufrette/Adapter/FlysystemV2Spec.php
 	rm -r spec/Gaufrette/Adapter/AzureBlobStorage
 	rm spec/Gaufrette/Adapter/GridFSSpec.php
 	rm spec/Gaufrette/Adapter/PhpseclibSftpSpec.php
