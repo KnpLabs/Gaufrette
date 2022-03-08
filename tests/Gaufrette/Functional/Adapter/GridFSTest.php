@@ -8,7 +8,7 @@ use MongoDB\Client;
 
 class GridFSTest extends FunctionalTestCase
 {
-    public function setUp()
+    protected function setUp()
     {
         $uri = getenv('MONGO_URI');
         $dbname = getenv('MONGO_DBNAME');
@@ -52,41 +52,75 @@ class GridFSTest extends FunctionalTestCase
 
         $keys = $this->filesystem->listKeys('foo/foob');
         $this->assertEquals(
-            array('foo/foobar/bar.txt'),
+            ['foo/foobar/bar.txt'],
             $keys['keys'],
             '', 0, 10, true);
 
         $keys = $this->filesystem->listKeys('foo/');
         $this->assertEquals(
-            array('foo/foobar/bar.txt', 'foo/bar/buzz.txt'),
+            ['foo/foobar/bar.txt', 'foo/bar/buzz.txt'],
             $keys['keys'],
             '', 0, 10, true);
 
         $keys = $this->filesystem->listKeys('foo');
         $this->assertEquals(
-            array('foo/foobar/bar.txt', 'foo/bar/buzz.txt', 'foobarbuz.txt', 'foo'),
+            ['foo/foobar/bar.txt', 'foo/bar/buzz.txt', 'foobarbuz.txt', 'foo'],
             $keys['keys'],
             '', 0, 10, true);
 
         $keys = $this->filesystem->listKeys('fooz');
         $this->assertEquals(
-            array(),
+            [],
             $keys['keys'],
             '', 0, 10, true);
     }
-    
+
     /**
      * @test
      * Tests metadata written to GridFS can be retrieved after writing
      */
-    public function testMetadataRetrieveAfterWrite()
+    public function shouldRetrieveMetadataAfterWrite()
     {
         //Create local copy of fileadapter
         $fileadpt = clone $this->filesystem->getAdapter();
-        
-        $this->filesystem->getAdapter()->setMetadata('metadatatest', array('testing'  =>  true));
+
+        $this->filesystem->getAdapter()->setMetadata('metadatatest', ['testing' => true]);
         $this->filesystem->write('metadatatest', 'test');
-        
+
         $this->assertEquals($this->filesystem->getAdapter()->getMetadata('metadatatest'), $fileadpt->getMetadata('metadatatest'));
+    }
+
+    /**
+     * @test
+     * Test to see if filesize works
+     */
+    public function shouldGetSize()
+    {
+        $this->filesystem->write('sizetest.txt', 'data');
+        $this->assertEquals(4, $this->filesystem->size('sizetest.txt'));
+    }
+
+    /**
+     * @test
+     * Should retrieve empty metadata w/o errors
+     */
+    public function shouldRetrieveEmptyMetadata()
+    {
+        $this->filesystem->write('no-metadata.txt', 'content');
+
+        $this->assertEquals([], $this->filesystem->getAdapter()->getMetadata('no-metadata.txt'));
+    }
+
+    /**
+     * @test
+     * @group functional
+     */
+    public function shouldGetMtime()
+    {
+        if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
+            $this->markTestSkipped('Not working on Windows.');
+        } else {
+            parent::shouldGetMtime();
+        }
     }
 }

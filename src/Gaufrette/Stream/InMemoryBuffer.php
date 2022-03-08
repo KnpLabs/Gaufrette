@@ -89,7 +89,7 @@ class InMemoryBuffer implements Stream
         } else {
             $before = substr($this->content, 0, $this->position);
             $after = $newNumBytes > $newPosition ? substr($this->content, $newPosition) : '';
-            $this->content = $before.$data.$after;
+            $this->content = $before . $data . $after;
         }
 
         $this->position = $newPosition;
@@ -111,12 +111,15 @@ class InMemoryBuffer implements Stream
         switch ($whence) {
             case SEEK_SET:
                 $this->position = $offset;
+
                 break;
             case SEEK_CUR:
                 $this->position += $offset;
+
                 break;
             case SEEK_END:
                 $this->position = $this->numBytes + $offset;
+
                 break;
             default:
                 return false;
@@ -159,7 +162,7 @@ class InMemoryBuffer implements Stream
             $isDirectory = $this->filesystem->isDirectory($this->key);
             $time = $this->filesystem->mtime($this->key);
 
-            $stats = array(
+            $stats = [
                 'dev' => 1,
                 'ino' => 0,
                 'mode' => $isDirectory ? 16893 : 33204,
@@ -173,7 +176,7 @@ class InMemoryBuffer implements Stream
                 'ctime' => $time,
                 'blksize' => -1,
                 'blocks' => -1,
-            );
+            ];
 
             return array_merge(array_values($stats), $stats);
         }

@@ -1,0 +1,77 @@
+name: Tests
+on: [push, pull_request]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 10
+      matrix:
+        php: ['7.1', '7.2', '7.3', '7.4']
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@2.1.0
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: flex
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        run: |
+          composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable
+
+      - name: Remove PHPSpec adapter tests
+        run: make remove-phpspec
+
+      - name: PHPSpec
+        run: php vendor/bin/phpspec run -fpretty --verbose
+
+      - name: PHPUnit
+        run: php vendor/bin/phpunit
+
+  adapter:
+    name: Adapter
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 10
+      matrix:
+        run:
+          - { php: '7.3', packages: 'async-aws/simple-s3:^0.1.1', phpspec: 'spec/Gaufrette/Adapter/AsyncAwsS3Spec.php' }
+          - { php: '7.3', packages: 'aws/aws-sdk-php:^2.4.12', phpspec: 'spec/Gaufrette/Adapter/AwsS3Spec.php' }
+          - { php: '7.4', packages: 'aws/aws-sdk-php:^3.158', phpspec: 'spec/Gaufrette/Adapter/AwsS3Spec.php' }
+          - { php: '7.4', packages: 'rackspace/php-opencloud:^1.9.2', phpspec: 'spec/Gaufrette/Adapter/OpenCloudSpec.php' }
+          - { php: '7.4', packages: 'google/apiclient:^1.1.3', phpspec: 'spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php' }
+          - { php: '7.4', packages: 'doctrine/dbal:^2.3', phpspec: 'spec/Gaufrette/Adapter/DoctrineDbalSpec.php' }
+          - { php: '7.4', packages: 'league/flysystem:^1.0', phpspec: 'spec/Gaufrette/Adapter/FlysystemSpec.php' }
+          - { php: '7.4', packages: 'microsoft/azure-storage-blob:^1.0', phpspec: 'spec/Gaufrette/Adapter/AzureBlobStore' }
+          - { php: '7.4', packages: 'mongodb/mongodb:^1.1', phpspec: 'spec/Gaufrette/Adapter/GridFSSpec.php' }
+          - { php: '7.4', packages: 'phpseclib/phpseclib:^2.0', phpspec: 'spec/Gaufrette/Adapter/PhpseclibSftpSpec.php' }
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@2.1.0
+        with:
+          php-version: ${{ matrix.run.php }}
+          coverage: none
+          tools: flex
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        run: |
+          composer req ${{ matrix.run.packages }} --no-update
+          composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable
+
+      - name: PHPSpec
+        if: ${{ matrix.run.phpspec }}
+        run: php vendor/bin/phpspec run -fpretty --verbose ${{ matrix.run.phpspec }}
+
+      - name: PHPUnit
+        run: php vendor/bin/phpunit

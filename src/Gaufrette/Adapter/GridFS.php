@@ -14,10 +14,7 @@ use MongoDB\GridFS\Exception\FileNotFoundException;
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class GridFS implements Adapter,
-                        ChecksumCalculator,
-                        MetadataSupporter,
-                        ListKeysAware
+class GridFS implements Adapter, ChecksumCalculator, MetadataSupporter, ListKeysAware, SizeCalculator
 {
     /** @var array */
     private $metadata = [];
@@ -30,6 +27,9 @@ class GridFS implements Adapter,
      */
     public function __construct(Bucket $bucket)
     {
+        if (!class_exists(Bucket::class)) {
+            throw new \LogicException('You need to install package "mongodb/mongodb" to use this adapter');
+        }
         $this->bucket = $bucket;
     }
 
@@ -168,14 +168,16 @@ class GridFS implements Adapter,
     {
         if (isset($this->metadata[$key])) {
             return $this->metadata[$key];
-        } else {
-            $meta = $this->bucket->findOne(['filename' => $key], ['projection' => ['metadata' => 1,'_id' => 0]]);
-            if ($meta === null) {
-                return array();
-            }
-            $this->metadata[$key] = iterator_to_array($meta['metadata']);
-            return $this->metadata[$key];
         }
+        $meta = $this->bucket->findOne(['filename' => $key], ['projection' => ['metadata' => 1,'_id' => 0]]);
+
+        if ($meta === null || !isset($meta['metadata'])) {
+            return [];
+        }
+
+        $this->metadata[$key] = iterator_to_array($meta['metadata']);
+
+        return $this->metadata[$key];
     }
 
     /**
@@ -204,5 +206,18 @@ class GridFS implements Adapter,
         }
 
         return $result;
+    }
+
+    public function size($key)
+    {
+        if (!$this->exists($key)) {
+            return false;
+        }
+        $size = $this->bucket->findOne(['filename' => $key], ['projection' => ['length' => 1,'_id' => 0]]);
+        if (!isset($size['length'])) {
+            return false;
+        }
+
+        return $size['length'];
     }
 }

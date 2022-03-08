@@ -9,7 +9,7 @@ use Gaufrette\Filesystem;
 class AwsS3Test extends FunctionalTestCase
 {
     /** @var int */
-    static private $SDK_VERSION;
+    private static $SDK_VERSION;
 
     /** @var string */
     private $bucket;
@@ -17,7 +17,7 @@ class AwsS3Test extends FunctionalTestCase
     /** @var S3Client */
     private $client;
 
-    public function setUp()
+    protected function setUp()
     {
         $key = getenv('AWS_KEY');
         $secret = getenv('AWS_SECRET');
@@ -54,7 +54,7 @@ class AwsS3Test extends FunctionalTestCase
         $this->createFilesystem(['create' => true]);
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         if ($this->client === null || !$this->client->doesBucketExist($this->bucket)) {
             return;
@@ -64,6 +64,7 @@ class AwsS3Test extends FunctionalTestCase
 
         if (!$result->hasKey('Contents')) {
             $this->client->deleteBucket(['Bucket' => $this->bucket]);
+
             return;
         }
 
@@ -80,31 +81,36 @@ class AwsS3Test extends FunctionalTestCase
     }
 
     /**
+     * @test
      * @expectedException \RuntimeException
      */
-    public function testThrowsExceptionIfBucketMissingAndNotCreating()
+    public function shouldThrowExceptionIfBucketMissingAndNotCreating()
     {
         $this->createFilesystem();
         $this->filesystem->read('foo');
     }
 
-    public function testWritesObjects()
+    /**
+     * @test
+     */
+    public function shouldWriteObjects()
     {
         $this->assertEquals(7, $this->filesystem->write('foo', 'testing'));
     }
 
-    public function testChecksForObjectExistence()
+    /**
+     * @test
+     */
+    public function shouldCheckForObjectExistence()
     {
         $this->filesystem->write('foo', '');
         $this->assertTrue($this->filesystem->has('foo'));
     }
 
-    public function testGetsObjectUrls()
-    {
-        $this->assertNotEmpty($this->filesystem->getAdapter()->getUrl('foo'));
-    }
-
-    public function testChecksForObjectExistenceWithDirectory()
+    /**
+     * @test
+     */
+    public function shouldCheckForObjectExistenceWithDirectory()
     {
         $this->createFilesystem(['directory' => 'bar', 'create' => true]);
         $this->filesystem->write('foo', '');
@@ -112,20 +118,20 @@ class AwsS3Test extends FunctionalTestCase
         $this->assertTrue($this->filesystem->has('foo'));
     }
 
-    public function testGetsObjectUrlsWithDirectory()
-    {
-        $this->createFilesystem(['directory' => 'bar']);
-        $this->assertNotEmpty($this->filesystem->getAdapter()->getUrl('foo'));
-    }
-
-    public function testListKeysWithoutDirectory()
+    /**
+     * @test
+     */
+    public function shouldListKeysWithoutDirectory()
     {
         $this->assertEquals([], $this->filesystem->listKeys());
         $this->filesystem->write('test.txt', 'some content');
         $this->assertEquals(['test.txt'], $this->filesystem->listKeys());
     }
 
-    public function testListKeysWithDirectory()
+    /**
+     * @test
+     */
+    public function shouldListKeysWithDirectory()
     {
         $this->createFilesystem(['create' => true, 'directory' => 'root/']);
         $this->filesystem->write('test.txt', 'some content');
@@ -133,20 +139,29 @@ class AwsS3Test extends FunctionalTestCase
         $this->assertTrue($this->filesystem->has('test.txt'));
     }
 
-    public function testKeysWithoutDirectory()
+    /**
+     * @test
+     */
+    public function shouldGetKeysWithoutDirectory()
     {
         $this->filesystem->write('test.txt', 'some content');
         $this->assertEquals(['test.txt'], $this->filesystem->keys());
     }
 
-    public function testKeysWithDirectory()
+    /**
+     * @test
+     */
+    public function shouldGetKeysWithDirectory()
     {
         $this->createFilesystem(['create' => true, 'directory' => 'root/']);
         $this->filesystem->write('test.txt', 'some content');
         $this->assertEquals(['test.txt'], $this->filesystem->keys());
     }
 
-    public function testUploadWithGivenContentType()
+    /**
+     * @test
+     */
+    public function shouldUploadWithGivenContentType()
     {
         /** @var AwsS3 $adapter */
         $adapter = $this->filesystem->getAdapter();

@@ -7,9 +7,7 @@ use phpseclib\Net\SFTP as SecLibSFTP;
 use Gaufrette\Filesystem;
 use Gaufrette\File;
 
-class PhpseclibSftp implements Adapter,
-                               FileFactory,
-                               ListKeysAware
+class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
 {
     protected $sftp;
     protected $directory;
@@ -24,6 +22,9 @@ class PhpseclibSftp implements Adapter,
      */
     public function __construct(SecLibSFTP $sftp, $directory = null, $create = false)
     {
+        if (!class_exists(SecLibSFTP::class)) {
+            throw new \LogicException('You need to install package "phpseclib/phpseclib" to use this adapter');
+        }
         $this->sftp = $sftp;
         $this->directory = $directory;
         $this->create = $create;
@@ -119,9 +120,9 @@ class PhpseclibSftp implements Adapter,
             return $keys;
         }
 
-        $filteredKeys = array();
-        foreach (array('keys', 'dirs') as $hash) {
-            $filteredKeys[$hash] = array();
+        $filteredKeys = [];
+        foreach (['keys', 'dirs'] as $hash) {
+            $filteredKeys[$hash] = [];
             foreach ($keys[$hash] as $key) {
                 if (0 === strpos($key, $prefix)) {
                     $filteredKeys[$hash][] = $key;
@@ -141,7 +142,7 @@ class PhpseclibSftp implements Adapter,
 
         $stat = $this->sftp->stat($this->computePath($key));
 
-        return isset($stat['mtime']) ? $stat['mtime'] : false;
+        return $stat['mtime'] ?? false;
     }
 
     /**
@@ -199,12 +200,12 @@ class PhpseclibSftp implements Adapter,
 
     protected function computePath($key)
     {
-        return $this->directory.'/'.ltrim($key, '/');
+        return $this->directory . '/' . ltrim($key, '/');
     }
 
     protected function fetchKeys($directory = '', $onlyKeys = true)
     {
-        $keys = array('keys' => array(), 'dirs' => array());
+        $keys = ['keys' => [], 'dirs' => []];
         $computedPath = $this->computePath($directory);
 
         if (!$this->sftp->file_exists($computedPath)) {
@@ -217,7 +218,7 @@ class PhpseclibSftp implements Adapter,
                 continue;
             }
 
-            $path = ltrim($directory.'/'.$filename, '/');
+            $path = ltrim($directory . '/' . $filename, '/');
             if (isset($stat['type']) && $stat['type'] === NET_SFTP_TYPE_DIRECTORY) {
                 $keys['dirs'][] = $path;
             } else {
@@ -229,7 +230,7 @@ class PhpseclibSftp implements Adapter,
 
         if ($onlyKeys && !empty($dirs)) {
             $keys['keys'] = array_merge($keys['keys'], $dirs);
-            $keys['dirs'] = array();
+            $keys['dirs'] = [];
         }
 
         foreach ($dirs as $dir) {

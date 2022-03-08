@@ -3,17 +3,17 @@
 namespace Gaufrette;
 
 /**
- * Associates filesystem instances to domains.
+ * Associates filesystem instances to their names.
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class FilesystemMap
+class FilesystemMap implements FilesystemMapInterface
 {
-    private $filesystems = array();
+    private $filesystems = [];
 
     /**
      * Returns an array of all the registered filesystems where the key is the
-     * domain and the value the filesystem.
+     * name and the value the filesystem.
      *
      * @return array
      */
@@ -23,76 +23,64 @@ class FilesystemMap
     }
 
     /**
-     * Register the given filesystem for the specified domain.
+     * Register the given filesystem for the specified name.
      *
-     * @param string     $domain
+     * @param string     $name
      * @param FilesystemInterface $filesystem
      *
-     * @throws \InvalidArgumentException when the specified domain contains
+     * @throws \InvalidArgumentException when the specified name contains
      *                                  forbidden characters
      */
-    public function set($domain, FilesystemInterface $filesystem)
+    public function set($name, FilesystemInterface $filesystem)
     {
-        if (!preg_match('/^[-_a-zA-Z0-9]+$/', $domain)) {
+        if (!preg_match('/^[-_a-zA-Z0-9]+$/', $name)) {
             throw new \InvalidArgumentException(sprintf(
-                'The specified domain "%s" is not a valid domain.',
-                $domain
+                'The specified name "%s" is not valid.',
+                $name
             ));
         }
 
-        $this->filesystems[$domain] = $filesystem;
+        $this->filesystems[$name] = $filesystem;
     }
 
     /**
-     * Indicates whether there is a filesystem registered for the specified
-     * domain.
-     *
-     * @param string $domain
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    public function has($domain)
+    public function has($name)
     {
-        return isset($this->filesystems[$domain]);
+        return isset($this->filesystems[$name]);
     }
 
     /**
-     * Returns the filesystem registered for the specified domain.
-     *
-     * @param string $domain
-     *
-     * @return FilesystemInterface
-     *
-     * @throw  \InvalidArgumentException when there is no filesystem registered
-     *                                  for the specified domain
+     * {@inheritdoc}
      */
-    public function get($domain)
+    public function get($name)
     {
-        if (!$this->has($domain)) {
+        if (!$this->has($name)) {
             throw new \InvalidArgumentException(sprintf(
-                'There is no filesystem defined for the "%s" domain.',
-                $domain
+                'There is no filesystem defined having "%s" name.',
+                $name
             ));
         }
 
-        return $this->filesystems[$domain];
+        return $this->filesystems[$name];
     }
 
     /**
-     * Removes the filesystem registered for the specified domain.
+     * Removes the filesystem registered for the specified name.
      *
-     * @param string $domain
+     * @param string $name
      */
-    public function remove($domain)
+    public function remove($name)
     {
-        if (!$this->has($domain)) {
+        if (!$this->has($name)) {
             throw new \InvalidArgumentException(sprintf(
                 'Cannot remove the "%s" filesystem as it is not defined.',
-                $domain
+                $name
             ));
         }
 
-        unset($this->filesystems[$domain]);
+        unset($this->filesystems[$name]);
     }
 
     /**
@@ -100,6 +88,6 @@ class FilesystemMap
      */
     public function clear()
     {
-        $this->filesystems = array();
+        $this->filesystems = [];
     }
 }

@@ -42,15 +42,17 @@ class DoctrineDbalSpec extends ObjectBehavior
     {
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
+            ->will(function ($argument) {
+                return sprintf('"%s"', $argument[0]);
+            });
 
         $connection
-            ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
+            ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(12);
         $this->exists('filename')->shouldReturn(true);
 
         $connection
-            ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
+            ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(0);
         $this->exists('filename')->shouldReturn(false);
     }
@@ -62,19 +64,21 @@ class DoctrineDbalSpec extends ObjectBehavior
     {
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
+            ->will(function ($argument) {
+                return sprintf('"%s"', $argument[0]);
+            });
         $connection
-            ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
+            ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(false);
         $connection
             ->insert(
                 'someTableName',
-                array(
-                    '"content"'  => 'some content',
-                    '"mtime"'    => strtotime('2012-10-10 23:10:10'),
+                [
+                    '"content"' => 'some content',
+                    '"mtime"' => strtotime('2012-10-10 23:10:10'),
                     '"checksum"' => '9893532233caff98cd083a116b013c0b',
-                    '"key"'      => 'filename'
-                ))
+                    '"key"' => 'filename',
+                ])
             ->shouldBeCalled();
 
         $this->write('filename', 'some content')->shouldReturn(12);
@@ -87,21 +91,23 @@ class DoctrineDbalSpec extends ObjectBehavior
     {
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
+            ->will(function ($argument) {
+                return sprintf('"%s"', $argument[0]);
+            });
         $connection
-            ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
+            ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(true);
         $connection
             ->update(
                 'someTableName',
-                array(
-                    '"content"'  => 'some content',
-                    '"mtime"'    => strtotime('2012-10-10 23:10:10'),
+                [
+                    '"content"' => 'some content',
+                    '"mtime"' => strtotime('2012-10-10 23:10:10'),
                     '"checksum"' => '9893532233caff98cd083a116b013c0b',
-                ),
-                array(
-                    '"key"'      => 'filename'
-                ))
+                ],
+                [
+                    '"key"' => 'filename',
+                ])
             ->shouldBeCalled();
 
         $this->write('filename', 'some content')->shouldReturn(12);
@@ -114,9 +120,11 @@ class DoctrineDbalSpec extends ObjectBehavior
     {
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
+            ->will(function ($argument) {
+                return sprintf('"%s"', $argument[0]);
+            });
         $connection
-            ->fetchColumn('SELECT "content" FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
+            ->fetchColumn('SELECT "content" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn('some content');
 
         $this->read('filename')->shouldReturn('some content');
@@ -129,9 +137,11 @@ class DoctrineDbalSpec extends ObjectBehavior
     {
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
+            ->will(function ($argument) {
+                return sprintf('"%s"', $argument[0]);
+            });
         $connection
-            ->fetchColumn('SELECT "checksum" FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
+            ->fetchColumn('SELECT "checksum" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(1234);
 
         $this->checksum('filename')->shouldReturn(1234);
@@ -144,9 +154,11 @@ class DoctrineDbalSpec extends ObjectBehavior
     {
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
+            ->will(function ($argument) {
+                return sprintf('"%s"', $argument[0]);
+            });
         $connection
-            ->fetchColumn('SELECT "mtime" FROM "someTableName" WHERE "key" = :key', array('key' => 'filename'))
+            ->fetchColumn('SELECT "mtime" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(1234);
 
         $this->mtime('filename')->shouldReturn(1234);
@@ -159,16 +171,18 @@ class DoctrineDbalSpec extends ObjectBehavior
     {
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
+            ->will(function ($argument) {
+                return sprintf('"%s"', $argument[0]);
+            });
         $connection
             ->update(
                 'someTableName',
-                array(
-                    '"key"'  => 'newFile',
-                ),
-                array(
-                    '"key"'  => 'filename'
-                ))
+                [
+                    '"key"' => 'newFile',
+                ],
+                [
+                    '"key"' => 'filename',
+                ])
             ->shouldBeCalled()
             ->willReturn(1);
 
@@ -181,15 +195,17 @@ class DoctrineDbalSpec extends ObjectBehavior
      */
     function it_get_keys(Connection $connection, Statement $stmt)
     {
-        $stmt->fetchAll(\PDO::FETCH_COLUMN)->willReturn(array('filename', 'filename1', 'filename2'));
+        $stmt->fetchAll(\PDO::FETCH_COLUMN)->willReturn(['filename', 'filename1', 'filename2']);
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
+            ->will(function ($argument) {
+                return sprintf('"%s"', $argument[0]);
+            });
         $connection
             ->executeQuery('SELECT "key" FROM "someTableName"')
             ->willReturn($stmt);
 
-        $this->keys()->shouldReturn(array('filename', 'filename1', 'filename2'));
+        $this->keys()->shouldReturn(['filename', 'filename1', 'filename2']);
     }
 
     /**
@@ -199,9 +215,11 @@ class DoctrineDbalSpec extends ObjectBehavior
     {
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) { return sprintf('"%s"', $argument[0]); });
+            ->will(function ($argument) {
+                return sprintf('"%s"', $argument[0]);
+            });
         $connection
-            ->delete('someTableName', array('"key"' => 'filename'))
+            ->delete('someTableName', ['"key"' => 'filename'])
             ->shouldBeCalled()
             ->willReturn(1);
 

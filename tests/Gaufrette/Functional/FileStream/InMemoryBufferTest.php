@@ -7,9 +7,9 @@ use Gaufrette\Adapter\InMemory as InMemoryAdapter;
 
 class InMemoryBufferTest extends FunctionalTestCase
 {
-    public function setUp()
+    protected function setUp()
     {
-        $this->filesystem = new Filesystem(new InMemoryAdapter(array()));
+        $this->filesystem = new Filesystem(new InMemoryAdapter([]));
 
         $this->registerLocalFilesystemInStream();
     }

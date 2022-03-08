@@ -1,13 +1,2 @@
-.idea/
-bin/tests-all
-doc/
-vendor/
-.dockerignore
-.editorconfig
-.gitignore
-.travis.yml
-appveyor.yml
-composer.lock
-docker-compose.yml
-LICENSE
-README.md
+# ignore all by default
+*

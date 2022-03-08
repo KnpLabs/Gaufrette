@@ -16,7 +16,7 @@ abstract class FunctionalTestCase extends TestCase
     {
         if (!preg_match('/\\\\(\w+)Test$/', get_class($this), $matches)) {
             throw new \RuntimeException(sprintf(
-                'Unable to guess filesystem name from class "%s", '.
+                'Unable to guess filesystem name from class "%s", ' .
                 'please override the ->getAdapterName() method.',
                 get_class($this)
             ));
@@ -25,7 +25,7 @@ abstract class FunctionalTestCase extends TestCase
         return $matches[1];
     }
 
-    public function setUp()
+    protected function setUp()
     {
         $basename = $this->getAdapterName();
         $filename = sprintf(
@@ -48,7 +48,7 @@ EOF
         $this->filesystem = new Filesystem($adapter);
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         if (null === $this->filesystem) {
             return;
@@ -160,7 +160,7 @@ EOF
      */
     public function shouldFetchKeys()
     {
-        $this->assertEquals(array(), $this->filesystem->keys());
+        $this->assertEquals([], $this->filesystem->keys());
 
         $this->filesystem->write('foo', 'Some content');
         $this->filesystem->write('bar', 'Some content');
@@ -169,7 +169,7 @@ EOF
         $actualKeys = $this->filesystem->keys();
 
         $this->assertCount(3, $actualKeys);
-        foreach (array('foo', 'bar', 'baz') as $key) {
+        foreach (['foo', 'bar', 'baz'] as $key) {
             $this->assertContains($key, $actualKeys);
         }
     }

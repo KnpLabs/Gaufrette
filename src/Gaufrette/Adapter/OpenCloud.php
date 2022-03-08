@@ -17,8 +17,7 @@ use OpenCloud\ObjectStore\Exception\ObjectNotFoundException;
  * @author  James Watson <james@sitepulse.org>
  * @author  Daniel Richter <nexyz9@gmail.com>
  */
-class OpenCloud implements Adapter,
-                           ChecksumCalculator
+class OpenCloud implements Adapter, ChecksumCalculator
 {
     /**
      * @var Service
@@ -47,6 +46,9 @@ class OpenCloud implements Adapter,
      */
     public function __construct(Service $objectStore, $containerName, $createContainer = false)
     {
+        if (!class_exists(Service::class)) {
+            throw new \LogicException('You need to install package "rackspace/php-opencloud" to use this adapter');
+        }
         $this->objectStore = $objectStore;
         $this->containerName = $containerName;
         $this->createContainer = $createContainer;
@@ -141,7 +143,7 @@ class OpenCloud implements Adapter,
     public function keys()
     {
         $objectList = $this->getContainer()->objectList();
-        $keys = array();
+        $keys = [];
 
         while ($object = $objectList->next()) {
             $keys[] = $object->getName();

@@ -1,3 +1,65 @@
+
+v0.10.0
+=======
+
+## Added
+
+- Support for AsyncAws
+
+## Removed
+
+The following adapters were deprecated and have now been removed. 
+
+- AclAwareAmazonS3
+- AmazonS3
+- Cache
+- Dropbox
+- LazyOpenCloud
+- MogileFS
+- Sftp
+
+We also removed the deprecated function `AwsS3::getUrl()`.
+
+v0.9.0
+======
+
+## New features
+
+- Add MimeTypeProvider to AzureBlobStorage (#630)
+
+## Fixes
+
+- Fix docker setup for dev env (#580)
+- Define env vars in .env file only (#615)
+- Add PHP Coding Standard check step on CI (#617)
+- PHPUnit tests enhancement (#627)
+
+Thank you @nicolasmure, @peter279k and @rgembalik for your contributions!
+
+v0.8.3
+======
+
+## Changes
+
+- Change Filesystem to FilesystemInterface in File's constructor (#608)
+
+Thank you @athlan for your contribution !
+
+v0.8.2
+======
+
+## New features
+
+- Declare a FilesystemMapInterface (#604)
+- Add SizeCalculator support to GridFS (#603)
+- Local Adapter: directory deletion (#610)
+
+## Fixes
+
+- GridFS : return empty array when object has no metadata (#609)
+
+Thank you @athos7933, @bsperduto and @nicolasmure for your contributions !
+
 v0.8.1
 ======
 

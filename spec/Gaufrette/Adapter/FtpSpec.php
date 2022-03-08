@@ -87,49 +87,49 @@ class FtpSpec extends ObjectBehavior
 
     function it_fetches_keys_without_directories_dots()
     {
-        $this->keys()->shouldReturn(array('filename', 'filename.exe', '.htaccess', 'aaa', 'aaa/filename'));
+        $this->keys()->shouldReturn(['filename', 'filename.exe', '.htaccess', 'aaa', 'aaa/filename']);
     }
 
     function it_fetches_keys_with_spaces_and_unicode_chars()
     {
         $this->beConstructedWith('/home/l3l2', 'localhost');
 
-        $this->keys()->shouldReturn(array('Žľuťoučký kůň.pdf', 'a b c d -> žežulička', 'a b c d -> žežulička/do re mi.pdf'));
+        $this->keys()->shouldReturn(['Žľuťoučký kůň.pdf', 'a b c d -> žežulička', 'a b c d -> žežulička/do re mi.pdf']);
     }
 
     function it_fetches_keys_recursive()
     {
         $this->beConstructedWith('/home/l3l3', 'localhost');
 
-        $this->keys()->shouldReturn(array('filename', 'filename.exe', '.htaccess', 'aaa', 'www', 'aaa/filename', 'www/filename', 'www/some', 'www/some/otherfilename'));
+        $this->keys()->shouldReturn(['filename', 'filename.exe', '.htaccess', 'aaa', 'www', 'aaa/filename', 'www/filename', 'www/some', 'www/some/otherfilename']);
     }
 
     function it_lists_keys()
     {
-        $this->listKeys()->shouldReturn(array(
-            'keys' => array('filename', 'filename.exe', '.htaccess', 'aaa/filename'),
-            'dirs' => array('aaa')
-        ));
+        $this->listKeys()->shouldReturn([
+            'keys' => ['filename', 'filename.exe', '.htaccess', 'aaa/filename'],
+            'dirs' => ['aaa'],
+        ]);
 
-        $this->listKeys('file')->shouldReturn(array(
-            'keys' => array('filename', 'filename.exe'),
-            'dirs' => array()
-        ));
+        $this->listKeys('file')->shouldReturn([
+            'keys' => ['filename', 'filename.exe'],
+            'dirs' => [],
+        ]);
 
-        $this->listKeys('name')->shouldReturn(array(
-            'keys' => array(),
-            'dirs' => array()
-        ));
+        $this->listKeys('name')->shouldReturn([
+            'keys' => [],
+            'dirs' => [],
+        ]);
 
-        $this->listKeys('aaa')->shouldReturn(array(
-            'keys' => array('aaa/filename'),
-            'dirs' => array('aaa')
-        ));
+        $this->listKeys('aaa')->shouldReturn([
+            'keys' => ['aaa/filename'],
+            'dirs' => ['aaa'],
+        ]);
 
-        $this->listKeys('aaa/')->shouldReturn(array(
-            'keys' => array('aaa/filename'),
-            'dirs' => array()
-        ));
+        $this->listKeys('aaa/')->shouldReturn([
+            'keys' => ['aaa/filename'],
+            'dirs' => [],
+        ]);
     }
 
     function it_fetches_mtime()
@@ -178,7 +178,7 @@ class FtpSpec extends ObjectBehavior
     {
         $this->beConstructedWith('/home/l3l1', 'localhost');
 
-        $this->keys()->shouldReturn(array('filename', '.htaccess'));
+        $this->keys()->shouldReturn(['filename', '.htaccess']);
     }
 
     function it_checks_if_hidden_file_exists()
@@ -193,9 +193,9 @@ class FtpSpec extends ObjectBehavior
         global $createdDirectory;
         $createdDirectory = '';
 
-        $this->beConstructedWith('/home/l3l0/new', 'localhost', array('create' => true));
+        $this->beConstructedWith('/home/l3l0/new', 'localhost', ['create' => true]);
 
-        $this->listDirectory()->shouldReturn(array('keys' => array(), 'dirs' => array()));
+        $this->listDirectory()->shouldReturn(['keys' => [], 'dirs' => []]);
     }
 
     function it_does_not_create_base_directory_and_should_throw_exception()
@@ -203,16 +203,16 @@ class FtpSpec extends ObjectBehavior
         global $createdDirectory;
         $createdDirectory = '';
 
-        $this->beConstructedWith('/home/l3l0/new', 'localhost', array('create' => false));
+        $this->beConstructedWith('/home/l3l0/new', 'localhost', ['create' => false]);
 
-        $this->shouldThrow(new \RuntimeException("The directory '/home/l3l0/new' does not exist."))->during('listDirectory', array());
+        $this->shouldThrow(new \RuntimeException("The directory '/home/l3l0/new' does not exist."))->during('listDirectory', []);
     }
 
     function it_fetches_keys_for_windows()
     {
         $this->beConstructedWith('C:\Ftp', 'localhost');
 
-        $this->keys()->shouldReturn(array('archive', 'file1.zip', 'file2.zip'));
+        $this->keys()->shouldReturn(['archive', 'file1.zip', 'file2.zip']);
     }
 
     function it_supports_sizecalculator()

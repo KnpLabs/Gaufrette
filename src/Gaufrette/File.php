@@ -50,9 +50,9 @@ class File
 
     /**
      * @param string     $key
-     * @param Filesystem $filesystem
+     * @param FilesystemInterface $filesystem
      */
-    public function __construct($key, Filesystem $filesystem)
+    public function __construct($key, FilesystemInterface $filesystem)
     {
         $this->key = $key;
         $this->name = $key;
@@ -78,7 +78,7 @@ class File
      *
      * @return string
      */
-    public function getContent($metadata = array())
+    public function getContent($metadata = [])
     {
         if (isset($this->content)) {
             return $this->content;
@@ -140,7 +140,7 @@ class File
      * @return int The number of bytes that were written into the file, or
      *             FALSE on failure
      */
-    public function setContent($content, $metadata = array())
+    public function setContent($content, $metadata = [])
     {
         $this->content = $content;
         $this->setMetadata($metadata);
@@ -176,7 +176,7 @@ class File
      *
      * @return bool TRUE on success
      */
-    public function delete($metadata = array())
+    public function delete($metadata = [])
     {
         $this->setMetadata($metadata);
 

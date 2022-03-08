@@ -1,0 +1,11 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+    reportUnmatchedIgnoredErrors: false
+    paths:
+        - src
+
+    scanFiles:
+        - vendor/google/apiclient/src/Google/Task/Retryable.php

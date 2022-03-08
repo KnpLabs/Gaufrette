@@ -6,18 +6,13 @@ use Gaufrette\Util;
 use Gaufrette\Adapter;
 use Gaufrette\Stream;
 
-
 /**
  * Adapter for the local filesystem.
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  * @author Leszek Prabucki <leszek.prabucki@gmail.com>
  */
-class Local implements Adapter,
-    StreamFactory,
-    ChecksumCalculator,
-    SizeCalculator,
-    MimeTypeProvider
+class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculator, MimeTypeProvider
 {
     protected $directory;
     private $create;
@@ -53,6 +48,10 @@ class Local implements Adapter,
      */
     public function read($key)
     {
+        if ($this->isDirectory($key)) {
+            return false;
+        }
+
         return file_get_contents($this->computePath($key));
     }
 
@@ -141,17 +140,18 @@ class Local implements Adapter,
     /**
      * {@inheritdoc}
      *
-     * @throws \OutOfBoundsException     If the computed path is out of the directory
-     * @throws \InvalidArgumentException if the directory already exists
-     * @throws \RuntimeException         if the directory could not be created
+     * Can also delete a directory recursively when the given $key matches a
+     * directory.
      */
     public function delete($key)
     {
         if ($this->isDirectory($key)) {
-            return rmdir($this->computePath($key));
+            return $this->deleteDirectory($this->computePath($key));
+        } elseif ($this->exists($key)) {
+            return unlink($this->computePath($key));
         }
 
-        return unlink($this->computePath($key));
+        return false;
     }
 
     /**
@@ -250,7 +250,7 @@ class Local implements Adapter,
     {
         $this->ensureDirectoryExists($this->directory, $this->create);
 
-        return $this->normalizePath($this->directory.'/'.$key);
+        return $this->normalizePath($this->directory . '/' . $key);
     }
 
     /**
@@ -308,5 +308,46 @@ class Local implements Adapter,
         if (!@mkdir($directory, $this->mode, true) && !is_dir($directory)) {
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
         }
+    }
+
+    /**
+     * @param string The directory's path to delete
+     *
+     * @throws \InvalidArgumentException When attempting to delete the root
+     * directory of this adapter.
+     *
+     * @return bool Wheter the operation succeeded or not
+     */
+    private function deleteDirectory($directory)
+    {
+        if ($this->directory === $directory) {
+            throw new \InvalidArgumentException(
+                sprintf('Impossible to delete the root directory of this Local adapter ("%s").', $directory)
+            );
+        }
+
+        $status = true;
+
+        if (file_exists($directory)) {
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator(
+                    $directory,
+                    \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
+                ),
+                \RecursiveIteratorIterator::CHILD_FIRST
+            );
+
+            foreach ($iterator as $item) {
+                if ($item->isDir()) {
+                    $status = $status && rmdir(strval($item));
+                } else {
+                    $status = $status && unlink(strval($item));
+                }
+            }
+
+            $status = $status && rmdir($directory);
+        }
+
+        return $status;
     }
 }

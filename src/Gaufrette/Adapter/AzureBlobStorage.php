@@ -20,11 +20,7 @@ use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
  * @author Luciano Mammino <lmammino@oryzone.com>
  * @author Paweł Czyżewski <pawel.czyzewski@enginewerk.com>
  */
-class AzureBlobStorage implements Adapter,
-                                  MetadataSupporter,
-                                  SizeCalculator,
-                                  ChecksumCalculator
-
+class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, ChecksumCalculator, MimeTypeProvider
 {
     /**
      * Error constants.
@@ -271,9 +267,11 @@ class AzureBlobStorage implements Adapter,
         try {
             if ($this->multiContainerMode) {
                 $containersList = $this->blobProxy->listContainers();
+
                 return call_user_func_array('array_merge', array_map(
-                    function(Container $container) {
+                    function (Container $container) {
                         $containerName = $container->getName();
+
                         return $this->fetchBlobs($containerName, $containerName);
                     },
                     $containersList->getContainers()
@@ -332,7 +330,25 @@ class AzureBlobStorage implements Adapter,
 
             return false;
         }
+    }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function mimeType($key)
+    {
+        $this->init();
+        list($containerName, $key) = $this->tokenizeKey($key);
+
+        try {
+            $properties = $this->blobProxy->getBlobProperties($containerName, $key);
+
+            return $properties->getProperties()->getContentType();
+        } catch (ServiceException $e) {
+            $this->failIfContainerNotFound($e, sprintf('read content mime type for key "%s"', $key), $containerName);
+
+            return false;
+        }
     }
 
     /**
@@ -564,12 +580,14 @@ class AzureBlobStorage implements Adapter,
     private function fetchBlobs($containerName, $prefix = null)
     {
         $blobList = $this->blobProxy->listBlobs($containerName);
+
         return array_map(
             function (Blob $blob) use ($prefix) {
                 $name = $blob->getName();
                 if (null !== $prefix) {
-                    $name = $prefix .'/'. $name;
+                    $name = $prefix . '/' . $name;
                 }
+
                 return $name;
             },
             $blobList->getBlobs()

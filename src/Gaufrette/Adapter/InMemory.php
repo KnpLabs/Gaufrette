@@ -12,15 +12,14 @@ use Gaufrette\Util;
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class InMemory implements Adapter,
-                          MimeTypeProvider
+class InMemory implements Adapter, MimeTypeProvider
 {
-    protected $files = array();
+    protected $files = [];
 
     /**
      * @param array $files An array of files
      */
-    public function __construct(array $files = array())
+    public function __construct(array $files = [])
     {
         $this->setFiles($files);
     }
@@ -32,16 +31,16 @@ class InMemory implements Adapter,
      */
     public function setFiles(array $files)
     {
-        $this->files = array();
+        $this->files = [];
         foreach ($files as $key => $file) {
             if (!is_array($file)) {
-                $file = array('content' => $file);
+                $file = ['content' => $file];
             }
 
-            $file = array_merge(array(
+            $file = array_merge([
                 'content' => null,
                 'mtime' => null,
-            ), $file);
+            ], $file);
 
             $this->setFile($key, $file['content'], $file['mtime']);
         }
@@ -60,10 +59,10 @@ class InMemory implements Adapter,
             $mtime = time();
         }
 
-        $this->files[$key] = array(
+        $this->files[$key] = [
             'content' => (string) $content,
             'mtime' => (integer) $mtime,
-        );
+        ];
     }
 
     /**
