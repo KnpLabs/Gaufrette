@@ -360,7 +360,7 @@ class Ftp implements Adapter,
      */
     private function createConnectionUrl()
     {
-        $url = $this->ssl ? 'sftp://' : 'ftp://';
+        $url = $this->ssl ? 'ftps://' : 'ftp://';
         $url .= $this->username . ':' . $this->password . '@' . $this->host;
         $url .= $this->port ? ':' . $this->port : '';
 
