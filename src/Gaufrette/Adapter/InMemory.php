@@ -116,7 +116,7 @@ class InMemory implements Adapter, MimeTypeProvider
      */
     public function mtime($key)
     {
-        return isset($this->files[$key]['mtime']) ? $this->files[$key]['mtime'] : false;
+        return $this->files[$key]['mtime'] ?? false;
     }
 
     /**

@@ -71,7 +71,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
      */
     public function getMetadata($key)
     {
-        return isset($this->metadata[$key]) ? $this->metadata[$key] : [];
+        return $this->metadata[$key] ?? [];
     }
 
     /**
