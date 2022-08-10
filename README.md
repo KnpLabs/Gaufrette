@@ -3,8 +3,7 @@ Gaufrette
 
 Gaufrette provides a filesystem abstraction layer.
 
-[![Build Status](https://img.shields.io/travis/KnpLabs/Gaufrette/master.svg?style=flat-square)](http://travis-ci.org/KnpLabs/Gaufrette)
-[![AppVeyor Status](https://img.shields.io/appveyor/ci/NiR-/Gaufrette/master.svg?style=flat-square)](https://ci.appveyor.com/project/NiR-/gaufrette)
+[![Build Status](https://github.com/KnpLabs/Gaufrette/actions/workflows/ci.yml/badge.svg)](https://github.com/KnpLabs/Gaufrette/actions)
 [![Quality Score](https://img.shields.io/scrutinizer/g/KnpLabs/Gaufrette.svg?style=flat-square)](https://scrutinizer-ci.com/g/KnpLabs/Gaufrette)
 [![Packagist Version](https://img.shields.io/packagist/v/KnpLabs/Gaufrette.svg?style=flat-square)](https://packagist.org/packages/KnpLabs/Gaufrette)
 [![Total Downloads](https://img.shields.io/packagist/dt/KnpLabs/Gaufrette.svg?style=flat-square)](https://packagist.org/packages/KnpLabs/Gaufrette)
