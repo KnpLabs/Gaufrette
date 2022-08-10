@@ -328,7 +328,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     {
         $path = $this->computePath($key);
 
-        return isset($this->metadata[$path]) ? $this->metadata[$path] : [];
+        return $this->metadata[$path] ?? [];
     }
 
     /**

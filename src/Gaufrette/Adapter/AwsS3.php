@@ -70,7 +70,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
      */
     public function getMetadata($key)
     {
-        return isset($this->metadata[$key]) ? $this->metadata[$key] : [];
+        return $this->metadata[$key] ?? [];
     }
 
     /**

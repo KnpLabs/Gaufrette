@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@2.1.0
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           coverage: none
@@ -55,7 +55,7 @@ jobs:
 
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@2.1.0
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.run.php }}
           coverage: none

@@ -20,7 +20,9 @@ class GridFSSpec extends ObjectBehavior
     function letGo()
     {
         array_map(function ($res) {
-            @fclose($res);
+            if (is_resource($res)) {
+                @fclose($res);
+            }
         }, $this->resources);
     }
 

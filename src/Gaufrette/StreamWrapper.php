@@ -254,7 +254,7 @@ class StreamWrapper
         );
 
         $domain = $parts['host'];
-        $key = substr($parts['path'], 1);
+        $key = !empty($parts['path']) ? substr($parts['path'], 1) : '';
 
         if (null !== $parts['query']) {
             $key .= '?' . $parts['query'];
