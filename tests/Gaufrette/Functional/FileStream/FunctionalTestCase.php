@@ -5,7 +5,7 @@ namespace Gaufrette\Functional\FileStream;
 use Gaufrette\StreamWrapper;
 use PHPUnit\Framework\TestCase;
 
-class FunctionalTestCase extends TestCase
+abstract class FunctionalTestCase extends TestCase
 {
     protected $filesystem;
 
@@ -46,11 +46,11 @@ class FunctionalTestCase extends TestCase
 
     /**
      * @test
-     * @expectedException \LogicException
-     * @expectedExceptionMessage The stream does not allow read.
      */
     public function shouldNotReadWhenOpenInWriteMode()
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('The stream does not allow read.');
         $this->filesystem->write('test.txt', 'test content');
 
         $fileHandler = fopen('gaufrette://filestream/test.txt', 'w');
@@ -62,11 +62,11 @@ class FunctionalTestCase extends TestCase
 
     /**
      * @test
-     * @expectedException \LogicException
-     * @expectedExceptionMessage The stream does not allow write.
      */
     public function shouldNotWriteWhenOpenInReadMode()
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('The stream does not allow write.');
         $this->filesystem->write('test.txt', 'test content');
 
         $fileHandler = fopen('gaufrette://filestream/test.txt', 'r');
