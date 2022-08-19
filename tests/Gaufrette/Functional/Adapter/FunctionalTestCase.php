@@ -25,7 +25,7 @@ abstract class FunctionalTestCase extends TestCase
         return $matches[1];
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $basename = $this->getAdapterName();
         $filename = sprintf(
@@ -48,7 +48,7 @@ EOF
         $this->filesystem = new Filesystem($adapter);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if (null === $this->filesystem) {
             return;
@@ -61,7 +61,7 @@ EOF
      * @test
      * @group functional
      */
-    public function shouldWriteAndRead()
+    public function shouldWriteAndRead(): void
     {
         $this->assertEquals(12, $this->filesystem->write('foo', 'Some content'));
         $this->assertEquals(13, $this->filesystem->write('test/subdir/foo', 'Some content1', true));
@@ -74,7 +74,7 @@ EOF
      * @test
      * @group functional
      */
-    public function shouldUpdateFileContent()
+    public function shouldUpdateFileContent(): void
     {
         $this->filesystem->write('foo', 'Some content');
         $this->filesystem->write('foo', 'Some content updated', true);
@@ -86,7 +86,7 @@ EOF
      * @test
      * @group functional
      */
-    public function shouldCheckIfFileExists()
+    public function shouldCheckIfFileExists(): void
     {
         $this->assertFalse($this->filesystem->has('foo'));
 
@@ -101,7 +101,7 @@ EOF
      * @test
      * @group functional
      */
-    public function shouldGetMtime()
+    public function shouldGetMtime(): void
     {
         $this->filesystem->write('foo', 'Some content');
 
@@ -114,7 +114,7 @@ EOF
      * @expectedException \RuntimeException
      * @expectedMessage Could not get mtime for the "foo" key
      */
-    public function shouldFailWhenTryMtimeForKeyWhichDoesNotExist()
+    public function shouldFailWhenTryMtimeForKeyWhichDoesNotExist(): void
     {
         $this->assertFalse($this->filesystem->mtime('foo'));
     }
@@ -123,7 +123,7 @@ EOF
      * @test
      * @group functional
      */
-    public function shouldRenameFile()
+    public function shouldRenameFile(): void
     {
         $this->filesystem->write('foo', 'Some content');
         $this->filesystem->rename('foo', 'boo');
@@ -143,7 +143,7 @@ EOF
      * @test
      * @group functional
      */
-    public function shouldDeleteFile()
+    public function shouldDeleteFile(): void
     {
         $this->filesystem->write('foo', 'Some content');
 
@@ -158,7 +158,7 @@ EOF
      * @test
      * @group functional
      */
-    public function shouldFetchKeys()
+    public function shouldFetchKeys(): void
     {
         $this->assertEquals([], $this->filesystem->keys());
 
@@ -178,7 +178,7 @@ EOF
      * @test
      * @group functional
      */
-    public function shouldWorkWithHiddenFiles()
+    public function shouldWorkWithHiddenFiles(): void
     {
         $this->filesystem->write('.foo', 'hidden');
         $this->assertTrue($this->filesystem->has('.foo'));
@@ -191,7 +191,7 @@ EOF
      * @test
      * @group functional
      */
-    public function shouldKeepFileObjectInRegister()
+    public function shouldKeepFileObjectInRegister(): void
     {
         $FileObjectA = $this->filesystem->createFile('somefile');
         $FileObjectB = $this->filesystem->createFile('somefile');
@@ -203,7 +203,7 @@ EOF
      * @test
      * @group functional
      */
-    public function shouldWriteToSameFile()
+    public function shouldWriteToSameFile(): void
     {
         $FileObjectA = $this->filesystem->createFile('somefile');
         $FileObjectA->setContent('ABC');

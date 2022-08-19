@@ -17,7 +17,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
 
     private $containers = [];
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->markTestSkipped(__CLASS__ . ' is flaky.');
 
@@ -37,7 +37,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldWriteAndRead()
+    public function shouldWriteAndRead(): void
     {
         $path1 = $this->createUniqueContainerName('container') . '/foo';
         $path2 = $this->createUniqueContainerName('test') . '/subdir/foo';
@@ -53,7 +53,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldUpdateFileContent()
+    public function shouldUpdateFileContent(): void
     {
         $path = $this->createUniqueContainerName('container') . '/foo';
 
@@ -67,7 +67,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldCheckIfFileExists()
+    public function shouldCheckIfFileExists(): void
     {
         $path1 = $this->createUniqueContainerName('container') . '/foo';
         $path2 = $this->createUniqueContainerName('test') . '/somefile';
@@ -86,7 +86,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldGetMtime()
+    public function shouldGetMtime(): void
     {
         $path = $this->createUniqueContainerName('container') . '/foo';
 
@@ -99,7 +99,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldGetSize()
+    public function shouldGetSize(): void
     {
         $path = $this->createUniqueContainerName('container') . '/foo';
 
@@ -112,7 +112,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldGetMd5Hash()
+    public function shouldGetMd5Hash(): void
     {
         $path = $this->createUniqueContainerName('container') . '/foo';
 
@@ -126,7 +126,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldGetContentType()
+    public function shouldGetContentType(): void
     {
         $path = $this->createUniqueContainerName('container') . '/foo';
 
@@ -142,7 +142,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @expectedException \RuntimeException
      * @expectedMessage Could not get mtime for the "foo" key
      */
-    public function shouldFailWhenTryMtimeForKeyWhichDoesNotExist()
+    public function shouldFailWhenTryMtimeForKeyWhichDoesNotExist(): void
     {
         $this->assertFalse($this->filesystem->mtime('container5/foo'));
     }
@@ -151,7 +151,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldRenameFile()
+    public function shouldRenameFile(): void
     {
         $somedir = $this->createUniqueContainerName('somedir');
         $path1 = $this->createUniqueContainerName('container') . '/foo';
@@ -175,7 +175,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldDeleteFile()
+    public function shouldDeleteFile(): void
     {
         $path = $this->createUniqueContainerName('container') . '/foo';
 
@@ -192,7 +192,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldFetchKeys()
+    public function shouldFetchKeys(): void
     {
         $path1 = $this->createUniqueContainerName('container-1') . '/foo';
         $path2 = $this->createUniqueContainerName('container-2') . '/bar';
@@ -212,7 +212,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldWorkWithHiddenFiles()
+    public function shouldWorkWithHiddenFiles(): void
     {
         $path = $this->createUniqueContainerName('container') . '/.foo';
 
@@ -227,7 +227,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldKeepFileObjectInRegister()
+    public function shouldKeepFileObjectInRegister(): void
     {
         $path = $this->createUniqueContainerName('container') . '/somefile';
 
@@ -241,7 +241,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldWriteToSameFile()
+    public function shouldWriteToSameFile(): void
     {
         $path = $this->createUniqueContainerName('container') . '/somefile';
 
@@ -261,7 +261,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
         return $container;
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         foreach ($this->containers as $container) {
             $this->adapter->deleteContainer($container);

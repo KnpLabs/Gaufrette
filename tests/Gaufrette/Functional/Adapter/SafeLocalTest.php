@@ -7,7 +7,7 @@ use Gaufrette\Adapter\SafeLocal;
 
 class SafeLocalTest extends FunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!file_exists($this->getDirectory())) {
             mkdir($this->getDirectory());
@@ -16,7 +16,7 @@ class SafeLocalTest extends FunctionalTestCase
         $this->filesystem = new Filesystem(new SafeLocal($this->getDirectory()));
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         foreach ($this->filesystem->keys() as $key) {
             $this->filesystem->delete($key);
@@ -27,7 +27,7 @@ class SafeLocalTest extends FunctionalTestCase
         rmdir($this->getDirectory());
     }
 
-    private function getDirectory()
+    private function getDirectory(): string
     {
         return sprintf('%s/filesystem', __DIR__);
     }

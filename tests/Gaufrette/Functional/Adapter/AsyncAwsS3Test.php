@@ -15,7 +15,7 @@ class AsyncAwsS3Test extends FunctionalTestCase
     /** @var SimpleS3Client */
     private $client;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!class_exists(SimpleS3Client::class)) {
             $this->markTestSkipped('You need to install async-aws/simple-s3 to run this test.');
@@ -37,7 +37,7 @@ class AsyncAwsS3Test extends FunctionalTestCase
         $this->createFilesystem(['create' => true]);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if ($this->client === null) {
             return;
@@ -58,7 +58,7 @@ class AsyncAwsS3Test extends FunctionalTestCase
      * @test
      * @expectedException \RuntimeException
      */
-    public function shouldThrowExceptionIfBucketMissingAndNotCreating()
+    public function shouldThrowExceptionIfBucketMissingAndNotCreating(): void
     {
         $this->createFilesystem();
         $this->filesystem->read('foo');
@@ -67,7 +67,7 @@ class AsyncAwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldWriteObjects()
+    public function shouldWriteObjects(): void
     {
         $this->assertEquals(7, $this->filesystem->write('foo', 'testing'));
     }
@@ -75,7 +75,7 @@ class AsyncAwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldCheckForObjectExistence()
+    public function shouldCheckForObjectExistence(): void
     {
         $this->filesystem->write('foo', '');
         $this->assertTrue($this->filesystem->has('foo'));
@@ -84,7 +84,7 @@ class AsyncAwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldCheckForObjectExistenceWithDirectory()
+    public function shouldCheckForObjectExistenceWithDirectory(): void
     {
         $this->createFilesystem(['directory' => 'bar', 'create' => true]);
         $this->filesystem->write('foo', '');
@@ -95,7 +95,7 @@ class AsyncAwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldListKeysWithoutDirectory()
+    public function shouldListKeysWithoutDirectory(): void
     {
         $this->assertEquals([], $this->filesystem->listKeys());
         $this->filesystem->write('test.txt', 'some content');
@@ -105,7 +105,7 @@ class AsyncAwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldListKeysWithDirectory()
+    public function shouldListKeysWithDirectory(): void
     {
         $this->createFilesystem(['create' => true, 'directory' => 'root/']);
         $this->filesystem->write('test.txt', 'some content');
@@ -116,7 +116,7 @@ class AsyncAwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldGetKeysWithoutDirectory()
+    public function shouldGetKeysWithoutDirectory(): void
     {
         $this->filesystem->write('test.txt', 'some content');
         $this->assertEquals(['test.txt'], $this->filesystem->keys());
@@ -125,7 +125,7 @@ class AsyncAwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldGetKeysWithDirectory()
+    public function shouldGetKeysWithDirectory(): void
     {
         $this->createFilesystem(['create' => true, 'directory' => 'root/']);
         $this->filesystem->write('test.txt', 'some content');
@@ -135,7 +135,7 @@ class AsyncAwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldUploadWithGivenContentType()
+    public function shouldUploadWithGivenContentType(): void
     {
         /** @var AwsS3 $adapter */
         $adapter = $this->filesystem->getAdapter();

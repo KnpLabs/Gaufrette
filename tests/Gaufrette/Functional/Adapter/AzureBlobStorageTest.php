@@ -18,7 +18,7 @@ class AzureBlobStorageTest extends FunctionalTestCase
     /** @var AzureBlobStorage */
     private $adapter;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $account = getenv('AZURE_ACCOUNT');
         $key = getenv('AZURE_KEY');
@@ -39,7 +39,7 @@ class AzureBlobStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldGetContentType()
+    public function shouldGetContentType(): void
     {
         $path = '/somefile';
         $content = 'Some content';
@@ -48,7 +48,7 @@ class AzureBlobStorageTest extends FunctionalTestCase
         $this->assertEquals('text/plain', $this->filesystem->mimeType($path));
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if ($this->adapter === null) {
             return;
