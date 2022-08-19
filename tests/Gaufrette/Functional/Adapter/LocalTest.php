@@ -9,7 +9,7 @@ class LocalTest extends FunctionalTestCase
 {
     private $directory;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->directory = sprintf('%s/filesystem', str_replace('\\', '/', __DIR__));
 
@@ -20,7 +20,7 @@ class LocalTest extends FunctionalTestCase
         $this->filesystem = new Filesystem(new Local($this->directory));
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $adapter = $this->filesystem->getAdapter();
 
@@ -37,7 +37,7 @@ class LocalTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldWorkWithSyslink()
+    public function shouldWorkWithSyslink(): void
     {
         if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
             $this->markTestSkipped('Symlinks are not supported on Windows.');
@@ -71,7 +71,7 @@ class LocalTest extends FunctionalTestCase
      * @covers Gaufrette\Adapter\Local
      * @group functional
      */
-    public function shouldListingOnlyGivenDirectory()
+    public function shouldListingOnlyGivenDirectory(): void
     {
         $this->filesystem->write('aaa.txt', 'some content');
         $this->filesystem->write('localDir/test.txt', 'some content');
@@ -95,7 +95,7 @@ class LocalTest extends FunctionalTestCase
      * @covers Gaufrette\Adapter\Local
      * @group functional
      */
-    public function shouldListingAllKeys()
+    public function shouldListingAllKeys(): void
     {
         $this->filesystem->write('aaa.txt', 'some content');
         $this->filesystem->write('localDir/dir1/dir2/dir3/test.txt', 'some content');
@@ -112,7 +112,7 @@ class LocalTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldBeAbleToClearCache()
+    public function shouldBeAbleToClearCache(): void
     {
         $this->filesystem->get('test.txt', true);
         $this->filesystem->write('test.txt', '123', true);
@@ -139,7 +139,7 @@ class LocalTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldDeleteDirectory()
+    public function shouldDeleteDirectory(): void
     {
         $path = $this->directory . DIRECTORY_SEPARATOR . 'delete-me.d';
         mkdir($path);
@@ -157,7 +157,7 @@ class LocalTest extends FunctionalTestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Impossible to delete the root directory of this Local adapter
      */
-    public function shouldNotDeleteTheAdapterRootDirectory()
+    public function shouldNotDeleteTheAdapterRootDirectory(): void
     {
         $this->filesystem->getAdapter()->delete('/');
     }

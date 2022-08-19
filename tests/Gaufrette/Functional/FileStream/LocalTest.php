@@ -9,7 +9,7 @@ class LocalTest extends FunctionalTestCase
 {
     protected $directory;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->directory = __DIR__ . DIRECTORY_SEPARATOR . 'filesystem';
         @mkdir($this->directory . DIRECTORY_SEPARATOR . 'subdir', 0777, true);
@@ -22,7 +22,7 @@ class LocalTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldChmodDirectory()
+    public function shouldChmodDirectory(): void
     {
         if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
             $this->markTestSkipped('Chmod and umask are not available on Windows.');
@@ -35,7 +35,7 @@ class LocalTest extends FunctionalTestCase
         $this->assertEquals('0770', substr(sprintf('%o', $perms), -4));
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $adapter = $this->filesystem->getAdapter();
 
@@ -51,7 +51,7 @@ class LocalTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldSupportsDirectory()
+    public function shouldSupportsDirectory(): void
     {
         $this->assertFileExists('gaufrette://filestream/subdir');
         $this->assertDirectoryExists('gaufrette://filestream/subdir');
