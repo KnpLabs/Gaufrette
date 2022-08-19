@@ -16,14 +16,14 @@
         }
     ],
     "require": {
-        "php": ">=7.1"
+        "php": "^7.4 || ^8.0"
     },
     "conflict": {
         "microsoft/windowsazure": "<0.4.3"
     },
     "require-dev": {
-        "phpspec/phpspec": "^5.1 || ^6.2",
-        "phpunit/phpunit": "~7.5",
+        "phpspec/phpspec": "^7.0",
+        "phpunit/phpunit": "~8.0",
         "mikey179/vfsstream": "v1.x-dev as 1.7.0"
     },
     "suggest": {
