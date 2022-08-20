@@ -4,7 +4,7 @@ services:
   php7.1:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile
+      dockerfile: docker/php/Dockerfile_php_7_1
       target: php7.1
     env_file: .env
     volumes:
@@ -18,7 +18,7 @@ services:
   php7.2:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile
+      dockerfile: docker/php/Dockerfile_php_7_2
       target: php7.2
     env_file: .env
     volumes:
@@ -32,7 +32,7 @@ services:
   php7.3:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile
+      dockerfile: docker/php/Dockerfile_php_7_3
       target: php7.3
     env_file: .env
     volumes:

@@ -64,29 +64,29 @@ For `InMemory`, `Local` and `Zip` adapters everyone in this list is considered a
 
 ### Development
 
-Requires the latest versions of :
+Requires :
   * docker-ce
   * docker-compose
 
 1) Create `.env` file :
 ```bash
-$ make dev
+$ make docker.dev
 ```
 and configure it as you want.
 
 2) Build the php docker image :
 ```bash
-$ make build
+$ make docker.build
 ```
 
 3) Install dependencies :
 ```bash
-$ make install-deps
+$ make docker.all-deps
 ```
 
 4) Run tests :
 ```bash
-$ make tests
+$ make docker.tests
 ```
 
 You can also use a different php version, simply set the `PHP_VERSION` env var
