@@ -79,7 +79,7 @@ require-all-legacy: # kept for compatibility with the old CI config, to be remov
 
 
 require-all: require-all-legacy ## Install all dependencies for adapters
-	composer require --no-update async-aws/simple-s3:^0.1.1
+	composer require --no-update async-aws/simple-s3:^1.0
 
 .PHONY: clear
 clear: ## Remove not versioned files

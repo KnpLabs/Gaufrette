@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Functional\Adapter;
 
+use Gaufrette\Exception\FileNotFound;
 use Gaufrette\Filesystem;
 use PHPUnit\Framework\TestCase;
 
@@ -111,12 +112,12 @@ EOF
     /**
      * @test
      * @group functional
-     * @expectedException \RuntimeException
-     * @expectedMessage Could not get mtime for the "foo" key
      */
     public function shouldFailWhenTryMtimeForKeyWhichDoesNotExist(): void
     {
-        $this->assertFalse($this->filesystem->mtime('foo'));
+        $this->expectException(FileNotFound::class);
+        $this->expectExceptionMessage('The file "foo" was not found.');
+        $this->filesystem->mtime('foo');
     }
 
     /**
