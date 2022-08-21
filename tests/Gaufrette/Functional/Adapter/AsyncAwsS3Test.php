@@ -44,6 +44,10 @@ class AsyncAwsS3Test extends FunctionalTestCase
         }
 
         try {
+            $files = $this->filesystem->listKeys();
+            foreach ($files as $file) {
+                $this->filesystem->delete($file);
+            }
             $this->client->deleteBucket(['Bucket' => $this->bucket]);
         } catch (\Throwable $e) {
         }
@@ -56,10 +60,10 @@ class AsyncAwsS3Test extends FunctionalTestCase
 
     /**
      * @test
-     * @expectedException \RuntimeException
      */
     public function shouldThrowExceptionIfBucketMissingAndNotCreating(): void
     {
+        $this->expectException(\RuntimeException::class);
         $this->createFilesystem();
         $this->filesystem->read('foo');
     }

@@ -57,5 +57,5 @@ require-all-legacy:
 
 
 require-all: require-all-legacy
-	composer require --no-update async-aws/simple-s3:^0.1.1
+	composer require --no-update async-aws/simple-s3:^1.0
 
