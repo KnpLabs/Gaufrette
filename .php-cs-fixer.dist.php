@@ -1,6 +1,6 @@
 <?php
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setFinder(PhpCsFixer\Finder::create()
         ->exclude('vendor')
         ->in(__DIR__)
@@ -9,17 +9,17 @@ return PhpCsFixer\Config::create()
         '@PSR1' => true,
         '@PSR2' => true,
         'array_syntax' => [ 'syntax' => 'short' ],
-        'binary_operator_spaces' => [ 'align_equals' => false, 'align_double_arrow' => false ],
+        'binary_operator_spaces' => true,
         'blank_line_before_statement' => true,
         'cast_spaces' => true,
         'combine_consecutive_unsets' => true,
         'concat_space' => [ 'spacing' => 'one' ],
         'linebreak_after_opening_tag' => true,
-        'method_argument_space' => ['ensure_fully_multiline' => false],
+        'method_argument_space' => ['on_multiline' => 'ensure_fully_multiline'],
         'no_blank_lines_after_class_opening' => true,
         'no_blank_lines_after_phpdoc' => true,
         'no_break_comment' => false,
-        'no_extra_consecutive_blank_lines' => true,
+        'no_extra_blank_lines' => true,
         'no_spaces_around_offset' => true,
         'no_trailing_comma_in_singleline_array' => true,
         'no_unused_imports' => true,
@@ -34,7 +34,7 @@ return PhpCsFixer\Config::create()
         'phpdoc_trim' => true,
         'single_quote' => true,
         'ternary_to_null_coalescing' => true,
-        'trailing_comma_in_multiline_array' => true,
+        'trailing_comma_in_multiline' => ['elements' => ['arrays']],
         'trim_array_spaces' => true,
     ])
     ->registerCustomFixers(new PedroTroller\CS\Fixer\Fixers())

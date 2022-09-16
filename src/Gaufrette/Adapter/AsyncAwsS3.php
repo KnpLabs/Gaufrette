@@ -280,7 +280,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
         $this->service->createBucket([
             'Bucket' => $this->bucket,
             'CreateBucketConfiguration' => [
-                'LocationConstraint' => $this->service->getConfiguration()->get(Configuration::OPTION_REGION)
+                'LocationConstraint' => $this->service->getConfiguration()->get(Configuration::OPTION_REGION),
             ],
         ]);
         $this->bucketExists = true;

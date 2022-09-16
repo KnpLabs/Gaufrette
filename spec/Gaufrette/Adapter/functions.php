@@ -66,4 +66,3 @@ function apc_exists($path)
 
     return true;
 }
-

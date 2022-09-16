@@ -180,13 +180,13 @@ class OpenCloudSpec extends ObjectBehavior
         $objects = [$object1, $object2, $object3];
 
         $objectList->next()->will(
-                   function () use ($objects, &$index) {
-                       if ($index < count($objects)) {
-                           $index++;
+            function () use ($objects, &$index) {
+                if ($index < count($objects)) {
+                    $index++;
 
-                           return $objects[$index - 1];
-                       }
-                   }
+                    return $objects[$index - 1];
+                }
+            }
         )          ->shouldBeCalledTimes(count($objects) + 1);
 
         $container->objectList()->willReturn($objectList);
