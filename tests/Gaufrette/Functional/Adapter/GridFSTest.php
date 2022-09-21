@@ -8,7 +8,7 @@ use MongoDB\Client;
 
 class GridFSTest extends FunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $uri = getenv('MONGO_URI');
         $dbname = getenv('MONGO_DBNAME');
@@ -28,7 +28,7 @@ class GridFSTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldListKeys()
+    public function shouldListKeys(): void
     {
         $this->filesystem->write('foo/foobar/bar.txt', 'data');
         $this->filesystem->write('foo/bar/buzz.txt', 'data');
@@ -79,7 +79,7 @@ class GridFSTest extends FunctionalTestCase
      * @test
      * Tests metadata written to GridFS can be retrieved after writing
      */
-    public function shouldRetrieveMetadataAfterWrite()
+    public function shouldRetrieveMetadataAfterWrite(): void
     {
         //Create local copy of fileadapter
         $fileadpt = clone $this->filesystem->getAdapter();
@@ -94,7 +94,7 @@ class GridFSTest extends FunctionalTestCase
      * @test
      * Test to see if filesize works
      */
-    public function shouldGetSize()
+    public function shouldGetSize(): void
     {
         $this->filesystem->write('sizetest.txt', 'data');
         $this->assertEquals(4, $this->filesystem->size('sizetest.txt'));
@@ -104,7 +104,7 @@ class GridFSTest extends FunctionalTestCase
      * @test
      * Should retrieve empty metadata w/o errors
      */
-    public function shouldRetrieveEmptyMetadata()
+    public function shouldRetrieveEmptyMetadata(): void
     {
         $this->filesystem->write('no-metadata.txt', 'content');
 
@@ -115,7 +115,7 @@ class GridFSTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldGetMtime()
+    public function shouldGetMtime(): void
     {
         if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
             $this->markTestSkipped('Not working on Windows.');

@@ -11,7 +11,7 @@ class DoctrineDbalTest extends FunctionalTestCase
     /** @var  \Doctrine\DBAL\Connection */
     private $connection;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         if (!class_exists(DriverManager::class)) {
             self::markTestSkipped('Package doctrine/dbal is not installed');
@@ -19,7 +19,7 @@ class DoctrineDbalTest extends FunctionalTestCase
         parent::setUpBeforeClass();
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->connection = DriverManager::getConnection([
             'driver' => 'pdo_sqlite',
@@ -40,7 +40,7 @@ class DoctrineDbalTest extends FunctionalTestCase
         $this->filesystem = new Filesystem(new DoctrineDbal($this->connection, 'gaufrette'));
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $schemaManager = $this->connection->getSchemaManager();
 
@@ -52,7 +52,7 @@ class DoctrineDbalTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldListKeys()
+    public function shouldListKeys(): void
     {
         $this->filesystem->write('foo/foobar/bar.txt', 'data');
         $this->filesystem->write('foo/bar/buzz.txt', 'data');

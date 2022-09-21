@@ -14,7 +14,7 @@ class OpenCloudTest extends FunctionalTestCase
     /** @var string */
     private $container;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $username = getenv('RACKSPACE_USER') ?: '';
         $apiKey = getenv('RACKSPACE_APIKEY') ?: '';
@@ -49,7 +49,7 @@ class OpenCloudTest extends FunctionalTestCase
         $this->filesystem = new Filesystem($adapter);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if ($this->filesystem === null) {
             return;

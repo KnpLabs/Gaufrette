@@ -13,6 +13,7 @@ use Gaufrette\Filesystem;
  */
 class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
 {
+    /** @var null|resource|\FTP\Connection */
     protected $connection = null;
     protected $directory;
     protected $host;

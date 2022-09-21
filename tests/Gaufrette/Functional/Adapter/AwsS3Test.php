@@ -17,7 +17,7 @@ class AwsS3Test extends FunctionalTestCase
     /** @var S3Client */
     private $client;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $key = getenv('AWS_KEY');
         $secret = getenv('AWS_SECRET');
@@ -54,7 +54,7 @@ class AwsS3Test extends FunctionalTestCase
         $this->createFilesystem(['create' => true]);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if ($this->client === null || !$this->client->doesBucketExist($this->bucket)) {
             return;
@@ -84,7 +84,7 @@ class AwsS3Test extends FunctionalTestCase
      * @test
      * @expectedException \RuntimeException
      */
-    public function shouldThrowExceptionIfBucketMissingAndNotCreating()
+    public function shouldThrowExceptionIfBucketMissingAndNotCreating(): void
     {
         $this->createFilesystem();
         $this->filesystem->read('foo');
@@ -93,7 +93,7 @@ class AwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldWriteObjects()
+    public function shouldWriteObjects(): void
     {
         $this->assertEquals(7, $this->filesystem->write('foo', 'testing'));
     }
@@ -101,7 +101,7 @@ class AwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldCheckForObjectExistence()
+    public function shouldCheckForObjectExistence(): void
     {
         $this->filesystem->write('foo', '');
         $this->assertTrue($this->filesystem->has('foo'));
@@ -110,7 +110,7 @@ class AwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldCheckForObjectExistenceWithDirectory()
+    public function shouldCheckForObjectExistenceWithDirectory(): void
     {
         $this->createFilesystem(['directory' => 'bar', 'create' => true]);
         $this->filesystem->write('foo', '');
@@ -121,7 +121,7 @@ class AwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldListKeysWithoutDirectory()
+    public function shouldListKeysWithoutDirectory(): void
     {
         $this->assertEquals([], $this->filesystem->listKeys());
         $this->filesystem->write('test.txt', 'some content');
@@ -131,7 +131,7 @@ class AwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldListKeysWithDirectory()
+    public function shouldListKeysWithDirectory(): void
     {
         $this->createFilesystem(['create' => true, 'directory' => 'root/']);
         $this->filesystem->write('test.txt', 'some content');
@@ -142,7 +142,7 @@ class AwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldGetKeysWithoutDirectory()
+    public function shouldGetKeysWithoutDirectory(): void
     {
         $this->filesystem->write('test.txt', 'some content');
         $this->assertEquals(['test.txt'], $this->filesystem->keys());
@@ -151,7 +151,7 @@ class AwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldGetKeysWithDirectory()
+    public function shouldGetKeysWithDirectory(): void
     {
         $this->createFilesystem(['create' => true, 'directory' => 'root/']);
         $this->filesystem->write('test.txt', 'some content');
@@ -161,7 +161,7 @@ class AwsS3Test extends FunctionalTestCase
     /**
      * @test
      */
-    public function shouldUploadWithGivenContentType()
+    public function shouldUploadWithGivenContentType(): void
     {
         /** @var AwsS3 $adapter */
         $adapter = $this->filesystem->getAdapter();
