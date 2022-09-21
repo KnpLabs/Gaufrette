@@ -6,7 +6,7 @@ use Gaufrette\Filesystem;
 use PhpSpec\ObjectBehavior;
 
 interface MetadataAdapter extends \Gaufrette\Adapter,
-                                  \Gaufrette\Adapter\MetadataSupporter
+    \Gaufrette\Adapter\MetadataSupporter
 {
 }
 

@@ -155,8 +155,12 @@ class AzureBlobStorage extends ObjectBehavior
     function it_should_write_file($blobProxyFactory, $blobProxy)
     {
         $blobProxy
-            ->createBlockBlob('containerName', 'filename', 'some content',
-                \Mockery::type('\WindowsAzure\Blob\Models\CreateBlobOptions'))
+            ->createBlockBlob(
+                'containerName',
+                'filename',
+                'some content',
+                \Mockery::type('\WindowsAzure\Blob\Models\CreateBlobOptions')
+            )
             ->shouldBeCalled();
 
         $blobProxyFactory
@@ -174,8 +178,12 @@ class AzureBlobStorage extends ObjectBehavior
     function it_should_return_false_when_cannot_write($blobProxyFactory, $blobProxy)
     {
         $blobProxy
-            ->createBlockBlob('containerName', 'filename', 'some content',
-                \Mockery::type('\WindowsAzure\Blob\Models\CreateBlobOptions'))
+            ->createBlockBlob(
+                'containerName',
+                'filename',
+                'some content',
+                \Mockery::type('\WindowsAzure\Blob\Models\CreateBlobOptions')
+            )
             ->willThrow(new ServiceException(500));
 
         $blobProxyFactory
@@ -193,8 +201,12 @@ class AzureBlobStorage extends ObjectBehavior
     function it_should_not_mask_exception_when_write($blobProxyFactory, $blobProxy)
     {
         $blobProxy
-            ->createBlockBlob('containerName', 'filename', 'some content',
-                \Mockery::type('\WindowsAzure\Blob\Models\CreateBlobOptions'))
+            ->createBlockBlob(
+                'containerName',
+                'filename',
+                'some content',
+                \Mockery::type('\WindowsAzure\Blob\Models\CreateBlobOptions')
+            )
             ->willThrow(new \RuntimeException('write'));
 
         $blobProxyFactory

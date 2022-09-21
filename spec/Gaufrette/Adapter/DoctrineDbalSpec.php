@@ -78,7 +78,8 @@ class DoctrineDbalSpec extends ObjectBehavior
                     '"mtime"' => strtotime('2012-10-10 23:10:10'),
                     '"checksum"' => '9893532233caff98cd083a116b013c0b',
                     '"key"' => 'filename',
-                ])
+                ]
+            )
             ->shouldBeCalled();
 
         $this->write('filename', 'some content')->shouldReturn(12);
@@ -107,7 +108,8 @@ class DoctrineDbalSpec extends ObjectBehavior
                 ],
                 [
                     '"key"' => 'filename',
-                ])
+                ]
+            )
             ->shouldBeCalled();
 
         $this->write('filename', 'some content')->shouldReturn(12);
@@ -182,7 +184,8 @@ class DoctrineDbalSpec extends ObjectBehavior
                 ],
                 [
                     '"key"' => 'filename',
-                ])
+                ]
+            )
             ->shouldBeCalled()
             ->willReturn(1);
 

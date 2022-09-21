@@ -8,11 +8,11 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 interface ExtendedAdapter extends \Gaufrette\Adapter,
-                          \Gaufrette\Adapter\FileFactory,
-                          \Gaufrette\Adapter\StreamFactory,
-                          \Gaufrette\Adapter\ChecksumCalculator,
-                          \Gaufrette\Adapter\MetadataSupporter,
-                          \Gaufrette\Adapter\MimeTypeProvider
+    \Gaufrette\Adapter\FileFactory,
+    \Gaufrette\Adapter\StreamFactory,
+    \Gaufrette\Adapter\ChecksumCalculator,
+    \Gaufrette\Adapter\MetadataSupporter,
+    \Gaufrette\Adapter\MimeTypeProvider
 {
 }
 

@@ -163,46 +163,46 @@ class Zip implements Adapter
 
         if (true !== ($resultCode = $this->zipArchive->open($this->zipFile, ZipArchive::CREATE))) {
             switch ($resultCode) {
-            case ZipArchive::ER_EXISTS:
-                $errMsg = 'File already exists.';
+                case ZipArchive::ER_EXISTS:
+                    $errMsg = 'File already exists.';
 
-                break;
-            case ZipArchive::ER_INCONS:
-                $errMsg = 'Zip archive inconsistent.';
+                    break;
+                case ZipArchive::ER_INCONS:
+                    $errMsg = 'Zip archive inconsistent.';
 
-                break;
-            case ZipArchive::ER_INVAL:
-                $errMsg = 'Invalid argument.';
+                    break;
+                case ZipArchive::ER_INVAL:
+                    $errMsg = 'Invalid argument.';
 
-                break;
-            case ZipArchive::ER_MEMORY:
-                $errMsg = 'Malloc failure.';
+                    break;
+                case ZipArchive::ER_MEMORY:
+                    $errMsg = 'Malloc failure.';
 
-                break;
-            case ZipArchive::ER_NOENT:
-                $errMsg = 'Invalid argument.';
+                    break;
+                case ZipArchive::ER_NOENT:
+                    $errMsg = 'Invalid argument.';
 
-                break;
-            case ZipArchive::ER_NOZIP:
-                $errMsg = 'Not a zip archive.';
+                    break;
+                case ZipArchive::ER_NOZIP:
+                    $errMsg = 'Not a zip archive.';
 
-                break;
-            case ZipArchive::ER_OPEN:
-                $errMsg = 'Can\'t open file.';
+                    break;
+                case ZipArchive::ER_OPEN:
+                    $errMsg = 'Can\'t open file.';
 
-                break;
-            case ZipArchive::ER_READ:
-                $errMsg = 'Read error.';
+                    break;
+                case ZipArchive::ER_READ:
+                    $errMsg = 'Read error.';
 
-                break;
-            case ZipArchive::ER_SEEK:
-                $errMsg = 'Seek error.';
+                    break;
+                case ZipArchive::ER_SEEK:
+                    $errMsg = 'Seek error.';
 
-                break;
-            default:
-                $errMsg = 'Unknown error.';
+                    break;
+                default:
+                    $errMsg = 'Unknown error.';
 
-                break;
+                    break;
             }
 
             throw new \RuntimeException(sprintf('%s', $errMsg));

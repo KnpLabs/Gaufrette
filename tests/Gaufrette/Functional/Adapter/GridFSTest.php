@@ -48,31 +48,51 @@ class GridFSTest extends FunctionalTestCase
         $this->assertEquals(
             $this->filesystem->keys(),
             $keys['keys'],
-            '', 0, 10, true);
+            '',
+            0,
+            10,
+            true
+        );
 
         $keys = $this->filesystem->listKeys('foo/foob');
         $this->assertEquals(
             ['foo/foobar/bar.txt'],
             $keys['keys'],
-            '', 0, 10, true);
+            '',
+            0,
+            10,
+            true
+        );
 
         $keys = $this->filesystem->listKeys('foo/');
         $this->assertEquals(
             ['foo/foobar/bar.txt', 'foo/bar/buzz.txt'],
             $keys['keys'],
-            '', 0, 10, true);
+            '',
+            0,
+            10,
+            true
+        );
 
         $keys = $this->filesystem->listKeys('foo');
         $this->assertEquals(
             ['foo/foobar/bar.txt', 'foo/bar/buzz.txt', 'foobarbuz.txt', 'foo'],
             $keys['keys'],
-            '', 0, 10, true);
+            '',
+            0,
+            10,
+            true
+        );
 
         $keys = $this->filesystem->listKeys('fooz');
         $this->assertEquals(
             [],
             $keys['keys'],
-            '', 0, 10, true);
+            '',
+            0,
+            10,
+            true
+        );
     }
 
     /**

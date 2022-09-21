@@ -36,7 +36,8 @@ abstract class FunctionalTestCase extends TestCase
         );
 
         if (!file_exists($filename)) {
-            $this->markTestSkipped(<<<EOF
+            $this->markTestSkipped(
+                <<<EOF
 To run the {$basename} filesystem tests, you must:
 
  1. Copy the file "{$filename}.dist" as "{$filename}"

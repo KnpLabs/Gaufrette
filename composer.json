@@ -24,7 +24,9 @@
     "require-dev": {
         "phpspec/phpspec": "^7.0",
         "phpunit/phpunit": "~8.0",
-        "mikey179/vfsstream": "v1.x-dev as 1.7.0"
+        "mikey179/vfsstream": "v1.x-dev as 1.7.0",
+        "friendsofphp/php-cs-fixer": "^3.9",
+        "pedrotroller/php-cs-custom-fixer": "^2.28"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony",
