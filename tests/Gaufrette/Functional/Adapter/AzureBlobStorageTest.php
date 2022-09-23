@@ -28,7 +28,7 @@ class AzureBlobStorageTest extends FunctionalTestCase
             $this->markTestSkipped('Either AZURE_ACCOUNT, AZURE_KEY and/or AZURE_CONTAINER env variables are not defined.');
         }
 
-        $connection = sprintf('BlobEndpoint=https://%1$s.blob.core.windows.net/;AccountName=%1$s;AccountKey=%2$s', $account, $key);
+        $connection = sprintf('DefaultEndpointsProtocol=https;AccountName=%s;AccountKey=%s;EndpointSuffix=core.windows.net', $account, $key);
 
         $this->container = uniqid($containerName);
         $this->adapter = new AzureBlobStorage(new BlobProxyFactory($connection), $this->container, true);
