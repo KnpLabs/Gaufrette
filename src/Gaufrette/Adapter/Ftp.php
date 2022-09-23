@@ -490,6 +490,10 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
      */
     private function isConnected()
     {
+        if (class_exists('\FTP\Connection')) {
+            return $this->connection instanceof \FTP\Connection;
+        }
+
         return is_resource($this->connection);
     }
 
