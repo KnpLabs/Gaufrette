@@ -82,10 +82,10 @@ class AwsS3Test extends FunctionalTestCase
 
     /**
      * @test
-     * @expectedException \RuntimeException
      */
     public function shouldThrowExceptionIfBucketMissingAndNotCreating(): void
     {
+        $this->expectException(\RuntimeException::class);
         $this->createFilesystem();
         $this->filesystem->read('foo');
     }
