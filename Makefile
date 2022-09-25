@@ -30,7 +30,6 @@ docker.all-deps: docker.deps ## Install dependencies
 		microsoft/azure-storage-blob:^1.0 \
 		phpseclib/phpseclib:^2.0 \
 		mongodb/mongodb:^1.1 \
-		symfony/event-dispatcher:^4.4 \
 		async-aws/simple-s3:^0.1.1
 
 .PHONY: tests
@@ -74,8 +73,7 @@ require-all-legacy: # kept for compatibility with the old CI config, to be remov
 		league/flysystem:^1.0 \
 		microsoft/azure-storage-blob:^1.0 \
 		phpseclib/phpseclib:^2.0 \
-		mongodb/mongodb:^1.1 \
-		symfony/event-dispatcher:^4.4
+		mongodb/mongodb:^1.1
 
 
 require-all: require-all-legacy ## Install all dependencies for adapters
