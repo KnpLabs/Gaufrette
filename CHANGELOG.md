@@ -1,4 +1,11 @@
 
+v0.11.0
+=======
+
+## Added
+
+- Google Cloud Storage: options to automatically create bucket if not exists
+
 v0.10.0
 =======
 

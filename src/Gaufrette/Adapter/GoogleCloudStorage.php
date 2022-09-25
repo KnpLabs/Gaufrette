@@ -3,6 +3,10 @@
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
+use Google\Exception;
+use Google\Service\Storage;
+use Google\Service\Storage\BucketIamConfiguration;
+use Google\Service\Storage\BucketIamConfigurationUniformBucketLevelAccess;
 use GuzzleHttp;
 
 /**
@@ -12,37 +16,44 @@ use GuzzleHttp;
  */
 class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
 {
+    public const OPTION_CREATE_BUCKET_IF_NOT_EXISTS = 'create';
+    public const OPTION_PROJECT_ID = 'project_id';
+    public const OPTION_LOCATION = 'bucket_location';
+    public const OPTION_STORAGE_CLASS = 'storage_class';
+
     protected $service;
     protected $bucket;
-    protected $options;
+    protected $options = [
+        self::OPTION_CREATE_BUCKET_IF_NOT_EXISTS => false,
+        self::OPTION_STORAGE_CLASS => 'STANDARD',
+        'directory' => '',
+        'acl' => 'private',
+    ];
     protected $bucketExists;
     protected $metadata = [];
     protected $detectContentType;
 
     /**
-     * @param \Google_Service_Storage $service           The storage service class with authenticated
+     * @param Storage $service           The storage service class with authenticated
      *                                                   client and full access scope
      * @param string                  $bucket            The bucket name
      * @param array                   $options           Options can be directory and acl
      * @param bool                    $detectContentType Whether to detect the content type or not
      */
     public function __construct(
-        \Google_Service_Storage $service,
+        Storage $service,
         $bucket,
         array $options = [],
         $detectContentType = false
     ) {
-        if (!class_exists(\Google_Service_Storage::class)) {
+        if (!class_exists(Storage::class)) {
             throw new \LogicException('You need to install package "google/apiclient" to use this adapter');
         }
 
         $this->service = $service;
         $this->bucket = $bucket;
         $this->options = array_replace(
-            [
-                'directory' => '',
-                'acl' => 'private',
-            ],
+            $this->options,
             $options
         );
 
@@ -80,6 +91,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
      */
     public function setBucket($bucket)
     {
+        $this->bucketExists = null;
         $this->bucket = $bucket;
     }
 
@@ -197,7 +209,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
 
         try {
             $this->service->objects->get($this->bucket, $path);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
 
@@ -347,7 +359,39 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
             $this->bucketExists = true;
 
             return;
-        } catch (\Google_Service_Exception $e) {
+        } catch (Exception $e) {
+            if ($this->options[self::OPTION_CREATE_BUCKET_IF_NOT_EXISTS]) {
+                if (!isset($this->options[self::OPTION_PROJECT_ID])) {
+                    throw new \RuntimeException(
+                        sprintf('Option "%s" missing, cannot create bucket', self::OPTION_PROJECT_ID)
+                    );
+                }
+                if (!isset($this->options[self::OPTION_LOCATION])) {
+                    throw new \RuntimeException(
+                        sprintf('Option "%s" missing, cannot create bucket', self::OPTION_LOCATION)
+                    );
+                }
+
+                $bucketIamConfigDetail = new BucketIamConfigurationUniformBucketLevelAccess();
+                $bucketIamConfigDetail->setEnabled(true);
+                $bucketIam = new BucketIamConfiguration();
+                $bucketIam->setUniformBucketLevelAccess($bucketIamConfigDetail);
+                $bucket = new Storage\Bucket();
+                $bucket->setName($this->bucket);
+                $bucket->setLocation($this->options[self::OPTION_LOCATION]);
+                $bucket->setStorageClass($this->options[self::OPTION_STORAGE_CLASS]);
+                $bucket->setIamConfiguration($bucketIam);
+
+                $this->service->buckets->insert(
+                    $this->options[self::OPTION_PROJECT_ID],
+                    $bucket
+                );
+
+                $this->bucketExists = true;
+
+                return;
+            }
+
             $this->bucketExists = false;
 
             throw new \RuntimeException(
