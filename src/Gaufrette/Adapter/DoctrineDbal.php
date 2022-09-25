@@ -187,8 +187,8 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
             'dirs' => [],
             'keys' => array_map(
                 function ($value) {
-                return $value['_key'];
-            },
+                    return $value['_key'];
+                },
                 $keys
             ),
         ];

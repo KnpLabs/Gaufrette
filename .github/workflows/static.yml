@@ -47,13 +47,12 @@ jobs:
       - name: Download dependencies
         run: |
           make require-all
-          composer require --dev --no-update pedrotroller/php-cs-custom-fixer:2.23.0
           composer update --no-interaction --prefer-dist
 
       - name: PHP-CS-Fixer
         run: |
           ./vendor/bin/php-cs-fixer --version
-          ./vendor/bin/php-cs-fixer fix --diff --diff-format udiff --dry-run --show-progress=none
+          ./vendor/bin/php-cs-fixer fix --diff --dry-run --show-progress=none
 
   psalm:
     name: Psalm
