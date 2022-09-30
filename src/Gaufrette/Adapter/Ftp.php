@@ -354,6 +354,18 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
     }
 
     /**
+     * @return string
+     */
+    private function createConnectionUrl()
+    {
+        $url = $this->ssl ? 'ftps://' : 'ftp://';
+        $url .= $this->username . ':' . $this->password . '@' . $this->host;
+        $url .= $this->port ? ':' . $this->port : '';
+
+        return $url;
+    }
+
+    /**
      * @param string $directory - full directory path
      *
      * @return bool
@@ -364,14 +376,27 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
             return true;
         }
 
-        if (!@ftp_chdir($this->getConnection(), $directory)) {
-            return false;
+        try {
+            $chDirResult = ftp_chdir($this->getConnection(), $this->directory);
+
+            // change directory again to return in the base directory
+            ftp_chdir($this->getConnection(), $this->directory);
+            return $chDirResult;
+        } catch (\Exception $e) {
+            // is_dir is only available in passive mode.
+            // See https://php.net/manual/en/wrappers.ftp.php for more details.
+            if (!$this->passive) {
+                throw new \RuntimeException(
+                    \sprintf('Not able to determine whether "%s" is a directory or not. Please try again using a passive FTP connection if your backend supports it, by setting the "passive" option of this adapter to true.', $directory),
+                    $e->getCode(),
+                    $e
+                );
+            }
+
+            // Build the FTP URL that will be used to check if the path is a directory or not
+            $url = $this->createConnectionUrl();
+            return @is_dir($url . $directory);
         }
-
-        // change directory again to return in the base directory
-        ftp_chdir($this->getConnection(), $this->directory);
-
-        return true;
     }
 
     private function fetchKeys($directory = '', $onlyKeys = true)
