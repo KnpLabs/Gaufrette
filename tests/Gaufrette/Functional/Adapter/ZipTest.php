@@ -15,8 +15,6 @@ class ZipTest extends FunctionalTestCase
             $this->markTestSkipped('Zip adapter is not supported on Windows.');
         }
 
-        @touch(__DIR__ . '/test.zip');
-
         $this->filesystem = new Filesystem(new Zip(__DIR__ . '/test.zip'));
     }
 
@@ -29,25 +27,11 @@ class ZipTest extends FunctionalTestCase
 
     /**
      * @test
-     * @expectedException \RuntimeException
      * @group functional
      */
     public function shouldNotAcceptInvalidZipArchive(): void
     {
+        $this->expectException(\RuntimeException::class);
         new Zip(__FILE__);
-    }
-
-    /**
-     * @test
-     * @group functional
-     */
-    public function shouldCreateNewZipArchive(): Zip
-    {
-        $tmp = tempnam(sys_get_temp_dir(), uniqid());
-        $za = new Zip($tmp);
-
-        $this->assertFileExists($tmp);
-
-        return $za;
     }
 }
