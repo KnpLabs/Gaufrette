@@ -1,23 +1,28 @@
 <?php
 
-$client_id = 'xxxxxxxxxxxxxxx.apps.googleusercontent.com';
-$service_account_name = 'xxxxxxxxxxxxxxx@developer.gserviceaccount.com';
-$key_file_location = 'key.p12';
-$bucket_name = 'mybucket';
+use Gaufrette\Adapter\GoogleCloudStorage;
 
-$client = new \Google_Client();
+$keyFileLocation = '/home/me/path/to/service-auth-key.json';
+$bucketName = 'gaufrette-bucket-test-' . uniqid();
+$projectId = 'your-project-id-000';
+$bucketLocation = 'EUROPE-WEST9';
+
+putenv('GOOGLE_APPLICATION_CREDENTIALS=' . $keyFileLocation);
+
+$client = new \Google\Client();
 $client->setApplicationName('Gaufrette');
+$client->addScope(Google\Service\Storage::DEVSTORAGE_FULL_CONTROL);
+$client->useApplicationDefaultCredentials();
 
-$key = file_get_contents($key_file_location);
-$cred = new \Google_Auth_AssertionCredentials(
-    $service_account_name,
-    array(\Google_Service_Storage::DEVSTORAGE_FULL_CONTROL),
-    $key
+$service = new \Google\Service\Storage($client);
+
+return new GoogleCloudStorage(
+    $service,
+    $bucketName,
+    [
+        GoogleCloudStorage::OPTION_CREATE_BUCKET_IF_NOT_EXISTS => true,
+        GoogleCloudStorage::OPTION_PROJECT_ID => $projectId,
+        GoogleCloudStorage::OPTION_LOCATION => $bucketLocation,
+    ],
+    true
 );
-$client->setAssertionCredentials($cred);
-if ($client->getAuth()->isAccessTokenExpired()) {
-    $client->getAuth()->refreshTokenWithAssertion($cred);
-}
-
-$service = new \Google_Service_Storage($client);
-return new Gaufrette\Adapter\GoogleCloudStorage($service, $bucket_name, array(), true);

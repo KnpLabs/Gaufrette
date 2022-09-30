@@ -2,6 +2,8 @@
 
 namespace Gaufrette\Functional\Adapter;
 
+use Gaufrette\Adapter\GoogleCloudStorage;
+
 /**
  * Functional tests for the GoogleCloudStorage adapter.
  *
@@ -15,18 +17,16 @@ class GoogleCloudStorageTest extends FunctionalTestCase
     /**
      * @test
      * @group functional
-     *
-     * @expectedException \RuntimeException
      */
     public function shouldThrowExceptionIfBucketMissing()
     {
+        $this->expectException(\RuntimeException::class);
         /** @var \Gaufrette\Adapter\GoogleCloudStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
-        $oldBucket = $adapter->getOptions();
+        $adapter->setOptions([GoogleCloudStorage::OPTION_CREATE_BUCKET_IF_NOT_EXISTS => false]);
         $adapter->setBucket('Gaufrette-' . mt_rand());
 
         $adapter->read('foo');
-        $adapter->setBucket($oldBucket);
     }
 
     /**
