@@ -154,11 +154,11 @@ class LocalTest extends FunctionalTestCase
     /**
      * @test
      * @group functional
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Impossible to delete the root directory of this Local adapter
      */
     public function shouldNotDeleteTheAdapterRootDirectory(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Impossible to delete the root directory of this Local adapter');
         $this->filesystem->getAdapter()->delete('/');
     }
 }
