@@ -68,7 +68,7 @@ require-all-legacy: # kept for compatibility with the old CI config, to be remov
 	composer require --no-update \
 		aws/aws-sdk-php:^3.158 \
 		rackspace/php-opencloud:^1.9.2 \
-		google/apiclient:^1.1.3 \
+		google/apiclient:^2.12 \
 		doctrine/dbal:^2.3 \
 		league/flysystem:^1.0 \
 		microsoft/azure-storage-blob:^1.0 \
