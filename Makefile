@@ -23,7 +23,6 @@ docker.deps: ## Install dependencies
 docker.all-deps: docker.deps ## Install dependencies
 	docker/run-task php${PHP_VERSION} composer require --no-update \
 		aws/aws-sdk-php:^3.158 \
-		rackspace/php-opencloud:^1.9.2 \
 		google/apiclient:^2.12 \
 		doctrine/dbal:^2.3 \
 		league/flysystem:^1.0 \
@@ -56,7 +55,6 @@ docker.php-cs-fix: ## Run CS fixer
 remove-phpspec: ## Remove adapter specs (allows you to run test suite without adapters deps)
 	rm spec/Gaufrette/Adapter/AsyncAwsS3Spec.php
 	rm spec/Gaufrette/Adapter/AwsS3Spec.php
-	rm spec/Gaufrette/Adapter/OpenCloudSpec.php
 	rm spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php
 	rm spec/Gaufrette/Adapter/DoctrineDbalSpec.php
 	rm spec/Gaufrette/Adapter/FlysystemSpec.php
@@ -67,7 +65,6 @@ remove-phpspec: ## Remove adapter specs (allows you to run test suite without ad
 require-all-legacy: # kept for compatibility with the old CI config, to be removed at some point
 	composer require --no-update \
 		aws/aws-sdk-php:^3.158 \
-		rackspace/php-opencloud:^1.9.2 \
 		google/apiclient:^2.12 \
 		doctrine/dbal:^2.3 \
 		league/flysystem:^1.0 \
