@@ -45,53 +45,33 @@ class GridFSTest extends FunctionalTestCase
         //these values are canonicalized to avoid wrong order or keys issue
 
         $keys = $this->filesystem->listKeys('foo');
-        $this->assertEquals(
+        $this->assertEqualsCanonicalizing(
             $this->filesystem->keys(),
-            $keys['keys'],
-            '',
-            0,
-            10,
-            true
+            $keys['keys']
         );
 
         $keys = $this->filesystem->listKeys('foo/foob');
-        $this->assertEquals(
+        $this->assertEqualsCanonicalizing(
             ['foo/foobar/bar.txt'],
-            $keys['keys'],
-            '',
-            0,
-            10,
-            true
+            $keys['keys']
         );
 
         $keys = $this->filesystem->listKeys('foo/');
-        $this->assertEquals(
+        $this->assertEqualsCanonicalizing(
             ['foo/foobar/bar.txt', 'foo/bar/buzz.txt'],
-            $keys['keys'],
-            '',
-            0,
-            10,
-            true
+            $keys['keys']
         );
 
         $keys = $this->filesystem->listKeys('foo');
-        $this->assertEquals(
+        $this->assertEqualsCanonicalizing(
             ['foo/foobar/bar.txt', 'foo/bar/buzz.txt', 'foobarbuz.txt', 'foo'],
-            $keys['keys'],
-            '',
-            0,
-            10,
-            true
+            $keys['keys']
         );
 
         $keys = $this->filesystem->listKeys('fooz');
-        $this->assertEquals(
+        $this->assertEqualsCanonicalizing(
             [],
-            $keys['keys'],
-            '',
-            0,
-            10,
-            true
+            $keys['keys']
         );
     }
 
