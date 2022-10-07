@@ -6,11 +6,11 @@ use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
 use MicrosoftAzure\Storage\Blob\Models\Blob;
+use MicrosoftAzure\Storage\Blob\Models\BlobServiceOptions;
 use MicrosoftAzure\Storage\Blob\Models\Container;
 use MicrosoftAzure\Storage\Blob\Models\CreateBlobOptions;
 use MicrosoftAzure\Storage\Blob\Models\CreateBlockBlobOptions;
 use MicrosoftAzure\Storage\Blob\Models\CreateContainerOptions;
-use MicrosoftAzure\Storage\Blob\Models\DeleteContainerOptions;
 use MicrosoftAzure\Storage\Blob\Models\ListBlobsOptions;
 use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
 
@@ -130,11 +130,11 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
      * Deletes a container.
      *
      * @param string                 $containerName
-     * @param DeleteContainerOptions $options
+     * @param BlobServiceOptions $options
      *
      * @throws \RuntimeException if cannot delete the container
      */
-    public function deleteContainer($containerName, DeleteContainerOptions $options = null)
+    public function deleteContainer($containerName, BlobServiceOptions $options = null)
     {
         $this->init();
 

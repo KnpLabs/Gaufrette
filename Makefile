@@ -80,6 +80,9 @@ require-all: require-all-legacy ## Install all dependencies for adapters
 clear: ## Remove not versioned files
 	rm -rf vendor/ composer.lock
 
+test.phpstan: ## Run phpstan analysis
+	php vendor/bin/phpstan analyze --memory-limit 1G
+
 #
 ### OTHERS
 # --------

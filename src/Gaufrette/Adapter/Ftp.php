@@ -501,7 +501,7 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
      * Returns an opened ftp connection resource. If the connection is not
      * already opened, it open it before.
      *
-     * @return resource The ftp connection
+     * @return resource|\FTP\Connection The ftp connection
      */
     private function getConnection()
     {

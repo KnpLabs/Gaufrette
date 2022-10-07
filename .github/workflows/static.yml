@@ -10,7 +10,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '8.1'
           extensions: mongo, mbstring, fileinfo
           tools: composer:v2
 
@@ -20,7 +20,7 @@ jobs:
       - name: Download dependencies
         run: |
           make require-all
-          composer require --dev --no-update phpstan/phpstan:0.12.48
+          composer require --dev --no-update phpstan/phpstan:1.8.8
           composer update --no-interaction --prefer-dist
 
       - name: PHPStan
@@ -37,7 +37,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '8.1'
           extensions: mongo, mbstring, fileinfo
           tools: composer:v2
 

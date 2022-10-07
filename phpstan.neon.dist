@@ -6,6 +6,3 @@ parameters:
     reportUnmatchedIgnoredErrors: false
     paths:
         - src
-
-    scanFiles:
-        - vendor/google/apiclient/src/Google/Task/Retryable.php
