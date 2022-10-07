@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := help
 
 PHP_VERSION ?= 7.2
+export ROOT_DIR=${PWD}
 
 #
 ### DOCKER
@@ -75,6 +76,10 @@ require-all-legacy: # kept for compatibility with the old CI config, to be remov
 
 require-all: require-all-legacy ## Install all dependencies for adapters
 	composer require --no-update async-aws/simple-s3:^1.0
+
+.PHONY: bc-check
+bc-check: ## Check for backward compatibility change
+	docker run -v ${ROOT_DIR}:/app --rm nyholm/roave-bc-check
 
 .PHONY: clear
 clear: ## Remove not versioned files
