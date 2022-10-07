@@ -6,6 +6,10 @@ v0.11.0
 
 - Google Cloud Storage: options to automatically create bucket if not exists
 
+## Removed
+
+- Adapter for OpenCloud (#669)
+
 v0.10.0
 =======
 
