@@ -16,13 +16,13 @@ Gaufrette provides a filesystem abstraction layer.
 Why use Gaufrette?
 ------------------
 
-Imagine you have to manage a lot of medias in a PHP project. Lets see how to
-take this situation in your advantage using Gaufrette.
+Imagine you have to manage a lot of media in a PHP project. Let's see how to
+take this situation to your advantage using Gaufrette.
 
 The filesystem abstraction layer permits you to develop your application without
-the need to know where all those medias will be stored and how.
+the need to know where all those media will be stored and how.
 
-Another advantage of this is the possibility to update the files location
+Another advantage of this is the possibility to update the location of the files
 without any impact on the code apart from the definition of your filesystem.
 In example, if your project grows up very fast and if your server reaches its
 limits, you can easily move your medias in an Amazon S3 server or any other
@@ -34,7 +34,7 @@ Read the official [Gaufrette documentation](http://knplabs.github.io/Gaufrette/)
 
 ### Metapackages for adapters
 
-Every maintained adapter now have a dedicated metapackage. You can [find the list on packagist](https://packagist.org/packages/gaufrette/).
+Every maintained adapter now has a dedicated metapackage. You can [find the list on packagist](https://packagist.org/packages/gaufrette/).
 **We highly recommend you to use them as they contain their own requirements**: you don't need to worry about third-party dependencies
 to install before using Gaufrette anymore.
 
@@ -44,7 +44,7 @@ Symfony integration is available through [KnpLabs/KnpGaufretteBundle](https://gi
 
 ### Maintainers
 
-Here is the list of dedicated maintainer(s) for every adapter not deprecated. If you don't receive any response to
+Here is the list of the dedicated maintainer(s) for every adapter not deprecated. If you don't receive any response to
 your issue or pull request in a timely manner, ping us:
 
 | Adapter            | Referent                    |
@@ -63,7 +63,7 @@ your issue or pull request in a timely manner, ping us:
 | PhpseclibSftp      | @fabschurt                  |
 | Zip                |                             |
 
-For `InMemory`, `Local` and `Zip` adapters everyone in this list is considered as a maintainer.
+For `InMemory`, `Local`, and `Zip` adapters everyone in this list is considered as a maintainer.
 
 ### Development
 
@@ -77,7 +77,7 @@ $ make docker.dev
 ```
 and configure it as you want.
 
-2) Build the php docker image :
+2) Build the PHP docker image :
 ```bash
 $ make docker.build
 ```
@@ -96,13 +96,13 @@ You can also use a different php version, simply set the `PHP_VERSION` env var
 to any of these values when calling a make target :
 - `7.1`
 - `7.2` (default)
-- `7.3` (the docker setup for php 7.3 is available, however the ssh2 extension
-is not installed [as it is not available for php 7.3 yet](https://serverpilot.io/docs/how-to-install-the-php-ssh2-extension))
+- `7.3` (The docker setup for PHP 7.3 is available. However, the ssh2 extension
+is not installed [as it is not available for PHP 7.3 yet](https://serverpilot.io/docs/how-to-install-the-php-ssh2-extension))
 
 See the [`docker-compose.yml`](/docker-compose.yml) file for more details.
 
 You'll need to clear the previously installed dependencies when switching from
-a version to an other, to do so, run :
+one version to an other. To do so, run :
 ```bash
 $ make clear-deps
 $ PHP_VERSION=<the_version_you_want_to_use> make build install-deps
