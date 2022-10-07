@@ -6,6 +6,10 @@ v0.11.0
 
 - Google Cloud Storage: options to automatically create bucket if not exists
 
+## Updated
+
+- Azure seems to have break compatibility, phpstan detected it and it's now fixed (#674)
+
 ## Removed
 
 - Adapter for OpenCloud (#669)
