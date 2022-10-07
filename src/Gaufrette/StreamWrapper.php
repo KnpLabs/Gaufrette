@@ -21,7 +21,7 @@ class StreamWrapper
      */
     public static function setFilesystemMap(FilesystemMap $map)
     {
-        static::$filesystemMap = $map;
+        self::$filesystemMap = $map;
     }
 
     /**
@@ -31,11 +31,11 @@ class StreamWrapper
      */
     public static function getFilesystemMap()
     {
-        if (null === static::$filesystemMap) {
-            static::$filesystemMap = static::createFilesystemMap();
+        if (null === self::$filesystemMap) {
+            self::$filesystemMap = self::createFilesystemMap();
         }
 
-        return static::$filesystemMap;
+        return self::$filesystemMap;
     }
 
     /**
@@ -45,9 +45,9 @@ class StreamWrapper
      */
     public static function register($scheme = 'gaufrette')
     {
-        static::streamWrapperUnregister($scheme);
+        self::streamWrapperUnregister($scheme);
 
-        if (!static::streamWrapperRegister($scheme, __CLASS__)) {
+        if (!self::streamWrapperRegister($scheme, __CLASS__)) {
             throw new \RuntimeException(sprintf(
                 'Could not register stream wrapper class %s for scheme %s.',
                 __CLASS__,
@@ -271,7 +271,7 @@ class StreamWrapper
             ));
         }
 
-        return static::getFilesystemMap()->get($domain)->createStream($key);
+        return self::getFilesystemMap()->get($domain)->createStream($key);
     }
 
     protected function createStreamMode($mode)

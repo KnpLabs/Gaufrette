@@ -21,7 +21,7 @@ class Flysystem implements Adapter, ListKeysAware
 
     /**
      * @param AdapterInterface  $adapter
-     * @param Config|array|null $config
+     * @param \League\Flysystem\Config|array|null $config
      */
     public function __construct(AdapterInterface $adapter, $config = null)
     {

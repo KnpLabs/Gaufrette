@@ -44,7 +44,6 @@ jobs:
         run:
           - { php: '7.4', packages: 'async-aws/simple-s3:^1.0', phpspec: 'spec/Gaufrette/Adapter/AsyncAwsS3Spec.php' }
           - { php: '7.4', packages: 'aws/aws-sdk-php:^3.158', phpspec: 'spec/Gaufrette/Adapter/AwsS3Spec.php' }
-          - { php: '7.4', packages: 'rackspace/php-opencloud:^1.9.2', phpspec: 'spec/Gaufrette/Adapter/OpenCloudSpec.php' }
           - { php: '7.4', packages: 'google/apiclient:^1.1.3', phpspec: 'spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php' }
           - { php: '7.4', packages: 'doctrine/dbal:^2.3', phpspec: 'spec/Gaufrette/Adapter/DoctrineDbalSpec.php' }
           - { php: '7.4', packages: 'league/flysystem:^1.0', phpspec: 'spec/Gaufrette/Adapter/FlysystemSpec.php' }
