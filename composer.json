@@ -42,5 +42,11 @@
         "branch-alias": {
             "dev-master": "0.10.x-dev"
         }
+    },
+    "archive": {
+        "exclude": [
+            "/tests",
+            "/phpunit.xml.dist"
+        ]
     }
 }
