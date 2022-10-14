@@ -231,7 +231,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         if (class_exists(Result::class)) {
             // dbal 3.x
             $result->beADoubleOf(Result::class);
-            $result->fetchAllNumeric()->willReturn(['filename', 'filename1', 'filename2']);
+            $result->fetchFirstColumn()->willReturn(['filename', 'filename1', 'filename2']);
         } else {
             // BC layer for dbal 2.x
             $result->beADoubleOf(\Doctrine\DBAL\Statement::class);

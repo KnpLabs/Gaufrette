@@ -55,7 +55,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
 
         if (class_exists(Result::class)) {
             // dbal 3.x
-            return $stmt->fetchAllNumeric();
+            return $stmt->fetchFirstColumn();
         }
 
         // BC layer for dbal 2.x

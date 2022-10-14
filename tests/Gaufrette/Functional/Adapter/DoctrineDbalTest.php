@@ -34,7 +34,7 @@ class DoctrineDbalTest extends FunctionalTestCase
             // dbal 3.4+
             $column->setPlatformOption('unique', true);
         } else {
-            // dbal 2.x
+            // BC layer dbal 2.x
             $column->setUnique(true);
         }
         $table->addColumn('content', 'blob');
