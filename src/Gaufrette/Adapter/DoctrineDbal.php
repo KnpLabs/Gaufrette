@@ -88,7 +88,12 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
      */
     public function exists($key)
     {
-        return (boolean) $this->connection->fetchColumn(
+        $method = 'fetchOne'; // dbal 3.x
+        if (!method_exists($this->connection, $method)) {
+            $method = 'fetchColumn'; // dbal 2.x
+        }
+
+        return (boolean) $this->connection->$method(
             sprintf(
                 'SELECT COUNT(%s) FROM %s WHERE %s = :key',
                 $this->getQuotedColumn('key'),
@@ -153,7 +158,12 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
 
     private function getColumnValue($key, $column)
     {
-        $value = $this->connection->fetchColumn(
+        $method = 'fetchOne'; // dbal 3.x
+        if (!method_exists($this->connection, $method)) {
+            $method = 'fetchColumn'; // dbal 2.x
+        }
+
+        $value = $this->connection->$method(
             sprintf(
                 'SELECT %s FROM %s WHERE %s = :key',
                 $this->getQuotedColumn($column),
@@ -173,7 +183,12 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     {
         $prefix = trim($prefix);
 
-        $keys = $this->connection->fetchAll(
+        $method = 'fetchAllAssociative'; // dbal 3.x
+        if (!method_exists($this->connection, 'fetchAllAssociative')) {
+            $method = 'fetchAll'; // dbal 2.x
+        }
+
+        $keys = $this->connection->$method(
             sprintf(
                 'SELECT %s AS _key FROM %s WHERE %s LIKE :pattern',
                 $this->getQuotedColumn('key'),
