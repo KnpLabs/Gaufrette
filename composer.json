@@ -46,7 +46,14 @@
     "archive": {
         "exclude": [
             "/tests",
-            "/phpunit.xml.dist"
+            "/phpunit.xml.dist",
+            "/.env.dist",
+            "/spec",
+            "/Makefile",
+            "/phpspec.yml",
+            "/docker-compose.yml",
+            "/docker",
+            "/.dockerignore"
         ]
     }
 }
