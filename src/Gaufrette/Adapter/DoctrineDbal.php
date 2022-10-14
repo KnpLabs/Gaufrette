@@ -2,6 +2,7 @@
 
 namespace Gaufrette\Adapter;
 
+use Doctrine\DBAL\Result;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Doctrine\DBAL\Connection;
@@ -52,6 +53,12 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
             $this->getQuotedTable()
         ));
 
+        if (class_exists(Result::class)) {
+            // dbal 3.x
+            return $stmt->fetchAllNumeric();
+        }
+
+        // BC layer for dbal 2.x
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
 
@@ -89,8 +96,8 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     public function exists($key)
     {
         $method = 'fetchOne'; // dbal 3.x
-        if (!method_exists($this->connection, $method)) {
-            $method = 'fetchColumn'; // dbal 2.x
+        if (!method_exists(Connection::class, $method)) {
+            $method = 'fetchColumn'; // BC layer for dbal 2.x
         }
 
         return (boolean) $this->connection->$method(
@@ -159,8 +166,8 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     private function getColumnValue($key, $column)
     {
         $method = 'fetchOne'; // dbal 3.x
-        if (!method_exists($this->connection, $method)) {
-            $method = 'fetchColumn'; // dbal 2.x
+        if (!method_exists(Connection::class, $method)) {
+            $method = 'fetchColumn'; // BC layer for dbal 2.x
         }
 
         $value = $this->connection->$method(
@@ -184,8 +191,8 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
         $prefix = trim($prefix);
 
         $method = 'fetchAllAssociative'; // dbal 3.x
-        if (!method_exists($this->connection, 'fetchAllAssociative')) {
-            $method = 'fetchAll'; // dbal 2.x
+        if (!method_exists(Connection::class, 'fetchAllAssociative')) {
+            $method = 'fetchAll'; // BC layer for dbal 2.x
         }
 
         $keys = $this->connection->$method(
