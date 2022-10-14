@@ -11,4 +11,4 @@ source .env # load dev parameters
 
 make require-all
 composer install
-vendor/bin/phpunit tests/Gaufrette/Functional/Adapter/AsyncAwsS3Test.php
+vendor/bin/phpunit
