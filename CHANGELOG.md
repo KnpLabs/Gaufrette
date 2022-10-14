@@ -5,6 +5,8 @@ v0.11.0
 ## Added
 
 - Google Cloud Storage: options to automatically create bucket if not exists
+- Support for PHP 8.0+
+- Support for doctrine/dbal 3.x
 
 ## Updated
 
