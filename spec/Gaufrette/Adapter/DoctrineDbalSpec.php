@@ -6,7 +6,7 @@ namespace spec\Gaufrette\Adapter;
 require_once 'functions.php';
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Result;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -46,13 +46,18 @@ class DoctrineDbalSpec extends ObjectBehavior
                 return sprintf('"%s"', $argument[0]);
             });
 
+        $method = 'fetchOne'; // dbal 3.x
+        if (!method_exists(Connection::class, 'fetchAllAssociative')) {
+            $method = 'fetchColumn'; // BC layer for dbal 2.x
+        }
+
         $connection
-            ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
+            ->$method('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(12);
         $this->exists('filename')->shouldReturn(true);
 
         $connection
-            ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
+            ->$method('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(0);
         $this->exists('filename')->shouldReturn(false);
     }
@@ -67,8 +72,14 @@ class DoctrineDbalSpec extends ObjectBehavior
             ->will(function ($argument) {
                 return sprintf('"%s"', $argument[0]);
             });
+
+        $method = 'fetchOne'; // dbal 3.x
+        if (!method_exists(Connection::class, 'fetchAllAssociative')) {
+            $method = 'fetchColumn'; // BC layer for dbal 2.x
+        }
+
         $connection
-            ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
+            ->$method('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(false);
         $connection
             ->insert(
@@ -90,13 +101,18 @@ class DoctrineDbalSpec extends ObjectBehavior
      */
     function it_write_file(Connection $connection)
     {
+        $method = 'fetchOne'; // dbal 3.x
+        if (!method_exists(Connection::class, 'fetchAllAssociative')) {
+            $method = 'fetchColumn'; // BC layer for dbal 2.x
+        }
+
         $connection
             ->quoteIdentifier(Argument::any())
             ->will(function ($argument) {
                 return sprintf('"%s"', $argument[0]);
             });
         $connection
-            ->fetchColumn('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
+            ->$method('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(true);
         $connection
             ->update(
@@ -120,13 +136,18 @@ class DoctrineDbalSpec extends ObjectBehavior
      */
     function it_reads_file(Connection $connection)
     {
+        $method = 'fetchOne'; // dbal 3.x
+        if (!method_exists(Connection::class, 'fetchAllAssociative')) {
+            $method = 'fetchColumn'; // BC layer for dbal 2.x
+        }
+
         $connection
             ->quoteIdentifier(Argument::any())
             ->will(function ($argument) {
                 return sprintf('"%s"', $argument[0]);
             });
         $connection
-            ->fetchColumn('SELECT "content" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
+            ->$method('SELECT "content" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn('some content');
 
         $this->read('filename')->shouldReturn('some content');
@@ -137,13 +158,18 @@ class DoctrineDbalSpec extends ObjectBehavior
      */
     function it_calculates_checksum(Connection $connection)
     {
+        $method = 'fetchOne'; // dbal 3.x
+        if (!method_exists(Connection::class, 'fetchAllAssociative')) {
+            $method = 'fetchColumn'; // BC layer for dbal 2.x
+        }
+
         $connection
             ->quoteIdentifier(Argument::any())
             ->will(function ($argument) {
                 return sprintf('"%s"', $argument[0]);
             });
         $connection
-            ->fetchColumn('SELECT "checksum" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
+            ->$method('SELECT "checksum" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(1234);
 
         $this->checksum('filename')->shouldReturn(1234);
@@ -154,13 +180,18 @@ class DoctrineDbalSpec extends ObjectBehavior
      */
     function it_gets_mtime(Connection $connection)
     {
+        $method = 'fetchOne'; // dbal 3.x
+        if (!method_exists(Connection::class, 'fetchAllAssociative')) {
+            $method = 'fetchColumn'; // BC layer for dbal 2.x
+        }
+
         $connection
             ->quoteIdentifier(Argument::any())
             ->will(function ($argument) {
                 return sprintf('"%s"', $argument[0]);
             });
         $connection
-            ->fetchColumn('SELECT "mtime" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
+            ->$method('SELECT "mtime" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(1234);
 
         $this->mtime('filename')->shouldReturn(1234);
@@ -194,11 +225,19 @@ class DoctrineDbalSpec extends ObjectBehavior
 
     /**
      * @param \Doctrine\DBAL\Connection $connection
-     * @param \Doctrine\DBAL\Statement $stmt
      */
-    function it_get_keys(Connection $connection, Statement $stmt)
+    function it_get_keys(Connection $connection, $result)
     {
-        $stmt->fetchAll(\PDO::FETCH_COLUMN)->willReturn(['filename', 'filename1', 'filename2']);
+        if (class_exists(Result::class)) {
+            // dbal 3.x
+            $result->beADoubleOf(Result::class);
+            $result->fetchFirstColumn()->willReturn(['filename', 'filename1', 'filename2']);
+        } else {
+            // BC layer for dbal 2.x
+            $result->beADoubleOf(\Doctrine\DBAL\Statement::class);
+            $result->fetchAll(\PDO::FETCH_COLUMN)->willReturn(['filename', 'filename1', 'filename2']);
+        }
+
         $connection
             ->quoteIdentifier(Argument::any())
             ->will(function ($argument) {
@@ -206,7 +245,7 @@ class DoctrineDbalSpec extends ObjectBehavior
             });
         $connection
             ->executeQuery('SELECT "key" FROM "someTableName"')
-            ->willReturn($stmt);
+            ->willReturn($result);
 
         $this->keys()->shouldReturn(['filename', 'filename1', 'filename2']);
     }

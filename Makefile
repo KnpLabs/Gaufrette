@@ -25,7 +25,7 @@ docker.all-deps: docker.deps ## Install dependencies
 	docker/run-task php${PHP_VERSION} composer require --no-update \
 		aws/aws-sdk-php:^3.158 \
 		google/apiclient:^2.12 \
-		doctrine/dbal:^2.3 \
+		doctrine/dbal:^3.4 \
 		league/flysystem:^1.0 \
 		microsoft/azure-storage-blob:^1.0 \
 		phpseclib/phpseclib:^2.0 \
@@ -67,7 +67,7 @@ require-all-legacy: # kept for compatibility with the old CI config, to be remov
 	composer require --no-update \
 		aws/aws-sdk-php:^3.158 \
 		google/apiclient:^2.12 \
-		doctrine/dbal:^2.3 \
+		doctrine/dbal:^3.4 \
 		league/flysystem:^1.0 \
 		microsoft/azure-storage-blob:^1.0 \
 		phpseclib/phpseclib:^2.0 \

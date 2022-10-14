@@ -46,6 +46,7 @@ jobs:
           - { php: '8.1', packages: 'aws/aws-sdk-php:^3.158', phpspec: 'spec/Gaufrette/Adapter/AwsS3Spec.php' }
           - { php: '8.1', packages: 'google/apiclient:^2.12', phpspec: 'spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php' }
           - { php: '8.1', packages: 'doctrine/dbal:^2.3', phpspec: 'spec/Gaufrette/Adapter/DoctrineDbalSpec.php' }
+          - { php: '8.1', packages: 'doctrine/dbal:^3.4', phpspec: 'spec/Gaufrette/Adapter/DoctrineDbalSpec.php' }
           - { php: '8.1', packages: 'league/flysystem:^1.0', phpspec: 'spec/Gaufrette/Adapter/FlysystemSpec.php' }
           - { php: '8.1', packages: 'microsoft/azure-storage-blob:^1.0', phpspec: 'spec/Gaufrette/Adapter/AzureBlobStore' }
           - { php: '8.1', packages: 'mongodb/mongodb:^1.1', phpspec: 'spec/Gaufrette/Adapter/GridFSSpec.php' }

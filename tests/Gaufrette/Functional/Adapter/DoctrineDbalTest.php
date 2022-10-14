@@ -29,7 +29,14 @@ class DoctrineDbalTest extends FunctionalTestCase
         $schema = $this->connection->getSchemaManager()->createSchema();
 
         $table = $schema->createTable('gaufrette');
-        $table->addColumn('key', 'string', ['unique' => true]);
+        $column = $table->addColumn('key', 'string');
+        if (method_exists($column, 'setPlatformOption')) {
+            // dbal 3.4+
+            $column->setPlatformOption('unique', true);
+        } else {
+            // BC layer dbal 2.x
+            $column->setUnique(true);
+        }
         $table->addColumn('content', 'blob');
         $table->addColumn('mtime', 'integer');
         $table->addColumn('checksum', 'string', ['length' => 32]);
