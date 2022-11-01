@@ -198,6 +198,11 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
             $options->setContentType($contentType);
         }
 
+        $size = is_resource($content)
+            ? Util\Size::fromResource($content)
+            : Util\Size::fromContent($content)
+        ;
+
         try {
             if ($this->multiContainerMode) {
                 $this->createContainer($containerName);
@@ -209,11 +214,8 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
 
             return false;
         }
-        if (is_resource($content)) {
-            return Util\Size::fromResource($content);
-        }
 
-        return Util\Size::fromContent($content);
+        return $size;
     }
 
     /**
