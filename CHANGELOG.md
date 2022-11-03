@@ -1,3 +1,13 @@
+v0.11.1
+=======
+
+## Added
+
+- gitattributes file to avoid download too much files on install with composer in #679
+
+## Fixed
+
+- Azure integraton with stream was not working properly, it has been fixed in #683
 
 v0.11.0
 =======
