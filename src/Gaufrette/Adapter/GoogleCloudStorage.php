@@ -10,7 +10,6 @@ use Google\Service\Exception as ServiceException;
 use Google\Service\Storage\BucketIamConfiguration;
 use Google\Service\Storage\BucketIamConfigurationUniformBucketLevelAccess;
 use GuzzleHttp;
-use Psr\Http\Message\StreamInterface;
 
 /**
  * Google Cloud Storage adapter using the Google APIs Client Library for PHP.
@@ -126,12 +125,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
             $response = $httpClient->request('GET', $object->getMediaLink());
             if ($response->getStatusCode() == 200) {
                 $this->setMetadata($key, $object->getMetadata());
-                $body = $response->getBody();
-                if ($body instanceof StreamInterface) {
-                    return $body->getContents();
-                }
-
-                return $body;
+                return (string)$response->getBody();
             }
         }
 
