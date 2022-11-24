@@ -273,7 +273,7 @@ if (!interface_exists(FilesystemAdapter::class)) {
         $basedir . 'src/Gaufrette/Adapter/FlysystemV2V3.php',
     ];
 } else {
-    $return['parameters']['excludePaths']['analyse'] = [
+    $return['parameters']['excludePaths'] = [
         $basedir . 'src/Gaufrette/Adapter/Flysystem.php',
     ];
 }

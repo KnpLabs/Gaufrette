@@ -68,14 +68,14 @@ jobs:
       max-parallel: 10
       matrix:
         run:
-          - { packages: 'league/flysystem:^1.0' }
-          - { packages: 'league/flysystem:^2.0' }
-          - { packages: 'league/flysystem:^3.0' }
+          - { php: '7.4', packages: 'league/flysystem:^1.0' }
+          - { php: '7.4', packages: 'league/flysystem:^2.0' }
+          - { php: '8.1', packages: 'league/flysystem:^3.0' }
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: ${{ matrix.run.php }}
           extensions: mongo, mbstring, fileinfo, simplexml
           tools: composer:v2
 
