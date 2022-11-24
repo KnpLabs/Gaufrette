@@ -74,7 +74,7 @@ require-common: # kept for compatibility with the old CI config, to be removed a
 		mongodb/mongodb:^1.1 \
 		async-aws/simple-s3:^1.0
 
-mae: require-common  # kept for compatibility with the old CI config, to be removed at some point
+require-all-legacy: require-common  # kept for compatibility with the old CI config, to be removed at some point
 	composer require --no-update \
 		league/flysystem:^1.0
 
