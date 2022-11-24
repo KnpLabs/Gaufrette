@@ -5,7 +5,13 @@ jobs:
   phpstan:
     name: PHPStan
     runs-on: ubuntu-latest
-
+    strategy:
+      max-parallel: 10
+      matrix:
+        run:
+          - { packages: 'league/flysystem:^1.0' }
+          - { packages: 'league/flysystem:^2.0' }
+          - { packages: 'league/flysystem:^3.0' }
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -18,13 +24,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Download dependencies and run php-stan
-        strategy:
-          max-parallel: 10
-          matrix:
-            run:
-              - { packages: 'league/flysystem:^1.0' }
-              - { packages: 'league/flysystem:^2.0' }
-              - { packages: 'league/flysystem:^3.0' }
         run: |
           make require-common
           composer require ${{ matrix.run.packages }} --no-update
@@ -65,6 +64,13 @@ jobs:
   psalm:
     name: Psalm
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 10
+      matrix:
+        run:
+          - { packages: 'league/flysystem:^1.0' }
+          - { packages: 'league/flysystem:^2.0' }
+          - { packages: 'league/flysystem:^3.0' }
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -77,13 +83,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Download dependencies
-        strategy:
-          max-parallel: 10
-          matrix:
-            run:
-              - { packages: 'league/flysystem:^1.0' }
-              - { packages: 'league/flysystem:^2.0' }
-              - { packages: 'league/flysystem:^3.0' }
         run: |
           make require-common
           composer require --dev --no-update psalm/phar:4.9.2 ${{ matrix.run.packages }}
