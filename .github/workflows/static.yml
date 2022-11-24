@@ -17,9 +17,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download dependencies
+      - name: Download dependencies and run php-stan
+        strategy:
+          max-parallel: 10
+          matrix:
+            run:
+              - { packages: 'league/flysystem:^1.0' }
+              - { packages: 'league/flysystem:^2.0' }
+              - { packages: 'league/flysystem:^3.0' }
         run: |
-          make require-all
+          make require-common
+          composer require ${{ matrix.run.packages }} --no-update
           composer require --dev --no-update phpstan/phpstan:1.8.8
           composer update --no-interaction --prefer-dist
 
@@ -62,16 +70,23 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
-          extensions: mongo, mbstring, fileinfo
+          extensions: mongo, mbstring, fileinfo, simplexml
           tools: composer:v2
 
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Download dependencies
+        strategy:
+          max-parallel: 10
+          matrix:
+            run:
+              - { packages: 'league/flysystem:^1.0' }
+              - { packages: 'league/flysystem:^2.0' }
+              - { packages: 'league/flysystem:^3.0' }
         run: |
-          make require-all
-          composer require --dev --no-update psalm/phar:3.16
+          make require-common
+          composer require --dev --no-update psalm/phar:4.9.2 ${{ matrix.run.packages }}
           composer update --no-interaction --prefer-dist
 
       - name: Psalm

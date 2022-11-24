@@ -54,6 +54,7 @@ your issue or pull request in a timely manner, ping us:
 | AzureBlobStorage   | @NiR-                       |
 | DoctrineDbal       | @pedrotroller, @NicolasNSSM |
 | Flysystem          | @nicolasmure                |
+| FlysystemV2V3      | @nicolasmure                |
 | Ftp                | @fabschurt                  |
 | GoogleCloudStorage | @AntoineLelaisant           |
 | GridFS             | @NiR-                       |

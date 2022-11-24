@@ -1,5 +1,5 @@
 includes:
-    - phpstan-baseline.neon
+    - phpstan-baseline.php
 
 parameters:
     level: 5
