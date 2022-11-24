@@ -133,7 +133,7 @@ class InMemory implements Adapter, MimeTypeProvider
     /**
      * {@inheritdoc}
      */
-    public function isDirectory($path)
+    public function isDirectory($key)
     {
         return false;
     }

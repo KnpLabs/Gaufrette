@@ -9,5 +9,6 @@
 /appveyor.yml export-ignore
 /psalm.baseline.xml export-ignore
 /psalm.xml export-ignore
+/PsalmPlugin.php export-ignore
 /bin export-ignore
 /doc export-ignore

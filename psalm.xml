@@ -7,6 +7,9 @@
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
     errorBaseline="psalm.baseline.xml"
 >
+    <plugins>
+        <plugin filename="PsalmPlugin.php" />
+    </plugins>
     <projectFiles>
         <directory name="src" />
         <ignoreFiles>

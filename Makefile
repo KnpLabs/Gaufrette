@@ -59,23 +59,28 @@ remove-phpspec: ## Remove adapter specs (allows you to run test suite without ad
 	rm spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php
 	rm spec/Gaufrette/Adapter/DoctrineDbalSpec.php
 	rm spec/Gaufrette/Adapter/FlysystemSpec.php
+	rm spec/Gaufrette/Adapter/FlysystemV2V3Spec.php
 	rm -r spec/Gaufrette/Adapter/AzureBlobStorage
 	rm spec/Gaufrette/Adapter/GridFSSpec.php
 	rm spec/Gaufrette/Adapter/PhpseclibSftpSpec.php
 
-require-all-legacy: # kept for compatibility with the old CI config, to be removed at some point
+require-common: # kept for compatibility with the old CI config, to be removed at some point
 	composer require --no-update \
 		aws/aws-sdk-php:^3.158 \
 		google/apiclient:^2.12 \
 		doctrine/dbal:^3.4 \
-		league/flysystem:^1.0 \
 		microsoft/azure-storage-blob:^1.0 \
 		phpseclib/phpseclib:^2.0 \
-		mongodb/mongodb:^1.1
+		mongodb/mongodb:^1.1 \
+		async-aws/simple-s3:^1.0
 
+require-all-legacy: require-common  # kept for compatibility with the old CI config, to be removed at some point
+	composer require --no-update \
+		league/flysystem:^1.0
 
-require-all: require-all-legacy ## Install all dependencies for adapters
-	composer require --no-update async-aws/simple-s3:^1.0
+require-all: require-common ## Install all dependencies for adapters
+	composer require --no-update \
+    		league/flysystem:^3.0
 
 .PHONY: bc-check
 bc-check: ## Check for backward compatibility change

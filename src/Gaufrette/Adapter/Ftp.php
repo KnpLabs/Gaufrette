@@ -13,7 +13,11 @@ use Gaufrette\Filesystem;
  */
 class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
 {
-    /** @var null|resource|\FTP\Connection */
+    /**
+     * @psalm-suppress UndefinedDocblockClass
+     * @phpstan-ignore-next-line
+     * @var null|resource|\FTP\Connection
+     */
     protected $connection = null;
     protected $directory;
     protected $host;
@@ -490,8 +494,9 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
      */
     private function isConnected()
     {
-        if (class_exists('\FTP\Connection')) {
-            return $this->connection instanceof \FTP\Connection;
+        $class = '\FTP\Connection';
+        if (class_exists($class)) {
+            return is_a($this->connection, $class);
         }
 
         return is_resource($this->connection);
@@ -501,6 +506,7 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
      * Returns an opened ftp connection resource. If the connection is not
      * already opened, it open it before.
      *
+     * @psalm-return resource
      * @return resource|\FTP\Connection The ftp connection
      */
     private function getConnection()

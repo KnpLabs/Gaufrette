@@ -187,7 +187,7 @@ class InMemoryBuffer implements Stream
     /**
      * {@inheritdoc}
      */
-    public function cast($castAst)
+    public function cast($castAs)
     {
         return false;
     }

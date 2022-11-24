@@ -5,7 +5,13 @@ jobs:
   phpstan:
     name: PHPStan
     runs-on: ubuntu-latest
-
+    strategy:
+      max-parallel: 10
+      matrix:
+        run:
+          - { packages: 'league/flysystem:^1.0' }
+          - { packages: 'league/flysystem:^2.0' }
+          - { packages: 'league/flysystem:^3.0' }
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -17,9 +23,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download dependencies
+      - name: Download dependencies and run php-stan
         run: |
-          make require-all
+          make require-common
+          composer require ${{ matrix.run.packages }} --no-update
           composer require --dev --no-update phpstan/phpstan:1.8.8
           composer update --no-interaction --prefer-dist
 
@@ -57,12 +64,19 @@ jobs:
   psalm:
     name: Psalm
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 10
+      matrix:
+        run:
+          - { php: '7.4', packages: 'league/flysystem:^1.0' }
+          - { php: '7.4', packages: 'league/flysystem:^2.0' }
+          - { php: '8.1', packages: 'league/flysystem:^3.0' }
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
-          extensions: mongo, mbstring, fileinfo
+          php-version: ${{ matrix.run.php }}
+          extensions: mongo, mbstring, fileinfo, simplexml
           tools: composer:v2
 
       - name: Checkout code
@@ -70,11 +84,11 @@ jobs:
 
       - name: Download dependencies
         run: |
-          make require-all
-          composer require --dev --no-update psalm/phar:3.16
+          make require-common
+          composer require --dev --no-update vimeo/psalm:4.30.0 ${{ matrix.run.packages }}
           composer update --no-interaction --prefer-dist
 
       - name: Psalm
         run: |
-          ./vendor/bin/psalm.phar --version
-          ./vendor/bin/psalm.phar --output-format=github --no-progress --show-info=false --stats
+          ./vendor/bin/psalm --version
+          ./vendor/bin/psalm --output-format=github --no-progress --stats
