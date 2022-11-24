@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Gaufrette\Adapter;
 
 use Gaufrette\Adapter;
-use Gaufrette\Adapter\ListKeysAware;
 use Gaufrette\Exception\UnsupportedAdapterMethodException;
 use League\Flysystem\Config;
 use League\Flysystem\FilesystemAdapter;

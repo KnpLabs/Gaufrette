@@ -65,7 +65,8 @@ class FlysystemV2V3Spec extends ObjectBehavior
 
     function it_lists_keys(FilesystemAdapter $adapter)
     {
-        $adapter->listContents('', true)->willReturn([
+        $adapter->listContents('', true)->willReturn(
+            [
                 new DirectoryAttributes('folder', null, 1457104978),
                 new FileAttributes('file', 22, null, 1457104978),
             ]
