@@ -85,10 +85,10 @@ jobs:
       - name: Download dependencies
         run: |
           make require-common
-          composer require --dev --no-update psalm/phar:4.9.2 ${{ matrix.run.packages }}
+          composer require --dev --no-update vimeo/psalm:4.30.0 ${{ matrix.run.packages }}
           composer update --no-interaction --prefer-dist
 
       - name: Psalm
         run: |
-          ./vendor/bin/psalm.phar --version
-          ./vendor/bin/psalm.phar --output-format=github --no-progress --stats
+          ./vendor/bin/psalm --version
+          ./vendor/bin/psalm --output-format=github --no-progress --stats

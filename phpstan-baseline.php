@@ -269,11 +269,11 @@ if (!interface_exists(FilesystemAdapter::class)) {
         ],
     ]);
 
-    $return['parameters']['excludePaths'] = [
+    $return['parameters']['excludePaths']['analyse'] = [
         $basedir . 'src/Gaufrette/Adapter/FlysystemV2V3.php',
     ];
 } else {
-    $return['parameters']['excludePaths'] = [
+    $return['parameters']['excludePaths']['analyse'] = [
         $basedir . 'src/Gaufrette/Adapter/Flysystem.php',
     ];
 }
