@@ -126,7 +126,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
             if ($response->getStatusCode() == 200) {
                 $this->setMetadata($key, $object->getMetadata());
 
-                return (string)$response->getBody();
+                return (string) $response->getBody();
             }
         }
 
