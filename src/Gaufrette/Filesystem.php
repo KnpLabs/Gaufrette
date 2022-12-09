@@ -280,7 +280,7 @@ class Filesystem implements FilesystemInterface
      * Checks if matching file by given key exists in the filesystem.
      *
      * Key must be non empty string, otherwise it will throw Exception\FileNotFound
-     * {@see http://php.net/manual/en/function.empty.php}
+     * {@see https://php.net/manual/en/function.empty.php}
      *
      * @param string $key
      *

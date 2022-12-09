@@ -81,7 +81,7 @@ class Path
      *
      * @return string
      *
-     * @see http://php.net/manual/en/function.dirname.php
+     * @see https://php.net/manual/en/function.dirname.php
      */
     public static function dirname($path)
     {
