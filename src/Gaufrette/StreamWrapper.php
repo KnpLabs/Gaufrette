@@ -14,6 +14,8 @@ class StreamWrapper
 
     private $stream;
 
+    public $context;
+
     /**
      * Defines the filesystem map.
      *
