@@ -71,7 +71,7 @@ jobs:
       - name: Download dependencies
         run: |
           make require-all
-          composer require --dev --no-update psalm/phar:4.17
+          composer require --dev --no-update psalm/phar:4.16
           composer update --no-interaction --prefer-dist
 
       - name: Psalm
