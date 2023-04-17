@@ -40,7 +40,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-fix-php82-deprecated": "0.11.x-dev"
+            "dev-fix-php82-deprecated": "0.12.x-dev"
         }
     },
     "archive": {
