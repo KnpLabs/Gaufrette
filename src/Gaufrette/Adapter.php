@@ -22,7 +22,7 @@ interface Adapter
      *
      * @return int|bool The number of bytes that were written into the file
      */
-    public function write(string $key, string $content): int|bool;
+    public function write(string $key, mixed $content): int|bool;
 
     /**
      * Indicates whether the file exists.
@@ -46,7 +46,7 @@ interface Adapter
     /**
      * Deletes the file.
      */
-    public function delete(string$key): bool;
+    public function delete(string $key): bool;
 
     /**
      * Renames a file.

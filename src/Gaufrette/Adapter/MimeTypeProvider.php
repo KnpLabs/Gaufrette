@@ -11,10 +11,6 @@ interface MimeTypeProvider
 {
     /**
      * Returns the mime type of the specified key.
-     *
-     * @param string $key
-     *
-     * @return string
      */
-    public function mimeType($key);
+    public function mimeType(string $key): string;
 }
