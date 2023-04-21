@@ -13,72 +13,48 @@ interface Adapter
     /**
      * Reads the content of the file.
      *
-     * @param string $key
-     *
      * @return string|bool if cannot read content
      */
-    public function read($key);
+    public function read(string $key): string|bool;
 
     /**
      * Writes the given content into the file.
      *
-     * @param string $key
-     * @param string $content
-     *
      * @return int|bool The number of bytes that were written into the file
      */
-    public function write($key, $content);
+    public function write(string $key, string $content): int|bool;
 
     /**
      * Indicates whether the file exists.
-     *
-     * @param string $key
-     *
-     * @return bool
      */
-    public function exists($key);
+    public function exists(string $key): bool;
 
     /**
      * Returns an array of all keys (files and directories).
      *
-     * @return array
+     * @return array<int, string>
      */
-    public function keys();
+    public function keys(): array;
 
     /**
      * Returns the last modified time.
      *
-     * @param string $key
-     *
      * @return int|bool An UNIX like timestamp or false
      */
-    public function mtime($key);
+    public function mtime(string $key): int|bool;
 
     /**
      * Deletes the file.
-     *
-     * @param string $key
-     *
-     * @return bool
      */
-    public function delete($key);
+    public function delete(string$key): bool;
 
     /**
      * Renames a file.
-     *
-     * @param string $sourceKey
-     * @param string $targetKey
-     *
-     * @return bool
      */
-    public function rename($sourceKey, $targetKey);
+    public function rename(string $sourceKey, string $targetKey): bool;
 
     /**
      * Check if key is directory.
-     *
-     * @param string $key
-     *
-     * @return bool
      */
-    public function isDirectory($key);
+    public function isDirectory(string $key): bool;
 }
