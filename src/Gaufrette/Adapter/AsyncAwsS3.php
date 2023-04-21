@@ -15,13 +15,12 @@ use Gaufrette\Util;
  */
 class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator, MimeTypeProvider
 {
-    protected SimpleS3Client $service;
     protected array $options;
     protected bool $bucketExists;
     protected array $metadata = [];
 
     public function __construct(
-        SimpleS3Client $service,
+        private readonly SimpleS3Client $service,
         private readonly string $bucket,
         array $options = [],
         private readonly bool $detectContentType = false
@@ -29,7 +28,6 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
         if (!class_exists(SimpleS3Client::class)) {
             throw new \LogicException('You need to install package "async-aws/simple-s3" to use this adapter');
         }
-        $this->service = $service;
         $this->options = array_replace(
             [
                 'create' => false,
