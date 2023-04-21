@@ -9,7 +9,7 @@ namespace Gaufrette\Adapter;
  */
 interface MetadataSupporter
 {
-    public function setMetadata(string $key, array $content);
+    public function setMetadata(string $key, array $content): void;
 
     public function getMetadata(string $key): array;
 }

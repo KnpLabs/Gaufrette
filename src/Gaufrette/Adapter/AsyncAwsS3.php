@@ -43,7 +43,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     /**
      * {@inheritdoc}
      */
-    public function setMetadata(string $key, array $content)
+    public function setMetadata(string $key, array $content): void
     {
         // BC with AmazonS3 adapter
         if (isset($content['contentType'])) {
