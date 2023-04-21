@@ -11,10 +11,6 @@ interface ChecksumCalculator
 {
     /**
      * Returns the checksum of the specified key.
-     *
-     * @param string $key
-     *
-     * @return string
      */
-    public function checksum($key);
+    public function checksum(string $key): string;
 }
