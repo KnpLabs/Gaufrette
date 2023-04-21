@@ -6,37 +6,28 @@ use Gaufrette\Adapter;
 use Gaufrette\Exception\UnsupportedAdapterMethodException;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Util;
+use League\Flysystem\Config;
 
 class Flysystem implements Adapter, ListKeysAware
 {
-    /**
-     * @var AdapterInterface
-     */
-    private $adapter;
+    private Config $config;
 
     /**
-     * @var Config
+     * @param Config|array|null $config
      */
-    private $config;
-
-    /**
-     * @param AdapterInterface  $adapter
-     * @param \League\Flysystem\Config|array|null $config
-     */
-    public function __construct(AdapterInterface $adapter, $config = null)
+    public function __construct(private readonly AdapterInterface $adapter, $config = null)
     {
         if (!interface_exists(AdapterInterface::class)) {
             throw new \LogicException('You need to install package "league/flysystem" to use this adapter');
         }
 
-        $this->adapter = $adapter;
         $this->config = Util::ensureConfig($config);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function read($key)
+    public function read(string $key): string|bool
     {
         return $this->adapter->read($key)['contents'];
     }
@@ -44,7 +35,7 @@ class Flysystem implements Adapter, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function write($key, $content)
+    public function write(string $key, mixed $content): int|bool
     {
         return $this->adapter->write($key, $content, $this->config);
     }
@@ -52,7 +43,7 @@ class Flysystem implements Adapter, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function exists($key)
+    public function exists(string $key): bool
     {
         return (bool) $this->adapter->has($key);
     }
@@ -60,7 +51,7 @@ class Flysystem implements Adapter, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function keys()
+    public function keys(): array
     {
         return array_map(function ($content) {
             return $content['path'];
@@ -70,7 +61,7 @@ class Flysystem implements Adapter, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function listKeys($prefix = '')
+    public function listKeys(string $prefix = ''): array
     {
         $dirs = [];
         $keys = [];
@@ -94,7 +85,7 @@ class Flysystem implements Adapter, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function mtime($key)
+    public function mtime(string $key): int|bool
     {
         return $this->adapter->getTimestamp($key);
     }
@@ -102,7 +93,7 @@ class Flysystem implements Adapter, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         return $this->adapter->delete($key);
     }
@@ -110,7 +101,7 @@ class Flysystem implements Adapter, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function rename($sourceKey, $targetKey)
+    public function rename(string $sourceKey, string $targetKey): bool
     {
         return $this->adapter->rename($sourceKey, $targetKey);
     }
@@ -118,7 +109,7 @@ class Flysystem implements Adapter, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function isDirectory($key)
+    public function isDirectory(string $key): bool
     {
         throw new UnsupportedAdapterMethodException('isDirectory is not supported by this adapter.');
     }
