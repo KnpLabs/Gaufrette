@@ -12,25 +12,22 @@ use Gaufrette\StreamMode;
  */
 class Local implements Stream
 {
-    private $path;
+    private string $path;
     private $mode;
     private $fileHandle;
-    private $mkdirMode;
+    private int $mkdirMode;
 
     /**
      * @param string $path
      * @param int    $mkdirMode
      */
-    public function __construct($path, $mkdirMode = 0755)
+    public function __construct(string $path, int $mkdirMode = 0755)
     {
         $this->path = $path;
         $this->mkdirMode = $mkdirMode;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function open(StreamMode $mode)
+    public function open(StreamMode $mode): bool
     {
         $baseDirPath = \Gaufrette\Util\Path::dirname($this->path);
         if ($mode->allowsWrite() && !is_dir($baseDirPath)) {
@@ -53,10 +50,7 @@ class Local implements Stream
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function read($count)
+    public function read(int $count): string|false
     {
         if (!$this->fileHandle) {
             return false;
@@ -69,29 +63,23 @@ class Local implements Stream
         return fread($this->fileHandle, $count);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function write($data)
+    public function write(string $data): int
     {
         if (!$this->fileHandle) {
-            return false;
+            return 0;
         }
 
         if (false === $this->mode->allowsWrite()) {
             throw new \LogicException('The stream does not allow write.');
         }
 
-        return fwrite($this->fileHandle, $data);
+        return fwrite($this->fileHandle, $data)?: 0;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function close()
+    public function close(): void
     {
         if (!$this->fileHandle) {
-            return false;
+            return;
         }
 
         $closed = fclose($this->fileHandle);
@@ -100,14 +88,9 @@ class Local implements Stream
             $this->mode = null;
             $this->fileHandle = null;
         }
-
-        return $closed;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function flush()
+    public function flush(): bool
     {
         if ($this->fileHandle) {
             return fflush($this->fileHandle);
@@ -116,10 +99,7 @@ class Local implements Stream
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek(int $offset, int $whence = SEEK_SET): bool
     {
         if ($this->fileHandle) {
             return 0 === fseek($this->fileHandle, $offset, $whence);
@@ -128,10 +108,7 @@ class Local implements Stream
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function tell()
+    public function tell(): int
     {
         if ($this->fileHandle) {
             return ftell($this->fileHandle);
@@ -140,10 +117,7 @@ class Local implements Stream
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function eof()
+    public function eof(): bool
     {
         if ($this->fileHandle) {
             return feof($this->fileHandle);
@@ -153,9 +127,9 @@ class Local implements Stream
     }
 
     /**
-     * {@inheritdoc}
+     * @return array<string, mixed>|false
      */
-    public function stat()
+    public function stat(): array|false
     {
         if ($this->fileHandle) {
             return fstat($this->fileHandle);
@@ -166,10 +140,7 @@ class Local implements Stream
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function cast($castAs)
+    public function cast(int $castAs)
     {
         if ($this->fileHandle) {
             return $this->fileHandle;
@@ -178,10 +149,7 @@ class Local implements Stream
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unlink()
+    public function unlink(): bool
     {
         if ($this->mode && $this->mode->impliesExistingContentDeletion()) {
             return @unlink($this->path);
