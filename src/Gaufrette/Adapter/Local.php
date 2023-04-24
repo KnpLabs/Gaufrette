@@ -14,10 +14,9 @@ use Gaufrette\Stream;
  */
 class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculator, MimeTypeProvider
 {
-    protected $directory;
-    private $create;
-    private $mode;
-
+    protected string $directory;
+    private bool $create;
+    private int $mode;
     /**
      * @param string $directory Directory where the filesystem is located
      * @param bool   $create    Whether to create the directory if it does not
@@ -27,8 +26,11 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      * @throws \RuntimeException if the specified directory does not exist and
      *                          could not be created
      */
-    public function __construct($directory, $create = false, $mode = 0777)
-    {
+    public function __construct(
+        string $directory, 
+        bool $create = false, 
+        int $mode = 0777
+    ){
         $this->directory = Util\Path::normalize($directory);
 
         if (is_link($this->directory)) {
@@ -40,13 +42,11 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    public function read($key)
+    public function read(string $key): string|bool
     {
         if ($this->isDirectory($key)) {
             return false;
@@ -56,13 +56,11 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    public function write($key, $content)
+    public function write(string $key, mixed $content): int|bool
     {
         $path = $this->computePath($key);
         $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($path), true);
@@ -71,13 +69,11 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    public function rename($sourceKey, $targetKey)
+    public function rename(string $sourceKey, string $targetKey): bool
     {
         $targetPath = $this->computePath($targetKey);
         $this->ensureDirectoryExists(\Gaufrette\Util\Path::dirname($targetPath), true);
@@ -85,22 +81,18 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
         return rename($this->computePath($sourceKey), $targetPath);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function exists($key)
+    public function exists(string $key): bool
     {
         return is_file($this->computePath($key));
     }
 
     /**
-     * {@inheritdoc}
-     *
+     * @return array<int, string> 
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    public function keys()
+    public function keys(): array
     {
         $this->ensureDirectoryExists($this->directory, $this->create);
 
@@ -126,24 +118,20 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    public function mtime($key)
+    public function mtime(string $key): int|bool
     {
         return filemtime($this->computePath($key));
     }
 
     /**
-     * {@inheritdoc}
-     *
      * Can also delete a directory recursively when the given $key matches a
      * directory.
      */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         if ($this->isDirectory($key)) {
             return $this->deleteDirectory($this->computePath($key));
@@ -163,55 +151,47 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    public function isDirectory($key)
+    public function isDirectory(string $key): bool
     {
         return is_dir($this->computePath($key));
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    public function createStream($key)
+    public function createStream(string $key): Stream\Local
     {
         return new Stream\Local($this->computePath($key), $this->mode);
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    public function checksum($key)
+    public function checksum(string $key): string|bool
     {
         return Util\Checksum::fromFile($this->computePath($key));
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    public function size($key)
+    public function size(string $key): int
     {
         return Util\Size::fromFile($this->computePath($key));
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    public function mimeType($key)
+    public function mimeType(string $key): string
     {
         $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
 
@@ -228,7 +208,7 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    public function computeKey($path)
+    public function computeKey(string $path): string
     {
         $path = $this->normalizePath($path);
 
@@ -246,7 +226,7 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \RuntimeException         If directory does not exists and cannot be created
      */
-    protected function computePath($key)
+    protected function computePath(string $key): string
     {
         $this->ensureDirectoryExists($this->directory, $this->create);
 
@@ -262,7 +242,7 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      * @throws \OutOfBoundsException If the computed path is out of the
      *                              directory
      */
-    protected function normalizePath($path)
+    protected function normalizePath(string $path): string
     {
         $path = Util\Path::normalize($path);
 
@@ -284,7 +264,7 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      * @throws \RuntimeException if the directory does not exists and could not
      *                          be created
      */
-    protected function ensureDirectoryExists($directory, $create = false)
+    protected function ensureDirectoryExists(string $directory, bool $create = false): void
     {
         if (!is_dir($directory)) {
             if (!$create) {
@@ -303,7 +283,7 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    protected function createDirectory($directory)
+    protected function createDirectory(string $directory): void
     {
         if (!@mkdir($directory, $this->mode, true) && !is_dir($directory)) {
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
@@ -318,7 +298,7 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      *
      * @return bool Wheter the operation succeeded or not
      */
-    private function deleteDirectory($directory)
+    private function deleteDirectory(string $directory): bool
     {
         if ($this->directory === $directory) {
             throw new \InvalidArgumentException(
