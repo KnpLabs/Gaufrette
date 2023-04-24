@@ -64,7 +64,7 @@ class File
      *
      * @param array<string, mixed> $metadata optional metadata which should be set when read
      */
-    public function getContent($metadata = []): string
+    public function getContent(array $metadata = []): string
     {
         if (isset($this->content)) {
             return $this->content;
@@ -144,9 +144,9 @@ class File
      *
      * @param array<string, mixed> $metadata optional metadata which should be send when write
      *
-     * @return bool TRUE on success
+     * @return true on success
      */
-    public function delete($metadata = []): bool
+    public function delete(array $metadata = []): bool
     {
         $this->setMetadata($metadata);
 
