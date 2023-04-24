@@ -9,15 +9,18 @@ namespace Gaufrette;
  */
 class FilesystemMap implements FilesystemMapInterface
 {
-    private $filesystems = [];
+    /**
+     * @var array<FilesystemInterface>
+     */
+    private array $filesystems = [];
 
     /**
      * Returns an array of all the registered filesystems where the key is the
      * name and the value the filesystem.
      *
-     * @return array
+     * @return array<FilesystemInterface>
      */
-    public function all()
+    public function all(): array
     {
         return $this->filesystems;
     }
@@ -25,13 +28,10 @@ class FilesystemMap implements FilesystemMapInterface
     /**
      * Register the given filesystem for the specified name.
      *
-     * @param string     $name
-     * @param FilesystemInterface $filesystem
-     *
      * @throws \InvalidArgumentException when the specified name contains
-     *                                  forbidden characters
+     *                                   forbidden characters
      */
-    public function set($name, FilesystemInterface $filesystem)
+    public function set(string $name, FilesystemInterface $filesystem): void
     {
         if (!preg_match('/^[-_a-zA-Z0-9]+$/', $name)) {
             throw new \InvalidArgumentException(sprintf(
@@ -43,18 +43,12 @@ class FilesystemMap implements FilesystemMapInterface
         $this->filesystems[$name] = $filesystem;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function has($name)
+    public function has(string $name): bool
     {
         return isset($this->filesystems[$name]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function get($name)
+    public function get(string $name): FilesystemInterface
     {
         if (!$this->has($name)) {
             throw new \InvalidArgumentException(sprintf(
@@ -68,10 +62,8 @@ class FilesystemMap implements FilesystemMapInterface
 
     /**
      * Removes the filesystem registered for the specified name.
-     *
-     * @param string $name
      */
-    public function remove($name)
+    public function remove(string $name): void
     {
         if (!$this->has($name)) {
             throw new \InvalidArgumentException(sprintf(
@@ -86,7 +78,7 @@ class FilesystemMap implements FilesystemMapInterface
     /**
      * Clears all the registered filesystems.
      */
-    public function clear()
+    public function clear(): void
     {
         $this->filesystems = [];
     }

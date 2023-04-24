@@ -10,30 +10,30 @@ namespace Gaufrette;
  */
 class StreamWrapper
 {
-    private static $filesystemMap;
+    private static FilesystemMap $filesystemMap;
 
-    private $stream;
+    private Stream $stream;
 
+    /**
+     * @var ?resource
+     * @see https://www.php.net/manual/en/class.streamwrapper.php#streamwrapper.props.context
+     */
     public $context;
 
     /**
      * Defines the filesystem map.
-     *
-     * @param FilesystemMap $map
      */
-    public static function setFilesystemMap(FilesystemMap $map)
+    public static function setFilesystemMap(FilesystemMap $map): void
     {
         self::$filesystemMap = $map;
     }
 
     /**
      * Returns the filesystem map.
-     *
-     * @return FilesystemMap $map
      */
-    public static function getFilesystemMap()
+    public static function getFilesystemMap(): FilesystemMap
     {
-        if (null === self::$filesystemMap) {
+        if (false === isset(self::$filesystemMap)) {
             self::$filesystemMap = self::createFilesystemMap();
         }
 
@@ -42,10 +42,8 @@ class StreamWrapper
 
     /**
      * Registers the stream wrapper to handle the specified scheme.
-     *
-     * @param string $scheme Default is gaufrette
      */
-    public static function register($scheme = 'gaufrette')
+    public static function register(string $scheme = 'gaufrette'): void
     {
         self::streamWrapperUnregister($scheme);
 
@@ -58,36 +56,32 @@ class StreamWrapper
         }
     }
 
-    /**
-     * @return FilesystemMap
-     */
-    protected static function createFilesystemMap()
+    protected static function createFilesystemMap(): FilesystemMap
     {
         return new FilesystemMap();
     }
 
     /**
-     * @param string $scheme - protocol scheme
+     * @param string $scheme Protocol scheme
      */
-    protected static function streamWrapperUnregister($scheme)
+    protected static function streamWrapperUnregister(string $scheme): bool
     {
         if (in_array($scheme, stream_get_wrappers())) {
             return stream_wrapper_unregister($scheme);
         }
+
+        return false;
     }
 
     /**
-     * @param string $scheme    - protocol scheme
-     * @param string $className
-     *
-     * @return bool
+     * @param string $scheme Protocol scheme
      */
-    protected static function streamWrapperRegister($scheme, $className)
+    protected static function streamWrapperRegister(string $scheme, string $className): bool
     {
         return stream_wrapper_register($scheme, $className);
     }
 
-    public function stream_open($path, $mode)
+    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool
     {
         $this->stream = $this->createStream($path);
 
@@ -95,46 +89,36 @@ class StreamWrapper
     }
 
     /**
-     * @param int $bytes
-     *
-     * @return mixed
+     * @return string|false
      */
-    public function stream_read($bytes)
+    public function stream_read(int $count): string|bool
     {
-        if ($this->stream) {
-            return $this->stream->read($bytes);
+        if (isset($this->stream)) {
+            return $this->stream->read($count);
         }
 
         return false;
     }
 
-    /**
-     * @param string $data
-     *
-     * @return int
-     */
-    public function stream_write($data)
+    public function stream_write(string $data): int
     {
-        if ($this->stream) {
+        if (isset($this->stream)) {
             return $this->stream->write($data);
         }
 
         return 0;
     }
 
-    public function stream_close()
+    public function stream_close(): void
     {
-        if ($this->stream) {
+        if (isset($this->stream)) {
             $this->stream->close();
         }
     }
 
-    /**
-     * @return bool
-     */
-    public function stream_flush()
+    public function stream_flush(): bool
     {
-        if ($this->stream) {
+        if (isset($this->stream)) {
             return $this->stream->flush();
         }
 
@@ -142,14 +126,11 @@ class StreamWrapper
     }
 
     /**
-     * @param int $offset
-     * @param int $whence - one of values [SEEK_SET, SEEK_CUR, SEEK_END]
-     *
-     * @return bool
+     * @param SEEK_SET|SEEK_CUR|SEEK_END $whence
      */
-    public function stream_seek($offset, $whence = SEEK_SET)
+    public function stream_seek(int $offset, int $whence = SEEK_SET): bool
     {
-        if ($this->stream) {
+        if (isset($this->stream)) {
             return $this->stream->seek($offset, $whence);
         }
 
@@ -157,23 +138,20 @@ class StreamWrapper
     }
 
     /**
-     * @return mixed
+     * Retrieve the current position of a stream
      */
-    public function stream_tell()
+    public function stream_tell(): int
     {
-        if ($this->stream) {
+        if (isset($this->stream)) {
             return $this->stream->tell();
         }
 
-        return false;
+        return 0;
     }
 
-    /**
-     * @return bool
-     */
-    public function stream_eof()
+    public function stream_eof(): bool
     {
-        if ($this->stream) {
+        if (isset($this->stream)) {
             return $this->stream->eof();
         }
 
@@ -181,11 +159,11 @@ class StreamWrapper
     }
 
     /**
-     * @return mixed
+     * @return array<string, mixed>|false
      */
-    public function stream_stat()
+    public function stream_stat(): array|bool
     {
-        if ($this->stream) {
+        if (isset($this->stream)) {
             return $this->stream->stat();
         }
 
@@ -193,14 +171,11 @@ class StreamWrapper
     }
 
     /**
-     * @param string $path
-     * @param int    $flags
+     * @return array<string, mixed>|false
      *
-     * @return mixed
-     *
-     * @todo handle $flags parameter
+     * @TODO handle $flags parameter
      */
-    public function url_stat($path, $flags)
+    public function url_stat(string $path, int $flags): array|bool
     {
         $stream = $this->createStream($path);
 
@@ -212,12 +187,7 @@ class StreamWrapper
         return $stream->stat();
     }
 
-    /**
-     * @param string $path
-     *
-     * @return mixed
-     */
-    public function unlink($path)
+    public function unlink(string $path): bool
     {
         $stream = $this->createStream($path);
 
@@ -231,18 +201,18 @@ class StreamWrapper
     }
 
     /**
-     * @return mixed
+     * @return resource|false
      */
-    public function stream_cast($castAs)
+    public function stream_cast(int $castAs)
     {
-        if ($this->stream) {
+        if (isset($this->stream)) {
             return $this->stream->cast($castAs);
         }
 
         return false;
     }
 
-    protected function createStream($path)
+    protected function createStream(string $path): Stream
     {
         $parts = array_merge(
             [
@@ -273,10 +243,13 @@ class StreamWrapper
             ));
         }
 
-        return self::getFilesystemMap()->get($domain)->createStream($key);
+        return self::getFilesystemMap()
+            ->get($domain)
+            ->createStream($key)
+        ;
     }
 
-    protected function createStreamMode($mode)
+    protected function createStreamMode(string $mode): StreamMode
     {
         return new StreamMode($mode);
     }
