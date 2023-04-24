@@ -5,23 +5,21 @@ namespace Gaufrette;
 interface FilesystemInterface
 {
     /**
+     * Returns the adapter.
+     */
+    public function getAdapter(): Adapter;
+
+    /**
      * Indicates whether the file matching the specified key exists.
-     *
-     * @param string $key
-     *
-     * @return bool TRUE if the file exists, FALSE otherwise
      *
      * @throws \InvalidArgumentException If $key is invalid
      */
-    public function has($key);
+    public function has(string $key): bool;
 
     /**
      * Renames a file.
      *
      * File::rename should be preferred or you may face bad filesystem consistency.
-     *
-     * @param string $sourceKey
-     * @param string $targetKey
      *
      * @return bool TRUE if the rename was successful
      *
@@ -32,7 +30,7 @@ interface FilesystemInterface
      *
      * @see File::rename()
      */
-    public function rename($sourceKey, $targetKey);
+    public function rename(string $sourceKey, string $targetKey): bool;
 
     /**
      * Returns the file matching the specified key.
@@ -42,10 +40,8 @@ interface FilesystemInterface
      *
      * @throws Exception\FileNotFound
      * @throws \InvalidArgumentException If $key is invalid
-     *
-     * @return File
      */
-    public function get($key, $create = false);
+    public function get(string $key, bool $create = false): File;
 
     /**
      * Writes the given content into the file.
@@ -60,7 +56,7 @@ interface FilesystemInterface
      *
      * @return int The number of bytes that were written into the file
      */
-    public function write($key, $content, $overwrite = false);
+    public function write(string $key, string $content, bool $overwrite = false): int;
 
     /**
      * Reads the content from the file.
@@ -70,29 +66,23 @@ interface FilesystemInterface
      * @throws Exception\FileNotFound    when file does not exist
      * @throws \RuntimeException         when cannot read file
      * @throws \InvalidArgumentException If $key is invalid
-     *
-     * @return string
      */
-    public function read($key);
+    public function read(string $key): string;
 
     /**
      * Deletes the file matching the specified key.
      *
-     * @param string $key
-     *
      * @throws \RuntimeException         when cannot read file
      * @throws \InvalidArgumentException If $key is invalid
-     *
-     * @return bool
      */
-    public function delete($key);
+    public function delete(string $key): bool;
 
     /**
      * Returns an array of all keys.
      *
-     * @return array
+     * @return array<string>
      */
-    public function keys();
+    public function keys(): array;
 
     /**
      * Lists keys beginning with given prefix
@@ -101,82 +91,60 @@ interface FilesystemInterface
      * if adapter implements ListKeysAware interface, adapter's implementation will be used,
      * in not, ALL keys will be requested and iterated through.
      *
-     * @param string $prefix
-     *
-     * @return array
+     * @return array{
+     *     keys: array<string>,
+     *     dirs: array<string>
+     * }
      */
-    public function listKeys($prefix = '');
+    public function listKeys(string $prefix = '');
 
     /**
      * Returns the last modified time of the specified file.
-     *
-     * @param string $key
      *
      * @return int An UNIX like timestamp
      *
      * @throws \InvalidArgumentException If $key is invalid
      */
-    public function mtime($key);
+    public function mtime(string $key): int;
 
     /**
      * Returns the checksum of the specified file's content.
-     *
-     * @param string $key
      *
      * @return string A MD5 hash
      *
      * @throws \InvalidArgumentException If $key is invalid
      */
-    public function checksum($key);
+    public function checksum(string $key): string;
 
     /**
      * Returns the size of the specified file's content.
-     *
-     * @param string $key
      *
      * @return int File size in Bytes
      *
      * @throws \InvalidArgumentException If $key is invalid
      */
-    public function size($key);
+    public function size(string $key): int;
 
     /**
      * Gets a new stream instance of the specified file.
      *
-     * @param $key
-     *
-     * @return Stream|Stream\InMemoryBuffer
-     *
      * @throws \InvalidArgumentException If $key is invalid
      */
-    public function createStream($key);
+    public function createStream(string $key): Stream;
 
     /**
      * Creates a new file in a filesystem.
      *
-     * @param $key
-     *
-     * @return File
-     *
      * @throws \InvalidArgumentException If $key is invalid
      */
-    public function createFile($key);
+    public function createFile(string $key): File;
 
     /**
      * Get the mime type of the provided key.
      *
-     * @param string $key
-     *
-     * @return string
-     *
      * @throws \InvalidArgumentException If $key is invalid
      */
-    public function mimeType($key);
+    public function mimeType(string $key): string;
 
-    /**
-     * @param string $key
-     *
-     * @return bool
-     */
-    public function isDirectory($key);
+    public function isDirectory(string $key): bool;
 }

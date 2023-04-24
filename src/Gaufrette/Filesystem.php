@@ -12,14 +12,14 @@ use Gaufrette\Adapter\ListKeysAware;
  */
 class Filesystem implements FilesystemInterface
 {
-    protected $adapter;
+    protected Adapter $adapter;
 
     /**
      * Contains File objects created with $this->createFile() method.
      *
-     * @var array
+     * @var array<string, File>
      */
-    protected $fileRegister = [];
+    protected array $fileRegister = [];
 
     /**
      * @param Adapter $adapter A configured Adapter instance
@@ -29,30 +29,19 @@ class Filesystem implements FilesystemInterface
         $this->adapter = $adapter;
     }
 
-    /**
-     * Returns the adapter.
-     *
-     * @return Adapter
-     */
-    public function getAdapter()
+    public function getAdapter(): Adapter
     {
         return $this->adapter;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function has($key)
+    public function has(string $key): bool
     {
         self::assertValidKey($key);
 
         return $this->adapter->exists($key);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rename($sourceKey, $targetKey)
+    public function rename(string $sourceKey, string $targetKey): bool
     {
         self::assertValidKey($sourceKey);
         self::assertValidKey($targetKey);
@@ -75,10 +64,7 @@ class Filesystem implements FilesystemInterface
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function get($key, $create = false)
+    public function get(string $key, bool $create = false): File
     {
         self::assertValidKey($key);
 
@@ -89,10 +75,7 @@ class Filesystem implements FilesystemInterface
         return $this->createFile($key);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function write($key, $content, $overwrite = false)
+    public function write(string $key, string $content, bool $overwrite = false): int
     {
         self::assertValidKey($key);
 
@@ -109,10 +92,7 @@ class Filesystem implements FilesystemInterface
         return $numBytes;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function read($key)
+    public function read(string $key): string
     {
         self::assertValidKey($key);
 
@@ -127,10 +107,7 @@ class Filesystem implements FilesystemInterface
         return $content;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         self::assertValidKey($key);
 
@@ -145,18 +122,12 @@ class Filesystem implements FilesystemInterface
         throw new \RuntimeException(sprintf('Could not remove the "%s" key.', $key));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function keys()
+    public function keys(): array
     {
         return $this->adapter->keys();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function listKeys($prefix = '')
+    public function listKeys(string $prefix = ''): array
     {
         if ($this->adapter instanceof ListKeysAware) {
             return $this->adapter->listKeys($prefix);
@@ -181,10 +152,7 @@ class Filesystem implements FilesystemInterface
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function mtime($key)
+    public function mtime(string $key): int
     {
         self::assertValidKey($key);
 
@@ -193,10 +161,7 @@ class Filesystem implements FilesystemInterface
         return $this->adapter->mtime($key);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function checksum($key)
+    public function checksum(string $key): string
     {
         self::assertValidKey($key);
 
@@ -209,10 +174,7 @@ class Filesystem implements FilesystemInterface
         return Util\Checksum::fromContent($this->read($key));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function size($key)
+    public function size(string $key): int
     {
         self::assertValidKey($key);
 
@@ -225,10 +187,7 @@ class Filesystem implements FilesystemInterface
         return Util\Size::fromContent($this->read($key));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function createStream($key)
+    public function createStream(string $key): Stream
     {
         self::assertValidKey($key);
 
@@ -239,10 +198,7 @@ class Filesystem implements FilesystemInterface
         return new Stream\InMemoryBuffer($this, $key);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function createFile($key)
+    public function createFile(string $key): File
     {
         self::assertValidKey($key);
 
@@ -257,10 +213,7 @@ class Filesystem implements FilesystemInterface
         return $this->fileRegister[$key];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function mimeType($key)
+    public function mimeType(string $key): string
     {
         self::assertValidKey($key);
 
@@ -274,6 +227,11 @@ class Filesystem implements FilesystemInterface
             'Adapter "%s" cannot provide MIME type',
             get_class($this->adapter)
         ));
+    }
+
+    public function isDirectory(string $key): bool
+    {
+        return $this->adapter->isDirectory($key);
     }
 
     /**
@@ -323,14 +281,6 @@ class Filesystem implements FilesystemInterface
         if ($this->isFileInRegister($key)) {
             unset($this->fileRegister[$key]);
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isDirectory($key)
-    {
-        return $this->adapter->isDirectory($key);
     }
 
     /**
