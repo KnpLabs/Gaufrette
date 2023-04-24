@@ -11,20 +11,20 @@ use Gaufrette\Exception;
  */
 class UnexpectedFile extends \RuntimeException implements Exception
 {
-    private $key;
+    private string $key;
 
-    public function __construct($key, $code = 0, \Exception $previous = null)
+    public function __construct(string $key, int $code = 0, ?\Exception $previous = null)
     {
-        $this->key = $key;
-
         parent::__construct(
             sprintf('The file "%s" was not supposed to exist.', $key),
             $code,
             $previous
         );
+
+        $this->key = $key;
     }
 
-    public function getKey()
+    public function getKey(): string
     {
         return $this->key;
     }
