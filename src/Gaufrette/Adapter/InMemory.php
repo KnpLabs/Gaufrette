@@ -14,10 +14,10 @@ use Gaufrette\Util;
  */
 class InMemory implements Adapter, MimeTypeProvider
 {
-    protected $files = [];
+    protected array $files = [];
 
     /**
-     * @param array $files An array of files
+     * @param array<string, mixed> $files An array of files
      */
     public function __construct(array $files = [])
     {
@@ -27,9 +27,9 @@ class InMemory implements Adapter, MimeTypeProvider
     /**
      * Defines the files.
      *
-     * @param array $files An array of files
+     * @param array<string, mixed> $files An array of files
      */
-    public function setFiles(array $files)
+    public function setFiles(array $files): void
     {
         $this->files = [];
         foreach ($files as $key => $file) {
@@ -53,7 +53,7 @@ class InMemory implements Adapter, MimeTypeProvider
      * @param string $content The content
      * @param int    $mtime   The last modified time (automatically set to now if NULL)
      */
-    public function setFile($key, $content = null, $mtime = null)
+    public function setFile(string $key, string $content = null, int $mtime = null): void
     {
         if (null === $mtime) {
             $mtime = time();
@@ -65,18 +65,12 @@ class InMemory implements Adapter, MimeTypeProvider
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function read($key)
+    public function read(string $key): string|bool
     {
         return $this->files[$key]['content'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rename($sourceKey, $targetKey)
+    public function rename(string $sourceKey, mixed $targetKey): bool
     {
         $content = $this->read($sourceKey);
         $this->delete($sourceKey);
@@ -85,9 +79,9 @@ class InMemory implements Adapter, MimeTypeProvider
     }
 
     /**
-     * {@inheritdoc}
+     * @param ?array<string, mixed> $metadata
      */
-    public function write($key, $content, array $metadata = null)
+    public function write(string $key, mixed $content, array $metadata = null): int|bool
     {
         $this->files[$key]['content'] = $content;
         $this->files[$key]['mtime'] = time();
@@ -95,34 +89,25 @@ class InMemory implements Adapter, MimeTypeProvider
         return Util\Size::fromContent($content);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function exists($key)
+    public function exists(string $key): bool
     {
         return array_key_exists($key, $this->files);
     }
 
     /**
-     * {@inheritdoc}
+     * @return array<int, string> 
      */
-    public function keys()
+    public function keys(): array
     {
         return array_keys($this->files);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function mtime($key)
+    public function mtime(string $key): int|bool
     {
         return $this->files[$key]['mtime'] ?? false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         unset($this->files[$key]);
         clearstatcache();
@@ -130,18 +115,12 @@ class InMemory implements Adapter, MimeTypeProvider
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isDirectory($path)
+    public function isDirectory(string $path): bool
     {
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function mimeType($key)
+    public function mimeType(string $key): string
     {
         $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
 
