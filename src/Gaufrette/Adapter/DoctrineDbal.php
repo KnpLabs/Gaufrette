@@ -84,7 +84,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function checksum(string $key): string
+    public function checksum(string $key): string|bool
     {
         return $this->getColumnValue($key, 'checksum');
     }

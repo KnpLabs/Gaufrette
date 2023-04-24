@@ -304,7 +304,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     /**
      * {@inheritdoc}
      */
-    public function checksum(string $key): string
+    public function checksum(string $key): string|bool
     {
         $this->init();
         list($containerName, $key) = $this->tokenizeKey($key);

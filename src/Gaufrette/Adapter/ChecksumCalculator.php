@@ -12,5 +12,5 @@ interface ChecksumCalculator
     /**
      * Returns the checksum of the specified key.
      */
-    public function checksum(string $key): string;
+    public function checksum(string $key): string|bool;
 }
