@@ -8,14 +8,11 @@ use Gaufrette\Filesystem;
 
 class AwsS3Test extends FunctionalTestCase
 {
-    /** @var int */
-    private static $SDK_VERSION;
+    private static int $SDK_VERSION;
 
-    /** @var string */
-    private $bucket;
+    private string $bucket;
 
-    /** @var S3Client */
-    private $client;
+    private S3Client $client;
 
     protected function setUp(): void
     {

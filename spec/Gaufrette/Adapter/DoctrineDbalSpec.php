@@ -12,9 +12,6 @@ use Prophecy\Argument;
 
 class DoctrineDbalSpec extends ObjectBehavior
 {
-    /**
-     * @param \Doctrine\DBAL\Connection $connection
-     */
     function let(Connection $connection)
     {
         $this->beConstructedWith($connection, 'someTableName');
@@ -35,9 +32,6 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->isDirectory('filename')->shouldReturn(false);
     }
 
-    /**
-     * @param \Doctrine\DBAL\Connection $connection
-     */
     function it_checks_if_file_exists(Connection $connection)
     {
         $connection
@@ -62,9 +56,6 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->exists('filename')->shouldReturn(false);
     }
 
-    /**
-     * @param \Doctrine\DBAL\Connection $connection
-     */
     function it_writes_to_new_file(Connection $connection)
     {
         $connection
@@ -96,9 +87,6 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
-    /**
-     * @param \Doctrine\DBAL\Connection $connection
-     */
     function it_write_file(Connection $connection)
     {
         $method = 'fetchOne'; // dbal 3.x
@@ -131,9 +119,6 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
-    /**
-     * @param \Doctrine\DBAL\Connection $connection
-     */
     function it_reads_file(Connection $connection)
     {
         $method = 'fetchOne'; // dbal 3.x
@@ -153,9 +138,6 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->read('filename')->shouldReturn('some content');
     }
 
-    /**
-     * @param \Doctrine\DBAL\Connection $connection
-     */
     function it_calculates_checksum(Connection $connection)
     {
         $method = 'fetchOne'; // dbal 3.x
@@ -175,9 +157,6 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->checksum('filename')->shouldReturn(1234);
     }
 
-    /**
-     * @param \Doctrine\DBAL\Connection $connection
-     */
     function it_gets_mtime(Connection $connection)
     {
         $method = 'fetchOne'; // dbal 3.x
@@ -197,9 +176,6 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->mtime('filename')->shouldReturn(1234);
     }
 
-    /**
-     * @param \Doctrine\DBAL\Connection $connection
-     */
     function it_renames_file(Connection $connection)
     {
         $connection
@@ -223,9 +199,6 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->rename('filename', 'newFile')->shouldReturn(true);
     }
 
-    /**
-     * @param \Doctrine\DBAL\Connection $connection
-     */
     function it_get_keys(Connection $connection, $result)
     {
         if (class_exists(Result::class)) {
@@ -250,9 +223,6 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->keys()->shouldReturn(['filename', 'filename1', 'filename2']);
     }
 
-    /**
-     * @param \Doctrine\DBAL\Connection $connection
-     */
     function it_deletes_file(Connection $connection)
     {
         $connection
