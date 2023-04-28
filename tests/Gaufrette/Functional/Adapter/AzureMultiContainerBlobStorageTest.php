@@ -13,9 +13,9 @@ use Gaufrette\Filesystem;
  */
 class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
 {
-    private $adapter;
+    private AzureBlobStorage $adapter;
 
-    private $containers = [];
+    private array $containers = [];
 
     protected function setUp(): void
     {

@@ -99,7 +99,7 @@ class FlysystemSpec extends ObjectBehavior
         $this->rename('oldfilename', 'newfilename')->shouldReturn(true);
     }
 
-    function it_does_not_support_is_directory(AdapterInterface $adapter)
+    function it_does_not_support_is_directory()
     {
         $this->shouldThrow('Gaufrette\Exception\UnsupportedAdapterMethodException')->duringisDirectory('folder');
     }
