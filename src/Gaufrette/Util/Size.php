@@ -34,7 +34,7 @@ class Size
      *
      * @param resource $handle
      */
-    public static function fromResource($handle): int
+    public static function fromResource($handle): array|false|int
     {
         $cStat = fstat($handle);
         // if the resource is a remote file, $cStat will be false
