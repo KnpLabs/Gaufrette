@@ -10,6 +10,9 @@ namespace Gaufrette;
  */
 class StreamWrapper
 {
+    /** @var resource|null Stream context (this is set by PHP) */
+    public $context;
+    
     private static $filesystemMap;
 
     private $stream;
