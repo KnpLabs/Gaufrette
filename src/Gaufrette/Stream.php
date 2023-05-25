@@ -26,7 +26,7 @@ interface Stream
      *
      * @param int $count The number of bytes
      */
-    public function read(int $count): string|false;
+    public function read(int $count): string|bool;
 
     /**
      * Writes the specified data.
@@ -59,6 +59,9 @@ interface Stream
     /**
      * Seeks to the specified offset.
      */
+    /**
+     * @param SEEK_SET|SEEK_CUR|SEEK_END $whence
+     */
     public function seek(int $offset, int $whence = SEEK_SET): bool;
 
     /**
@@ -76,11 +79,12 @@ interface Stream
      *
      * @return array<string, mixed>|false
      */
-    public function stat(): array|false;
+    public function stat(): array|bool;
 
     /**
      * Retrieve the underlying resource.
      *
+     * @param STREAM_CAST_FOR_SELECT|STREAM_CAST_AS_STREAM $castAs
      * @return resource|false using resource or false
      */
     public function cast(int $castAs);
