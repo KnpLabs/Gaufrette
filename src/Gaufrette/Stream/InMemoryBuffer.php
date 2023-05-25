@@ -11,11 +11,11 @@ class InMemoryBuffer implements Stream
 {
     private Filesystem $filesystem;
     private string $key;
-    private StreamMode $mode;
+    private ?StreamMode $mode = null;
     private string $content;
     private int $numBytes;
     private int $position;
-    private bool $synchronized;
+    private bool $synchronized = false;
 
     /**
      * @param Filesystem $filesystem The filesystem managing the file to stream
@@ -181,7 +181,7 @@ class InMemoryBuffer implements Stream
         return false;
     }
 
-    public function cast($castAst)
+    public function cast(int $castAs): bool
     {
         return false;
     }
