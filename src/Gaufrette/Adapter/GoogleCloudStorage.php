@@ -212,9 +212,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     }
 
     /**
-     * @return array<int, string> 
-     * @throws RuntimeException 
-     * @throws ReflectionException 
+     * @{inheritdoc}
      */
     public function keys(): array
     {
