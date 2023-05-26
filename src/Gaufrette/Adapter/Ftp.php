@@ -127,8 +127,7 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
     }
 
     /**
-     * 
-     * @return array<int, string> 
+     * {@inheritdoc}
      */
     public function keys(): array
     {
@@ -243,7 +242,7 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
         ];
     }
 
-    public function createFile(mixed $key, Filesystem $filesystem): \Gaufrette\File
+    public function createFile(mixed $key, Filesystem $filesystem): File
     {
         $this->ensureDirectoryExists($this->directory, $this->create);
 
@@ -563,7 +562,10 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
         }
     }
 
-    private function isLinuxListing(mixed $info): bool
+    /**
+     * @param array<int, string>|false $info
+     */
+    private function isLinuxListing(array $info): bool
     {
         return count($info) >= 9;
     }
