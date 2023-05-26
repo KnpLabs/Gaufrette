@@ -30,7 +30,7 @@ function extension_loaded()
     return $extensionLoaded;
 }
 
-function opendir()
+function opendir(string $url)
 {
     return true;
 }
@@ -40,7 +40,7 @@ function apc_fetch(string $path)
     return sprintf('%s content', $path);
 }
 
-function apc_store(string $path)
+function apc_store(string $path, mixed $content, int $ttl)
 {
     if ('prefix-apc-test/invalid' === $path) {
         return false;
@@ -58,7 +58,7 @@ function apc_delete(string $path)
     return true;
 }
 
-function apc_exists(string $path)
+function apc_exists(mixed $path)
 {
     if ('prefix-apc-test/invalid' === $path) {
         return false;
