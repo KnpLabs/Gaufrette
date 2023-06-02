@@ -14,20 +14,23 @@ use Gaufrette\Util;
 class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator, MimeTypeProvider
 {
     protected S3Client $service;
+    protected string $bucket;
     protected array $options;
     protected bool $bucketExists;
     protected array $metadata = [];
+    protected bool $detectContentType;
 
     public function __construct(
         S3Client $service,
-        private readonly string $bucket,
+        string $bucket,
         array $options = [],
-        private readonly bool $detectContentType = false
+        bool $detectContentType = false
     ) {
         if (!class_exists(S3Client::class)) {
             throw new \LogicException('You need to install package "aws/aws-sdk-php" to use this adapter');
         }
         $this->service = $service;
+        $this->bucket = $bucket;
         $this->options = array_replace(
             [
                 'create' => false,
@@ -36,6 +39,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
             ],
             $options
         );
+        $this->detectContentType = $detectContentType;
     }
 
     /**

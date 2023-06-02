@@ -15,19 +15,27 @@ use Gaufrette\Util;
  */
 class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator, MimeTypeProvider
 {
+    protected SimpleS3Client $service;
+    protected string $bucket;
     protected array $options;
     protected bool $bucketExists;
     protected array $metadata = [];
 
+    protected bool $detectContentType;
+
     public function __construct(
-        private readonly SimpleS3Client $service,
-        private readonly string $bucket,
+        SimpleS3Client $service,
+        string $bucket,
         array $options = [],
-        private readonly bool $detectContentType = false
+        bool $detectContentType = false
     ) {
         if (!class_exists(SimpleS3Client::class)) {
             throw new \LogicException('You need to install package "async-aws/simple-s3" to use this adapter');
         }
+
+        $this->service = $service;
+        $this->bucket = $bucket;
+
         $this->options = array_replace(
             [
                 'create' => false,
@@ -36,6 +44,8 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
             ],
             $options
         );
+
+        $this->detectContentType = $detectContentType;
     }
 
     /**
@@ -304,7 +314,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
         return ltrim(substr($path, strlen($this->options['directory'])), '/');
     }
 
-    private function guessContentType(mixed $content): false|string
+    private function guessContentType(mixed $content): bool|string
     {
         $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
 
