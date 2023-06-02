@@ -143,10 +143,6 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
     }
 
     /**
-     * @param string $key
-     *
-     * @return bool
-     *
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
@@ -296,7 +292,7 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      * @throws \InvalidArgumentException When attempting to delete the root
      * directory of this adapter.
      *
-     * @return bool Wheter the operation succeeded or not
+     * @return bool Whether the operation succeeded or not
      */
     private function deleteDirectory(string $directory): bool
     {

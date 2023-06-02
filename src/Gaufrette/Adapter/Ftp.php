@@ -410,9 +410,9 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
     /**
      * Parses the given raw list.
      *
-     * @param array $rawlist
+     * @param array<mixed, mixed> $rawlist
      *
-     * @return array
+     * @return array<mixed, mixed>
      */
     private function parseRawlist(array $rawlist): array
     {
@@ -448,8 +448,6 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
 
     /**
      * Computes the path for the given key.
-     *
-     * @param string $key
      */
     private function computePath(string $key)
     {
@@ -458,8 +456,6 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
 
     /**
      * Indicates whether the adapter has an open ftp connection.
-     *
-     * @return bool
      */
     private function isConnected(): bool
     {
