@@ -20,8 +20,8 @@ class Checksum
     /**
      * Returns the checksum of the specified file.
      */
-    public static function fromFile(string $filename): bool|string
+    public static function fromFile(string $filename): string
     {
-        return md5_file($filename);
+        return md5_file($filename)?: '';
     }
 }
