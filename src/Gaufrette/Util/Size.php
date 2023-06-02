@@ -24,9 +24,9 @@ class Size
     /**
      * Returns the size in bytes from the given file.
      */
-    public static function fromFile(string $filename): bool|int
+    public static function fromFile(string $filename): int
     {
-        return filesize($filename);
+        return filesize($filename)?: 0;
     }
 
     /**
@@ -34,7 +34,7 @@ class Size
      *
      * @param resource $handle
      */
-    public static function fromResource($handle): array|bool|int
+    public static function fromResource($handle): int
     {
         $cStat = fstat($handle);
         // if the resource is a remote file, $cStat will be false
