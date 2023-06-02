@@ -80,9 +80,6 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
         $this->options = array_replace($this->options, $options);
     }
 
-    /**
-     * @return string The current bucket name
-     */
     public function getBucket(): string
     {
         return $this->bucket;
@@ -90,8 +87,6 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
 
     /**
      * Sets a new bucket name.
-     *
-     * @param string $bucket The new bucket name
      */
     public function setBucket(string $bucket): void
     {
@@ -212,7 +207,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function keys(): array
     {
@@ -400,10 +395,8 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     /**
      * @param string $path
      * @param array<string, mixed>  $options
-     *
-     * @return bool|StorageObject
      */
-    private function getObjectData(string $path, array $options = [])
+    private function getObjectData(string $path, array $options = []): bool|StorageObject
     {
         try {
             return $this->service->objects->get($this->bucket, $path, $options);
