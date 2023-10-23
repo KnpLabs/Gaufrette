@@ -45,7 +45,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
     /**
      * {@inheritdoc}
      */
-    public function setMetadata(string $key, array $content): void
+    public function setMetadata(string $key, array $metadata): void
     {
         // BC with AmazonS3 adapter
         if (isset($metadata['contentType'])) {

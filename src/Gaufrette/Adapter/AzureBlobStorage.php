@@ -5,6 +5,7 @@ namespace Gaufrette\Adapter;
 use Gaufrette\Adapter;
 use Gaufrette\Util;
 use Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface;
+use MicrosoftAzure\Storage\Blob\Internal\IBlob;
 use MicrosoftAzure\Storage\Blob\Models\Blob;
 use MicrosoftAzure\Storage\Blob\Models\BlobServiceOptions;
 use MicrosoftAzure\Storage\Blob\Models\Container;
@@ -28,7 +29,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     const ERROR_CONTAINER_ALREADY_EXISTS = 'ContainerAlreadyExists';
     const ERROR_CONTAINER_NOT_FOUND = 'ContainerNotFound';
 
-    protected \MicrosoftAzure\Storage\Blob\Internal\IBlob $blobProxy;
+    protected ?IBlob $blobProxy = null;
 
     protected bool $multiContainerMode = false;
 
@@ -479,7 +480,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     }
 
     /**
-     * @return array<string, string>
+     * @return array{string, string}
      */
     private function tokenizeKey(string $key): array
     {
