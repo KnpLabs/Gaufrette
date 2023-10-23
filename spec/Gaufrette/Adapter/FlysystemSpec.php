@@ -34,7 +34,7 @@ class FlysystemSpec extends ObjectBehavior
     {
         $adapter->write('filename', 'Hello.', $config)->willReturn([]);
 
-        $this->write('filename', 'Hello.')->shouldReturn([]);
+        $this->write('filename', 'Hello.')->shouldReturn(0);
     }
 
     function it_checks_if_file_exists(AdapterInterface $adapter)

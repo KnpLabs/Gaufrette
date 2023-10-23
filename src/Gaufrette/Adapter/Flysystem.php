@@ -37,7 +37,17 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function write(string $key, mixed $content): int|bool
     {
-        return $this->adapter->write($key, $content, $this->config);
+        $metadata = $this->adapter->write($key, $content, $this->config);
+
+        if (false === $metadata) {
+            return false;
+        }
+
+        if (is_int($metadata['size'] ?? 0)) {
+            return $metadata['size'] ?? 0;
+        }
+
+        return 0;
     }
 
     /**
