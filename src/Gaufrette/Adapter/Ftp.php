@@ -561,7 +561,7 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
     /**
      * @param array<int, string>|false $info
      */
-    private function isLinuxListing(array $info): bool
+    private function isLinuxListing(bool|array $info): bool
     {
         return count($info) >= 9;
     }

@@ -202,6 +202,7 @@ class StreamWrapper
 
     /**
      * @return resource|false
+     * @param STREAM_CAST_FOR_SELECT|STREAM_CAST_AS_STREAM $castAs
      */
     public function stream_cast(int $castAs)
     {
