@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 abstract class FunctionalTestCase extends TestCase
 {
-    protected Filesystem $filesystem;
+    protected ?Filesystem $filesystem = null;
 
     /**
      * @test
