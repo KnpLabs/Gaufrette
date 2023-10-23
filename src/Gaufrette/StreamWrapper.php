@@ -10,6 +10,14 @@ namespace Gaufrette;
  */
 class StreamWrapper
 {
+    /**
+     * Required to avoid creating a dynamic property,
+     * see https://www.php.net/manual/en/class.streamwrapper.php.
+     *
+     * @var resource
+     */
+    public $context;
+
     private static $filesystemMap;
 
     private $stream;
