@@ -63,7 +63,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
      *
      * @throws \RuntimeException if cannot create the container
      */
-    public function createContainer(string $containerName, CreateContainerOptions $options = null)
+    public function createContainer(string $containerName, CreateContainerOptions $options = null): void
     {
         $this->init();
 
