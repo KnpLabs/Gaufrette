@@ -7,7 +7,7 @@ use PhpSpec\ObjectBehavior;
 use WindowsAzure\Blob\Models\Blob;
 use WindowsAzure\Common\ServiceException;
 
-class AzureBlobStorage extends ObjectBehavior
+class AzureBlobStorageSpec extends ObjectBehavior
 {
     /**
      * @param \Gaufrette\Adapter\AzureBlobStorage\BlobProxyFactoryInterface $blobProxyFactory

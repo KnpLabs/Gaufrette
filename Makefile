@@ -53,13 +53,13 @@ docker.php-cs-fix: ## Run CS fixer
 # -------
 #
 
-remove-phpspec: ## Remove adapter specs (allows you to run test suite without adapters deps)
+remove-phpspec: ## Remove adapter specs (allows you to run test suite without adapters that needs deps)
 	rm spec/Gaufrette/Adapter/AsyncAwsS3Spec.php
 	rm spec/Gaufrette/Adapter/AwsS3Spec.php
-	rm spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php
+	rm spec/Gaufrette/Adapter/AzureBlobStorageSpec.php
 	rm spec/Gaufrette/Adapter/DoctrineDbalSpec.php
 	rm spec/Gaufrette/Adapter/FlysystemSpec.php
-	rm -r spec/Gaufrette/Adapter/AzureBlobStorage
+	rm spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php
 	rm spec/Gaufrette/Adapter/GridFSSpec.php
 	rm spec/Gaufrette/Adapter/PhpseclibSftpSpec.php
 
