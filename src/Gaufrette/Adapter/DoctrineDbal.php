@@ -163,7 +163,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     }
 
     /**
-     * @return mixed|false
+     * @return mixed
      */
     private function getColumnValue(string $key, string $column)
     {
