@@ -322,7 +322,7 @@ class FilesystemSpec extends ObjectBehavior
         $extendedAdapter->read('filename')->shouldNotBeCalled();
         $extendedAdapter->checksum('filename')->shouldBeCalled()->willReturn(12);
 
-        $this->checksum('filename')->shouldReturn(12);
+        $this->checksum('filename')->shouldReturn("12");
     }
 
     function it_delegates_mime_type_resolution_to_adapter_when_adapter_is_mime_type_provider(ExtendedAdapter $extendedAdapter)

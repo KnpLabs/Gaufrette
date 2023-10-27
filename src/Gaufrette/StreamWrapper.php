@@ -81,7 +81,10 @@ class StreamWrapper
         return stream_wrapper_register($scheme, $className);
     }
 
-    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool
+    /**
+     * @param STREAM_USE_PATH|STREAM_REPORT_ERRORS|9 $options
+     */
+    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path = null): bool
     {
         $this->stream = $this->createStream($path);
 

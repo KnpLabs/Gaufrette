@@ -5,6 +5,7 @@ namespace spec\Gaufrette;
 use Gaufrette\FilesystemMap;
 use Gaufrette\Filesystem;
 use Gaufrette\Stream;
+use Gaufrette\StreamWrapper;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -19,28 +20,31 @@ class StreamWrapperSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Gaufrette\StreamWrapper');
+        $this->shouldHaveType(StreamWrapper::class);
     }
 
     function it_opens_stream(Stream $stream)
     {
         $stream->open(Argument::any())->willReturn(true);
 
-        $this->stream_open('gaufrette://some/filename', 'r+')->shouldReturn(true);
+        $this
+            ->stream_open('gaufrette://some/filename', 'r+', STREAM_REPORT_ERRORS)
+            ->shouldReturn(true)
+        ;
     }
 
     function it_does_not_open_stream_when_key_is_not_defined()
     {
         $this
             ->shouldThrow(new \InvalidArgumentException('The specified path (gaufrette://some) is invalid.'))
-            ->duringStream_open('gaufrette://some', 'r+');
+            ->duringStream_open('gaufrette://some', 'r+', STREAM_REPORT_ERRORS);
     }
 
     function it_does_not_open_stream_when_host_is_not_defined()
     {
         $this
             ->shouldThrow(new \InvalidArgumentException('The specified path (gaufrette:///somefile) is invalid.'))
-            ->duringStream_open('gaufrette:///somefile', 'r+')
+            ->duringStream_open('gaufrette:///somefile', 'r+', STREAM_REPORT_ERRORS)
         ;
     }
 
@@ -54,7 +58,7 @@ class StreamWrapperSpec extends ObjectBehavior
         $stream->open(Argument::any())->willReturn(true);
         $stream->read(4)->willReturn('some');
 
-        $this->stream_open('gaufrette://some/filename', 'r+');
+        $this->stream_open('gaufrette://some/filename', 'r+', STREAM_REPORT_ERRORS);
         $this->stream_read(4)->shouldReturn('some');
     }
 
@@ -68,7 +72,7 @@ class StreamWrapperSpec extends ObjectBehavior
         $stream->open(Argument::any())->willReturn(true);
         $stream->write('some content')->shouldBeCalled()->willReturn(12);
 
-        $this->stream_open('gaufrette://some/filename', 'w+');
+        $this->stream_open('gaufrette://some/filename', 'w+', STREAM_REPORT_ERRORS);
         $this->stream_write('some content')->shouldReturn(12);
     }
 
@@ -82,7 +86,7 @@ class StreamWrapperSpec extends ObjectBehavior
     {
         $stream->open(Argument::any())->willReturn(true);
         $stream->close()->shouldBeCalled();
-        $this->stream_open('gaufrette://some/filename', 'w+');
+        $this->stream_open('gaufrette://some/filename', 'w+', STREAM_REPORT_ERRORS);
         $this->stream_close();
     }
 
@@ -96,7 +100,7 @@ class StreamWrapperSpec extends ObjectBehavior
     {
         $stream->open(Argument::any())->willReturn(true);
         $stream->flush()->shouldBeCalled();
-        $this->stream_open('gaufrette://some/filename', 'w+');
+        $this->stream_open('gaufrette://some/filename', 'w+', STREAM_REPORT_ERRORS);
         $this->stream_flush();
     }
 
@@ -110,7 +114,7 @@ class StreamWrapperSpec extends ObjectBehavior
     {
         $stream->open(Argument::any())->willReturn(true);
         $stream->seek(12, SEEK_SET)->shouldBeCalled()->willReturn(true);
-        $this->stream_open('gaufrette://some/filename', 'w+');
+        $this->stream_open('gaufrette://some/filename', 'w+', STREAM_REPORT_ERRORS);
         $this->stream_seek(12, SEEK_SET)->shouldReturn(true);
     }
 
@@ -124,7 +128,7 @@ class StreamWrapperSpec extends ObjectBehavior
     {
         $stream->open(Argument::any())->willReturn(true);
         $stream->tell()->shouldBeCalled()->willReturn(12);
-        $this->stream_open('gaufrette://some/filename', 'w+');
+        $this->stream_open('gaufrette://some/filename', 'w+', STREAM_REPORT_ERRORS);
         $this->stream_tell()->shouldReturn(12);
     }
 
@@ -137,7 +141,7 @@ class StreamWrapperSpec extends ObjectBehavior
     function it_checks_if_eof(Stream $stream)
     {
         $stream->open(Argument::any())->willReturn(true);
-        $this->stream_open('gaufrette://some/filename', 'w+');
+        $this->stream_open('gaufrette://some/filename', 'w+', STREAM_REPORT_ERRORS);
         $stream->eof()->willReturn(false);
 
         $this->stream_eof()->shouldReturn(false);
@@ -171,7 +175,7 @@ class StreamWrapperSpec extends ObjectBehavior
         $stream->open(Argument::any())->willReturn(true);
         $stream->stat()->willReturn($stat);
 
-        $this->stream_open('gaufrette://some/filename', 'w+');
+        $this->stream_open('gaufrette://some/filename', 'w+', STREAM_REPORT_ERRORS);
         $this->stream_stat()->shouldReturn($stat);
     }
 
@@ -230,7 +234,7 @@ class StreamWrapperSpec extends ObjectBehavior
         $stream->open(Argument::any())->willReturn(true);
         $stream->cast(STREAM_CAST_FOR_SELECT)->willReturn('resource');
 
-        $this->stream_open('gaufrette://some/filename', 'w+');
+        $this->stream_open('gaufrette://some/filename', 'w+', STREAM_REPORT_ERRORS);
         $this->stream_cast(STREAM_CAST_FOR_SELECT)->shouldReturn('resource');
     }
 }

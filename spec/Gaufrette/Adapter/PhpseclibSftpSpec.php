@@ -11,15 +11,8 @@ if (!defined('NET_SFTP_TYPE_DIRECTORY')) {
 }
 
 use Gaufrette\Filesystem;
-use phpseclib\Net\SFTP as Base;
+use phpseclib\Net\SFTP;
 use PhpSpec\ObjectBehavior;
-
-class SFTP extends Base
-{
-    public function __construct()
-    {
-    }
-}
 
 class PhpseclibSftpSpec extends ObjectBehavior
 {
