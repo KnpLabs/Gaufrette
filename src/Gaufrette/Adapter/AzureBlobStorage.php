@@ -53,7 +53,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
         return $this->createContainerOptions;
     }
 
-    public function setCreateContainerOptions(CreateContainerOptions $options)
+    public function setCreateContainerOptions(CreateContainerOptions $options): void
     {
         $this->createContainerOptions = $options;
     }
