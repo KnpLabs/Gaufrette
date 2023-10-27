@@ -180,7 +180,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
         $this->initialized = true;
     }
 
-    protected function ensureDirectoryExists(string $directory, bool $create)
+    protected function ensureDirectoryExists(string $directory, bool $create): void
     {
         $pwd = $this->sftp->pwd();
         if ($this->sftp->chdir($directory)) {
