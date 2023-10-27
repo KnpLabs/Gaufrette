@@ -92,7 +92,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
      *
      * @throws \RuntimeException if cannot delete the container
      */
-    public function deleteContainer(string $containerName, BlobServiceOptions $options = null)
+    public function deleteContainer(string $containerName, BlobServiceOptions $options = null): void
     {
         $this->init();
 
