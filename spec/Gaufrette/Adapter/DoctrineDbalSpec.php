@@ -154,7 +154,7 @@ class DoctrineDbalSpec extends ObjectBehavior
             ->$method('SELECT "checksum" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(1234);
 
-        $this->checksum('filename')->shouldReturn("1234");
+        $this->checksum('filename')->shouldReturn('1234');
     }
 
     function it_gets_mtime(Connection $connection)

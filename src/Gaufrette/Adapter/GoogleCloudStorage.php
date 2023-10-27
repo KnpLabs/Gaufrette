@@ -269,9 +269,9 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     }
 
     /**
-     * @return array<int, string> 
-     * @throws RuntimeException 
-     * @throws ReflectionException 
+     * @return array<int, string>
+     * @throws RuntimeException
+     * @throws ReflectionException
      */
     public function listKeys(string $prefix = ''): array
     {
@@ -304,7 +304,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     }
 
     /**
-     * @param array<string, mixed> $content 
+     * @param array<string, mixed> $content
      */
     public function setMetadata(string $key, array $content): void
     {

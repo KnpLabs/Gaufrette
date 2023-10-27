@@ -95,7 +95,7 @@ class InMemory implements Adapter, MimeTypeProvider
     }
 
     /**
-     * @return array<int, string> 
+     * @return array<int, string>
      */
     public function keys(): array
     {

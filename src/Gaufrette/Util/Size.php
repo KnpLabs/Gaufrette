@@ -37,6 +37,7 @@ class Size
     public static function fromResource($handle): int
     {
         $cStat = fstat($handle);
+
         // if the resource is a remote file, $cStat will be false
         return $cStat ? $cStat['size'] : 0;
     }

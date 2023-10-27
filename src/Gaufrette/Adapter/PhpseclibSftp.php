@@ -169,7 +169,6 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
      *
      * It will ensure the root directory exists
      */
-
     protected function initialize(): void
     {
         if ($this->initialized) {

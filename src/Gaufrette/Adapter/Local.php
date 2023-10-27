@@ -27,10 +27,10 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      *                          could not be created
      */
     public function __construct(
-        string $directory, 
-        bool $create = false, 
+        string $directory,
+        bool $create = false,
         int $mode = 0777
-    ){
+    ) {
         $this->directory = Util\Path::normalize($directory);
 
         if (is_link($this->directory)) {
@@ -87,7 +87,7 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
     }
 
     /**
-     * @return array<int, string> 
+     * @return array<int, string>
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
