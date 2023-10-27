@@ -449,7 +449,7 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
     /**
      * Computes the path for the given key.
      */
-    private function computePath(string $key)
+    private function computePath(string $key): string
     {
         return rtrim($this->directory, '/') . '/' . $key;
     }
