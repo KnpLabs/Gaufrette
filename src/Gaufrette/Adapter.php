@@ -13,7 +13,7 @@ interface Adapter
     /**
      * Reads the content of the file.
      *
-     * @return string|bool if cannot read content
+     * @return string|false Returns FALSE in content is not readable
      */
     public function read(string $key): string|bool;
 
