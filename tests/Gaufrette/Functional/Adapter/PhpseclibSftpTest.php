@@ -8,11 +8,9 @@ use phpseclib\Net\SFTP;
 
 class PhpseclibSftpTest extends FunctionalTestCase
 {
-    /** @var SFTP */
-    private $sftp;
+    private SFTP $sftp;
 
-    /** @var string */
-    private $baseDir;
+    private string $baseDir;
 
     protected function setUp(): void
     {

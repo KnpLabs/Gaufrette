@@ -12,9 +12,6 @@ class FilesystemMapSpec extends ObjectBehavior
         $this->shouldHaveType('Gaufrette\FilesystemMap');
     }
 
-    /**
-     * @param Gaufrette\Filesystem $filesystem
-     */
     function it_checks_if_has_mapped_filesystem(Filesystem $filesystem)
     {
         $this->set('some', $filesystem);
@@ -22,9 +19,6 @@ class FilesystemMapSpec extends ObjectBehavior
         $this->has('other')->shouldReturn(false);
     }
 
-    /**
-     * @param Gaufrette\Filesystem $filesystem
-     */
     function it_sets_mapped_filesystem(Filesystem $filesystem)
     {
         $this->set('some', $filesystem);
@@ -39,9 +33,6 @@ class FilesystemMapSpec extends ObjectBehavior
         ;
     }
 
-    /**
-     * @param Gaufrette\Filesystem $filesystem
-     */
     function it_removes_mapped_filesystem(Filesystem $filesystem)
     {
         $this->set('some', $filesystem);
@@ -58,9 +49,6 @@ class FilesystemMapSpec extends ObjectBehavior
         ;
     }
 
-    /**
-     * @param Gaufrette\Filesystem $filesystem
-     */
     function it_removes_all_filesystems(Filesystem $filesystem)
     {
         $this->set('some', $filesystem);

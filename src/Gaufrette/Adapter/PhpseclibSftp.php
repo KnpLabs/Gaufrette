@@ -9,31 +9,27 @@ use Gaufrette\File;
 
 class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
 {
-    protected $sftp;
-    protected $directory;
-    protected $create;
-    protected $initialized = false;
+    protected bool $initialized = false;
 
     /**
-     * @param SecLibSFTP  $sftp      An Sftp instance
      * @param string      $directory The distant directory
      * @param bool        $create    Whether to create the remote directory if it
      *                               does not exist
      */
-    public function __construct(SecLibSFTP $sftp, $directory = null, $create = false)
-    {
+    public function __construct(
+        private SecLibSFTP $sftp,
+        private ?string $directory = null,
+        private bool $create = false
+    ) {
         if (!class_exists(SecLibSFTP::class)) {
             throw new \LogicException('You need to install package "phpseclib/phpseclib" to use this adapter');
         }
-        $this->sftp = $sftp;
-        $this->directory = $directory;
-        $this->create = $create;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function read($key)
+    public function read(string $key): string|bool
     {
         return $this->sftp->get($this->computePath($key));
     }
@@ -41,7 +37,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function rename($sourceKey, $targetKey)
+    public function rename(string $sourceKey, string $targetKey): bool
     {
         $this->initialize();
 
@@ -56,7 +52,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function write($key, $content)
+    public function write(string $key, mixed $content): int|bool
     {
         $this->initialize();
 
@@ -72,7 +68,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function exists($key)
+    public function exists(string $key): bool
     {
         $this->initialize();
 
@@ -82,7 +78,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function isDirectory($key)
+    public function isDirectory(string $key): bool
     {
         $this->initialize();
 
@@ -99,7 +95,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function keys()
+    public function keys(): array
     {
         $keys = $this->fetchKeys();
 
@@ -109,7 +105,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function listKeys($prefix = '')
+    public function listKeys(string $prefix = ''): array
     {
         preg_match('/(.*?)[^\/]*$/', $prefix, $match);
         $directory = rtrim($match[1], '/');
@@ -136,7 +132,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function mtime($key)
+    public function mtime(string $key): int|bool
     {
         $this->initialize();
 
@@ -148,7 +144,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         return $this->sftp->delete($this->computePath($key), false);
     }
@@ -156,7 +152,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function createFile($key, Filesystem $filesystem)
+    public function createFile(string $key, Filesystem $filesystem): File
     {
         $file = new File($key, $filesystem);
 
@@ -173,7 +169,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
      *
      * It will ensure the root directory exists
      */
-    protected function initialize()
+    protected function initialize(): void
     {
         if ($this->initialized) {
             return;
@@ -184,7 +180,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
         $this->initialized = true;
     }
 
-    protected function ensureDirectoryExists($directory, $create)
+    protected function ensureDirectoryExists(string $directory, bool $create): void
     {
         $pwd = $this->sftp->pwd();
         if ($this->sftp->chdir($directory)) {
@@ -198,12 +194,15 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
         }
     }
 
-    protected function computePath($key)
+    protected function computePath(string $key): string
     {
         return $this->directory . '/' . ltrim($key, '/');
     }
 
-    protected function fetchKeys($directory = '', $onlyKeys = true)
+    /**
+     * @return array<string, array<string>>
+     */
+    protected function fetchKeys(string $directory = '', bool $onlyKeys = true): array
     {
         $keys = ['keys' => [], 'dirs' => []];
         $computedPath = $this->computePath($directory);

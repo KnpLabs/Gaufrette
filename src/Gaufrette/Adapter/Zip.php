@@ -14,30 +14,21 @@ use Gaufrette\Util;
  */
 class Zip implements Adapter
 {
-    /**
-     * @var string The zip archive full path
-     */
-    protected $zipFile;
+    protected ZipArchive $zipArchive;
 
-    /**
-     * @var ZipArchive
-     */
-    protected $zipArchive;
-
-    public function __construct($zipFile)
+    public function __construct(private string $zipFile)
     {
         if (!extension_loaded('zip')) {
             throw new \RuntimeException(sprintf('Unable to use %s as the ZIP extension is not available.', __CLASS__));
         }
 
-        $this->zipFile = $zipFile;
         $this->reinitZipArchive();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function read($key)
+    public function read(string $key): string|bool
     {
         if (false === ($content = $this->zipArchive->getFromName($key, 0))) {
             return false;
@@ -49,7 +40,7 @@ class Zip implements Adapter
     /**
      * {@inheritdoc}
      */
-    public function write($key, $content)
+    public function write(string $key, mixed $content): int|bool
     {
         if (!$this->zipArchive->addFromString($key, $content)) {
             return false;
@@ -65,7 +56,7 @@ class Zip implements Adapter
     /**
      * {@inheritdoc}
      */
-    public function exists($key)
+    public function exists(string $key): bool
     {
         return (boolean) $this->getStat($key);
     }
@@ -73,7 +64,7 @@ class Zip implements Adapter
     /**
      * {@inheritdoc}
      */
-    public function keys()
+    public function keys(): array
     {
         $keys = [];
 
@@ -89,7 +80,7 @@ class Zip implements Adapter
      *
      * {@inheritdoc}
      */
-    public function isDirectory($key)
+    public function isDirectory(string $key): bool
     {
         return false;
     }
@@ -97,7 +88,7 @@ class Zip implements Adapter
     /**
      * {@inheritdoc}
      */
-    public function mtime($key)
+    public function mtime(string $key): int|bool
     {
         $stat = $this->getStat($key);
 
@@ -107,7 +98,7 @@ class Zip implements Adapter
     /**
      * {@inheritdoc}
      */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         if (!$this->zipArchive->deleteName($key)) {
             return false;
@@ -119,7 +110,7 @@ class Zip implements Adapter
     /**
      * {@inheritdoc}
      */
-    public function rename($sourceKey, $targetKey)
+    public function rename(string $sourceKey, string $targetKey): bool
     {
         if (!$this->zipArchive->renameName($sourceKey, $targetKey)) {
             return false;
@@ -131,12 +122,8 @@ class Zip implements Adapter
     /**
      * Returns the stat of a file in the zip archive
      *  (name, index, crc, mtime, compression size, compression method, filesize).
-     *
-     * @param $key
-     *
-     * @return array|bool
      */
-    public function getStat($key)
+    public function getStat(string $key): array
     {
         $stat = $this->zipArchive->statName($key);
         if (false === $stat) {
@@ -148,7 +135,7 @@ class Zip implements Adapter
 
     public function __destruct()
     {
-        if ($this->zipArchive) {
+        if (isset($this->zipArchive)) {
             try {
                 $this->zipArchive->close();
             } catch (\Exception $e) {
@@ -157,7 +144,7 @@ class Zip implements Adapter
         }
     }
 
-    protected function reinitZipArchive()
+    protected function reinitZipArchive(): self
     {
         $this->zipArchive = new ZipArchive();
 
@@ -216,7 +203,7 @@ class Zip implements Adapter
      *
      * @throws \RuntimeException If file could not be saved
      */
-    protected function save()
+    protected function save(): bool
     {
         // Close to save modification
         if (!$this->zipArchive->close()) {

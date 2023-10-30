@@ -9,28 +9,25 @@ use Gaufrette\Util;
 
 class InMemoryBuffer implements Stream
 {
-    private $filesystem;
-    private $key;
-    private $mode;
-    private $content;
-    private $numBytes;
-    private $position;
-    private $synchronized;
+    private Filesystem $filesystem;
+    private string $key;
+    private ?StreamMode $mode = null;
+    private string $content;
+    private int $numBytes;
+    private int $position;
+    private bool $synchronized = false;
 
     /**
      * @param Filesystem $filesystem The filesystem managing the file to stream
      * @param string     $key        The file key
      */
-    public function __construct(Filesystem $filesystem, $key)
+    public function __construct(Filesystem $filesystem, string $key)
     {
         $this->filesystem = $filesystem;
         $this->key = $key;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function open(StreamMode $mode)
+    public function open(StreamMode $mode): bool
     {
         $this->mode = $mode;
 
@@ -57,7 +54,7 @@ class InMemoryBuffer implements Stream
         return true;
     }
 
-    public function read($count)
+    public function read(int $count): string|bool
     {
         if (false === $this->mode->allowsRead()) {
             throw new \LogicException('The stream does not allow read.');
@@ -69,7 +66,7 @@ class InMemoryBuffer implements Stream
         return $chunk;
     }
 
-    public function write($data)
+    public function write(string $data): int
     {
         if (false === $this->mode->allowsWrite()) {
             throw new \LogicException('The stream does not allow write.');
@@ -99,14 +96,14 @@ class InMemoryBuffer implements Stream
         return $numWrittenBytes;
     }
 
-    public function close()
+    public function close(): void
     {
         if (!$this->synchronized) {
             $this->flush();
         }
     }
 
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek(int $offset, int $whence = SEEK_SET): bool
     {
         switch ($whence) {
             case SEEK_SET:
@@ -128,12 +125,12 @@ class InMemoryBuffer implements Stream
         return true;
     }
 
-    public function tell()
+    public function tell(): int
     {
         return $this->position;
     }
 
-    public function flush()
+    public function flush(): bool
     {
         if ($this->synchronized) {
             return true;
@@ -148,15 +145,15 @@ class InMemoryBuffer implements Stream
         return true;
     }
 
-    public function eof()
+    public function eof(): bool
     {
         return $this->position >= $this->numBytes;
     }
 
     /**
-     * {@inheritdoc}
+     * @return array<string, mixed>|false
      */
-    public function stat()
+    public function stat(): array|bool
     {
         if ($this->filesystem->has($this->key)) {
             $isDirectory = $this->filesystem->isDirectory($this->key);
@@ -184,18 +181,12 @@ class InMemoryBuffer implements Stream
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function cast($castAst)
+    public function cast(int $castAs): bool
     {
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unlink()
+    public function unlink(): bool
     {
         if ($this->mode && $this->mode->impliesExistingContentDeletion()) {
             return $this->filesystem->delete($this->key);
@@ -204,10 +195,7 @@ class InMemoryBuffer implements Stream
         return false;
     }
 
-    /**
-     * @return bool
-     */
-    protected function hasNewContentAtFurtherPosition()
+    protected function hasNewContentAtFurtherPosition(): bool
     {
         return $this->position > 0 && !$this->content;
     }
@@ -215,10 +203,8 @@ class InMemoryBuffer implements Stream
     /**
      * @param string $content   Empty string by default
      * @param bool   $overwrite Overwrite by default
-     *
-     * @return string
      */
-    protected function writeContent($content = '', $overwrite = true)
+    protected function writeContent(string $content = '', bool $overwrite = true): string
     {
         $this->filesystem->write($this->key, $content, $overwrite);
 
