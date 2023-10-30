@@ -50,7 +50,7 @@ class Local implements Stream
         return true;
     }
 
-    public function read(int $count): string|false
+    public function read(int $count): string|bool
     {
         if (!$this->fileHandle) {
             return false;
