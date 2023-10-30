@@ -315,7 +315,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
         return ltrim(substr($path, strlen($this->options['directory'])), '/');
     }
 
-    private function guessContentType(mixed $content): false|string
+    private function guessContentType(mixed $content): bool|string
     {
         $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
 
