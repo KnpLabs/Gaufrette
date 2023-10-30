@@ -120,7 +120,7 @@ interface FilesystemInterface
      *
      * @throws \InvalidArgumentException If $key is invalid
      */
-    public function createStream(string $key): Stream|Stream\InMemoryBuffer;
+    public function createStream(string $key): Stream;
 
     /**
      * Creates a new file in a filesystem.

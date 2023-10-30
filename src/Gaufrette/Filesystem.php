@@ -223,7 +223,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function createStream(string $key): Stream|Stream\InMemoryBuffer
+    public function createStream(string $key): Stream
     {
         self::assertValidKey($key);
 
