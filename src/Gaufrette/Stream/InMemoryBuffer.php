@@ -54,7 +54,7 @@ class InMemoryBuffer implements Stream
         return true;
     }
 
-    public function read(int $count): string|false
+    public function read(int $count): string|bool
     {
         if (false === $this->mode->allowsRead()) {
             throw new \LogicException('The stream does not allow read.');
