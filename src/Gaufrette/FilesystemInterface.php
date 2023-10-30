@@ -167,7 +167,7 @@ interface FilesystemInterface
      *
      * @param string $key
      *
-     * @return string
+     * @return string|false
      *
      * @throws \InvalidArgumentException If $key is invalid
      */

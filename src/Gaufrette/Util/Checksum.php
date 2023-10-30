@@ -5,31 +5,23 @@ namespace Gaufrette\Util;
 /**
  * Checksum utils.
  *
- * @author  Antoine Hérault <antoine.herault@gmail.com>
+ * @author Antoine Hérault <antoine.herault@gmail.com>
  */
 class Checksum
 {
     /**
      * Returns the checksum of the given content.
-     *
-     * @param string $content
-     *
-     * @return string
      */
-    public static function fromContent($content)
+    public static function fromContent(string $content): string
     {
         return md5($content);
     }
 
     /**
      * Returns the checksum of the specified file.
-     *
-     * @param string $filename
-     *
-     * @return string
      */
-    public static function fromFile($filename)
+    public static function fromFile(string $filename): string
     {
-        return md5_file($filename);
+        return md5_file($filename)?: '';
     }
 }

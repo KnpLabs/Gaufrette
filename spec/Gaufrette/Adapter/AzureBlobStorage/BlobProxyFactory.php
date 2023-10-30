@@ -6,10 +6,7 @@ use PhpSpec\ObjectBehavior;
 
 class BlobProxyFactory extends ObjectBehavior
 {
-    /**
-     * @param string $connectionString
-     */
-    function let($connectionString)
+    function let(string $connectionString)
     {
         $this->beConstructedWith($connectionString);
     }

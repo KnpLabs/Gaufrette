@@ -16,7 +16,7 @@ interface Stream
      *
      * @return bool TRUE on success or FALSE on failure
      */
-    public function open(StreamMode $mode);
+    public function open(StreamMode $mode): bool;
 
     /**
      * Reads the specified number of bytes from the current position.
@@ -25,10 +25,8 @@ interface Stream
      * string.
      *
      * @param int $count The number of bytes
-     *
-     * @return string
      */
-    public function read($count);
+    public function read(int $count): string|bool;
 
     /**
      * Writes the specified data.
@@ -36,11 +34,9 @@ interface Stream
      * Don't forget to update the current position of the stream by number of
      * bytes that were successfully written.
      *
-     * @param string $data
-     *
      * @return int The number of bytes that were successfully written
      */
-    public function write($data);
+    public function write(string $data): int;
 
     /**
      * Closes the stream.
@@ -48,7 +44,7 @@ interface Stream
      * It must free all the resources. If there is any data to flush, you
      * should do so
      */
-    public function close();
+    public function close(): void;
 
     /**
      * Flushes the output.
@@ -58,52 +54,45 @@ interface Stream
      *
      * @return bool TRUE on success or FALSE on failure
      */
-    public function flush();
+    public function flush(): bool;
 
     /**
      * Seeks to the specified offset.
-     *
-     * @param int $offset
-     * @param int $whence
-     *
-     * @return bool
      */
-    public function seek($offset, $whence = SEEK_SET);
+    /**
+     * @param SEEK_SET|SEEK_CUR|SEEK_END $whence
+     */
+    public function seek(int $offset, int $whence = SEEK_SET): bool;
 
     /**
      * Returns the current position.
-     *
-     * @return int
      */
-    public function tell();
+    public function tell(): int;
 
     /**
      * Indicates whether the current position is the end-of-file.
-     *
-     * @return bool
      */
-    public function eof();
+    public function eof(): bool;
 
     /**
      * Gathers statistics of the stream.
      *
-     * @return array
+     * @return array<string, mixed>|false
      */
-    public function stat();
+    public function stat(): array|bool;
 
     /**
      * Retrieve the underlying resource.
      *
-     * @param int $castAs
-     *
-     * @return mixed using resource or false
+     * @param STREAM_CAST_FOR_SELECT|STREAM_CAST_AS_STREAM $castAs
+     * @return resource|false using resource or false
      */
-    public function cast($castAs);
+    public function cast(int $castAs);
 
     /**
      * Delete a file.
      *
      * @return bool TRUE on success FALSE otherwise
      */
-    public function unlink();
+    public function unlink(): bool;
 }

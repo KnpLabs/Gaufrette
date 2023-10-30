@@ -14,11 +14,6 @@ interface FileFactory
 {
     /**
      * Creates a new File instance and returns it.
-     *
-     * @param string     $key
-     * @param Filesystem $filesystem
-     *
-     * @return File
      */
-    public function createFile($key, Filesystem $filesystem);
+    public function createFile(string $key, Filesystem $filesystem): File;
 }

@@ -12,15 +12,9 @@ use MicrosoftAzure\Storage\Common\ServicesBuilder;
  */
 class BlobProxyFactory implements BlobProxyFactoryInterface
 {
-    /**
-     * @var string
-     */
-    protected $connectionString;
+    protected string $connectionString;
 
-    /**
-     * @param string $connectionString
-     */
-    public function __construct($connectionString)
+    public function __construct(string $connectionString)
     {
         if (!class_exists(ServicesBuilder::class) && !class_exists(BlobRestProxy::class)) {
             throw new \LogicException('You need to install package "microsoft/azure-storage-blob" to use this adapter');
@@ -28,10 +22,7 @@ class BlobProxyFactory implements BlobProxyFactoryInterface
         $this->connectionString = $connectionString;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function create()
+    public function create(): BlobRestProxy
     {
         if (class_exists(ServicesBuilder::class)) {
             // for microsoft/azure-storage < 1.0

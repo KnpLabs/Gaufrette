@@ -10,22 +10,14 @@ interface FilesystemMapInterface
     /**
      * Indicates whether there is a filesystem registered for the specified
      * name.
-     *
-     * @param string $name
-     *
-     * @return bool
      */
-    public function has($name);
+    public function has(string $name): bool;
 
     /**
      * Returns the filesystem registered for the specified name.
      *
-     * @param string $name
-     *
-     * @return FilesystemInterface
-     *
      * @throw  \InvalidArgumentException when there is no filesystem registered
-     *                                  for the specified name
+     *                                   for the specified name
      */
-    public function get($name);
+    public function get(string $name): FilesystemInterface;
 }

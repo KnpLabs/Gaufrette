@@ -10,18 +10,12 @@ namespace Gaufrette\Adapter;
  */
 class SafeLocal extends Local
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function computeKey($path)
+    public function computeKey(string $path): string
     {
         return base64_decode(parent::computeKey($path));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function computePath($key)
+    protected function computePath(string $key): string
     {
         return parent::computePath(base64_encode($key));
     }
