@@ -129,7 +129,7 @@ class Local implements Stream
     /**
      * @return array<string, mixed>|false
      */
-    public function stat(): array|false
+    public function stat(): array|bool
     {
         if ($this->fileHandle) {
             return fstat($this->fileHandle);
