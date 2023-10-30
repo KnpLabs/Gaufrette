@@ -153,7 +153,7 @@ class InMemoryBuffer implements Stream
     /**
      * @return array<string, mixed>|false
      */
-    public function stat(): array|false
+    public function stat(): array|bool
     {
         if ($this->filesystem->has($this->key)) {
             $isDirectory = $this->filesystem->isDirectory($this->key);
