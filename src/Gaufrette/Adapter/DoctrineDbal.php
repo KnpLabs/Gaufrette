@@ -16,9 +16,7 @@ use Doctrine\DBAL\Connection;
  */
 class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
 {
-    protected $connection;
-    protected $table;
-    protected $columns = [
+    protected array $columns = [
         'key' => 'key',
         'content' => 'content',
         'mtime' => 'mtime',
@@ -30,21 +28,22 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
      * @param string     $table      The files table
      * @param array      $columns    The column names
      */
-    public function __construct(Connection $connection, $table, array $columns = [])
-    {
+    public function __construct(
+        private Connection $connection,
+        private string $table,
+        array $columns = []
+    ) {
         if (!class_exists(Connection::class)) {
             throw new \LogicException('You need to install package "doctrine/dbal" to use this adapter');
         }
 
-        $this->connection = $connection;
-        $this->table = $table;
         $this->columns = array_replace($this->columns, $columns);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function keys()
+    public function keys(): array
     {
         $keys = [];
         $stmt = $this->connection->executeQuery(sprintf(
@@ -65,7 +64,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function rename($sourceKey, $targetKey)
+    public function rename(string $sourceKey, string $targetKey): bool
     {
         return (boolean) $this->connection->update(
             $this->table,
@@ -77,7 +76,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function mtime($key)
+    public function mtime(string $key): int|bool
     {
         return $this->getColumnValue($key, 'mtime');
     }
@@ -85,7 +84,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function checksum($key)
+    public function checksum(string $key): string|bool
     {
         return $this->getColumnValue($key, 'checksum');
     }
@@ -93,7 +92,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function exists($key)
+    public function exists(string $key): bool
     {
         $method = 'fetchOne'; // dbal 3.x
         if (!method_exists(Connection::class, $method)) {
@@ -114,7 +113,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function read($key)
+    public function read(string $key): string|bool
     {
         return $this->getColumnValue($key, 'content');
     }
@@ -122,7 +121,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         return (boolean) $this->connection->delete(
             $this->table,
@@ -133,7 +132,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function write($key, $content)
+    public function write(string $key, mixed $content): int|bool
     {
         $values = [
             $this->getQuotedColumn('content') => $content,
@@ -158,12 +157,15 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function isDirectory($key)
+    public function isDirectory(string $key): bool
     {
         return false;
     }
 
-    private function getColumnValue($key, $column)
+    /**
+     * @return mixed
+     */
+    private function getColumnValue(string $key, string $column)
     {
         $method = 'fetchOne'; // dbal 3.x
         if (!method_exists(Connection::class, $method)) {
@@ -186,7 +188,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function listKeys($prefix = '')
+    public function listKeys(string $prefix = ''): array
     {
         $prefix = trim($prefix);
 
@@ -216,12 +218,12 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
         ];
     }
 
-    private function getQuotedTable()
+    private function getQuotedTable(): string
     {
         return $this->connection->quoteIdentifier($this->table);
     }
 
-    private function getQuotedColumn($column)
+    private function getQuotedColumn(string $column)
     {
         return $this->connection->quoteIdentifier($this->columns[$column]);
     }

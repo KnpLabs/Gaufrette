@@ -2,12 +2,13 @@
 
 namespace Gaufrette\Functional\FileStream;
 
+use Gaufrette\Filesystem;
 use Gaufrette\StreamWrapper;
 use PHPUnit\Framework\TestCase;
 
 abstract class FunctionalTestCase extends TestCase
 {
-    protected $filesystem;
+    protected ?Filesystem $filesystem = null;
 
     /**
      * @test

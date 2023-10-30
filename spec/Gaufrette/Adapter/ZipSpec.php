@@ -2,6 +2,7 @@
 
 namespace spec\Gaufrette\Adapter;
 
+use Gaufrette\Adapter;
 use PhpSpec\ObjectBehavior;
 
 class ZipSpec extends ObjectBehavior
@@ -13,6 +14,6 @@ class ZipSpec extends ObjectBehavior
 
     function it_is_adapter()
     {
-        $this->shouldHaveType('Gaufrette\Adapter');
+        $this->shouldHaveType(Adapter::class);
     }
 }

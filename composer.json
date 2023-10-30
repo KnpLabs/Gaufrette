@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.0"
+        "php": "^8.0"
     },
     "conflict": {
         "microsoft/windowsazure": "<0.4.3"
@@ -40,7 +40,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.10.x-dev"
+            "dev-fix-php82-deprecated": "0.12.x-dev"
         }
     },
     "archive": {

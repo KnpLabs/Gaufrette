@@ -2,6 +2,8 @@
 
 namespace Gaufrette\Adapter;
 
+use Gaufrette\Stream;
+
 /**
  * Interface for the stream creation class.
  *
@@ -11,10 +13,6 @@ interface StreamFactory
 {
     /**
      * Creates a new stream instance of the specified file.
-     *
-     * @param string $key
-     *
-     * @return \Gaufrette\Stream
      */
-    public function createStream($key);
+    public function createStream(string $key): Stream;
 }
