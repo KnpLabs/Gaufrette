@@ -60,7 +60,7 @@ class File
      *
      * @param array $metadata optional metadata which should be set when read
      */
-    public function getContent($metadata = []): string
+    public function getContent(array $metadata = []): string
     {
         if (isset($this->content)) {
             return $this->content;
