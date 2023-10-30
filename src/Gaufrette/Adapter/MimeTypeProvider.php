@@ -10,7 +10,7 @@ namespace Gaufrette\Adapter;
 interface MimeTypeProvider
 {
     /**
-     * Returns the mime type of the specified key.
+     * @return false|string the mime type of the specified key.
      */
-    public function mimeType(string $key): string;
+    public function mimeType(string $key): string|bool;
 }

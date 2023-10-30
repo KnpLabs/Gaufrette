@@ -120,7 +120,7 @@ class InMemory implements Adapter, MimeTypeProvider
         return false;
     }
 
-    public function mimeType(string $key): string
+    public function mimeType(string $key): bool|string
     {
         $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
 

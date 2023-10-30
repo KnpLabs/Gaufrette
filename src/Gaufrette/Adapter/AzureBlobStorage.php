@@ -286,7 +286,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     /**
      * {@inheritdoc}
      */
-    public function mimeType(string $key): string
+    public function mimeType(string $key): string|bool
     {
         $this->init();
         list($containerName, $key) = $this->tokenizeKey($key);

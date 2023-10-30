@@ -183,11 +183,12 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
     }
 
     /**
+     * {@inheritdoc}
      * @throws \OutOfBoundsException     If the computed path is out of the directory
      * @throws \InvalidArgumentException if the directory already exists
      * @throws \RuntimeException         if the directory could not be created
      */
-    public function mimeType(string $key): string
+    public function mimeType(string $key): bool|string
     {
         $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
 

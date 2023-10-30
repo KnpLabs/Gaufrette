@@ -173,7 +173,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
         }
     }
 
-    public function mimeType(string $key): string|bool
+    public function mimeType(string $key): bool|string
     {
         try {
             $result = $this->service->headObject($this->getOptions($key));

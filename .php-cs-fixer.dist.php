@@ -21,7 +21,7 @@ return (new PhpCsFixer\Config())
         'no_break_comment' => false,
         'no_extra_blank_lines' => true,
         'no_spaces_around_offset' => true,
-        'no_trailing_comma_in_singleline' => true,
+        'no_trailing_comma_in_singleline_array' => true,
         'no_unused_imports' => true,
         'no_useless_else' => true,
         'no_useless_return' => true,
