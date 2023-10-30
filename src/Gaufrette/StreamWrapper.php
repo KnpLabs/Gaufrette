@@ -82,7 +82,7 @@ class StreamWrapper
     }
 
     /**
-     * @param STREAM_USE_PATH|STREAM_REPORT_ERRORS|9 $options
+     * @param STREAM_USE_PATH|STREAM_REPORT_ERRORS|9 $options "9" is the result of a bitwize operation between STREAM_USE_PATH and STREAM_REPORT_ERRORS (STREAM_USE_PATH|STREAM_REPORT_ERRORS).
      */
     public function stream_open(string $path, string $mode, int $options, ?string &$opened_path = null): bool
     {
