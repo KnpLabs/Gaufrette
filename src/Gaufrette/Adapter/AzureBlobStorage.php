@@ -36,10 +36,10 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     protected CreateContainerOptions $createContainerOptions;
 
     public function __construct(
-        private readonly BlobProxyFactoryInterface $blobProxyFactory,
-        private readonly ?string $containerName = null,
+        private BlobProxyFactoryInterface $blobProxyFactory,
+        private ?string $containerName = null,
         bool $create = false,
-        private readonly bool $detectContentType = true
+        private bool $detectContentType = true
     ) {
         if (null === $containerName) {
             $this->multiContainerMode = true;

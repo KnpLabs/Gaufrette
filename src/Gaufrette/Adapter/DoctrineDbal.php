@@ -29,8 +29,8 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
      * @param array      $columns    The column names
      */
     public function __construct(
-        private readonly Connection $connection,
-        private readonly string $table,
+        private Connection $connection,
+        private string $table,
         array $columns = []
     ) {
         if (!class_exists(Connection::class)) {
