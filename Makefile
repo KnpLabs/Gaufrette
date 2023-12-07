@@ -57,6 +57,7 @@ remove-phpspec: ## Remove adapter specs (allows you to run test suite without ad
 	rm spec/Gaufrette/Adapter/AsyncAwsS3Spec.php
 	rm spec/Gaufrette/Adapter/AwsS3Spec.php
 	rm spec/Gaufrette/Adapter/AzureBlobStorageSpec.php
+	rm -r spec/Gaufrette/Adapter/AzureBlobStorage
 	rm spec/Gaufrette/Adapter/DoctrineDbalSpec.php
 	rm spec/Gaufrette/Adapter/FlysystemSpec.php
 	rm spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php
