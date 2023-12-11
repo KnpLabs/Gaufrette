@@ -124,6 +124,11 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
     {
         $this->ensureBucketExists();
         $options = $this->getOptions($key, ['Body' => $content]);
+        
+        if (!empty($options['tags'])) {
+            $options['Tagging'] = http_build_query($options['tags']);
+            unset($options['tags']);
+        }
 
         /*
          * If the ContentType was not already set in the metadata, then we autodetect
