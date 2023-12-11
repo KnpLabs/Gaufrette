@@ -48,8 +48,8 @@ $filesystem = new Filesystem($adapter);
 ## IAM policy
 
 If you are not familiar with AWS, here are the key concepts:
-* [IAM, stands for *Identity and Access Management*](http://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html)
-* [IAM policies, are the way to grant access to your IAM users/groups](http://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_access-management.html)
+* [IAM, stands for *Identity and Access Management*](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html)
+* [IAM policies, are the way to grant access to your IAM users/groups](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_access-management.html)
  
 We **strongly recommend** you to create a dedicated IAM user with the most restrictive policy.
 

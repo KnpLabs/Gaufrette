@@ -3,16 +3,16 @@
     "type":         "library",
     "description":  "PHP library that provides a filesystem abstraction layer",
     "keywords":     ["file", "filesystem", "media", "abstraction"],
-    "homepage":     "http://knplabs.com",
+    "homepage":     "https://knplabs.com",
     "license":      "MIT",
     "authors": [
         {
             "name": "KnpLabs Team",
-            "homepage": "http://knplabs.com"
+            "homepage": "https://knplabs.com"
         },
         {
             "name":     "The contributors",
-            "homepage": "http://github.com/knplabs/Gaufrette/contributors"
+            "homepage": "https://github.com/knplabs/Gaufrette/contributors"
         }
     ],
     "require": {

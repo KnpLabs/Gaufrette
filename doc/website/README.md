@@ -20,7 +20,7 @@ Here are all the variables you can set in your `couscous.yml`:
 
 ```yaml
 # Base URL of the published website
-baseUrl: http://username.github.io/project
+baseUrl: https://username.github.io/project
 
 # Used to link to the GitHub project
 github:

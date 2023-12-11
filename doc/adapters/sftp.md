@@ -15,7 +15,7 @@ the [`PhpseclibSftp`](phpseclib-sftp.html) adapter is based on a full-php ssh cl
 ## Prerequisites
 
 * [PHP-SSH](https://github.com/Herzult/php-ssh)
-* [SSH2 extension](http://www.php.net/manual/en/book.ssh2.php)
+* [SSH2 extension](https://www.php.net/manual/en/book.ssh2.php)
 
 You can install it via:
 

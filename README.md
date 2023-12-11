@@ -30,7 +30,7 @@ solution.
 
 ### Documentation
 
-Read the official [Gaufrette documentation](http://knplabs.github.io/Gaufrette/).
+Read the official [Gaufrette documentation](https://knplabs.github.io/Gaufrette/).
 
 ### Metapackages for adapters
 

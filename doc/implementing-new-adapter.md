@@ -44,7 +44,7 @@ To get the benefits of PHPSpec code generator we run:
 $ ./bin/phpspec run spec/Gaufrette/Adapter/KnpStorageSpec.php
 ```
 
-You can continue to play with PHPSpec, read more on [PHPSpec website](http://phpspec.readthedocs.org/en/latest/).
+You can continue to play with PHPSpec, read more on [PHPSpec website](https://phpspec.readthedocs.org/en/latest/).
 
 ## Implementing adapter interface
 
