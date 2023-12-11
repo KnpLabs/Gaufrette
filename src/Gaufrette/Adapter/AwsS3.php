@@ -105,7 +105,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
         $this->ensureBucketExists();
         $options = $this->getOptions(
             $targetKey,
-            ['CopySource' => $this->bucket . '/' . $this->computePath($sourceKey)]
+            ['CopySource' => urlencode($this->bucket . '/' . $this->computePath($sourceKey))]
         );
 
         try {
