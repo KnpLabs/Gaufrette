@@ -15,7 +15,7 @@ interface Adapter
      *
      * @param string $key
      *
-     * @return string|bool if cannot read content
+     * @return string|false The file content as string or `false` on failure
      */
     public function read($key);
 
@@ -25,7 +25,7 @@ interface Adapter
      * @param string $key
      * @param string $content
      *
-     * @return int|bool The number of bytes that were written into the file
+     * @return int|false The number of bytes that were written into the file or `false` on failure
      */
     public function write($key, $content);
 
@@ -50,7 +50,7 @@ interface Adapter
      *
      * @param string $key
      *
-     * @return int|bool An UNIX like timestamp or false
+     * @return int|false An UNIX like timestamp or false on failure
      */
     public function mtime($key);
 
