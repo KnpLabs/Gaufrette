@@ -78,7 +78,7 @@ class FileSpec extends ObjectBehavior
         $filesystem->write('filename', 'some content', true)->shouldBeCalled()->willReturn(21);
 
         $this->setContent('some content')->shouldReturn(21);
-        $this->getContent('filename')->shouldReturn('some content');
+        $this->getContent()->shouldReturn('some content');
     }
 
     function it_sets_key_as_name_by_default()

@@ -17,7 +17,12 @@ class Path
         $path = str_replace('\\', '/', $path);
         $prefix = static::getAbsolutePrefix($path);
         $path = substr($path, strlen($prefix));
-        $parts = array_filter(explode('/', $path), 'strlen');
+        $parts = array_filter(
+            explode('/', $path),
+            function (string $part): bool {
+                return '' !== $part;
+            },
+        );
         $tokens = [];
 
         foreach ($parts as $part) {
