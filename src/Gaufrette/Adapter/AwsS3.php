@@ -162,7 +162,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
     /**
      * {@inheritdoc}
      */
-    public function size(string $key): int
+    public function size(string $key): bool|int
     {
         try {
             $result = $this->service->headObject($this->getOptions($key));
