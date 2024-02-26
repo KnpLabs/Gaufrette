@@ -101,6 +101,16 @@ parameters:
 			path: src/Gaufrette/Adapter/Ftp.php
 
 		-
+			message: "#^Property Gaufrette\\\\Adapter\\\\Ftp\\:\\:\\$connection has unknown class FTP\\\\Connection as its type\\.$#"
+			count: 1
+			path: src/Gaufrette/Adapter/Ftp.php
+
+		-
+			message: "#^Method Gaufrette\\\\Adapter\\\\Ftp\\:\\:getConnection\\(\\) has invalid return type FTP\\\\Connection\\.$#"
+			count: 1
+			path: src/Gaufrette/Adapter/Ftp.php
+
+		-
 			message: "#^Call to function is_resource\\(\\) with string will always evaluate to false\\.$#"
 			count: 1
 			path: src/Gaufrette/Adapter/GoogleCloudStorage.php
