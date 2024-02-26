@@ -1,5 +1,8 @@
-on: [push, pull_request]
+---
 name: Roave
+
+on: workflow_call
+
 jobs:
   roave_bc_check:
     name: BC Check

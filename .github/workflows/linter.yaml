@@ -1,16 +1,27 @@
-on: [push, pull_request]
-name: Static analysis
+---
+name: Linters
+
+on:
+  workflow_call:
+    inputs:
+      PHP_VERSIONS:
+        type: string
+        required: true
 
 jobs:
+
   phpstan:
     name: PHPStan
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ${{ fromJson(inputs.PHP_VERSIONS) }}
 
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: ${{ matrix.php }}
           extensions: mongo, mbstring, fileinfo
           tools: composer:v2
 
@@ -37,7 +48,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.0'
+          php-version: ${{ fromJson(inputs.PHP_VERSIONS)[0] }}
           extensions: mongo, mbstring, fileinfo
           tools: composer:v2
 

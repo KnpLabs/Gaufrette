@@ -1,0 +1,84 @@
+---
+name: Tests
+
+on:
+  workflow_call:
+    inputs:
+      PHP_VERSIONS:
+        type: string
+        required: true
+      LAST_VERSION:
+        type: string
+        required: true
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ${{ fromJson(inputs.PHP_VERSIONS) }}
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: flex
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        run: |
+          composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable
+
+      - name: Remove PHPSpec adapter tests
+        run: make remove-phpspec
+
+      - name: PHPSpec
+        run: php vendor/bin/phpspec run -fpretty --verbose
+
+      - name: PHPUnit
+        run: php vendor/bin/phpunit
+
+  adapter:
+    name: Adapter
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - { php: '${{ inputs.LAST_VERSION }}', package: 'async-aws/simple-s3:^1.0', phpspec: 'spec/Gaufrette/Adapter/AsyncAwsS3Spec.php' }
+          - { php: '${{ inputs.LAST_VERSION }}', package: 'aws/aws-sdk-php:^3.158', phpspec: 'spec/Gaufrette/Adapter/AwsS3Spec.php' }
+          - { php: '${{ inputs.LAST_VERSION }}', package: 'google/apiclient:^2.12', phpspec: 'spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php' }
+          - { php: '${{ inputs.LAST_VERSION }}', package: 'doctrine/dbal:^2.3', phpspec: 'spec/Gaufrette/Adapter/DoctrineDbalSpec.php' }
+          - { php: '${{ inputs.LAST_VERSION }}', package: 'doctrine/dbal:^3.4', phpspec: 'spec/Gaufrette/Adapter/DoctrineDbalSpec.php' }
+          - { php: '${{ inputs.LAST_VERSION }}', package: 'league/flysystem:^1.0', phpspec: 'spec/Gaufrette/Adapter/FlysystemSpec.php' }
+          - { php: '${{ inputs.LAST_VERSION }}', package: 'microsoft/azure-storage-blob:^1.0', phpspec: 'spec/Gaufrette/Adapter/AzureBlobStore' }
+          - { php: '${{ inputs.LAST_VERSION }}', package: 'mongodb/mongodb:^1.1', phpspec: 'spec/Gaufrette/Adapter/GridFSSpec.php' }
+          - { php: '${{ inputs.LAST_VERSION }}', package: 'phpseclib/phpseclib:^2.0', phpspec: 'spec/Gaufrette/Adapter/PhpseclibSftpSpec.php' }
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: flex
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        run: |
+          composer req ${{ matrix.package }} --no-update
+          composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable
+
+      - name: PHPSpec
+        if: ${{ matrix.phpspec }}
+        run: php vendor/bin/phpspec run -fpretty --verbose ${{ matrix.phpspec }}
+
+      - name: PHPUnit
+        run: php vendor/bin/phpunit
