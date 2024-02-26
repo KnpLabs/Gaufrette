@@ -10,6 +10,8 @@ concurrency:
 jobs:
     bc-break:
         uses: ./.github/workflows/bc-break.yaml
+        with:
+            LAST_VERSION: '8.2'
 
     test:
         uses: ./.github/workflows/test.yaml
