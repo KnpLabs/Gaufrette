@@ -17,7 +17,7 @@ class Filesystem implements FilesystemInterface
     /**
      * Contains File objects created with $this->createFile() method.
      *
-     * @var array<string, string|File>
+     * @var array<string, File>
      */
     protected array $fileRegister = [];
 
