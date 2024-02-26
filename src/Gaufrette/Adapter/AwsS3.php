@@ -16,7 +16,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
     protected S3Client $service;
     protected string $bucket;
     protected array $options;
-    protected bool $bucketExists;
+    protected bool $bucketExists = false;
     protected array $metadata = [];
     protected bool $detectContentType;
 
@@ -278,9 +278,8 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
             'Bucket' => $this->bucket,
             'LocationConstraint' => $this->service->getRegion(),
         ]);
-        $this->bucketExists = true;
 
-        return true;
+        return $this->bucketExists = true;
     }
 
     protected function getOptions(string $key, array $options = []): array
