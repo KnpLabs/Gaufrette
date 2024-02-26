@@ -1,7 +1,12 @@
 ---
 name: Roave
 
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      LAST_VERSION:
+        type: string
+        required: true
 
 jobs:
   roave_bc_check:
@@ -11,6 +16,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ inputs.LAST_VERSION }}
       - name: Composer install
         run: composer require --dev roave/backward-compatibility-check
       - name: Roave BC Check
