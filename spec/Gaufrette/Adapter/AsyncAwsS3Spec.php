@@ -8,9 +8,6 @@ use PhpSpec\ObjectBehavior;
 
 class AsyncAwsS3Spec extends ObjectBehavior
 {
-    /**
-     * @param \AsyncAws\SimpleS3\SimpleS3Client $service
-     */
     function let(SimpleS3Client $service)
     {
         $this->beConstructedWith($service, 'bucketName');

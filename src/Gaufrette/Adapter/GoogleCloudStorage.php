@@ -10,6 +10,8 @@ use Google\Service\Exception as ServiceException;
 use Google\Service\Storage\BucketIamConfiguration;
 use Google\Service\Storage\BucketIamConfigurationUniformBucketLevelAccess;
 use GuzzleHttp;
+use RuntimeException;
+use ReflectionException;
 
 /**
  * Google Cloud Storage adapter using the Google APIs Client Library for PHP.
@@ -44,9 +46,9 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
      */
     public function __construct(
         Storage $service,
-        $bucket,
+        string $bucket,
         array $options = [],
-        $detectContentType = false
+        bool $detectContentType = false
     ) {
         if (!class_exists(Storage::class)) {
             throw new \LogicException('You need to install package "google/apiclient" to use this adapter');
@@ -63,44 +65,36 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     }
 
     /**
-     * @return array The actual options
+     * @return array<string, mixed> The actual options
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }
 
     /**
-     * @param array $options The new options
+     * @param array<string, mixed> $options The new options
      */
-    public function setOptions($options)
+    public function setOptions(array $options): void
     {
         $this->options = array_replace($this->options, $options);
     }
 
-    /**
-     * @return string The current bucket name
-     */
-    public function getBucket()
+    public function getBucket(): string
     {
         return $this->bucket;
     }
 
     /**
      * Sets a new bucket name.
-     *
-     * @param string $bucket The new bucket name
      */
-    public function setBucket($bucket)
+    public function setBucket(string $bucket): void
     {
         $this->bucketExists = null;
         $this->bucket = $bucket;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function read($key)
+    public function read(string $key): string|bool
     {
         $this->ensureBucketExists();
         $path = $this->computePath($key);
@@ -133,10 +127,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function write($key, $content)
+    public function write(string $key, mixed $content): int|bool
     {
         $this->ensureBucketExists();
         $path = $this->computePath($key);
@@ -201,10 +192,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function exists($key)
+    public function exists(string $key): bool
     {
         $this->ensureBucketExists();
         $path = $this->computePath($key);
@@ -221,15 +209,12 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     /**
      * {@inheritdoc}
      */
-    public function keys()
+    public function keys(): array
     {
         return $this->listKeys();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function mtime($key)
+    public function mtime(string $key): int|bool
     {
         $this->ensureBucketExists();
         $path = $this->computePath($key);
@@ -239,10 +224,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
         return $object ? strtotime($object->getUpdated()) : false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         $this->ensureBucketExists();
         $path = $this->computePath($key);
@@ -256,10 +238,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rename($sourceKey, $targetKey)
+    public function rename(string $sourceKey, string $targetKey): bool
     {
         $this->ensureBucketExists();
         $sourcePath = $this->computePath($sourceKey);
@@ -280,10 +259,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isDirectory($key)
+    public function isDirectory(string $key): bool
     {
         if ($this->exists($key . '/')) {
             return true;
@@ -293,9 +269,11 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     }
 
     /**
-     * {@inheritdoc}
+     * @return array<int, string>
+     * @throws RuntimeException
+     * @throws ReflectionException
      */
-    public function listKeys($prefix = '')
+    public function listKeys(string $prefix = ''): array
     {
         $this->ensureBucketExists();
 
@@ -326,9 +304,9 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     }
 
     /**
-     * {@inheritdoc}
+     * @param array<string, mixed> $content
      */
-    public function setMetadata($key, $content)
+    public function setMetadata(string $key, array $content): void
     {
         $path = $this->computePath($key);
 
@@ -336,9 +314,9 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     }
 
     /**
-     * {@inheritdoc}
+     * @return array<string, mixed>
      */
-    public function getMetadata($key)
+    public function getMetadata(string $key): array
     {
         $path = $this->computePath($key);
 
@@ -350,7 +328,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
      *
      * @throws \RuntimeException if the bucket does not exists
      */
-    protected function ensureBucketExists()
+    protected function ensureBucketExists(): void
     {
         if ($this->bucketExists) {
             return;
@@ -405,7 +383,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
         }
     }
 
-    protected function computePath($key)
+    protected function computePath(string $key): string
     {
         if (empty($this->options['directory'])) {
             return $key;
@@ -416,11 +394,9 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
 
     /**
      * @param string $path
-     * @param array  $options
-     *
-     * @return bool|StorageObject
+     * @param array<string, mixed>  $options
      */
-    private function getObjectData($path, $options = [])
+    private function getObjectData(string $path, array $options = []): bool|StorageObject
     {
         try {
             return $this->service->objects->get($this->bucket, $path, $options);
@@ -434,7 +410,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
      *
      * @return string
      */
-    private function guessContentType($content)
+    private function guessContentType(string $content): string
     {
         $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
 

@@ -1,0 +1,26 @@
+---
+name: Roave
+
+on:
+  workflow_call:
+    inputs:
+      LAST_VERSION:
+        type: string
+        required: true
+
+jobs:
+  roave_bc_check:
+    name: BC Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ inputs.LAST_VERSION }}
+      - name: Composer install
+        run: composer require --dev roave/backward-compatibility-check
+      - name: Roave BC Check
+        run: vendor/bin/roave-backward-compatibility-check --format=github-actions

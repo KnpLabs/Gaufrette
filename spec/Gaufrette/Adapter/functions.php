@@ -9,7 +9,7 @@ function time()
     return \strtotime('2012-10-10 23:10:10');
 }
 
-function file_exists($path)
+function file_exists(string $path)
 {
     //fake it for ssh+ssl: protocol for SFTP testing, otherwise delegate to global
     if (strpos($path, 'ssh+ssl:') === 0) {
@@ -19,7 +19,7 @@ function file_exists($path)
     return \file_exists($path);
 }
 
-function extension_loaded($name)
+function extension_loaded()
 {
     global $extensionLoaded;
 
@@ -30,17 +30,17 @@ function extension_loaded($name)
     return $extensionLoaded;
 }
 
-function opendir($url)
+function opendir(string $url)
 {
     return true;
 }
 
-function apc_fetch($path)
+function apc_fetch(string $path)
 {
     return sprintf('%s content', $path);
 }
 
-function apc_store($path, $content, $ttl)
+function apc_store(string $path, mixed $content, int $ttl)
 {
     if ('prefix-apc-test/invalid' === $path) {
         return false;
@@ -49,7 +49,7 @@ function apc_store($path, $content, $ttl)
     return sprintf('%s content', $path);
 }
 
-function apc_delete($path)
+function apc_delete(string $path)
 {
     if ('prefix-apc-test/invalid' === $path) {
         return false;
@@ -58,7 +58,7 @@ function apc_delete($path)
     return true;
 }
 
-function apc_exists($path)
+function apc_exists(mixed $path)
 {
     if ('prefix-apc-test/invalid' === $path) {
         return false;

@@ -10,37 +10,31 @@ use Gaufrette\Util;
 /**
  * Amazon S3 adapter using the AsyncAws.
  *
- * @author  Michael Dowling <mtdowling@gmail.com>
+ * @author Michael Dowling <mtdowling@gmail.com>
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
 class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator, MimeTypeProvider
 {
-    /** @var SimpleS3Client */
-    protected $service;
-    /** @var string */
-    protected $bucket;
-    /** @var array */
-    protected $options;
-    /** @var bool */
-    protected $bucketExists;
-    /** @var array */
-    protected $metadata = [];
-    /** @var bool */
-    protected $detectContentType;
+    protected SimpleS3Client $service;
+    protected string $bucket;
+    protected array $options;
+    protected bool $bucketExists;
+    protected array $metadata = [];
+    protected bool $detectContentType;
 
-    /**
-     * @param SimpleS3Client $service
-     * @param string   $bucket
-     * @param array    $options
-     * @param bool     $detectContentType
-     */
-    public function __construct(SimpleS3Client $service, $bucket, array $options = [], $detectContentType = false)
-    {
+    public function __construct(
+        SimpleS3Client $service,
+        string $bucket,
+        array $options = [],
+        bool $detectContentType = false
+    ) {
         if (!class_exists(SimpleS3Client::class)) {
             throw new \LogicException('You need to install package "async-aws/simple-s3" to use this adapter');
         }
+
         $this->service = $service;
         $this->bucket = $bucket;
+
         $this->options = array_replace(
             [
                 'create' => false,
@@ -56,7 +50,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     /**
      * {@inheritdoc}
      */
-    public function setMetadata($key, $content)
+    public function setMetadata(string $key, array $content): void
     {
         // BC with AmazonS3 adapter
         if (isset($content['contentType'])) {
@@ -70,7 +64,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     /**
      * {@inheritdoc}
      */
-    public function getMetadata($key)
+    public function getMetadata(string $key): array
     {
         return $this->metadata[$key] ?? [];
     }
@@ -78,7 +72,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     /**
      * {@inheritdoc}
      */
-    public function read($key)
+    public function read(string $key): string|bool
     {
         $this->ensureBucketExists();
         $options = $this->getOptions($key);
@@ -102,7 +96,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     /**
      * {@inheritdoc}
      */
-    public function rename($sourceKey, $targetKey)
+    public function rename(string $sourceKey, string $targetKey): bool
     {
         $this->ensureBucketExists();
         $options = $this->getOptions(
@@ -121,9 +115,8 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
 
     /**
      * {@inheritdoc}
-     * @param string|resource $content
      */
-    public function write($key, $content)
+    public function write(string $key, mixed $content): int|bool
     {
         $this->ensureBucketExists();
         $options = $this->getOptions($key);
@@ -153,7 +146,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     /**
      * {@inheritdoc}
      */
-    public function exists($key)
+    public function exists(string $key): bool
     {
         return $this->service->has($this->bucket, $this->computePath($key));
     }
@@ -161,7 +154,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     /**
      * {@inheritdoc}
      */
-    public function mtime($key)
+    public function mtime(string $key): int|bool
     {
         try {
             $result = $this->service->headObject($this->getOptions($key));
@@ -175,24 +168,24 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     /**
      * {@inheritdoc}
      */
-    public function size($key)
+    public function size(string $key): int
     {
         $result = $this->service->headObject($this->getOptions($key));
 
         return (int) $result->getContentLength();
     }
 
-    public function mimeType($key)
+    public function mimeType(string $key): string|bool
     {
         $result = $this->service->headObject($this->getOptions($key));
 
-        return $result->getContentType();
+        return $result->getContentType() ?: false;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function keys()
+    public function keys(): array
     {
         return $this->listKeys();
     }
@@ -200,7 +193,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     /**
      * {@inheritdoc}
      */
-    public function listKeys($prefix = '')
+    public function listKeys(string $prefix = ''): array
     {
         $this->ensureBucketExists();
 
@@ -223,7 +216,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     /**
      * {@inheritdoc}
      */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         try {
             $this->service->deleteObject($this->getOptions($key));
@@ -237,7 +230,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     /**
      * {@inheritdoc}
      */
-    public function isDirectory($key)
+    public function isDirectory(string $key): bool
     {
         $result = $this->service->listObjectsV2([
             'Bucket' => $this->bucket,
@@ -261,7 +254,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
      * @throws \RuntimeException if the bucket does not exists or could not be
      *                           created
      */
-    protected function ensureBucketExists()
+    protected function ensureBucketExists(): bool
     {
         if ($this->bucketExists) {
             return true;
@@ -288,7 +281,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
         return true;
     }
 
-    protected function getOptions($key, array $options = [])
+    protected function getOptions(string $key, array $options = []): array
     {
         $options['ACL'] = $this->options['acl'];
         $options['Bucket'] = $this->bucket;
@@ -303,7 +296,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
         return $options;
     }
 
-    protected function computePath($key)
+    protected function computePath(string $key): string
     {
         if (empty($this->options['directory'])) {
             return $key;
@@ -314,22 +307,13 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
 
     /**
      * Computes the key from the specified path.
-     *
-     * @param string $path
-     *
-     * return string
      */
-    protected function computeKey($path)
+    protected function computeKey(string $path): string
     {
         return ltrim(substr($path, strlen($this->options['directory'])), '/');
     }
 
-    /**
-     * @param string|resource $content
-     *
-     * @return string
-     */
-    private function guessContentType($content)
+    private function guessContentType(mixed $content): bool|string
     {
         $fileInfo = new \finfo(FILEINFO_MIME_TYPE);
 

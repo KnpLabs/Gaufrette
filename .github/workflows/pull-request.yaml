@@ -1,0 +1,25 @@
+---
+name: Pull-Request
+
+on: pull_request
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+    bc-break:
+        uses: ./.github/workflows/bc-break.yaml
+        with:
+            LAST_VERSION: '8.2'
+
+    test:
+        uses: ./.github/workflows/test.yaml
+        with:
+            PHP_VERSIONS: '["8.0", "8.1", "8.2"]'
+            LAST_VERSION: '8.2'
+
+    linter:
+        uses: ./.github/workflows/linter.yaml
+        with:
+            PHP_VERSIONS: '["8.0", "8.1", "8.2"]'
