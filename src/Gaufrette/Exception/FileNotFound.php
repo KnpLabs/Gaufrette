@@ -13,7 +13,7 @@ class FileNotFound extends \RuntimeException implements Exception
 {
     private $key;
 
-    public function __construct($key, $code = 0, \Exception $previous = null)
+    public function __construct($key, $code = 0, ?\Exception $previous = null)
     {
         $this->key = $key;
 
