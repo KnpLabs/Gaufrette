@@ -15,15 +15,12 @@ jobs:
   phpstan:
     name: PHPStan
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php: ${{ fromJson(inputs.PHP_VERSIONS) }}
 
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: '8.5'
           extensions: mongo, mbstring, fileinfo
           tools: composer:v2
 
@@ -50,7 +47,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.5'
           extensions: mongo-1.11.0, mbstring, fileinfo
           tools: composer:v2
 
