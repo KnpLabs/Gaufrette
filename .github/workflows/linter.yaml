@@ -1,12 +1,10 @@
----
-name: Linters
+name: Static analysis
 
 on:
-  workflow_call:
-    inputs:
-      PHP_VERSIONS:
-        type: string
-        required: true
+  push:
+    branches: master
+  pull_request:
+    branches: master
 
 jobs:
 
