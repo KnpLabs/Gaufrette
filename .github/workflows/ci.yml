@@ -29,7 +29,7 @@ jobs:
           tools: flex
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Download dependencies
         run: |
@@ -90,7 +90,7 @@ jobs:
           extensions: ${{ join(matrix.run.extensions, ', ') }}
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Download dependencies
         run: |
