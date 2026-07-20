@@ -103,3 +103,18 @@ jobs:
 
       - name: PHPUnit
         run: php vendor/bin/phpunit
+
+  roave_bc_check:
+    name: BC Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+      - name: Composer install
+        run: composer require --dev roave/backward-compatibility-check
+      - name: Roave BC Check
+        run: vendor/bin/roave-backward-compatibility-check --format=github-actions
