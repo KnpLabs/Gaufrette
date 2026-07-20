@@ -71,7 +71,7 @@ jobs:
 
           - packages: "mongodb/mongodb:^1.1"
             phpspec: "spec/Gaufrette/Adapter/GridFSSpec.php"
-            extensions: [mongodb-1.11.0]
+            extensions: [mongodb-1.21.0]
 
           - packages: "phpseclib/phpseclib:^2.0"
             phpspec: "spec/Gaufrette/Adapter/PhpseclibSftpSpec.php"
