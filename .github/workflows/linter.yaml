@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: master
 
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.repository }}/${{ github.workflow }}/${{ github.ref_name }}
+
 jobs:
 
   phpstan:
