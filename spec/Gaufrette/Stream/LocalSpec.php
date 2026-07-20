@@ -4,7 +4,7 @@ namespace spec\Gaufrette\Stream;
 
 use PhpSpec\ObjectBehavior;
 use Gaufrette\StreamMode;
-use org\bovigo\vfs\vfsStream;
+use bovigo\vfs\vfsStream;
 
 class LocalSpec extends ObjectBehavior
 {

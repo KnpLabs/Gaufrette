@@ -48,8 +48,8 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ fromJson(inputs.PHP_VERSIONS)[0] }}
-          extensions: mongo, mbstring, fileinfo
+          php-version: '8.1'
+          extensions: mongo-1.11.0, mbstring, fileinfo
           tools: composer:v2
 
       - name: Checkout code

@@ -2,7 +2,7 @@
 
 namespace spec\Gaufrette\Adapter;
 
-use org\bovigo\vfs\vfsStream;
+use bovigo\vfs\vfsStream;
 use PhpSpec\ObjectBehavior;
 
 class SafeLocalSpec extends ObjectBehavior
