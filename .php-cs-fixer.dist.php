@@ -28,7 +28,6 @@ return (new PhpCsFixer\Config())
         'no_whitespace_before_comma_in_array' => true,
         'no_whitespace_in_blank_line' => true,
         'normalize_index_brace' => true,
-        'PedroTroller/phpspec' => true,
         'phpdoc_indent' => true,
         'phpdoc_to_comment' => true,
         'phpdoc_trim' => true,
@@ -37,5 +36,4 @@ return (new PhpCsFixer\Config())
         'trailing_comma_in_multiline' => ['elements' => ['arrays']],
         'trim_array_spaces' => true,
     ])
-    ->registerCustomFixers(new PedroTroller\CS\Fixer\Fixers())
 ;
