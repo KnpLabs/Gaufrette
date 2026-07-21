@@ -25,7 +25,8 @@
         "phpspec/phpspec": "^7.0 || ^8.0",
         "phpunit/phpunit": "~9.6",
         "mikey179/vfsstream": "v1.x-dev as 1.7.0",
-        "friendsofphp/php-cs-fixer": "^3.95"
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "rector/rector": "^2.5"
     },
     "suggest": {
         "knplabs/knp-gaufrette-bundle": "to use with Symfony",
