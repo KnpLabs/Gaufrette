@@ -4,7 +4,7 @@ namespace Gaufrette\Adapter;
 
 global $createdDirectory;
 
-function time()
+function time(): int
 {
     return \strtotime('2012-10-10 23:10:10');
 }
@@ -12,7 +12,7 @@ function time()
 function file_exists(string $path)
 {
     //fake it for ssh+ssl: protocol for SFTP testing, otherwise delegate to global
-    if (strpos($path, 'ssh+ssl:') === 0) {
+    if (str_starts_with($path, 'ssh+ssl:')) {
         return in_array($path, ['/home/l3l0/filename', '/home/somedir/filename', 'ssh+ssl://localhost/home/l3l0/filename']) ? true : false;
     }
 
@@ -30,17 +30,17 @@ function extension_loaded()
     return $extensionLoaded;
 }
 
-function opendir(string $url)
+function opendir(string $url): bool
 {
     return true;
 }
 
-function apc_fetch(string $path)
+function apc_fetch(string $path): string
 {
     return sprintf('%s content', $path);
 }
 
-function apc_store(string $path, mixed $content, int $ttl)
+function apc_store(string $path, mixed $content, int $ttl): false|string
 {
     if ('prefix-apc-test/invalid' === $path) {
         return false;
@@ -49,7 +49,7 @@ function apc_store(string $path, mixed $content, int $ttl)
     return sprintf('%s content', $path);
 }
 
-function apc_delete(string $path)
+function apc_delete(string $path): bool
 {
     if ('prefix-apc-test/invalid' === $path) {
         return false;
@@ -58,7 +58,7 @@ function apc_delete(string $path)
     return true;
 }
 
-function apc_exists(mixed $path)
+function apc_exists(mixed $path): bool
 {
     if ('prefix-apc-test/invalid' === $path) {
         return false;

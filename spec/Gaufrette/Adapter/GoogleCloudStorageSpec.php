@@ -6,23 +6,23 @@ use PhpSpec\ObjectBehavior;
 
 class GoogleCloudStorageSpec extends ObjectBehavior
 {
-    public function let(\Google_Service_Storage $service)
+    public function let(\Google_Service_Storage $service): void
     {
         $this->beConstructedWith($service, 'bucketName');
     }
 
-    public function it_is_adapter()
+    public function it_is_adapter(): void
     {
-        $this->shouldHaveType('Gaufrette\Adapter');
+        $this->shouldHaveType(\Gaufrette\Adapter::class);
     }
 
-    public function it_supports_metadata()
+    public function it_supports_metadata(): void
     {
-        $this->shouldHaveType('Gaufrette\Adapter\MetadataSupporter');
+        $this->shouldHaveType(\Gaufrette\Adapter\MetadataSupporter::class);
     }
 
-    public function it_is_list_keys_aware()
+    public function it_is_list_keys_aware(): void
     {
-        $this->shouldHaveType('Gaufrette\Adapter\ListKeysAware');
+        $this->shouldHaveType(\Gaufrette\Adapter\ListKeysAware::class);
     }
 }

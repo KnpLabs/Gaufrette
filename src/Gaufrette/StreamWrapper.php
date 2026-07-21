@@ -47,10 +47,10 @@ class StreamWrapper
     {
         self::streamWrapperUnregister($scheme);
 
-        if (!self::streamWrapperRegister($scheme, __CLASS__)) {
+        if (!self::streamWrapperRegister($scheme, self::class)) {
             throw new \RuntimeException(sprintf(
                 'Could not register stream wrapper class %s for scheme %s.',
-                __CLASS__,
+                self::class,
                 $scheme
             ));
         }
@@ -184,7 +184,7 @@ class StreamWrapper
 
         try {
             $stream->open($this->createStreamMode('r+'));
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
         }
 
         return $stream->stat();
@@ -196,7 +196,7 @@ class StreamWrapper
 
         try {
             $stream->open($this->createStreamMode('w+'));
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
             return false;
         }
 

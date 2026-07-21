@@ -12,36 +12,36 @@ interface MetadataAdapter extends \Gaufrette\Adapter,
 
 class FileSpec extends ObjectBehavior
 {
-    public function let(Filesystem $filesystem)
+    public function let(Filesystem $filesystem): void
     {
         $this->beConstructedWith('filename', $filesystem);
     }
 
-    public function it_is_initializable()
+    public function it_is_initializable(): void
     {
-        $this->shouldHaveType('Gaufrette\File');
+        $this->shouldHaveType(\Gaufrette\File::class);
     }
 
-    public function it_gives_access_to_key()
+    public function it_gives_access_to_key(): void
     {
         $this->getKey()->shouldReturn('filename');
     }
 
-    public function it_gets_content(Filesystem $filesystem)
+    public function it_gets_content(Filesystem $filesystem): void
     {
         $filesystem->read('filename')->shouldBeCalled()->willReturn('Some content');
 
         $this->getContent()->shouldReturn('Some content');
     }
 
-    public function it_gets_mtime(Filesystem $filesystem)
+    public function it_gets_mtime(Filesystem $filesystem): void
     {
         $filesystem->mtime('filename')->shouldBeCalled()->willReturn(1358797854);
 
         $this->getMtime()->shouldReturn(1358797854);
     }
 
-    public function it_pass_metadata_when_write_content(Filesystem $filesystem, MetadataAdapter $adapter)
+    public function it_pass_metadata_when_write_content(Filesystem $filesystem, MetadataAdapter $adapter): void
     {
         $metadata = ['id' => '123'];
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
@@ -51,7 +51,7 @@ class FileSpec extends ObjectBehavior
         $this->setContent('some content', $metadata);
     }
 
-    public function it_pass_metadata_when_read_content(Filesystem $filesystem, MetadataAdapter $adapter)
+    public function it_pass_metadata_when_read_content(Filesystem $filesystem, MetadataAdapter $adapter): void
     {
         $metadata = ['id' => '123'];
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
@@ -61,7 +61,7 @@ class FileSpec extends ObjectBehavior
         $this->getContent($metadata);
     }
 
-    public function it_pass_metadata_when_delete_content(Filesystem $filesystem, MetadataAdapter $adapter)
+    public function it_pass_metadata_when_delete_content(Filesystem $filesystem, MetadataAdapter $adapter): void
     {
         $metadata = ['id' => '123'];
         $adapter->setMetadata('filename', $metadata)->shouldBeCalled();
@@ -71,7 +71,7 @@ class FileSpec extends ObjectBehavior
         $this->delete($metadata);
     }
 
-    public function it_sets_content_of_file(Filesystem $filesystem, MetadataAdapter $adapter)
+    public function it_sets_content_of_file(Filesystem $filesystem, MetadataAdapter $adapter): void
     {
         $adapter->setMetadata('filename', [])->shouldNotBeCalled();
         $filesystem->getAdapter()->willReturn($adapter);
@@ -81,18 +81,18 @@ class FileSpec extends ObjectBehavior
         $this->getContent()->shouldReturn('some content');
     }
 
-    public function it_sets_key_as_name_by_default()
+    public function it_sets_key_as_name_by_default(): void
     {
         $this->getName()->shouldReturn('filename');
     }
 
-    public function it_sets_name()
+    public function it_sets_name(): void
     {
         $this->setName('name');
         $this->getName()->shouldReturn('name');
     }
 
-    public function it_sets_size_for_new_file(Filesystem $filesystem)
+    public function it_sets_size_for_new_file(Filesystem $filesystem): void
     {
         $filesystem->write('filename', 'some content', true)->shouldBeCalled()->willReturn(21);
 
@@ -100,14 +100,14 @@ class FileSpec extends ObjectBehavior
         $this->getSize()->shouldReturn(21);
     }
 
-    public function it_calculates_size_from_filesystem(Filesystem $filesystem)
+    public function it_calculates_size_from_filesystem(Filesystem $filesystem): void
     {
         $filesystem->size('filename')->shouldBeCalled()->willReturn(12);
 
         $this->getSize()->shouldReturn(12);
     }
 
-    public function it_allows_to_set_size(Filesystem $filesystem)
+    public function it_allows_to_set_size(Filesystem $filesystem): void
     {
         $filesystem->read('filename')->shouldNotBeCalled();
 
@@ -115,14 +115,14 @@ class FileSpec extends ObjectBehavior
         $this->getSize()->shouldReturn(21);
     }
 
-    public function it_gets_zero_size_when_file_not_found(Filesystem $filesystem)
+    public function it_gets_zero_size_when_file_not_found(Filesystem $filesystem): void
     {
         $filesystem->size('filename')->willThrow(new \Gaufrette\Exception\FileNotFound('filename'));
 
         $this->getSize()->shouldReturn(0);
     }
 
-    public function it_check_if_file_with_key_exists_in_filesystem(Filesystem $filesystem)
+    public function it_check_if_file_with_key_exists_in_filesystem(Filesystem $filesystem): void
     {
         $filesystem->has('filename')->willReturn(true);
         $this->exists()->shouldReturn(true);
@@ -131,13 +131,13 @@ class FileSpec extends ObjectBehavior
         $this->exists()->shouldReturn(false);
     }
 
-    public function it_deletes_file_from_filesystem(Filesystem $filesystem)
+    public function it_deletes_file_from_filesystem(Filesystem $filesystem): void
     {
         $filesystem->delete('filename')->shouldBeCalled()->willReturn(true);
         $this->delete()->shouldReturn(true);
     }
 
-    public function it_renames_file_from_filesystem(Filesystem $filesystem)
+    public function it_renames_file_from_filesystem(Filesystem $filesystem): void
     {
         $filesystem->rename('filename', 'newname')->shouldBeCalled();
         $this->rename('newname');

@@ -118,7 +118,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     public function read(string $key): string|bool
     {
         $this->init();
-        list($containerName, $key) = $this->tokenizeKey($key);
+        [$containerName, $key] = $this->tokenizeKey($key);
 
         try {
             $blob = $this->blobProxy->getBlob($containerName, $key);
@@ -137,7 +137,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     public function write(string $key, mixed $content): int|bool
     {
         $this->init();
-        list($containerName, $key) = $this->tokenizeKey($key);
+        [$containerName, $key] = $this->tokenizeKey($key);
 
         if (class_exists(CreateBlockBlobOptions::class)) {
             $options = new CreateBlockBlobOptions();
@@ -178,7 +178,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     public function exists(string $key): bool
     {
         $this->init();
-        list($containerName, $key) = $this->tokenizeKey($key);
+        [$containerName, $key] = $this->tokenizeKey($key);
 
         $listBlobsOptions = new ListBlobsOptions();
         $listBlobsOptions->setPrefix($key);
@@ -222,7 +222,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
                 $containersList = $this->blobProxy->listContainers();
 
                 return call_user_func_array('array_merge', array_map(
-                    function (Container $container) {
+                    function (Container $container): array {
                         $containerName = $container->getName();
 
                         return $this->fetchBlobs($containerName, $containerName);
@@ -251,7 +251,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     public function mtime(string $key): int|bool
     {
         $this->init();
-        list($containerName, $key) = $this->tokenizeKey($key);
+        [$containerName, $key] = $this->tokenizeKey($key);
 
         try {
             $properties = $this->blobProxy->getBlobProperties($containerName, $key);
@@ -270,7 +270,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     public function size(string $key): int
     {
         $this->init();
-        list($containerName, $key) = $this->tokenizeKey($key);
+        [$containerName, $key] = $this->tokenizeKey($key);
 
         try {
             $properties = $this->blobProxy->getBlobProperties($containerName, $key);
@@ -289,7 +289,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     public function mimeType(string $key): string|bool
     {
         $this->init();
-        list($containerName, $key) = $this->tokenizeKey($key);
+        [$containerName, $key] = $this->tokenizeKey($key);
 
         try {
             $properties = $this->blobProxy->getBlobProperties($containerName, $key);
@@ -308,7 +308,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     public function checksum(string $key): string|bool
     {
         $this->init();
-        list($containerName, $key) = $this->tokenizeKey($key);
+        [$containerName, $key] = $this->tokenizeKey($key);
 
         try {
             $properties = $this->blobProxy->getBlobProperties($containerName, $key);
@@ -328,7 +328,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     public function delete(string $key): bool
     {
         $this->init();
-        list($containerName, $key) = $this->tokenizeKey($key);
+        [$containerName, $key] = $this->tokenizeKey($key);
 
         try {
             $this->blobProxy->deleteBlob($containerName, $key);
@@ -348,8 +348,8 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     {
         $this->init();
 
-        list($sourceContainerName, $sourceKey) = $this->tokenizeKey($sourceKey);
-        list($targetContainerName, $targetKey) = $this->tokenizeKey($targetKey);
+        [$sourceContainerName, $sourceKey] = $this->tokenizeKey($sourceKey);
+        [$targetContainerName, $targetKey] = $this->tokenizeKey($targetKey);
 
         try {
             if ($this->multiContainerMode) {
@@ -381,7 +381,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     public function setMetadata(string $key, array $content): void
     {
         $this->init();
-        list($containerName, $key) = $this->tokenizeKey($key);
+        [$containerName, $key] = $this->tokenizeKey($key);
 
         try {
             $this->blobProxy->setBlobMetadata($containerName, $key, $content);
@@ -404,7 +404,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
     public function getMetadata(string $key): array
     {
         $this->init();
-        list($containerName, $key) = $this->tokenizeKey($key);
+        [$containerName, $key] = $this->tokenizeKey($key);
 
         try {
             $properties = $this->blobProxy->getBlobProperties($containerName, $key);

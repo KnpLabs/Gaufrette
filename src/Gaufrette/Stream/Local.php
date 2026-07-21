@@ -12,19 +12,15 @@ use Gaufrette\StreamMode;
  */
 class Local implements Stream
 {
-    private string $path;
-    private $mode;
+    private ?\Gaufrette\StreamMode $mode = null;
     private $fileHandle;
-    private int $mkdirMode;
 
     /**
      * @param string $path
      * @param int    $mkdirMode
      */
-    public function __construct(string $path, int $mkdirMode = 0755)
+    public function __construct(private string $path, private int $mkdirMode = 0755)
     {
-        $this->path = $path;
-        $this->mkdirMode = $mkdirMode;
     }
 
     public function open(StreamMode $mode): bool
@@ -36,7 +32,7 @@ class Local implements Stream
 
         try {
             $fileHandle = @fopen($this->path, $mode->getMode());
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $fileHandle = false;
         }
 

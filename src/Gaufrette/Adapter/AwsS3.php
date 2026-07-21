@@ -14,23 +14,20 @@ use Gaufrette\Util;
 class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator, MimeTypeProvider
 {
     protected S3Client $service;
-    protected string $bucket;
     protected array $options;
     protected bool $bucketExists = false;
     protected array $metadata = [];
-    protected bool $detectContentType;
 
     public function __construct(
         S3Client $service,
-        string $bucket,
+        protected string $bucket,
         array $options = [],
-        bool $detectContentType = false
+        protected bool $detectContentType = false
     ) {
         if (!class_exists(S3Client::class)) {
             throw new \LogicException('You need to install package "aws/aws-sdk-php" to use this adapter');
         }
         $this->service = $service;
-        $this->bucket = $bucket;
         $this->options = array_replace(
             [
                 'create' => false,
@@ -39,7 +36,6 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
             ],
             $options
         );
-        $this->detectContentType = $detectContentType;
     }
 
     /**
@@ -83,7 +79,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
             $this->metadata[$key]['ContentType'] = $object->get('ContentType');
 
             return (string) $object->get('Body');
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -103,7 +99,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
             $this->service->copyObject(array_merge($options, $this->getMetadata($targetKey)));
 
             return $this->delete($sourceKey);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -132,7 +128,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
             }
 
             return Util\Size::fromContent($content);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -154,7 +150,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
             $result = $this->service->headObject($this->getOptions($key));
 
             return strtotime($result['LastModified']);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -168,7 +164,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
             $result = $this->service->headObject($this->getOptions($key));
 
             return $result['ContentLength'];
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -179,7 +175,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
             $result = $this->service->headObject($this->getOptions($key));
 
             return ($result['ContentType']);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -224,7 +220,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
             $this->service->deleteObject($this->getOptions($key));
 
             return true;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -240,7 +236,7 @@ class AwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator
             'MaxKeys' => 1,
         ]);
         if (isset($result['Contents'])) {
-            if (is_array($result['Contents']) || $result['Contents'] instanceof \Countable) {
+            if (is_countable($result['Contents'])) {
                 return count($result['Contents']) > 0;
             }
         }

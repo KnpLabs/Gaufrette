@@ -63,9 +63,7 @@ class Flysystem implements Adapter, ListKeysAware
      */
     public function keys(): array
     {
-        return array_map(function ($content) {
-            return $content['path'];
-        }, $this->adapter->listContents());
+        return array_map(fn(array $content) => $content['path'], $this->adapter->listContents());
     }
 
     /**
@@ -77,7 +75,7 @@ class Flysystem implements Adapter, ListKeysAware
         $keys = [];
 
         foreach ($this->adapter->listContents() as $content) {
-            if (empty($prefix) || 0 === strpos($content['path'], $prefix)) {
+            if (empty($prefix) || str_starts_with($content['path'], $prefix)) {
                 if ('dir' === $content['type']) {
                     $dirs[] = $content['path'];
                 } else {

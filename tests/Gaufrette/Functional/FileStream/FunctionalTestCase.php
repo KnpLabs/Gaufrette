@@ -13,7 +13,7 @@ abstract class FunctionalTestCase extends TestCase
     /**
      * @test
      */
-    public function shouldCheckIsFile()
+    public function shouldCheckIsFile(): void
     {
         $this->filesystem->write('test.txt', 'some content');
         $this->assertTrue(is_file('gaufrette://filestream/test.txt'));
@@ -25,7 +25,7 @@ abstract class FunctionalTestCase extends TestCase
     /**
      * @test
      */
-    public function shouldCheckFileExists()
+    public function shouldCheckFileExists(): void
     {
         $this->filesystem->write('test.txt', 'some content');
         $this->assertFileExists('gaufrette://filestream/test.txt');
@@ -37,7 +37,7 @@ abstract class FunctionalTestCase extends TestCase
     /**
      * @test
      */
-    public function shouldWriteAndReadFile()
+    public function shouldWriteAndReadFile(): void
     {
         file_put_contents('gaufrette://filestream/test.txt', 'test content');
 
@@ -48,7 +48,7 @@ abstract class FunctionalTestCase extends TestCase
     /**
      * @test
      */
-    public function shouldNotReadWhenOpenInWriteMode()
+    public function shouldNotReadWhenOpenInWriteMode(): void
     {
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('The stream does not allow read.');
@@ -64,7 +64,7 @@ abstract class FunctionalTestCase extends TestCase
     /**
      * @test
      */
-    public function shouldNotWriteWhenOpenInReadMode()
+    public function shouldNotWriteWhenOpenInReadMode(): void
     {
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('The stream does not allow write.');
@@ -80,7 +80,7 @@ abstract class FunctionalTestCase extends TestCase
     /**
      * @test
      */
-    public function shouldWriteFromSettedPosition()
+    public function shouldWriteFromSettedPosition(): void
     {
         $fileHandler = fopen('gaufrette://filestream/test.txt', 'w');
         fseek($fileHandler, 1, SEEK_SET);
@@ -106,7 +106,7 @@ abstract class FunctionalTestCase extends TestCase
     /**
      * @test
      */
-    public function shouldWriteEmptyContent()
+    public function shouldWriteEmptyContent(): void
     {
         $bytes = file_put_contents('gaufrette://filestream/test.txt', '');
 
@@ -119,7 +119,7 @@ abstract class FunctionalTestCase extends TestCase
     /**
      * @test
      */
-    public function shouldSetAndGetPosition()
+    public function shouldSetAndGetPosition(): void
     {
         file_put_contents('gaufrette://filestream/test.txt', 'test content');
 
@@ -144,7 +144,7 @@ abstract class FunctionalTestCase extends TestCase
     /**
      * @test
      */
-    public function shouldNotSeekWhenWhenceParameterIsInvalid()
+    public function shouldNotSeekWhenWhenceParameterIsInvalid(): void
     {
         file_put_contents('gaufrette://filestream/test.txt', 'test content');
 
@@ -155,7 +155,7 @@ abstract class FunctionalTestCase extends TestCase
     /**
      * @test
      */
-    public function shouldHandlesSubDir()
+    public function shouldHandlesSubDir(): void
     {
         file_put_contents('gaufrette://filestream/subdir/test.txt', 'test content');
 
@@ -168,7 +168,7 @@ abstract class FunctionalTestCase extends TestCase
     /**
      * @test
      */
-    public function shouldUnlinkFile()
+    public function shouldUnlinkFile(): void
     {
         if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
             $this->markTestSkipped('Flaky test on windows.');
@@ -183,7 +183,7 @@ abstract class FunctionalTestCase extends TestCase
     /**
      * @test
      */
-    public function shouldCopyFile()
+    public function shouldCopyFile(): void
     {
         file_put_contents('gaufrette://filestream/copy1.txt', 'test content');
 
@@ -200,7 +200,7 @@ abstract class FunctionalTestCase extends TestCase
      * @test
      * @dataProvider modesProvider
      */
-    public function shouldCreateNewFile($mode)
+    public function shouldCreateNewFile(string $mode): void
     {
         $fileHandler = fopen('gaufrette://filestream/test.txt', $mode);
         $this->assertFileExists('gaufrette://filestream/test.txt');

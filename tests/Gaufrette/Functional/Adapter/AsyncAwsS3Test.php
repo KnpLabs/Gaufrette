@@ -47,11 +47,11 @@ class AsyncAwsS3Test extends FunctionalTestCase
                 $this->filesystem->delete($file);
             }
             $this->client->deleteBucket(['Bucket' => $this->bucket]);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
         }
     }
 
-    private function createFilesystem(array $adapterOptions = [])
+    private function createFilesystem(array $adapterOptions = []): void
     {
         $this->filesystem = new Filesystem(new AsyncAwsS3($this->client, $this->bucket, $adapterOptions));
     }

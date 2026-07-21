@@ -12,8 +12,6 @@ use Gaufrette\Adapter\ListKeysAware;
  */
 class Filesystem implements FilesystemInterface
 {
-    protected Adapter $adapter;
-
     /**
      * Contains File objects created with $this->createFile() method.
      *
@@ -24,9 +22,8 @@ class Filesystem implements FilesystemInterface
     /**
      * @param Adapter $adapter A configured Adapter instance
      */
-    public function __construct(Adapter $adapter)
+    public function __construct(protected Adapter $adapter)
     {
-        $this->adapter = $adapter;
     }
 
     public function getAdapter(): Adapter
@@ -161,7 +158,7 @@ class Filesystem implements FilesystemInterface
         $keys = [];
 
         foreach ($this->keys() as $key) {
-            if (empty($prefix) || 0 === strpos($key, $prefix)) {
+            if (empty($prefix) || str_starts_with($key, $prefix)) {
                 if ($this->adapter->isDirectory($key)) {
                     $dirs[] = $key;
                 } else {
@@ -267,7 +264,7 @@ class Filesystem implements FilesystemInterface
 
         throw new \LogicException(sprintf(
             'Adapter "%s" cannot provide MIME type',
-            get_class($this->adapter)
+            $this->adapter::class
         ));
     }
 

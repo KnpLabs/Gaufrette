@@ -85,7 +85,7 @@ class File
 
         try {
             return $this->size = $this->filesystem->size($this->getKey());
-        } catch (FileNotFound $exception) {
+        } catch (FileNotFound) {
             return 0;
         }
     }

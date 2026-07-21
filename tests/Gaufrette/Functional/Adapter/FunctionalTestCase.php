@@ -12,11 +12,11 @@ abstract class FunctionalTestCase extends TestCase
 
     public function getAdapterName()
     {
-        if (!preg_match('/\\\\(\w+)Test$/', get_class($this), $matches)) {
+        if (!preg_match('/\\\\(\w+)Test$/', static::class, $matches)) {
             throw new \RuntimeException(sprintf(
                 'Unable to guess filesystem name from class "%s", ' .
                 'please override the ->getAdapterName() method.',
-                get_class($this)
+                static::class
             ));
         }
 

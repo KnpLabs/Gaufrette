@@ -9,7 +9,6 @@ namespace Gaufrette;
  */
 class StreamMode
 {
-    private string $mode;
     private string $base;
     private bool $plus;
     private string $flag;
@@ -19,15 +18,13 @@ class StreamMode
      *
      * @see https://www.php.net/manual/en/function.fopen.php
      */
-    public function __construct(string $mode)
+    public function __construct(private string $mode)
     {
-        $this->mode = $mode;
+        $this->mode = substr($this->mode, 0, 3);
+        $rest = substr($this->mode, 1);
 
-        $mode = substr($mode, 0, 3);
-        $rest = substr($mode, 1);
-
-        $this->base = substr($mode, 0, 1);
-        $this->plus = false !== strpos($rest, '+');
+        $this->base = substr($this->mode, 0, 1);
+        $this->plus = str_contains($rest, '+');
         $this->flag = trim($rest, '+');
     }
 

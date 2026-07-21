@@ -120,7 +120,7 @@ class PhpseclibSftp implements Adapter, FileFactory, ListKeysAware
         foreach (['keys', 'dirs'] as $hash) {
             $filteredKeys[$hash] = [];
             foreach ($keys[$hash] as $key) {
-                if (0 === strpos($key, $prefix)) {
+                if (str_starts_with($key, $prefix)) {
                     $filteredKeys[$hash][] = $key;
                 }
             }

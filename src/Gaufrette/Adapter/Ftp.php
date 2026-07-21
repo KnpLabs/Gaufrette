@@ -16,7 +16,6 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
     /** @var null|resource|\FTP\Connection */
     protected $connection = null;
     protected string $directory;
-    protected string $host;
     protected mixed $port;
     protected mixed $username;
     protected mixed $password;
@@ -33,14 +32,13 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
      * @param string $host      The host of the ftp server
      * @param array<string, mixed>  $options   The options like port, username, password, passive, create, mode
      */
-    public function __construct(string $directory, string $host, array $options = [])
+    public function __construct(string $directory, protected string $host, array $options = [])
     {
-        if (!extension_loaded('ftp')) {
+        if (!extension_loaded()) {
             throw new \RuntimeException('Unable to use Gaufrette\Adapter\Ftp as the FTP extension is not available.');
         }
 
         $this->directory = (string) $directory;
-        $this->host = $host;
         $this->port = $options['port'] ?? 21;
         $this->username = $options['username'] ?? null;
         $this->password = $options['password'] ?? null;
@@ -155,7 +153,7 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
         foreach (['keys', 'dirs'] as $hash) {
             $filteredKeys[$hash] = [];
             foreach ($keys[$hash] as $key) {
-                if (0 === strpos($key, $prefix)) {
+                if (str_starts_with($key, $prefix)) {
                     $filteredKeys[$hash][] = $key;
                 }
             }
@@ -227,9 +225,9 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
                 'size' => $itemData['size'],
             ];
 
-            if ('-' === substr($itemData['perms'], 0, 1)) {
+            if (str_starts_with($itemData['perms'], '-')) {
                 $fileData[$item['path']] = $item;
-            } elseif ('d' === substr($itemData['perms'], 0, 1)) {
+            } elseif (str_starts_with($itemData['perms'], 'd')) {
                 $dirs[] = $item['path'];
             }
         }
@@ -459,7 +457,7 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
      */
     private function isConnected(): bool
     {
-        if (class_exists('\FTP\Connection')) {
+        if (class_exists(\FTP\Connection::class)) {
             return $this->connection instanceof \FTP\Connection;
         }
 

@@ -25,9 +25,8 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     public const OPTION_LOCATION = 'bucket_location';
     public const OPTION_STORAGE_CLASS = 'storage_class';
 
-    protected $service;
-    protected $bucket;
-    protected $options = [
+    protected \Google\Service\Storage $service;
+    protected array $options = [
         self::OPTION_CREATE_BUCKET_IF_NOT_EXISTS => false,
         self::OPTION_STORAGE_CLASS => 'STANDARD',
         'directory' => '',
@@ -35,7 +34,6 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     ];
     protected $bucketExists;
     protected $metadata = [];
-    protected $detectContentType;
 
     /**
      * @param Storage $service           The storage service class with authenticated
@@ -46,22 +44,19 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
      */
     public function __construct(
         Storage $service,
-        string $bucket,
+        protected string $bucket,
         array $options = [],
-        bool $detectContentType = false
+        protected bool $detectContentType = false
     ) {
         if (!class_exists(Storage::class)) {
             throw new \LogicException('You need to install package "google/apiclient" to use this adapter');
         }
 
         $this->service = $service;
-        $this->bucket = $bucket;
         $this->options = array_replace(
             $this->options,
             $options
         );
-
-        $this->detectContentType = $detectContentType;
     }
 
     /**
@@ -187,7 +182,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
             }
 
             return $object->getSize();
-        } catch (ServiceException $e) {
+        } catch (ServiceException) {
             return false;
         }
     }
@@ -199,7 +194,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
 
         try {
             $this->service->objects->get($this->bucket, $path);
-        } catch (ServiceException $e) {
+        } catch (ServiceException) {
             return false;
         }
 
@@ -231,7 +226,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
 
         try {
             $this->service->objects->delete($this->bucket, $path);
-        } catch (ServiceException $e) {
+        } catch (ServiceException) {
             return false;
         }
 
@@ -252,7 +247,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
         try {
             $this->service->objects->copy($this->bucket, $sourcePath, $this->bucket, $targetPath, $object);
             $this->service->objects->delete($this->bucket, $sourcePath);
-        } catch (ServiceException $e) {
+        } catch (ServiceException) {
             return false;
         }
 
@@ -339,7 +334,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
             $this->bucketExists = true;
 
             return;
-        } catch (ServiceException $e) {
+        } catch (ServiceException) {
             if ($this->options[self::OPTION_CREATE_BUCKET_IF_NOT_EXISTS]) {
                 if (!isset($this->options[self::OPTION_PROJECT_ID])) {
                     throw new \RuntimeException(
@@ -400,7 +395,7 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
     {
         try {
             return $this->service->objects->get($this->bucket, $path, $options);
-        } catch (ServiceException $e) {
+        } catch (ServiceException) {
             return false;
         }
     }

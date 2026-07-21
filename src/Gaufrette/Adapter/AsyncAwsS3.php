@@ -16,24 +16,21 @@ use Gaufrette\Util;
 class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalculator, MimeTypeProvider
 {
     protected SimpleS3Client $service;
-    protected string $bucket;
     protected array $options;
     protected bool $bucketExists;
     protected array $metadata = [];
-    protected bool $detectContentType;
 
     public function __construct(
         SimpleS3Client $service,
-        string $bucket,
+        protected string $bucket,
         array $options = [],
-        bool $detectContentType = false
+        protected bool $detectContentType = false
     ) {
         if (!class_exists(SimpleS3Client::class)) {
             throw new \LogicException('You need to install package "async-aws/simple-s3" to use this adapter');
         }
 
         $this->service = $service;
-        $this->bucket = $bucket;
 
         $this->options = array_replace(
             [
@@ -43,8 +40,6 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
             ],
             $options
         );
-
-        $this->detectContentType = $detectContentType;
     }
 
     /**
@@ -88,7 +83,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
             $this->metadata[$key]['ContentType'] = $object->getContentType();
 
             return $object->getBody()->getContentAsString();
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -108,7 +103,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
             $this->service->copyObject(array_merge($options, $this->getMetadata($targetKey)));
 
             return $this->delete($sourceKey);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -138,7 +133,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
             }
 
             return Util\Size::fromContent($content);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -160,7 +155,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
             $result = $this->service->headObject($this->getOptions($key));
 
             return $result->getLastModified()->getTimestamp();
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
@@ -222,7 +217,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
             $this->service->deleteObject($this->getOptions($key));
 
             return true;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }

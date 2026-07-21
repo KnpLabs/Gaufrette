@@ -35,7 +35,7 @@ class GridFS implements Adapter, ChecksumCalculator, MetadataSupporter, ListKeys
     {
         try {
             $stream = $this->bucket->openDownloadStreamByName($key);
-        } catch (FileNotFoundException $e) {
+        } catch (FileNotFoundException) {
             return false;
         }
 
@@ -80,7 +80,7 @@ class GridFS implements Adapter, ChecksumCalculator, MetadataSupporter, ListKeys
             $this->bucket->downloadToStreamByName($sourceKey, $writable);
             $this->setMetadata($targetKey, $metadata);
             $this->delete($sourceKey);
-        } catch (FileNotFoundException $e) {
+        } catch (FileNotFoundException) {
             return false;
         } finally {
             fclose($writable);

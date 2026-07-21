@@ -72,7 +72,7 @@ class AwsS3Test extends FunctionalTestCase
         $this->client->deleteBucket(['Bucket' => $this->bucket]);
     }
 
-    private function createFilesystem(array $adapterOptions = [])
+    private function createFilesystem(array $adapterOptions = []): void
     {
         $this->filesystem = new Filesystem(new AwsS3($this->client, $this->bucket, $adapterOptions));
     }

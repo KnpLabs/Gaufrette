@@ -15,8 +15,6 @@ use Gaufrette\Stream;
 class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculator, MimeTypeProvider
 {
     protected string $directory;
-    private bool $create;
-    private int $mode;
     /**
      * @param string $directory Directory where the filesystem is located
      * @param bool   $create    Whether to create the directory if it does not
@@ -28,17 +26,14 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
      */
     public function __construct(
         string $directory,
-        bool $create = false,
-        int $mode = 0777
+        private bool $create = false,
+        private int $mode = 0777
     ) {
         $this->directory = Util\Path::normalize($directory);
 
         if (is_link($this->directory)) {
             $this->directory = realpath($this->directory);
         }
-
-        $this->create = $create;
-        $this->mode = $mode;
     }
 
     /**
@@ -104,7 +99,7 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
                 ),
                 \RecursiveIteratorIterator::CHILD_FIRST
             );
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $files = new \EmptyIterator();
         }
 
@@ -243,7 +238,7 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
     {
         $path = Util\Path::normalize($path);
 
-        if (0 !== strpos($path, $this->directory)) {
+        if (!str_starts_with($path, $this->directory)) {
             throw new \OutOfBoundsException(sprintf('The path "%s" is out of the filesystem.', $path));
         }
 

@@ -16,27 +16,27 @@ use PhpSpec\ObjectBehavior;
 
 class PhpseclibSftpSpec extends ObjectBehavior
 {
-    public function let(SFTP $sftp)
+    public function let(SFTP $sftp): void
     {
         $this->beConstructedWith($sftp, '/home/l3l0', false, 'l3lo', 'password');
     }
 
-    public function it_is_adapter()
+    public function it_is_adapter(): void
     {
-        $this->shouldHaveType('Gaufrette\Adapter');
+        $this->shouldHaveType(\Gaufrette\Adapter::class);
     }
 
-    public function it_is_file_factory()
+    public function it_is_file_factory(): void
     {
-        $this->shouldHaveType('Gaufrette\Adapter\FileFactory');
+        $this->shouldHaveType(\Gaufrette\Adapter\FileFactory::class);
     }
 
-    public function it_supports_native_list_keys()
+    public function it_supports_native_list_keys(): void
     {
-        $this->shouldHaveType('Gaufrette\Adapter\ListKeysAware');
+        $this->shouldHaveType(\Gaufrette\Adapter\ListKeysAware::class);
     }
 
-    public function it_fetches_keys(SFTP $sftp)
+    public function it_fetches_keys(SFTP $sftp): void
     {
         $sftp
             ->file_exists('/home/l3l0/')
@@ -60,14 +60,14 @@ class PhpseclibSftpSpec extends ObjectBehavior
         $this->keys()->shouldReturn(['filename', 'filename1', 'aaa', 'aaa/filename']);
     }
 
-    public function it_reads_file(SFTP $sftp)
+    public function it_reads_file(SFTP $sftp): void
     {
         $sftp->get('/home/l3l0/filename')->willReturn('some content');
 
         $this->read('filename')->shouldReturn('some content');
     }
 
-    public function it_creates_and_writes_file(SFTP $sftp)
+    public function it_creates_and_writes_file(SFTP $sftp): void
     {
         $sftp->pwd()->willReturn('/home/l3l0');
         $sftp->chdir('/home/l3l0')->willReturn(true);
@@ -77,7 +77,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
-    public function it_renames_file(SFTP $sftp)
+    public function it_renames_file(SFTP $sftp): void
     {
         $sftp->pwd()->willReturn('/home/l3l0');
         $sftp->chdir('/home/l3l0')->willReturn(true);
@@ -89,7 +89,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
         $this->rename('filename', 'filename1')->shouldReturn(true);
     }
 
-    public function it_should_check_if_file_exists(SFTP $sftp)
+    public function it_should_check_if_file_exists(SFTP $sftp): void
     {
         $sftp->pwd()->willReturn('/home/l3l0');
         $sftp->chdir('/home/l3l0')->willReturn(true);
@@ -102,7 +102,7 @@ class PhpseclibSftpSpec extends ObjectBehavior
         $this->exists('filename1')->shouldReturn(false);
     }
 
-    public function it_should_check_is_directory(SFTP $sftp)
+    public function it_should_check_is_directory(SFTP $sftp): void
     {
         $sftp->pwd()->willReturn('/home/l3l0');
         $sftp->chdir('/home/l3l0')->willReturn(true);
@@ -113,13 +113,13 @@ class PhpseclibSftpSpec extends ObjectBehavior
         $this->isDirectory('filename')->shouldReturn(false);
     }
 
-    public function it_should_create_file(SFTP $sftp, Filesystem $filesystem)
+    public function it_should_create_file(SFTP $sftp, Filesystem $filesystem): void
     {
         $sftp->stat('/home/l3l0/filename')->willReturn([
             'name' => '/home/l3l0/filename',
             'size' => '30',
         ]);
 
-        $this->createFile('filename', $filesystem)->beAnInstanceOf('Gaufrette\File');
+        $this->createFile('filename', $filesystem)->beAnInstanceOf(\Gaufrette\File::class);
     }
 }

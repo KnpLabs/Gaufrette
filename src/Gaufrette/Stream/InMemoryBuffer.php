@@ -9,8 +9,6 @@ use Gaufrette\Util;
 
 class InMemoryBuffer implements Stream
 {
-    private Filesystem $filesystem;
-    private string $key;
     private ?StreamMode $mode = null;
     private string $content;
     private int $numBytes;
@@ -21,10 +19,8 @@ class InMemoryBuffer implements Stream
      * @param Filesystem $filesystem The filesystem managing the file to stream
      * @param string     $key        The file key
      */
-    public function __construct(Filesystem $filesystem, string $key)
+    public function __construct(private Filesystem $filesystem, private string $key)
     {
-        $this->filesystem = $filesystem;
-        $this->key = $key;
     }
 
     public function open(StreamMode $mode): bool
@@ -138,7 +134,7 @@ class InMemoryBuffer implements Stream
 
         try {
             $this->writeContent($this->content);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
 

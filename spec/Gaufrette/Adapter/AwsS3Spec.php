@@ -13,37 +13,37 @@ use PhpSpec\ObjectBehavior;
 
 class AwsS3Spec extends ObjectBehavior
 {
-    public function let(S3Client $service)
+    public function let(S3Client $service): void
     {
         $this->beConstructedWith($service, 'bucketName');
     }
 
-    public function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType(AwsS3::class);
     }
 
-    public function it_is_adapter()
+    public function it_is_adapter(): void
     {
         $this->shouldHaveType(Adapter::class);
     }
 
-    public function it_supports_metadata()
+    public function it_supports_metadata(): void
     {
         $this->shouldHaveType(MetadataSupporter::class);
     }
 
-    public function it_supports_sizecalculator()
+    public function it_supports_sizecalculator(): void
     {
         $this->shouldHaveType(SizeCalculator::class);
     }
 
-    public function it_provides_mime_type()
+    public function it_provides_mime_type(): void
     {
         $this->shouldHaveType(MimeTypeProvider::class);
     }
 
-    public function it_creates_bucket_if_it_does_not_exists(S3Client $service)
+    public function it_creates_bucket_if_it_does_not_exists(S3Client $service): void
     {
         $this->beConstructedWith(
             $service,

@@ -18,8 +18,8 @@ final class Zip implements Adapter
 
     public function __construct(private string $zipFile)
     {
-        if (!extension_loaded('zip')) {
-            throw new \RuntimeException(sprintf('Unable to use %s as the ZIP extension is not available.', __CLASS__));
+        if (!extension_loaded()) {
+            throw new \RuntimeException(sprintf('Unable to use %s as the ZIP extension is not available.', self::class));
         }
 
         $this->reinitZipArchive();
@@ -139,7 +139,7 @@ final class Zip implements Adapter
         if (isset($this->zipArchive)) {
             try {
                 $this->zipArchive->close();
-            } catch (\Exception $e) {
+            } catch (\Exception) {
             }
             unset($this->zipArchive);
         }

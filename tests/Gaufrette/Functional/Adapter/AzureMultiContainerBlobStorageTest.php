@@ -19,7 +19,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
 
     protected function setUp(): void
     {
-        $this->markTestSkipped(__CLASS__ . ' is flaky.');
+        $this->markTestSkipped(self::class . ' is flaky.');
 
         $account = getenv('AZURE_ACCOUNT');
         $key = getenv('AZURE_KEY');
@@ -254,7 +254,7 @@ class AzureMultiContainerBlobStorageTest extends FunctionalTestCase
         $this->assertEquals('DEF', $FileObjectA->getContent());
     }
 
-    private function createUniqueContainerName($prefix)
+    private function createUniqueContainerName(string $prefix): string
     {
         $this->containers[] = $container = uniqid($prefix);
 

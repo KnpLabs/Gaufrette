@@ -12,33 +12,31 @@ use Prophecy\Argument;
 
 class DoctrineDbalSpec extends ObjectBehavior
 {
-    public function let(Connection $connection)
+    public function let(Connection $connection): void
     {
         $this->beConstructedWith($connection, 'someTableName');
     }
 
-    public function it_is_adapter()
+    public function it_is_adapter(): void
     {
-        $this->shouldHaveType('Gaufrette\Adapter');
+        $this->shouldHaveType(\Gaufrette\Adapter::class);
     }
 
-    public function it_is_checksum_calculator()
+    public function it_is_checksum_calculator(): void
     {
-        $this->shouldHaveType('Gaufrette\Adapter\ChecksumCalculator');
+        $this->shouldHaveType(\Gaufrette\Adapter\ChecksumCalculator::class);
     }
 
-    public function it_does_not_handle_directories()
+    public function it_does_not_handle_directories(): void
     {
         $this->isDirectory('filename')->shouldReturn(false);
     }
 
-    public function it_checks_if_file_exists(Connection $connection)
+    public function it_checks_if_file_exists(Connection $connection): void
     {
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) {
-                return sprintf('"%s"', $argument[0]);
-            });
+            ->will(fn($argument): string => sprintf('"%s"', $argument[0]));
 
         $method = 'fetchOne'; // dbal 3.x
         if (!method_exists(Connection::class, 'fetchAllAssociative')) {
@@ -56,13 +54,11 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->exists('filename')->shouldReturn(false);
     }
 
-    public function it_writes_to_new_file(Connection $connection)
+    public function it_writes_to_new_file(Connection $connection): void
     {
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) {
-                return sprintf('"%s"', $argument[0]);
-            });
+            ->will(fn($argument): string => sprintf('"%s"', $argument[0]));
 
         $method = 'fetchOne'; // dbal 3.x
         if (!method_exists(Connection::class, 'fetchAllAssociative')) {
@@ -87,7 +83,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
-    public function it_write_file(Connection $connection)
+    public function it_write_file(Connection $connection): void
     {
         $method = 'fetchOne'; // dbal 3.x
         if (!method_exists(Connection::class, 'fetchAllAssociative')) {
@@ -96,9 +92,7 @@ class DoctrineDbalSpec extends ObjectBehavior
 
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) {
-                return sprintf('"%s"', $argument[0]);
-            });
+            ->will(fn($argument): string => sprintf('"%s"', $argument[0]));
         $connection
             ->$method('SELECT COUNT("key") FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(true);
@@ -119,7 +113,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
-    public function it_reads_file(Connection $connection)
+    public function it_reads_file(Connection $connection): void
     {
         $method = 'fetchOne'; // dbal 3.x
         if (!method_exists(Connection::class, 'fetchAllAssociative')) {
@@ -128,9 +122,7 @@ class DoctrineDbalSpec extends ObjectBehavior
 
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) {
-                return sprintf('"%s"', $argument[0]);
-            });
+            ->will(fn($argument): string => sprintf('"%s"', $argument[0]));
         $connection
             ->$method('SELECT "content" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn('some content');
@@ -138,7 +130,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->read('filename')->shouldReturn('some content');
     }
 
-    public function it_calculates_checksum(Connection $connection)
+    public function it_calculates_checksum(Connection $connection): void
     {
         $method = 'fetchOne'; // dbal 3.x
         if (!method_exists(Connection::class, 'fetchAllAssociative')) {
@@ -147,9 +139,7 @@ class DoctrineDbalSpec extends ObjectBehavior
 
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) {
-                return sprintf('"%s"', $argument[0]);
-            });
+            ->will(fn($argument): string => sprintf('"%s"', $argument[0]));
         $connection
             ->$method('SELECT "checksum" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(1234);
@@ -157,7 +147,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->checksum('filename')->shouldReturn('1234');
     }
 
-    public function it_gets_mtime(Connection $connection)
+    public function it_gets_mtime(Connection $connection): void
     {
         $method = 'fetchOne'; // dbal 3.x
         if (!method_exists(Connection::class, 'fetchAllAssociative')) {
@@ -166,9 +156,7 @@ class DoctrineDbalSpec extends ObjectBehavior
 
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) {
-                return sprintf('"%s"', $argument[0]);
-            });
+            ->will(fn($argument): string => sprintf('"%s"', $argument[0]));
         $connection
             ->$method('SELECT "mtime" FROM "someTableName" WHERE "key" = :key', ['key' => 'filename'])
             ->willReturn(1234);
@@ -176,13 +164,11 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->mtime('filename')->shouldReturn(1234);
     }
 
-    public function it_renames_file(Connection $connection)
+    public function it_renames_file(Connection $connection): void
     {
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) {
-                return sprintf('"%s"', $argument[0]);
-            });
+            ->will(fn($argument): string => sprintf('"%s"', $argument[0]));
         $connection
             ->update(
                 'someTableName',
@@ -199,7 +185,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->rename('filename', 'newFile')->shouldReturn(true);
     }
 
-    public function it_get_keys(Connection $connection, $result)
+    public function it_get_keys(Connection $connection, $result): void
     {
         if (class_exists(Result::class)) {
             // dbal 3.x
@@ -213,9 +199,7 @@ class DoctrineDbalSpec extends ObjectBehavior
 
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) {
-                return sprintf('"%s"', $argument[0]);
-            });
+            ->will(fn($argument): string => sprintf('"%s"', $argument[0]));
         $connection
             ->executeQuery('SELECT "key" FROM "someTableName"')
             ->willReturn($result);
@@ -223,13 +207,11 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->keys()->shouldReturn(['filename', 'filename1', 'filename2']);
     }
 
-    public function it_deletes_file(Connection $connection)
+    public function it_deletes_file(Connection $connection): void
     {
         $connection
             ->quoteIdentifier(Argument::any())
-            ->will(function ($argument) {
-                return sprintf('"%s"', $argument[0]);
-            });
+            ->will(fn($argument): string => sprintf('"%s"', $argument[0]));
         $connection
             ->delete('someTableName', ['"key"' => 'filename'])
             ->shouldBeCalled()

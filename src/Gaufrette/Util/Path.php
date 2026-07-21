@@ -19,9 +19,7 @@ class Path
         $path = substr($path, strlen($prefix));
         $parts = array_filter(
             explode('/', $path),
-            function (string $part): bool {
-                return '' !== $part;
-            },
+            fn(string $part): bool => '' !== $part,
         );
         $tokens = [];
 

@@ -18,7 +18,7 @@ class GoogleCloudStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldThrowExceptionIfBucketMissing()
+    public function shouldThrowExceptionIfBucketMissing(): void
     {
         $this->expectException(\RuntimeException::class);
         /** @var \Gaufrette\Adapter\GoogleCloudStorage $adapter */
@@ -33,7 +33,7 @@ class GoogleCloudStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldWriteAndReadWithDirectory()
+    public function shouldWriteAndReadWithDirectory(): void
     {
         /** @var \Gaufrette\Adapter\GoogleCloudStorage $adapter */
         $adapter = $this->filesystem->getAdapter();
@@ -55,7 +55,7 @@ class GoogleCloudStorageTest extends FunctionalTestCase
      * @test
      * @group functional
      */
-    public function shouldSetMetadataCorrectly()
+    public function shouldSetMetadataCorrectly(): void
     {
         /** @var \Gaufrette\Adapter\GoogleCloudStorage $adapter */
         $adapter = $this->filesystem->getAdapter();

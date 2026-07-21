@@ -10,43 +10,43 @@ use PhpSpec\ObjectBehavior;
 
 class GridFSSpec extends ObjectBehavior
 {
-    private $resources = [];
+    private array $resources = [];
 
-    public function let(Bucket $bucket)
+    public function let(Bucket $bucket): void
     {
         $this->beConstructedWith($bucket);
     }
 
-    public function letGo()
+    public function letGo(): void
     {
-        array_map(function ($res) {
+        array_map(function ($res): void {
             if (is_resource($res)) {
                 @fclose($res);
             }
         }, $this->resources);
     }
 
-    public function it_is_adapter()
+    public function it_is_adapter(): void
     {
-        $this->shouldHaveType('Gaufrette\Adapter');
+        $this->shouldHaveType(\Gaufrette\Adapter::class);
     }
 
-    public function it_is_checksum_calculator()
+    public function it_is_checksum_calculator(): void
     {
-        $this->shouldHaveType('Gaufrette\Adapter\ChecksumCalculator');
+        $this->shouldHaveType(\Gaufrette\Adapter\ChecksumCalculator::class);
     }
 
-    public function it_supports_metadata()
+    public function it_supports_metadata(): void
     {
-        $this->shouldHaveType('Gaufrette\Adapter\MetadataSupporter');
+        $this->shouldHaveType(\Gaufrette\Adapter\MetadataSupporter::class);
     }
 
-    public function it_supports_native_list_keys()
+    public function it_supports_native_list_keys(): void
     {
-        $this->shouldHaveType('Gaufrette\Adapter\ListKeysAware');
+        $this->shouldHaveType(\Gaufrette\Adapter\ListKeysAware::class);
     }
 
-    public function it_reads_file(Bucket $bucket)
+    public function it_reads_file(Bucket $bucket): void
     {
         $this->resources[] = $readable = fopen('php://memory', 'rw');
         fwrite($readable, 'some content');
@@ -61,14 +61,14 @@ class GridFSSpec extends ObjectBehavior
         $this->read('filename')->shouldReturn('some content');
     }
 
-    public function it_does_not_fail_when_cannot_read(Bucket $bucket)
+    public function it_does_not_fail_when_cannot_read(Bucket $bucket): void
     {
         $bucket->openDownloadStreamByName('filename')->willThrow(FileNotFoundException::class);
 
         $this->read('filename')->shouldReturn(false);
     }
 
-    public function it_checks_if_file_exists(Bucket $bucket, BSONDocument $file)
+    public function it_checks_if_file_exists(Bucket $bucket, BSONDocument $file): void
     {
         $bucket
             ->findOne(['filename' => 'filename'])
@@ -83,7 +83,7 @@ class GridFSSpec extends ObjectBehavior
         $this->exists('filename2')->shouldReturn(false);
     }
 
-    public function it_deletes_file(Bucket $bucket)
+    public function it_deletes_file(Bucket $bucket): void
     {
         $bucket
             ->findOne(['filename' => 'filename'], ['projection' => ['_id' => 1]])
@@ -94,14 +94,14 @@ class GridFSSpec extends ObjectBehavior
         $this->delete('filename')->shouldReturn(true);
     }
 
-    public function it_does_not_delete_file(Bucket $bucket)
+    public function it_does_not_delete_file(Bucket $bucket): void
     {
         $bucket->findOne(['filename' => 'filename'], ['projection' => ['_id' => 1]])->willReturn(null);
 
         $this->delete('filename')->shouldReturn(false);
     }
 
-    public function it_writes_file(Bucket $bucket)
+    public function it_writes_file(Bucket $bucket): void
     {
         $this->resources[] = $writable = fopen('php://memory', 'rw');
 
@@ -117,7 +117,7 @@ class GridFSSpec extends ObjectBehavior
         ;
     }
 
-    public function it_renames_file(Bucket $bucket)
+    public function it_renames_file(Bucket $bucket): void
     {
         $this->resources[] = $writable = fopen('php://memory', 'rw');
         $this->resources[] = $readable = fopen('php://memory', 'rw');
@@ -137,7 +137,7 @@ class GridFSSpec extends ObjectBehavior
         $this->rename('filename', 'otherFilename')->shouldReturn(true);
     }
 
-    public function it_fetches_keys(Bucket $bucket)
+    public function it_fetches_keys(Bucket $bucket): void
     {
         $bucket
             ->find([], ['projection' => ['filename' => 1]])
@@ -147,7 +147,7 @@ class GridFSSpec extends ObjectBehavior
         $this->keys()->shouldReturn(['filename', 'otherFilename']);
     }
 
-    public function it_fetches_mtime(Bucket $bucket)
+    public function it_fetches_mtime(Bucket $bucket): void
     {
         $bucket
             ->findOne(['filename' => 'filename'], ['projection' => ['uploadDate' => 1]])
@@ -157,7 +157,7 @@ class GridFSSpec extends ObjectBehavior
         $this->mtime('filename')->shouldReturn(12345);
     }
 
-    public function it_calculates_checksum(Bucket $bucket)
+    public function it_calculates_checksum(Bucket $bucket): void
     {
         $bucket
             ->findOne(['filename' => 'filename'], ['projection' => ['md5' => 1]])
