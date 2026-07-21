@@ -60,3 +60,27 @@ jobs:
         run: |
           ./vendor/bin/php-cs-fixer --version
           ./vendor/bin/php-cs-fixer fix --diff --dry-run --show-progress=none
+
+
+  rector:
+    name: Rector
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mongodb-1.21.0, mbstring, fileinfo
+          tools: composer:v2
+
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          make require-all
+          composer update --no-interaction --prefer-dist
+
+      - name: Run rector
+        run: vendor/bin/rector --dry-run --no-progress-bar
