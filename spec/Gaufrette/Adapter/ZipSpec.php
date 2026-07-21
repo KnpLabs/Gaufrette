@@ -7,12 +7,12 @@ use PhpSpec\ObjectBehavior;
 
 class ZipSpec extends ObjectBehavior
 {
-    function let()
+    public function let()
     {
         $this->beConstructedWith('somefile');
     }
 
-    function it_is_adapter()
+    public function it_is_adapter()
     {
         $this->shouldHaveType(Adapter::class);
     }

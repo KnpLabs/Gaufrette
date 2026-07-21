@@ -31,7 +31,7 @@ abstract class FunctionalTestCase extends TestCase
         $this->assertFileExists('gaufrette://filestream/test.txt');
 
         $this->filesystem->delete('test.txt');
-        $this->assertFileNotExists('gaufrette://filestream/test.txt');
+        $this->assertFileDoesNotExist('gaufrette://filestream/test.txt');
     }
 
     /**

@@ -168,7 +168,8 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
                 'SELECT %s FROM %s WHERE %s = :key',
                 $this->getQuotedColumn($column),
                 $this->getQuotedTable(),
-                $this->getQuotedColumn('key')),
+                $this->getQuotedColumn('key')
+            ),
             ['key' => $key]
         );
 
@@ -216,13 +217,13 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
 
     /**
      * This function ensure the compatibility with both dbal 2.x and 3.x.
-     * 
+     *
      * fetchOne will be replaced with fetchColumn
      *
      * @param 'fetchOne'|'fetchAllAssociative' $method
-     * @param string $dql 
-     * @param array $arguments 
-     * @return mixed 
+     * @param string $dql
+     * @param array $arguments
+     * @return mixed
      */
     private function fetch(string $method, string $dql, array $arguments): mixed
     {

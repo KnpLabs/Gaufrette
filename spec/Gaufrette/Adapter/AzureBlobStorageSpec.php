@@ -12,19 +12,19 @@ use WindowsAzure\Common\ServiceException;
 
 class AzureBlobStorageSpec extends ObjectBehavior
 {
-    function let(BlobProxyFactoryInterface $blobProxyFactory)
+    public function let(BlobProxyFactoryInterface $blobProxyFactory)
     {
         $this->beConstructedWith($blobProxyFactory, 'containerName');
     }
 
-    function it_should_be_initializable()
+    public function it_should_be_initializable()
     {
         $this->shouldHaveType('Gaufrette\Adapter\AzureBlobStorage');
         $this->shouldHaveType('Gaufrette\Adapter');
         $this->shouldHaveType('Gaufrette\Adapter\MetadataSupporter');
     }
 
-    function it_should_read_file(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy, GetBlobResult $getBlobResult)
+    public function it_should_read_file(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy, GetBlobResult $getBlobResult)
     {
         $getBlobResult
             ->getContentStream()
@@ -45,7 +45,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->read('filename')->shouldReturn('some content');
     }
 
-    function it_should_return_false_when_cannot_read(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_return_false_when_cannot_read(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxy
             ->getBlob('containerName', 'filename')
@@ -60,7 +60,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->read('filename')->shouldReturn(false);
     }
 
-    function it_should_not_mask_exception_when_read(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_not_mask_exception_when_read(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxy
             ->getBlob('containerName', 'filename')
@@ -75,7 +75,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(new \RuntimeException('read'))->duringRead('filename');
     }
 
-    function it_should_rename_file(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_rename_file(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxy
             ->copyBlob('containerName', 'filename2', 'containerName', 'filename1')
@@ -93,7 +93,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->rename('filename1', 'filename2')->shouldReturn(true);
     }
 
-    function it_should_return_false_when_cannot_rename(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_return_false_when_cannot_rename(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxy
             ->copyBlob('containerName', 'filename2', 'containerName', 'filename1')
@@ -108,7 +108,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->rename('filename1', 'filename2')->shouldReturn(false);
     }
 
-    function it_should_not_mask_exception_when_rename(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_not_mask_exception_when_rename(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxy
             ->copyBlob('containerName', 'filename2', 'containerName', 'filename1')
@@ -123,7 +123,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(new \RuntimeException('rename'))->duringRename('filename1', 'filename2');
     }
 
-    function it_should_write_file(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_write_file(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxy
             ->createBlockBlob(
@@ -142,7 +142,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
-    function it_should_return_false_when_cannot_write(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_return_false_when_cannot_write(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxy
             ->createBlockBlob(
@@ -161,7 +161,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->write('filename', 'some content')->shouldReturn(false);
     }
 
-    function it_should_not_mask_exception_when_write(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_not_mask_exception_when_write(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxy
             ->createBlockBlob(
@@ -180,7 +180,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(new \RuntimeException('write'))->duringWrite('filename', 'some content');
     }
 
-    function it_should_check_if_file_exists(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy, GetBlobResult $getBlobResult)
+    public function it_should_check_if_file_exists(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy, GetBlobResult $getBlobResult)
     {
         $blobProxyFactory
             ->create()
@@ -202,7 +202,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->exists('filename2')->shouldReturn(true);
     }
 
-    function it_should_not_mask_exception_when_check_if_file_exists(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_not_mask_exception_when_check_if_file_exists(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxyFactory
             ->create()
@@ -217,7 +217,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(new \RuntimeException('exists'))->duringExists('filename');
     }
 
-    function it_should_get_file_mtime(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy, GetBlobPropertiesResult $getBlobPropertiesResult, BlobProperties $blobProperties)
+    public function it_should_get_file_mtime(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy, GetBlobPropertiesResult $getBlobPropertiesResult, BlobProperties $blobProperties)
     {
         $blobProxyFactory
             ->create()
@@ -242,7 +242,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->mtime('filename')->shouldReturn(strtotime('1987-12-28 20:00:00'));
     }
 
-    function it_should_return_false_when_cannot_mtime(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_return_false_when_cannot_mtime(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxyFactory
             ->create()
@@ -257,7 +257,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->mtime('filename')->shouldReturn(false);
     }
 
-    function it_should_not_mask_exception_when_get_mtime(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_not_mask_exception_when_get_mtime(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxyFactory
             ->create()
@@ -272,7 +272,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(new \RuntimeException('mtime'))->duringMtime('filename');
     }
 
-    function it_should_delete_file(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_delete_file(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxyFactory
             ->create()
@@ -286,7 +286,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->delete('filename')->shouldReturn(true);
     }
 
-    function it_should_return_false_when_cannot_delete_file(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_return_false_when_cannot_delete_file(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxyFactory
             ->create()
@@ -301,7 +301,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->delete('filename')->shouldReturn(false);
     }
 
-    function it_should_not_mask_exception_when_delete(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_not_mask_exception_when_delete(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxyFactory
             ->create()
@@ -316,7 +316,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(new \RuntimeException('delete'))->duringDelete('filename');
     }
 
-    function it_should_get_keys(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy, ListBlobsResult $listBlobResult)
+    public function it_should_get_keys(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy, ListBlobsResult $listBlobResult)
     {
         $fileNames = ['aaa', 'aaa/filename', 'filename1', 'filename2'];
         $blobs = [];
@@ -344,7 +344,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->keys()->shouldReturn(['aaa', 'aaa/filename', 'filename1', 'filename2']);
     }
 
-    function it_should_not_mask_exception_when_get_keys(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_not_mask_exception_when_get_keys(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxyFactory
             ->create()
@@ -359,7 +359,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->shouldThrow(new \RuntimeException('keys'))->duringKeys();
     }
 
-    function it_should_handle_dirs(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_handle_dirs(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxyFactory
             ->create()
@@ -381,7 +381,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->isDirectory('dirname')->shouldReturn(true);
     }
 
-    function it_should_create_container(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_create_container(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxyFactory
             ->create()
@@ -395,7 +395,7 @@ class AzureBlobStorageSpec extends ObjectBehavior
         $this->createContainer('containerName');
     }
 
-    function it_should_fail_when_cannot_create_container(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
+    public function it_should_fail_when_cannot_create_container(BlobProxyFactoryInterface $blobProxyFactory, IBlob $blobProxy)
     {
         $blobProxyFactory
             ->create()

@@ -12,27 +12,27 @@ use Prophecy\Argument;
 
 class DoctrineDbalSpec extends ObjectBehavior
 {
-    function let(Connection $connection)
+    public function let(Connection $connection)
     {
         $this->beConstructedWith($connection, 'someTableName');
     }
 
-    function it_is_adapter()
+    public function it_is_adapter()
     {
         $this->shouldHaveType('Gaufrette\Adapter');
     }
 
-    function it_is_checksum_calculator()
+    public function it_is_checksum_calculator()
     {
         $this->shouldHaveType('Gaufrette\Adapter\ChecksumCalculator');
     }
 
-    function it_does_not_handle_directories()
+    public function it_does_not_handle_directories()
     {
         $this->isDirectory('filename')->shouldReturn(false);
     }
 
-    function it_checks_if_file_exists(Connection $connection)
+    public function it_checks_if_file_exists(Connection $connection)
     {
         $connection
             ->quoteIdentifier(Argument::any())
@@ -56,7 +56,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->exists('filename')->shouldReturn(false);
     }
 
-    function it_writes_to_new_file(Connection $connection)
+    public function it_writes_to_new_file(Connection $connection)
     {
         $connection
             ->quoteIdentifier(Argument::any())
@@ -87,7 +87,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
-    function it_write_file(Connection $connection)
+    public function it_write_file(Connection $connection)
     {
         $method = 'fetchOne'; // dbal 3.x
         if (!method_exists(Connection::class, 'fetchAllAssociative')) {
@@ -119,7 +119,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->write('filename', 'some content')->shouldReturn(12);
     }
 
-    function it_reads_file(Connection $connection)
+    public function it_reads_file(Connection $connection)
     {
         $method = 'fetchOne'; // dbal 3.x
         if (!method_exists(Connection::class, 'fetchAllAssociative')) {
@@ -138,7 +138,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->read('filename')->shouldReturn('some content');
     }
 
-    function it_calculates_checksum(Connection $connection)
+    public function it_calculates_checksum(Connection $connection)
     {
         $method = 'fetchOne'; // dbal 3.x
         if (!method_exists(Connection::class, 'fetchAllAssociative')) {
@@ -157,7 +157,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->checksum('filename')->shouldReturn('1234');
     }
 
-    function it_gets_mtime(Connection $connection)
+    public function it_gets_mtime(Connection $connection)
     {
         $method = 'fetchOne'; // dbal 3.x
         if (!method_exists(Connection::class, 'fetchAllAssociative')) {
@@ -176,7 +176,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->mtime('filename')->shouldReturn(1234);
     }
 
-    function it_renames_file(Connection $connection)
+    public function it_renames_file(Connection $connection)
     {
         $connection
             ->quoteIdentifier(Argument::any())
@@ -199,7 +199,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->rename('filename', 'newFile')->shouldReturn(true);
     }
 
-    function it_get_keys(Connection $connection, $result)
+    public function it_get_keys(Connection $connection, $result)
     {
         if (class_exists(Result::class)) {
             // dbal 3.x
@@ -223,7 +223,7 @@ class DoctrineDbalSpec extends ObjectBehavior
         $this->keys()->shouldReturn(['filename', 'filename1', 'filename2']);
     }
 
-    function it_deletes_file(Connection $connection)
+    public function it_deletes_file(Connection $connection)
     {
         $connection
             ->quoteIdentifier(Argument::any())

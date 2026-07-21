@@ -163,7 +163,7 @@ final class Zip implements Adapter
                 default => 'Unknown error.',
             };
 
-            throw new \RuntimeException( $errMsg);
+            throw new \RuntimeException($errMsg);
         }
 
         return $this;
