@@ -151,7 +151,7 @@ class InMemoryBuffer implements Stream
     }
 
     /**
-     * @return array<string, mixed>|false
+     * @return array<string|int, mixed>|false
      */
     public function stat(): array|bool
     {

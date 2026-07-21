@@ -63,7 +63,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
      *
      * @throws \RuntimeException if cannot create the container
      */
-    public function createContainer(string $containerName, CreateContainerOptions $options = null): void
+    public function createContainer(string $containerName, ?CreateContainerOptions $options = null): void
     {
         $this->init();
 
@@ -92,7 +92,7 @@ class AzureBlobStorage implements Adapter, MetadataSupporter, SizeCalculator, Ch
      *
      * @throws \RuntimeException if cannot delete the container
      */
-    public function deleteContainer(string $containerName, BlobServiceOptions $options = null): void
+    public function deleteContainer(string $containerName, ?BlobServiceOptions $options = null): void
     {
         $this->init();
 

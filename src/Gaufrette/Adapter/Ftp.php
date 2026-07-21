@@ -432,7 +432,7 @@ class Ftp implements Adapter, FileFactory, ListKeysAware, SizeCalculator
                     ];
                 }
             } elseif (count($infos) >= 4) {
-                $isDir = (boolean) ('<dir>' === $infos[2]);
+                $isDir = (bool) ('<dir>' === $infos[2]);
                 $parsed[] = [
                     'perms' => $isDir ? 'd' : '-',
                     'num' => '',

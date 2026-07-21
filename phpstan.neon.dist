@@ -4,5 +4,6 @@ includes:
 parameters:
     level: 5
     reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
     paths:
         - src

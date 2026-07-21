@@ -53,7 +53,7 @@ class InMemory implements Adapter, MimeTypeProvider
      * @param string $content The content
      * @param int    $mtime   The last modified time (automatically set to now if NULL)
      */
-    public function setFile(string $key, string $content = null, int $mtime = null): void
+    public function setFile(string $key, ?string $content = null, ?int $mtime = null): void
     {
         if (null === $mtime) {
             $mtime = time();
@@ -61,7 +61,7 @@ class InMemory implements Adapter, MimeTypeProvider
 
         $this->files[$key] = [
             'content' => (string) $content,
-            'mtime' => (integer) $mtime,
+            'mtime' => (int) $mtime,
         ];
     }
 
@@ -75,13 +75,13 @@ class InMemory implements Adapter, MimeTypeProvider
         $content = $this->read($sourceKey);
         $this->delete($sourceKey);
 
-        return (boolean) $this->write($targetKey, $content);
+        return (bool) $this->write($targetKey, $content);
     }
 
     /**
      * @param ?array<string, mixed> $metadata
      */
-    public function write(string $key, mixed $content, array $metadata = null): int|bool
+    public function write(string $key, mixed $content, ?array $metadata = null): int|bool
     {
         $this->files[$key]['content'] = $content;
         $this->files[$key]['mtime'] = time();

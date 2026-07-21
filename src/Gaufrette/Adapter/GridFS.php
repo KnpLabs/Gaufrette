@@ -94,7 +94,7 @@ class GridFS implements Adapter, ChecksumCalculator, MetadataSupporter, ListKeys
      */
     public function exists(string $key): bool
     {
-        return (boolean) $this->bucket->findOne(['filename' => $key]);
+        return (bool) $this->bucket->findOne(['filename' => $key]);
     }
 
     /**

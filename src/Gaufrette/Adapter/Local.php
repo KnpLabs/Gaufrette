@@ -288,7 +288,7 @@ class Local implements Adapter, StreamFactory, ChecksumCalculator, SizeCalculato
     }
 
     /**
-     * @param string The directory's path to delete
+     * @param string $directory The directory's path to delete
      *
      * @throws \InvalidArgumentException When attempting to delete the root
      * directory of this adapter.

@@ -45,7 +45,6 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
      */
     public function keys(): array
     {
-        $keys = [];
         $stmt = $this->connection->executeQuery(sprintf(
             'SELECT %s FROM %s',
             $this->getQuotedColumn('key'),
@@ -66,7 +65,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
      */
     public function rename(string $sourceKey, string $targetKey): bool
     {
-        return (boolean) $this->connection->update(
+        return (bool) $this->connection->update(
             $this->table,
             [$this->getQuotedColumn('key') => $targetKey],
             [$this->getQuotedColumn('key') => $sourceKey]
@@ -94,12 +93,8 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
      */
     public function exists(string $key): bool
     {
-        $method = 'fetchOne'; // dbal 3.x
-        if (!method_exists(Connection::class, $method)) {
-            $method = 'fetchColumn'; // BC layer for dbal 2.x
-        }
-
-        return (boolean) $this->connection->$method(
+        return (bool) $this->fetch(
+            'fetchOne',
             sprintf(
                 'SELECT COUNT(%s) FROM %s WHERE %s = :key',
                 $this->getQuotedColumn('key'),
@@ -123,7 +118,7 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
      */
     public function delete(string $key): bool
     {
-        return (boolean) $this->connection->delete(
+        return (bool) $this->connection->delete(
             $this->table,
             [$this->getQuotedColumn('key') => $key]
         );
@@ -167,18 +162,13 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
      */
     private function getColumnValue(string $key, string $column)
     {
-        $method = 'fetchOne'; // dbal 3.x
-        if (!method_exists(Connection::class, $method)) {
-            $method = 'fetchColumn'; // BC layer for dbal 2.x
-        }
-
-        $value = $this->connection->$method(
+        $value = $this->fetch(
+            'fetchOne',
             sprintf(
                 'SELECT %s FROM %s WHERE %s = :key',
                 $this->getQuotedColumn($column),
                 $this->getQuotedTable(),
-                $this->getQuotedColumn('key')
-            ),
+                $this->getQuotedColumn('key')),
             ['key' => $key]
         );
 
@@ -192,12 +182,8 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     {
         $prefix = trim($prefix);
 
-        $method = 'fetchAllAssociative'; // dbal 3.x
-        if (!method_exists(Connection::class, 'fetchAllAssociative')) {
-            $method = 'fetchAll'; // BC layer for dbal 2.x
-        }
-
-        $keys = $this->connection->$method(
+        $keys = $this->fetch(
+            'fetchAllAssociative',
             sprintf(
                 'SELECT %s AS _key FROM %s WHERE %s LIKE :pattern',
                 $this->getQuotedColumn('key'),
@@ -226,5 +212,28 @@ class DoctrineDbal implements Adapter, ChecksumCalculator, ListKeysAware
     private function getQuotedColumn(string $column)
     {
         return $this->connection->quoteIdentifier($this->columns[$column]);
+    }
+
+    /**
+     * This function ensure the compatibility with both dbal 2.x and 3.x.
+     * 
+     * fetchOne will be replaced with fetchColumn
+     *
+     * @param 'fetchOne'|'fetchAllAssociative' $method
+     * @param string $dql 
+     * @param array $arguments 
+     * @return mixed 
+     */
+    private function fetch(string $method, string $dql, array $arguments): mixed
+    {
+        if (!method_exists(Connection::class, $method)) {
+            $method = match($method) {
+                'fetchAllAssociative' => 'fetchAll',
+                'fetchOne' => 'fetchColumn'
+            };
+        }
+
+        // @phpstan-ignore-next-line method.notFound (BC layer for dbal 2.x, guarded by method_exists() above)
+        return $this->connection->$method($dql, $arguments);
     }
 }

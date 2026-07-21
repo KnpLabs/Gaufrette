@@ -12,7 +12,7 @@ use Gaufrette\Util;
  * @author Boris Guéry <guery.b@gmail.com>
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Zip implements Adapter
+final class Zip implements Adapter
 {
     protected ZipArchive $zipArchive;
 
@@ -58,7 +58,7 @@ class Zip implements Adapter
      */
     public function exists(string $key): bool
     {
-        return (boolean) $this->getStat($key);
+        return (bool) $this->getStat($key);
     }
 
     /**
@@ -135,6 +135,7 @@ class Zip implements Adapter
 
     public function __destruct()
     {
+        // @phpstan-ignore-next-line isset.initializedProperty (guards the case where the constructor throws before reinitZipArchive() runs)
         if (isset($this->zipArchive)) {
             try {
                 $this->zipArchive->close();
@@ -149,50 +150,20 @@ class Zip implements Adapter
         $this->zipArchive = new ZipArchive();
 
         if (true !== ($resultCode = $this->zipArchive->open($this->zipFile, ZipArchive::CREATE))) {
-            switch ($resultCode) {
-                case ZipArchive::ER_EXISTS:
-                    $errMsg = 'File already exists.';
+            $errMsg = match ($resultCode) {
+                ZipArchive::ER_EXISTS => 'File already exists.',
+                ZipArchive::ER_INCONS => 'Zip archive inconsistent.',
+                ZipArchive::ER_INVAL => 'Invalid argument.',
+                ZipArchive::ER_MEMORY => 'Malloc failure.',
+                ZipArchive::ER_NOENT => 'Invalid argument.',
+                ZipArchive::ER_NOZIP => 'Not a zip archive.',
+                ZipArchive::ER_OPEN => 'Can\'t open file.',
+                ZipArchive::ER_READ => 'Read error.',
+                ZipArchive::ER_SEEK => 'Seek error.',
+                default => 'Unknown error.',
+            };
 
-                    break;
-                case ZipArchive::ER_INCONS:
-                    $errMsg = 'Zip archive inconsistent.';
-
-                    break;
-                case ZipArchive::ER_INVAL:
-                    $errMsg = 'Invalid argument.';
-
-                    break;
-                case ZipArchive::ER_MEMORY:
-                    $errMsg = 'Malloc failure.';
-
-                    break;
-                case ZipArchive::ER_NOENT:
-                    $errMsg = 'Invalid argument.';
-
-                    break;
-                case ZipArchive::ER_NOZIP:
-                    $errMsg = 'Not a zip archive.';
-
-                    break;
-                case ZipArchive::ER_OPEN:
-                    $errMsg = 'Can\'t open file.';
-
-                    break;
-                case ZipArchive::ER_READ:
-                    $errMsg = 'Read error.';
-
-                    break;
-                case ZipArchive::ER_SEEK:
-                    $errMsg = 'Seek error.';
-
-                    break;
-                default:
-                    $errMsg = 'Unknown error.';
-
-                    break;
-            }
-
-            throw new \RuntimeException(sprintf('%s', $errMsg));
+            throw new \RuntimeException( $errMsg);
         }
 
         return $this;
