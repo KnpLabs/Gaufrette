@@ -12,11 +12,10 @@ use Gaufrette\Filesystem;
  */
 class AzureBlobStorageTest extends FunctionalTestCase
 {
-    /** @var string Name of the Azure container used */
-    private $container;
+    /** Name of the Azure container used */
+    private string $container;
 
-    /** @var AzureBlobStorage */
-    private $adapter;
+    private AzureBlobStorage $adapter;
 
     protected function setUp(): void
     {

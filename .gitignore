@@ -7,6 +7,7 @@ doc/.couscous
 .php_cs.cache
 .php-cs-fixer.cache
 phpunit.xml
+.phpunit.result.cache
 tests/adapters/*
 !tests/adapters/*.dist
 vendor/

@@ -12,13 +12,9 @@ class Size
     /**
      * Returns the size in bytes from the given content.
      *
-     * @param string $content
-     *
-     * @return int
-     *
      * @todo handle the case the mbstring is not loaded
      */
-    public static function fromContent($content)
+    public static function fromContent(string $content): int
     {
         // Make sure to get the real length in byte and not
         // accidentally mistake some bytes as a UTF BOM.
@@ -27,26 +23,21 @@ class Size
 
     /**
      * Returns the size in bytes from the given file.
-     *
-     * @param string $filename
-     *
-     * @return int
      */
-    public static function fromFile($filename)
+    public static function fromFile(string $filename): int
     {
-        return filesize($filename);
+        return filesize($filename)?: 0;
     }
 
     /**
      * Returns the size in bytes from the given resource.
      *
      * @param resource $handle
-     *
-     * @return string
      */
-    public static function fromResource($handle)
+    public static function fromResource($handle): int
     {
         $cStat = fstat($handle);
+
         // if the resource is a remote file, $cStat will be false
         return $cStat ? $cStat['size'] : 0;
     }

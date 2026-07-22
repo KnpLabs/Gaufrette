@@ -2,14 +2,14 @@
 
 namespace Gaufrette\Functional\Adapter;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Gaufrette\Adapter\DoctrineDbal;
 use Gaufrette\Filesystem;
 
 class DoctrineDbalTest extends FunctionalTestCase
 {
-    /** @var  \Doctrine\DBAL\Connection */
-    private $connection;
+    private Connection $connection;
 
     public static function setUpBeforeClass(): void
     {

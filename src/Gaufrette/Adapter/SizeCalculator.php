@@ -10,11 +10,7 @@ namespace Gaufrette\Adapter;
 interface SizeCalculator
 {
     /**
-     * Returns the size of the specified key.
-     *
-     * @param string $key
-     *
-     * @return int
+     * @return false|int size of the specified key.
      */
-    public function size($key);
+    public function size(string $key): bool|int;
 }

@@ -1,0 +1,4 @@
+# Exclude E_DEPRECATED (8192) from E_ALL (32767): dependencies such as
+# mikey179/vfsstream emit "implicit nullable parameter" deprecations on
+# PHP 8.1+ that we cannot fix from our own code.
+runner.maintainers.errors.level: 24575

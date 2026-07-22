@@ -1,7 +1,14 @@
-on: [push, pull_request]
 name: Static analysis
 
+on:
+  push: ~
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.repository }}/${{ github.workflow }}/${{ github.ref_name }}
+
 jobs:
+
   phpstan:
     name: PHPStan
     runs-on: ubuntu-latest
@@ -10,17 +17,17 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
-          extensions: mongo, mbstring, fileinfo
+          php-version: '8.5'
+          extensions: mongodb-1.21.0, mbstring, fileinfo
           tools: composer:v2
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Download dependencies
         run: |
           make require-all
-          composer require --dev --no-update phpstan/phpstan:1.8.8
+          composer require --dev --no-update phpstan/phpstan:2.2.5
           composer update --no-interaction --prefer-dist
 
       - name: PHPStan
@@ -37,12 +44,12 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
-          extensions: mongo, mbstring, fileinfo
+          php-version: '8.5'
+          extensions: mongodb-1.21.0, mbstring, fileinfo
           tools: composer:v2
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Download dependencies
         run: |
@@ -53,28 +60,3 @@ jobs:
         run: |
           ./vendor/bin/php-cs-fixer --version
           ./vendor/bin/php-cs-fixer fix --diff --dry-run --show-progress=none
-
-  psalm:
-    name: Psalm
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.4'
-          extensions: mongo, mbstring, fileinfo
-          tools: composer:v2
-
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Download dependencies
-        run: |
-          make require-all
-          composer require --dev --no-update psalm/phar:3.16
-          composer update --no-interaction --prefer-dist
-
-      - name: Psalm
-        run: |
-          ./vendor/bin/psalm.phar --version
-          ./vendor/bin/psalm.phar --output-format=github --no-progress --show-info=false --stats

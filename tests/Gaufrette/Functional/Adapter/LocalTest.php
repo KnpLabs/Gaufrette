@@ -7,7 +7,7 @@ use Gaufrette\Adapter\Local;
 
 class LocalTest extends FunctionalTestCase
 {
-    private $directory;
+    private string $directory;
 
     protected function setUp(): void
     {

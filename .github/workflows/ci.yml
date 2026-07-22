@@ -1,15 +1,20 @@
 name: Tests
-on: [push, pull_request]
+
+on:
+  push: ~
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.repository }}/${{ github.workflow }}/${{ github.ref_name }}
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 10
       matrix:
-        php: ['7.4', '8.0', '8.1']
+        php: ["8.2", "8.3", "8.4", "8.5"]
 
     steps:
       - name: Set up PHP
@@ -20,7 +25,7 @@ jobs:
           tools: flex
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Download dependencies
         run: |
@@ -40,28 +45,48 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 10
+      fail-fast: false
       matrix:
         run:
-          - { php: '8.1', packages: 'async-aws/simple-s3:^1.0', phpspec: 'spec/Gaufrette/Adapter/AsyncAwsS3Spec.php' }
-          - { php: '8.1', packages: 'aws/aws-sdk-php:^3.158', phpspec: 'spec/Gaufrette/Adapter/AwsS3Spec.php' }
-          - { php: '8.1', packages: 'google/apiclient:^2.12', phpspec: 'spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php' }
-          - { php: '8.1', packages: 'doctrine/dbal:^2.3', phpspec: 'spec/Gaufrette/Adapter/DoctrineDbalSpec.php' }
-          - { php: '8.1', packages: 'doctrine/dbal:^3.4', phpspec: 'spec/Gaufrette/Adapter/DoctrineDbalSpec.php' }
-          - { php: '8.1', packages: 'league/flysystem:^1.0', phpspec: 'spec/Gaufrette/Adapter/FlysystemSpec.php' }
-          - { php: '8.1', packages: 'microsoft/azure-storage-blob:^1.0', phpspec: 'spec/Gaufrette/Adapter/AzureBlobStore' }
-          - { php: '8.1', packages: 'mongodb/mongodb:^1.1', phpspec: 'spec/Gaufrette/Adapter/GridFSSpec.php' }
-          - { php: '8.1', packages: 'phpseclib/phpseclib:^2.0', phpspec: 'spec/Gaufrette/Adapter/PhpseclibSftpSpec.php' }
+          - packages: "async-aws/simple-s3:^1.0"
+            phpspec: "spec/Gaufrette/Adapter/AsyncAwsS3Spec.php"
+
+          - packages: "aws/aws-sdk-php:^3.158"
+            phpspec: "spec/Gaufrette/Adapter/AwsS3Spec.php"
+
+          - packages: "google/apiclient:^2.12"
+            phpspec: "spec/Gaufrette/Adapter/GoogleCloudStorageSpec.php"
+
+          - packages: "doctrine/dbal:^2.3"
+            phpspec: "spec/Gaufrette/Adapter/DoctrineDbalSpec.php"
+
+          - packages: "doctrine/dbal:^3.4"
+            phpspec: "spec/Gaufrette/Adapter/DoctrineDbalSpec.php"
+
+          - packages: "league/flysystem:^1.0"
+            phpspec: "spec/Gaufrette/Adapter/FlysystemSpec.php"
+
+          - packages: "microsoft/azure-storage-blob:^1.0"
+            phpspec: "spec/Gaufrette/Adapter/AzureBlobStore"
+
+          - packages: "mongodb/mongodb:^1.1"
+            phpspec: "spec/Gaufrette/Adapter/GridFSSpec.php"
+            extensions: [mongodb-1.21.0]
+
+          - packages: "phpseclib/phpseclib:^2.0"
+            phpspec: "spec/Gaufrette/Adapter/PhpseclibSftpSpec.php"
 
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.run.php }}
+          php-version: "8.5"
           coverage: none
           tools: flex
+          extensions: ${{ join(matrix.run.extensions, ', ') }}
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Download dependencies
         run: |
@@ -74,3 +99,21 @@ jobs:
 
       - name: PHPUnit
         run: php vendor/bin/phpunit
+
+  roave-backwards-compatibility-check:
+    name: Roave Backwards Compatibility Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+
+      - name: Download dependencies
+        run: |
+          composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable
+
+      - name: Roave/BackwardCompatibilityCheck
+        run: docker run --rm -v `pwd`:/app nyholm/roave-bc-check --format=github-actions

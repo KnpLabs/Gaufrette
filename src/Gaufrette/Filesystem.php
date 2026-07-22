@@ -12,14 +12,14 @@ use Gaufrette\Adapter\ListKeysAware;
  */
 class Filesystem implements FilesystemInterface
 {
-    protected $adapter;
+    protected Adapter $adapter;
 
     /**
      * Contains File objects created with $this->createFile() method.
      *
-     * @var array
+     * @var array<string, File>
      */
-    protected $fileRegister = [];
+    protected array $fileRegister = [];
 
     /**
      * @param Adapter $adapter A configured Adapter instance
@@ -29,12 +29,7 @@ class Filesystem implements FilesystemInterface
         $this->adapter = $adapter;
     }
 
-    /**
-     * Returns the adapter.
-     *
-     * @return Adapter
-     */
-    public function getAdapter()
+    public function getAdapter(): Adapter
     {
         return $this->adapter;
     }
@@ -42,7 +37,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function has($key)
+    public function has(string $key): bool
     {
         self::assertValidKey($key);
 
@@ -52,7 +47,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function rename($sourceKey, $targetKey)
+    public function rename(string $sourceKey, string $targetKey): bool
     {
         self::assertValidKey($sourceKey);
         self::assertValidKey($targetKey);
@@ -78,7 +73,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function get($key, $create = false)
+    public function get(string $key, bool $create = false): File
     {
         self::assertValidKey($key);
 
@@ -92,7 +87,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function write($key, $content, $overwrite = false)
+    public function write(string $key, string $content, bool $overwrite = false): int
     {
         self::assertValidKey($key);
 
@@ -112,7 +107,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function read($key)
+    public function read(string $key): string
     {
         self::assertValidKey($key);
 
@@ -130,7 +125,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         self::assertValidKey($key);
 
@@ -148,7 +143,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function keys()
+    public function keys(): array
     {
         return $this->adapter->keys();
     }
@@ -156,7 +151,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function listKeys($prefix = '')
+    public function listKeys(string $prefix = ''): array
     {
         if ($this->adapter instanceof ListKeysAware) {
             return $this->adapter->listKeys($prefix);
@@ -184,7 +179,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function mtime($key)
+    public function mtime(string $key): int|bool
     {
         self::assertValidKey($key);
 
@@ -196,7 +191,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function checksum($key)
+    public function checksum(string $key): string
     {
         self::assertValidKey($key);
 
@@ -212,7 +207,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function size($key)
+    public function size(string $key): int
     {
         self::assertValidKey($key);
 
@@ -228,7 +223,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function createStream($key)
+    public function createStream(string $key): Stream
     {
         self::assertValidKey($key);
 
@@ -242,7 +237,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function createFile($key)
+    public function createFile(string $key): File
     {
         self::assertValidKey($key);
 
@@ -260,7 +255,7 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function mimeType($key)
+    public function mimeType(string $key): string|bool
     {
         self::assertValidKey($key);
 
@@ -282,11 +277,9 @@ class Filesystem implements FilesystemInterface
      * Key must be non empty string, otherwise it will throw Exception\FileNotFound
      * {@see http://php.net/manual/en/function.empty.php}
      *
-     * @param string $key
-     *
      * @throws Exception\FileNotFound when sourceKey does not exist
      */
-    private function assertHasFile($key)
+    private function assertHasFile(string $key): void
     {
         if (!$this->has($key)) {
             throw new Exception\FileNotFound($key);
@@ -295,12 +288,8 @@ class Filesystem implements FilesystemInterface
 
     /**
      * Checks if matching File object by given key exists in the fileRegister.
-     *
-     * @param string $key
-     *
-     * @return bool
      */
-    private function isFileInRegister($key)
+    private function isFileInRegister(string $key): bool
     {
         return array_key_exists($key, $this->fileRegister);
     }
@@ -308,17 +297,15 @@ class Filesystem implements FilesystemInterface
     /**
      * Clear files register.
      */
-    public function clearFileRegister()
+    public function clearFileRegister(): void
     {
         $this->fileRegister = [];
     }
 
     /**
      * Removes File object from register.
-     *
-     * @param string $key
      */
-    public function removeFromRegister($key)
+    public function removeFromRegister(string $key): void
     {
         if ($this->isFileInRegister($key)) {
             unset($this->fileRegister[$key]);
@@ -328,17 +315,15 @@ class Filesystem implements FilesystemInterface
     /**
      * {@inheritdoc}
      */
-    public function isDirectory($key)
+    public function isDirectory(string $key): bool
     {
         return $this->adapter->isDirectory($key);
     }
 
     /**
-     * @param string $key
-     *
      * @throws \InvalidArgumentException Given $key should not be empty
      */
-    private static function assertValidKey($key)
+    private static function assertValidKey(string $key): void
     {
         if (empty($key)) {
             throw new \InvalidArgumentException('Object path is empty.');

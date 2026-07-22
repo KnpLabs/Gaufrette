@@ -8,10 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 abstract class FunctionalTestCase extends TestCase
 {
-    /**
-     * @var Filesystem
-     */
-    protected $filesystem;
+    protected ?Filesystem $filesystem = null;
 
     public function getAdapterName()
     {

@@ -2,12 +2,13 @@
 
 namespace Gaufrette\Functional\FileStream;
 
+use Gaufrette\Filesystem;
 use Gaufrette\StreamWrapper;
 use PHPUnit\Framework\TestCase;
 
 abstract class FunctionalTestCase extends TestCase
 {
-    protected $filesystem;
+    protected ?Filesystem $filesystem = null;
 
     /**
      * @test
@@ -30,7 +31,7 @@ abstract class FunctionalTestCase extends TestCase
         $this->assertFileExists('gaufrette://filestream/test.txt');
 
         $this->filesystem->delete('test.txt');
-        $this->assertFileNotExists('gaufrette://filestream/test.txt');
+        $this->assertFileDoesNotExist('gaufrette://filestream/test.txt');
     }
 
     /**

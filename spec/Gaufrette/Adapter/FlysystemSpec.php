@@ -8,50 +8,50 @@ use League\Flysystem\Config;
 
 class FlysystemSpec extends ObjectBehavior
 {
-    function let(AdapterInterface $adapter, Config $config)
+    public function let(AdapterInterface $adapter, Config $config)
     {
         $this->beConstructedWith($adapter, $config);
     }
 
-    function it_is_adapter()
+    public function it_is_adapter()
     {
         $this->shouldImplement('Gaufrette\Adapter');
     }
 
-    function it_is_list_keys_aware()
+    public function it_is_list_keys_aware()
     {
         $this->shouldImplement('Gaufrette\Adapter\ListKeysAware');
     }
 
-    function it_reads_file(AdapterInterface $adapter)
+    public function it_reads_file(AdapterInterface $adapter)
     {
         $adapter->read('filename')->willReturn(['contents' => 'Hello.']);
 
         $this->read('filename')->shouldReturn('Hello.');
     }
 
-    function it_writes_file(AdapterInterface $adapter, Config $config)
+    public function it_writes_file(AdapterInterface $adapter, Config $config)
     {
         $adapter->write('filename', 'Hello.', $config)->willReturn([]);
 
-        $this->write('filename', 'Hello.')->shouldReturn([]);
+        $this->write('filename', 'Hello.')->shouldReturn(0);
     }
 
-    function it_checks_if_file_exists(AdapterInterface $adapter)
+    public function it_checks_if_file_exists(AdapterInterface $adapter)
     {
         $adapter->has('filename')->willReturn(true);
 
         $this->exists('filename')->shouldReturn(true);
     }
 
-    function it_checks_if_file_exists_when_flysystem_returns_array(AdapterInterface $adapter)
+    public function it_checks_if_file_exists_when_flysystem_returns_array(AdapterInterface $adapter)
     {
         $adapter->has('filename')->willReturn(['type' => 'file']);
 
         $this->exists('filename')->shouldReturn(true);
     }
 
-    function it_fetches_keys(AdapterInterface $adapter)
+    public function it_fetches_keys(AdapterInterface $adapter)
     {
         $adapter->listContents()->willReturn([[
             'path' => 'folder',
@@ -63,7 +63,7 @@ class FlysystemSpec extends ObjectBehavior
         $this->keys()->shouldReturn(['folder']);
     }
 
-    function it_lists_keys(AdapterInterface $adapter)
+    public function it_lists_keys(AdapterInterface $adapter)
     {
         $adapter->listContents()->willReturn([[
             'path' => 'folder',
@@ -78,28 +78,28 @@ class FlysystemSpec extends ObjectBehavior
         ]);
     }
 
-    function it_fetches_mtime(AdapterInterface $adapter)
+    public function it_fetches_mtime(AdapterInterface $adapter)
     {
         $adapter->getTimestamp('filename')->willReturn(1457104978);
 
         $this->mtime('filename')->shouldReturn(1457104978);
     }
 
-    function it_deletes_file(AdapterInterface $adapter)
+    public function it_deletes_file(AdapterInterface $adapter)
     {
         $adapter->delete('filename')->willReturn(true);
 
         $this->delete('filename')->shouldReturn(true);
     }
 
-    function it_renames_file(AdapterInterface $adapter)
+    public function it_renames_file(AdapterInterface $adapter)
     {
         $adapter->rename('oldfilename', 'newfilename')->willReturn(true);
 
         $this->rename('oldfilename', 'newfilename')->shouldReturn(true);
     }
 
-    function it_does_not_support_is_directory(AdapterInterface $adapter)
+    public function it_does_not_support_is_directory()
     {
         $this->shouldThrow('Gaufrette\Exception\UnsupportedAdapterMethodException')->duringisDirectory('folder');
     }

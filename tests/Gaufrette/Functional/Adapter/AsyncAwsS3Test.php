@@ -9,11 +9,9 @@ use Gaufrette\Filesystem;
 
 class AsyncAwsS3Test extends FunctionalTestCase
 {
-    /** @var string */
-    private $bucket;
+    private string $bucket;
 
-    /** @var SimpleS3Client */
-    private $client;
+    private SimpleS3Client $client;
 
     protected function setUp(): void
     {

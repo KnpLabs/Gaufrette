@@ -9,15 +9,17 @@ namespace Gaufrette;
  */
 class StreamMode
 {
-    private $mode;
-    private $base;
-    private $plus;
-    private $flag;
+    private string $mode;
+    private string $base;
+    private bool $plus;
+    private string $flag;
 
     /**
      * @param string $mode A stream mode as for the use of fopen()
+     *
+     * @see https://www.php.net/manual/en/function.fopen.php
      */
-    public function __construct($mode)
+    public function __construct(string $mode)
     {
         $this->mode = $mode;
 
@@ -31,20 +33,16 @@ class StreamMode
 
     /**
      * Returns the underlying mode.
-     *
-     * @return string
      */
-    public function getMode()
+    public function getMode(): string
     {
         return $this->mode;
     }
 
     /**
      * Indicates whether the mode allows to read.
-     *
-     * @return bool
      */
-    public function allowsRead()
+    public function allowsRead(): bool
     {
         if ($this->plus) {
             return true;
@@ -55,10 +53,8 @@ class StreamMode
 
     /**
      * Indicates whether the mode allows to write.
-     *
-     * @return bool
      */
-    public function allowsWrite()
+    public function allowsWrite(): bool
     {
         if ($this->plus) {
             return true;
@@ -69,20 +65,16 @@ class StreamMode
 
     /**
      * Indicates whether the mode allows to open an existing file.
-     *
-     * @return bool
      */
-    public function allowsExistingFileOpening()
+    public function allowsExistingFileOpening(): bool
     {
         return 'x' !== $this->base;
     }
 
     /**
      * Indicates whether the mode allows to create a new file.
-     *
-     * @return bool
      */
-    public function allowsNewFileOpening()
+    public function allowsNewFileOpening(): bool
     {
         return 'r' !== $this->base;
     }
@@ -90,10 +82,8 @@ class StreamMode
     /**
      * Indicates whether the mode implies to delete the existing content of the
      * file when it already exists.
-     *
-     * @return bool
      */
-    public function impliesExistingContentDeletion()
+    public function impliesExistingContentDeletion(): bool
     {
         return 'w' === $this->base;
     }
@@ -101,10 +91,8 @@ class StreamMode
     /**
      * Indicates whether the mode implies positioning the cursor at the
      * beginning of the file.
-     *
-     * @return bool
      */
-    public function impliesPositioningCursorAtTheBeginning()
+    public function impliesPositioningCursorAtTheBeginning(): bool
     {
         return 'a' !== $this->base;
     }
@@ -112,30 +100,24 @@ class StreamMode
     /**
      * Indicates whether the mode implies positioning the cursor at the end of
      * the file.
-     *
-     * @return bool
      */
-    public function impliesPositioningCursorAtTheEnd()
+    public function impliesPositioningCursorAtTheEnd(): bool
     {
         return 'a' === $this->base;
     }
 
     /**
      * Indicates whether the stream is in binary mode.
-     *
-     * @return bool
      */
-    public function isBinary()
+    public function isBinary(): bool
     {
         return 'b' === $this->flag;
     }
 
     /**
      * Indicates whether the stream is in text mode.
-     *
-     * @return bool
      */
-    public function isText()
+    public function isText(): bool
     {
         return false === $this->isBinary();
     }
