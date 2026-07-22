@@ -1,0 +1,49 @@
+name: Create discussion for release
+on:
+  release:
+    types: [published]
+
+jobs:
+  create-discussion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create discussion via GraphQL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const repoQuery = await github.graphql(`
+              query($owner:String!, $repo:String!) {
+                repository(owner:$owner, name:$repo) {
+                  id
+                  discussionCategories(first: 10) {
+                    nodes { id name }
+                  }
+                }
+              }
+            `, { owner: context.repo.owner, repo: context.repo.repo });
+
+            const category = repoQuery.repository.discussionCategories.nodes
+              .find(c => c.name === "Announcements");
+
+            if (!category) {
+              core.setFailed("Catégorie de discussion introuvable.");
+              return;
+            }
+
+            await github.graphql(`
+              mutation($repoId:ID!, $categoryId:ID!, $title:String!, $body:String!) {
+                createDiscussion(input: {
+                  repositoryId: $repoId,
+                  categoryId: $categoryId,
+                  title: $title,
+                  body: $body
+                }) {
+                  discussion { url }
+                }
+              }
+            `, {
+              repoId: repoQuery.repository.id,
+              categoryId: category.id,
+              title: context.payload.release.name,
+              body: context.payload.release.body
+            });
