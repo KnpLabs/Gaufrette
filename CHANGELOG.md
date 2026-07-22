@@ -1,3 +1,22 @@
+# Changelog
+
+## [1.0.0](https://github.com/KnpLabs/Gaufrette/compare/v0.11.1...v1.0.0) (2026-07-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* PHP 8.5 compatibility updates ([#722](https://github.com/KnpLabs/Gaufrette/issues/722))
+
+### Features
+
+* add GitHub Actions workflow to create discussions for published releases ([#726](https://github.com/KnpLabs/Gaufrette/issues/726)) ([0732fba](https://github.com/KnpLabs/Gaufrette/commit/0732fbae077a901d54c15f3a6505d68f81c0629d))
+* PHP 8.5 compatibility updates ([#722](https://github.com/KnpLabs/Gaufrette/issues/722)) ([d11a186](https://github.com/KnpLabs/Gaufrette/commit/d11a186e3f2c76fa885f4ac0532d2c98aa9a8ff2))
+
+
+### Bug Fixes
+
+* make commande to remove phpspec adapter ([#707](https://github.com/KnpLabs/Gaufrette/issues/707)) ([ceb9f23](https://github.com/KnpLabs/Gaufrette/commit/ceb9f239f9c22f452bc09814cc4ad0700b26078e))
+
 v0.11.1
 =======
 
