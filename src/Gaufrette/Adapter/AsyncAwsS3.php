@@ -18,7 +18,7 @@ class AsyncAwsS3 implements Adapter, MetadataSupporter, ListKeysAware, SizeCalcu
     protected SimpleS3Client $service;
     protected string $bucket;
     protected array $options;
-    protected bool $bucketExists;
+    protected bool $bucketExists = false;
     protected array $metadata = [];
     protected bool $detectContentType;
 
