@@ -290,7 +290,9 @@ class GoogleCloudStorage implements Adapter, MetadataSupporter, ListKeysAware
         // FIXME: Temporary workaround for google/google-api-php-client#375
         $reflectionClass = new \ReflectionClass('Google_Service_Storage_Objects');
         $reflectionProperty = $reflectionClass->getProperty('collection_key');
-        $reflectionProperty->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $reflectionProperty->setAccessible(true);
+        }
         $reflectionProperty->setValue($list, 'items');
 
         /** @var StorageObject $object */
